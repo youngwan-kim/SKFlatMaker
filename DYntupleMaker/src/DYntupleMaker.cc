@@ -2363,7 +2363,7 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 		// Electron_mHits[_nElectron] = elecTrk->numberOfLostHits();
 		// -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleMissingHitsCut.cc#L34-L41 -- //
 		constexpr reco::HitPattern::HitCategory missingHitType = reco::HitPattern::MISSING_INNER_HITS;
-		Electron_mHits[_nElectron] = elecTrk->hitPattern().numberOfHits(missingHitType);
+		Electron_mHits[_nElectron] = elecTrk->hitPattern().numberOfAllHits(missingHitType);
 		
 		Electron_dxy[_nElectron] = elecTrk->dxy();
 		Electron_dz[_nElectron] = elecTrk->dz();
