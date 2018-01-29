@@ -15,7 +15,7 @@ DYntupleMaker = cms.EDAnalyzer("DYntupleMaker",
 	MET = cms.untracked.InputTag("patMETs"),
 	LHEEventProduct = cms.untracked.InputTag("externalLHEProducer"),
 	LHERunInfoProduct = cms.untracked.InputTag("externalLHEProducer"),
-	GenParticle = cms.untracked.InputTag("genParticles"),
+        GenParticle = cms.untracked.InputTag("genParticles"),
 
 	# -- electron information -- #
 	rho = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
@@ -47,10 +47,11 @@ DYntupleMaker = cms.EDAnalyzer("DYntupleMaker",
 	pfMET = cms.untracked.InputTag("pfMet"),
 
 	# -- Trigger -- #
-	TriggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
-	TriggerResultsPAT = cms.untracked.InputTag("TriggerResults", "", "PAT"),
-	TriggerObject = cms.untracked.InputTag("selectedPatTrigger"),
-
+        TriggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
+        TriggerResultsPAT = cms.untracked.InputTag("TriggerResults", "", "PAT"),
+	##TriggerObject = cms.untracked.InputTag("selectedPatTrigger"),
+        TriggerObject = cms.untracked.InputTag("slimmedPatTrigger"),                       
+                               
 	# -- Else -- #
 	GenEventInfo = cms.untracked.InputTag("generator"),
 	BeamSpot = cms.untracked.InputTag("offlineBeamSpot"),

@@ -10,81 +10,88 @@
 //////////////////////
 // -- FrameWorks -- //
 //////////////////////
-#include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h" // -- Forward declarations of types in the EDM(Event Data Model).
+#include "FWCore/Framework/interface/EDAnalyzer.h" // -- EDAnalyzer is the base class for all analyzer "modules".
+#include "FWCore/Framework/interface/Event.h" // -- This is the primary interface for accessing EDProducts from a single collision and inserting new derived products.
+#include "FWCore/Framework/interface/MakerMacros.h" // -- including temporary until a better solution can be found (leads to more physical coupling than is probably necessary)
+#include "FWCore/ParameterSet/interface/ParameterSet.h" // -- Declaration for ParameterSet(parameter set) and related types 
+#include "FWCore/Framework/interface/ESHandle.h" // -- No description
 
 /////////////////////
 // -- For Muons -- //
 /////////////////////
-#include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/MuonReco/interface/Muon.h"
-#include "DataFormats/PatCandidates/interface/Muon.h"
-#include "DataFormats/MuonReco/interface/MuonCosmicCompatibility.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h" // -- Forward declarations of muon variables
+#include "DataFormats/MuonReco/interface/Muon.h" // -- A reconstructed Muon. (tracker alone, muon detector alone, combined muon plus tracker)
+#include "DataFormats/PatCandidates/interface/Muon.h" // -- Analysis-level muon class, pat::Muon implements the analysis-level muon class within the 'pat' namespace. PAT(Physics Analysis Toolkit)
+#include "DataFormats/MuonReco/interface/MuonCosmicCompatibility.h" // -- Variables shows how muon is cosmic-like
 
 /////////////////////////
 // -- For Electrons -- //
 /////////////////////////
-#include "DataFormats/PatCandidates/interface/Photon.h"
-#include "DataFormats/PatCandidates/interface/Electron.h"
-#include "RecoEgamma/EgammaTools/interface/EffectiveAreas.h"
+#include "DataFormats/PatCandidates/interface/Photon.h" // -- Analysis-level Photon class, pat::Photon implements the analysis-level photon class within the 'pat' namespace
+#include "DataFormats/PatCandidates/interface/Electron.h" // -- Analysis-level electron class,  pat::Electron implements the analysis-level electron class within the 'pat' namespace
+#include "RecoEgamma/EgammaTools/interface/EffectiveAreas.h" // -- It seems as a function refer effective areas of ECAL
 
 ///////////////////
 // -- For MET -- //
 ///////////////////
-#include "DataFormats/PatCandidates/interface/MET.h"
-#include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/PatCandidates/interface/MET.h" // -- Analysis-level MET class, pat::MET implements an analysis-level missing energy class as a 4-vector within the 'pat' namespace
+#include "DataFormats/METReco/interface/PFMET.h" // --  MET made from Particle Flow candidates, with various fraction functions ex)photonEtFraction()
 
 ////////////////////
 // -- For Jets -- //
 ////////////////////
-#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Jet.h" // -- Analysis-level calorimeter jet class, Jet implements the analysis-level calorimeter jet class within the 'pat' namespace.
 
 ////////////////////////////
 // -- For GenParticles -- //
 ////////////////////////////
-#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
-#include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h" // -- LHE info like PDF
+#include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h" // -- ??
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h" // -- 
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h" // -- ???
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" // -- contains information related to the details of the pileup simulation for a given event, ex) Nvtx, z of PU, sum(pt) of vtxs
 
 //#include "SimDataFormats/HepMCProduct/interface/HepMCProduct.h"
 
 //////////////////////////
 // -- Track & Vertex -- //
 //////////////////////////
-#include "DataFormats/TrackReco/interface/TrackFwd.h"
-#include "DataFormats/TrackReco/interface/Track.h"
-#include "DataFormats/Candidate/interface/VertexCompositeCandidate.h"
-#include "DataFormats/Candidate/interface/VertexCompositeCandidateFwd.h"
-#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
-#include "PhysicsTools/RecoUtils/interface/CandCommonVertexFitter.h"
-#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h" // -- Forward definitions for tracker variables
+#include "DataFormats/TrackReco/interface/Track.h" // -- reconstructed tracks that are stored in the AOD and RECO. also contains a reference to more detailed information(RECO)
+#include "DataFormats/Candidate/interface/VertexCompositeCandidate.h" // -- A composite Candidate  with error matrix and other vertex fix information. 
+#include "DataFormats/Candidate/interface/VertexCompositeCandidateFwd.h" // -- Foward declaration of VertexCompositeCandidate class's variables
+#include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h" // -- Least-squares vertex fitter implemented in the Kalman Filter formalism
+#include "PhysicsTools/RecoUtils/interface/CandCommonVertexFitter.h" // -- 
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h" // -- Helper class to build TransientTrack from the persistent Track.
 
 ////////////////////
 // -- Triggers -- //
 ////////////////////
-#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "FWCore/Common/interface/TriggerNames.h" // -- Used to access the names and indices of the triggers corresponding to a particular TriggerResults object
+#include "FWCore/Common/interface/TriggerResultsByName.h" // --  Class which provides methods to access trigger results
+#include "DataFormats/Common/interface/TriggerResults.h" // -- The trigger path results are maintained here as a sequence of entries, one per trigger path
+#include "DataFormats/HLTReco/interface/TriggerEvent.h" // -- The single EDProduct to be saved for each event (AOD case) describing the (HLT) trigger table
+#include "DataFormats/HLTReco/interface/TriggerObject.h" // --  A single trigger object (e.g., an isolated muon, or MET) described by its 4-momentum and physics type
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h" // -- Analysis-level trigger object class (stand-alone). (within the 'pat' namespace.)
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h" // -- This class provides access routines to get hold of the HLT Configuration
+
 
 ////////////////
 // -- Else -- //
 ////////////////
-#include "DataFormats/Math/interface/LorentzVector.h"
-#include "DataFormats/GeometrySurface/interface/GloballyPositioned.h"
-#include "Geometry/Records/interface/GlobalTrackingGeometryRecord.h"
-#include "DataFormats/Common/interface/RefToBaseVector.h"
-#include "DataFormats/Candidate/interface/NamedCompositeCandidateFwd.h"
-#include "DataFormats/Candidate/interface/NamedCompositeCandidate.h"
-#include "DataFormats/Candidate/interface/CompositeCandidateFwd.h"
-#include "DataFormats/Candidate/interface/CompositeCandidate.h"
-#include "DataFormats/Common/interface/View.h"
-#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
-#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
-#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "DataFormats/Math/interface/LorentzVector.h" // -- (pt, eta, phi, E) OR (pt, eta, phi, M)
+#include "DataFormats/GeometrySurface/interface/GloballyPositioned.h" // -- Base class for surfaces and volumes positioned in global 3D space.
+#include "Geometry/Records/interface/GlobalTrackingGeometryRecord.h" // -- The Muon DetUnit geometry.
+#include "DataFormats/Common/interface/RefToBaseVector.h" // -- 
+#include "DataFormats/Candidate/interface/NamedCompositeCandidateFwd.h" // -- Foward definition of NamedCompositeCandidate class
+#include "DataFormats/Candidate/interface/NamedCompositeCandidate.h" // -- A Candidate composed of daughters. The daughters are owned by the composite candidate.
+#include "DataFormats/Candidate/interface/CompositeCandidateFwd.h" // -- Foward definition of CompositeCandidate class
+#include "DataFormats/Candidate/interface/CompositeCandidate.h" // A Candidate composed of daughters. The daughters are owned by the composite candidate.
+#include "DataFormats/Common/interface/View.h" // -- Provide access to the collected elements contained by any WrapperBase that is a sequence.
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h" // -- 
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h" // -- Class to provide lumi weighting for analyzers to weight "flat-to-N" MC samples to data
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h" // -- contains information related to the details of the pileup simulation for a given event
 
 #include <TFile.h>
 #include <TTree.h>
@@ -95,6 +102,8 @@
 
 using namespace std;
 using namespace pat;
+using namespace edm;
+
 namespace reco { class CandCommonVertexFitterBase; class VertexCompositeCandidate; class CandCommonVertexFitter; }
 
 class DYntupleMaker : public edm::EDAnalyzer
@@ -130,7 +139,7 @@ private:
 	int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
 	std::string processName;
 	std::string theElectronID;
-
+	
 	HLTConfigProvider hltConfig_;
 
 	// -- Tokens (for 76X) -- //
@@ -149,6 +158,10 @@ private:
 	edm::EDGetTokenT< edm::ValueMap<bool> > 						eleLooseIdMapToken;
 	edm::EDGetTokenT< edm::ValueMap<bool> > 						eleMediumIdMapToken;
 	edm::EDGetTokenT< edm::ValueMap<bool> > 						eleTightIdMapToken;
+	edm::EDGetTokenT< edm::ValueMap<bool> >                                                 eleMVAIdnoIsoWP80MapToken;
+	edm::EDGetTokenT< edm::ValueMap<bool> >                                                 eleMVAIdnoIsoWP90MapToken;
+	edm::EDGetTokenT< edm::ValueMap<bool> >                                                 eleMVAIdisoWP80MapToken;
+	edm::EDGetTokenT< edm::ValueMap<bool> >                                                 eleMVAIdisoWP90MapToken;
 	edm::EDGetTokenT< edm::ValueMap<bool> > 						eleMVAIdWP80MapToken;
 	edm::EDGetTokenT< edm::ValueMap<bool> > 						eleMVAIdWP90MapToken;
 	edm::EDGetTokenT< edm::ValueMap<bool> > 						eleHEEPIdMapToken;
@@ -458,6 +471,10 @@ private:
 	bool Electron_passLooseID[MPSIZE];
 	bool Electron_passMediumID[MPSIZE];
 	bool Electron_passTightID[MPSIZE];
+	bool Electron_passMVAID_noIso_WP80[MPSIZE];
+	bool Electron_passMVAID_noIso_WP90[MPSIZE];
+	bool Electron_passMVAID_iso_WP80[MPSIZE];
+	bool Electron_passMVAID_iso_WP90[MPSIZE];
 	bool Electron_passMVAID_WP80[MPSIZE];
 	bool Electron_passMVAID_WP90[MPSIZE];
 	bool Electron_passHEEPID[MPSIZE];

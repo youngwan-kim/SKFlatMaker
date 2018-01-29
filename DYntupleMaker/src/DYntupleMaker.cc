@@ -160,41 +160,45 @@ using namespace isodeposit;
 // -- Constructor -- //
 DYntupleMaker::DYntupleMaker(const edm::ParameterSet& iConfig):
 // -- object tokens -- //
-MuonToken						( consumes< std::vector<pat::Muon> > 				(iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
-ElectronToken					( consumes< edm::View<reco::GsfElectron> >			(iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
-UnCorrElectronToken				( consumes< edm::View<reco::GsfElectron> >			(iConfig.getUntrackedParameter<edm::InputTag>("UnCorrElectron")) ),
-PhotonToken 					( consumes< edm::View<reco::Photon> >				(iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
-JetToken 						( consumes< std::vector<pat::Jet> >					(iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
-MetToken 						( consumes< std::vector<pat::MET> >					(iConfig.getUntrackedParameter<edm::InputTag>("MET")) ),
-LHEEventProductToken			( consumes< LHEEventProduct >  						(iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
-LHERunInfoProductToken			( consumes< LHERunInfoProduct,edm::InRun > 			(iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
-GenParticleToken 				( consumes< std::vector<reco::GenParticle> >		(iConfig.getUntrackedParameter<edm::InputTag>("GenParticle")) ),
+MuonToken			    ( consumes< std::vector<pat::Muon> > 			(iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
+ElectronToken			    ( consumes< edm::View<reco::GsfElectron> >			(iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
+UnCorrElectronToken	       	    ( consumes< edm::View<reco::GsfElectron> >			(iConfig.getUntrackedParameter<edm::InputTag>("UnCorrElectron")) ),
+PhotonToken 		      	    ( consumes< edm::View<reco::Photon> >			(iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
+JetToken 		     	    ( consumes< std::vector<pat::Jet> >				(iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
+MetToken 			    ( consumes< std::vector<pat::MET> >				(iConfig.getUntrackedParameter<edm::InputTag>("MET")) ),
+LHEEventProductToken		    ( consumes< LHEEventProduct >  			    	(iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
+LHERunInfoProductToken		    ( consumes< LHERunInfoProduct,edm::InRun > 			(iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
+GenParticleToken 		    ( consumes< std::vector<reco::GenParticle> >		(iConfig.getUntrackedParameter<edm::InputTag>("GenParticle")) ),
 // -- Electron tokens -- //
-RhoToken 						( consumes< double >								(iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
-eleVetoIdMapToken 				( consumes< edm::ValueMap<bool> >					(iConfig.getUntrackedParameter<edm::InputTag>("eleVetoIdMap")) ),
-eleLooseIdMapToken 				( consumes< edm::ValueMap<bool> >					(iConfig.getUntrackedParameter<edm::InputTag>("eleLooseIdMap")) ),
-eleMediumIdMapToken 			( consumes< edm::ValueMap<bool> >					(iConfig.getUntrackedParameter<edm::InputTag>("eleMediumIdMap")) ),
-eleTightIdMapToken 				( consumes< edm::ValueMap<bool> >					(iConfig.getUntrackedParameter<edm::InputTag>("eleTightIdMap")) ),
-eleMVAIdWP80MapToken 			( consumes< edm::ValueMap<bool> >					(iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP80Map")) ),
-eleMVAIdWP90MapToken 			( consumes< edm::ValueMap<bool> >					(iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP90Map")) ),
-eleHEEPIdMapToken 				( consumes< edm::ValueMap<bool> >					(iConfig.getUntrackedParameter<edm::InputTag>("eleHEEPIdMap")) ),
-ConversionsToken 				( consumes< std::vector<reco::Conversion> > 		(iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
-GsfTrackToken					( consumes< std::vector< reco::GsfTrack > > 		(iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
+RhoToken 			    ( consumes< double >					(iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
+eleVetoIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleVetoIdMap")) ),
+eleLooseIdMapToken 		    ( consumes< edm::ValueMap<bool> >			        (iConfig.getUntrackedParameter<edm::InputTag>("eleLooseIdMap")) ),
+eleMediumIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleMediumIdMap")) ),
+eleTightIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleTightIdMap")) ),
+eleMVAIdnoIsoWP80MapToken           ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP80Map")) ),
+eleMVAIdnoIsoWP90MapToken           ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP90Map")) ),
+eleMVAIdisoWP80MapToken           ( consumes< edm::ValueMap<bool> >                             (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP80Map")) ),
+eleMVAIdisoWP90MapToken           ( consumes< edm::ValueMap<bool> >                             (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP90Map")) ),
+eleMVAIdWP80MapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP80Map")) ),
+eleMVAIdWP90MapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP90Map")) ),
+eleHEEPIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleHEEPIdMap")) ),
+ConversionsToken 		    ( consumes< std::vector<reco::Conversion> > 		(iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
+GsfTrackToken			    ( consumes< std::vector< reco::GsfTrack > > 		(iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
 // -- Photon tokens -- //
-full5x5SigmaIEtaIEtaMapToken	( consumes< edm::ValueMap<float> > 					(iConfig.getUntrackedParameter<edm::InputTag>("full5x5SigmaIEtaIEtaMap")) ),
-phoChargedIsolationToken 		( consumes< edm::ValueMap<float> > 					(iConfig.getUntrackedParameter<edm::InputTag>("phoChargedIsolation")) ),
-phoNeutralHadronIsolationToken 	( consumes< edm::ValueMap<float> > 					(iConfig.getUntrackedParameter<edm::InputTag>("phoNeutralHadronIsolation")) ),
-phoPhotonIsolationToken 		( consumes< edm::ValueMap<float> > 					(iConfig.getUntrackedParameter<edm::InputTag>("phoPhotonIsolation")) ),
+full5x5SigmaIEtaIEtaMapToken	    ( consumes< edm::ValueMap<float> > 				(iConfig.getUntrackedParameter<edm::InputTag>("full5x5SigmaIEtaIEtaMap")) ),
+phoChargedIsolationToken 	    ( consumes< edm::ValueMap<float> > 				(iConfig.getUntrackedParameter<edm::InputTag>("phoChargedIsolation")) ),
+phoNeutralHadronIsolationToken 	    ( consumes< edm::ValueMap<float> > 				(iConfig.getUntrackedParameter<edm::InputTag>("phoNeutralHadronIsolation")) ),
+phoPhotonIsolationToken 	    ( consumes< edm::ValueMap<float> > 				(iConfig.getUntrackedParameter<edm::InputTag>("phoPhotonIsolation")) ),
 // -- Trigger Token -- //
-TriggerToken 					( consumes< edm::TriggerResults >  					(iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
-TriggerTokenPAT 				( consumes< edm::TriggerResults >  					(iConfig.getUntrackedParameter<edm::InputTag>("TriggerResultsPAT")) ),
-TriggerObjectToken 				( consumes< std::vector<pat::TriggerObjectStandAlone> >  	(iConfig.getUntrackedParameter<edm::InputTag>("TriggerObject")) ),
+TriggerToken 			    ( consumes< edm::TriggerResults >  			        (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
+TriggerTokenPAT 		    ( consumes< edm::TriggerResults >  				(iConfig.getUntrackedParameter<edm::InputTag>("TriggerResultsPAT")) ),
+TriggerObjectToken 		    ( consumes< std::vector<pat::TriggerObjectStandAlone> >  	(iConfig.getUntrackedParameter<edm::InputTag>("TriggerObject")) ),
 // -- Else -- //
-GenEventInfoToken 				( consumes< GenEventInfoProduct >  					(iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")) ),
-BeamSpotToken					( consumes< reco::BeamSpot > 						(iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
-PrimaryVertexToken 				( consumes< reco::VertexCollection > 				(iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
-TrackToken 						( consumes< edm::View<reco::Track> >  				(iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
-PileUpInfoToken 				( consumes< std::vector< PileupSummaryInfo > >  	(iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
+GenEventInfoToken 		    ( consumes< GenEventInfoProduct >  			        (iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")) ),
+BeamSpotToken			    ( consumes< reco::BeamSpot > 				(iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
+PrimaryVertexToken 		    ( consumes< reco::VertexCollection > 			(iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
+TrackToken 			    ( consumes< edm::View<reco::Track> >  			(iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
+PileUpInfoToken 		    ( consumes< std::vector< PileupSummaryInfo > >  	        (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
 {
 	nEvt = 0;
 
@@ -227,9 +231,9 @@ PileUpInfoToken 				( consumes< std::vector< PileupSummaryInfo > >  	(iConfig.ge
 	// phoChargedIsolationLabel          = iConfig.getUntrackedParameter<edm::InputTag>("phoChargedIsolation", edm::InputTag("photonIDValueMapProducer:phoChargedIsolation"));
 	// phoNeutralHadronIsolationLabel    = iConfig.getUntrackedParameter<edm::InputTag>("phoNeutralHadronIsolation", edm::InputTag("photonIDValueMapProducer:phoNeutralHadronIsolation"));
 	// phoPhotonIsolationLabel           = iConfig.getUntrackedParameter<edm::InputTag>("phoPhotonIsolation", edm::InputTag("photonIDValueMapProducer:phoPhotonIsolation"));
-	effAreaChHadronsFile              = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaChHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfChargedHadrons_V2.txt") );
-	effAreaNeuHadronsFile             = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaNeuHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfNeutralHadrons_V2.txt") );
-	effAreaPhotonsFile                = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaPhoFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfPhotons_V2.txt") );
+	effAreaChHadronsFile              = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaChHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfChargedHadrons_90percentBased.txt") );
+	effAreaNeuHadronsFile             = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaNeuHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased.txt") );
+	effAreaPhotonsFile                = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaPhoFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased.txt") );
 
  	// -- for Jet -- //
 	// theBDiscriminant_alg1             = iConfig.getUntrackedParameter<double>("BDiscriminant_tcheff", 0.7);
@@ -474,6 +478,10 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		Electron_passLooseID[i] = 0;
 		Electron_passMediumID[i] = 0;
 		Electron_passTightID[i] = 0;
+		Electron_passMVAID_noIso_WP80[i] = 0;
+		Electron_passMVAID_noIso_WP90[i] = 0;
+		Electron_passMVAID_iso_WP80[i] = 0;
+		Electron_passMVAID_iso_WP90[i] = 0;
 		Electron_passMVAID_WP80[i] = 0;
 		Electron_passMVAID_WP90[i] = 0;
 		Electron_passHEEPID[i] = 0;
@@ -731,18 +739,44 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	// cout << "##### Analyze:PU-Reweighting #####" << endl;
 
 	// fills
+	bool debug_suoh = true;
+	
 	if( theStoreHLTReportFlag ) hltReport(iEvent);
+	if(debug_suoh) cout << "theStorePriVtxFlag" << endl;
+
 	if( theStorePriVtxFlag ) fillPrimaryVertex(iEvent);
+	if(debug_suoh) cout << "theStoreJetFlag" << endl;
+
 	if( theStoreJetFlag ) fillJet(iEvent);
+	if(debug_suoh) cout << "theStoreMETFlag" << endl;
+
 	if( theStoreMETFlag ) fillMET(iEvent);
+	if(debug_suoh) cout << "theStoreLHEFlag" << endl;
+
 	if( !isRD && theStoreLHEFlag ) fillLHEInfo(iEvent);
+	if(debug_suoh) cout << "theStoreGENFlag" << endl;
+
 	if( !isRD && theStoreGENFlag ) fillGENInfo(iEvent);
+	if(debug_suoh) cout << "theStoreGenOthersFlag" << endl;
+
 	if( !isRD && theStoreGenOthersFlag ) fillGenOthersInfo(iEvent);
+	if(debug_suoh) cout << "theStorePhotonFlag" << endl;
+
 	if( theStorePhotonFlag ) fillPhotons(iEvent);
+	if(debug_suoh) cout << "theStoreMuonFlag" << endl;
+
 	if( theStoreMuonFlag ) fillMuons(iEvent, iSetup);
-	if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
+	if(debug_suoh) cout << "theStoreElectronFlag" << endl;
+
+	//if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
+	if(debug_suoh) cout << "theStoreTTFlag" << endl;
+
 	if( theStoreTTFlag ) fillTT(iEvent);
+	if(debug_suoh) cout << "Tree Fill" << endl;
+	
 	DYTree->Fill();
+	if(debug_suoh) cout << "Tree Fill finished" << endl;
+
 }
 
 // ------------ method called once each job just before starting event loop  ------------ //
@@ -944,6 +978,10 @@ void DYntupleMaker::beginJob()
 		DYTree->Branch("Electron_passLooseID", &Electron_passLooseID, "Electron_passLooseID[Nelectrons]/O");
 		DYTree->Branch("Electron_passMediumID", &Electron_passMediumID, "Electron_passMediumID[Nelectrons]/O");
 		DYTree->Branch("Electron_passTightID", &Electron_passTightID, "Electron_passTightID[Nelectrons]/O");
+		DYTree->Branch("Electron_passMVAID_noIso_WP80", &Electron_passMVAID_noIso_WP80, "Electron_passMVAID_noIso_WP80[Nelectrons]/O");
+		DYTree->Branch("Electron_passMVAID_noIso_WP90", &Electron_passMVAID_noIso_WP90, "Electron_passMVAID_noIso_WP90[Nelectrons]/O");
+		DYTree->Branch("Electron_passMVAID_iso_WP80", &Electron_passMVAID_iso_WP80, "Electron_passMVAID_iso_WP80[Nelectrons]/O");
+		DYTree->Branch("Electron_passMVAID_iso_WP90", &Electron_passMVAID_iso_WP90, "Electron_passMVAID_iso_WP90[Nelectrons]/O");
 		DYTree->Branch("Electron_passMVAID_WP80", &Electron_passMVAID_WP80, "Electron_passMVAID_WP80[Nelectrons]/O");
 		DYTree->Branch("Electron_passMVAID_WP90", &Electron_passMVAID_WP90, "Electron_passMVAID_WP90[Nelectrons]/O");
 		DYTree->Branch("Electron_passHEEPID", &Electron_passHEEPID, "Electron_passHEEPID[Nelectrons]/O");
@@ -1304,83 +1342,23 @@ void DYntupleMaker::beginJob()
 
 void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
-	const int nTrigName = 66;
+	const int nTrigName = 6;
 	string trigs[nTrigName] = 
 	{
-		// -- single muon triggers -- //
-		"HLT_IsoMu18_v*",
-		"HLT_IsoMu20_v*",
-		"HLT_IsoMu22_v*",
-		"HLT_IsoMu22_eta2p1_v*",
-		"HLT_IsoMu24_v*",
-		"HLT_IsoMu27_v*",
-		"HLT_IsoTkMu18_v*",
-		"HLT_IsoTkMu20_v*",
-		"HLT_IsoTkMu22_v*",
-		"HLT_IsoTkMu22_eta2p1_v*",
-		"HLT_IsoTkMu24_v*",
-		"HLT_IsoTkMu27_v*",
+	  // -- single muon triggers -- //
+	  "HLT_IsoMu27_v*",
+	  "HLT_Mu50_v*",
+	 
+	  // -- double muon triggers -- //
+	  "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*",
+	 
+	  // -- for Electrons -- //
+	  // -- Single Electron -- //
+	  "HLT_Ele35_WPTight_Gsf_v*",
 
-		"HLT_Mu20_v*",
-		"HLT_TkMu20_v*",
-		"HLT_Mu24_eta2p1_v*",
-		"HLT_TkMu24_eta2p1_v*",
-		"HLT_Mu27_v*",
-		"HLT_TkMu27_v*",
-		"HLT_Mu45_eta2p1_v*",
-		"HLT_Mu50_v*",
-		"HLT_TkMu50_v*",
-		"HLT_Mu55_v*",
-
-		// -- double muon triggers -- //
-		"HLT_Mu17_Mu8_v*",
-		"HLT_Mu17_Mu8_DZ_v*",
-		"HLT_Mu20_Mu10_v*",
-		"HLT_Mu20_Mu10_DZ_v*",
-		"HLT_Mu17_TkMu8_DZ_v*",
-		"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*",
-		"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*",
-		"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*",
-		"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*",
-
-		"HLT_Mu27_TkMu8_v*",
-		"HLT_Mu30_TkMu11_v*",
-		"HLT_Mu40_TkMu11_v*",
-
-		// -- for Electrons -- //
-		"HLT_Ele22_eta2p1_WP75_Gsf_v*",
-		"HLT_Ele22_eta2p1_WPLoose_Gsf_v*",
-		"HLT_Ele23_WP75_Gsf_v*",
-		"HLT_Ele23_WPLoose_Gsf_v*",
-		"HLT_Ele27_WPLoose_Gsf_v*",
-		"HLT_Ele27_eta2p1_WPLoose_v*",
-		"HLT_Ele27_eta2p1_WPLoose_Gsf_v*"
-		"HLT_Ele27_WPTight_Gsf_v*",
-		"HLT_Ele27_eta2p1_WPTight_Gsf_v*",
-		"HLT_Ele30_WPTight_Gsf_v*",
-		"HLT_Ele30_eta2p1_WPLoose_Gsf_v*",
-		"HLT_Ele30_eta2p1_WPTight_Gsf_v*",
-		"HLT_Ele30WP60_SC4_Mass55_v*",
-		"HLT_Ele30WP60_Ele8_Mass55_v*",
-		"HLT_Ele32_WPTight_Gsf_v*",
-		"HLT_Ele32_eta2p1_WPLoose_Gsf_v*",
-		"HLT_Ele32_eta2p1_WPTight_Gsf_v*",
-		"HLT_Ele35_WPLoose_Gsf_v*",
-		"HLT_Ele45_WPLoose_Gsf_v*",
-		"HLT_Ele105_CaloIdVT_GsfTrkIdT_v*",
-		"HLT_Ele250_CaloIdVT_GsfTrkIdT_v*",
-		"HLT_Ele300_CaloIdVT_GsfTrkIdT_v*",
-
-		"HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*",
-		"HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",
-		"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",
-		"HLT_DoubleEle24_22_eta2p1_WPLoose_Gsf_v*",
-		"HLT_DoubleEle25_CaloIdL_GsfTrkIdVL_v*",
-		"HLT_DoubleEle33_CaloIdL_v*",
-		"HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v*",
-		"HLT_DoubleEle33_CaloIdL_MW_v*",
-		"HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_MW_v*",
-		"HLT_DoubleEle37_Ele27_CaloIdL_GsfTrkIdVL_v*",
+	  // -- Double Electron -- //
+	  "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*", // -- low pt, loose ID & iso, unprescaled 
+	  "HLT_DoubleEle33_CaloIdL_MW_v*" // -- loose ID, no isolation
 	};
 
 	MuonHLT.clear();
@@ -1666,7 +1644,8 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
 	///////////////////
 	// cout << "// -- HLT Report for MINIAOD is used -- //" << endl;
 
-
+	cout << "------------------" << endl;
+	cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
 	edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
 	iEvent.getByToken(TriggerObjectToken, triggerObject);
 
@@ -1678,9 +1657,10 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
 
 		// cout << "[# of trigger object in this event: " << (*triggerObject).size() << endl;
 		for (pat::TriggerObjectStandAlone obj : *triggerObject)
-		{
-			obj.unpackPathNames(names);
-
+		  {
+		        obj.unpackPathNames(names);
+		        obj.unpackFilterLabels(iEvent, *trigResult);  //added Suoh
+			
 			// cout << "# Filters: " << obj.filterLabels().size() << endl;
 			for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter )
 			{
@@ -2261,13 +2241,26 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 
 	edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
 	iEvent.getByToken(eleTightIdMapToken, tight_id_decisions);
-
+	
+	edm::Handle<edm::ValueMap<bool> > mva_id_noIso_wp80_decisions;
+        iEvent.getByToken(eleMVAIdnoIsoWP80MapToken, mva_id_noIso_wp80_decisions);
+	
+	edm::Handle<edm::ValueMap<bool> > mva_id_noIso_wp90_decisions;
+        iEvent.getByToken(eleMVAIdnoIsoWP90MapToken, mva_id_noIso_wp90_decisions);
+	
+	edm::Handle<edm::ValueMap<bool> > mva_id_iso_wp80_decisions;
+        iEvent.getByToken(eleMVAIdisoWP80MapToken, mva_id_iso_wp80_decisions);
+	
+	edm::Handle<edm::ValueMap<bool> > mva_id_iso_wp90_decisions;
+	iEvent.getByToken(eleMVAIdisoWP90MapToken, mva_id_iso_wp90_decisions);
+	
+	/*
 	edm::Handle<edm::ValueMap<bool> > mva_id_wp80_decisions;
 	iEvent.getByToken(eleMVAIdWP80MapToken, mva_id_wp80_decisions);
 
 	edm::Handle<edm::ValueMap<bool> > mva_id_wp90_decisions;
 	iEvent.getByToken(eleMVAIdWP90MapToken, mva_id_wp90_decisions);
-
+	*/
 	// -- HEEP recipe is not working under 80X regression recipe (why?): temporarily disabled -- //
 	// edm::Handle<edm::ValueMap<bool> > heep_id_decisions;
 	// iEvent.getByToken(eleHEEPIdMapToken, heep_id_decisions);
@@ -2284,7 +2277,7 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 	std::vector< double > _ambGsfTrkPt;
 	for(int i=0; i< (int)ElecHandle->size(); i++)
 	{
-		const auto el = ElecHandle->ptrAt(i);
+	        const auto el = ElecHandle->ptrAt(i);
 
 		Electron_pT[_nElectron] = el->pt();
 		Electron_eta[_nElectron] = el->eta();
@@ -2396,8 +2389,14 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 		bool isPassLoose  = (*loose_id_decisions)[el];
 		bool isPassMedium = (*medium_id_decisions)[el];
 		bool isPassTight  = (*tight_id_decisions)[el];
+		bool isPassMVA_noIso_WP80 = (*mva_id_noIso_wp80_decisions)[el];
+		bool isPassMVA_noIso_WP90 = (*mva_id_noIso_wp90_decisions)[el];
+		bool isPassMVA_iso_WP80 = (*mva_id_iso_wp80_decisions)[el];
+		bool isPassMVA_iso_WP90 = (*mva_id_iso_wp90_decisions)[el];
+		/*
 		bool isPassMVA_WP80  = (*mva_id_wp80_decisions)[el];
 		bool isPassMVA_WP90  = (*mva_id_wp90_decisions)[el];
+		*/
 		// bool isPassHEEP  = (*heep_id_decisions)[el];
 
 		// cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
@@ -2405,8 +2404,15 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 		Electron_passLooseID[_nElectron] = isPassLoose;
 		Electron_passMediumID[_nElectron] = isPassMedium;
 		Electron_passTightID[_nElectron] = isPassTight;
+		Electron_passMVAID_noIso_WP80[_nElectron] = isPassMVA_noIso_WP80;
+                Electron_passMVAID_noIso_WP90[_nElectron] = isPassMVA_noIso_WP90;
+		Electron_passMVAID_iso_WP80[_nElectron] = isPassMVA_iso_WP80;
+		Electron_passMVAID_iso_WP90[_nElectron] = isPassMVA_iso_WP90;
+		/*
 		Electron_passMVAID_WP80[_nElectron] = isPassMVA_WP80;
 		Electron_passMVAID_WP90[_nElectron] = isPassMVA_WP90;
+		*/
+		
 		// Electron_passHEEPID[_nElectron] = isPassHEEP;
 
 		// cout << "##### fillElectrons: Start Dielectron Loop #####" << endl;
