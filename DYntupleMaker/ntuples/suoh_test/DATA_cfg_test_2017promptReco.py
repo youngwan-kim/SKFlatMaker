@@ -146,18 +146,18 @@ for idmod in my_phoid_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
 
 
-process.selectedElectrons = cms.EDFilter("PATElectronSelector",
-    #src = cms.InputTag("calibratedPatElectrons"),
-    src = cms.InputTag("slimmedElectrons"),                                    
-    cut = cms.string("pt>5 && abs(eta)")
-)
+#process.selectedElectrons = cms.EDFilter("PATElectronSelector",
+#    #src = cms.InputTag("calibratedPatElectrons"),
+#    src = cms.InputTag("slimmedElectrons"),                                    
+#    cut = cms.string("pt>5 && abs(eta)")
+#)
 
-process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedElectrons')
-process.electronIDValueMapProducer.srcMiniAOD = cms.InputTag('slimmedElectrons')
-#process.electronRegressionValueMapProducer.srcMiniAOD = cms.InputTag('slimmedElectrons')
-process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('slimmedElectrons')
-process.photonIDValueMapProducer.srcMiniAOD = cms.InputTag('slimmedPhotons')
-process.photonMVAValueMapProducer.srcMiniAOD = cms.InputTag('slimmedPhotons')
+#process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('selectedElectrons')
+#process.electronIDValueMapProducer.srcMiniAOD = cms.InputTag('selectedElectrons')
+##process.electronRegressionValueMapProducer.srcMiniAOD = cms.InputTag('slimmedElectrons')
+#process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('selectedElectrons')
+#process.photonIDValueMapProducer.srcMiniAOD = cms.InputTag('slimmedPhotons')
+#process.photonMVAValueMapProducer.srcMiniAOD = cms.InputTag('slimmedPhotons')
 
 
 
@@ -186,7 +186,7 @@ process.recoTree.isMC = isMC
 
 # -- Objects -- #
 process.recoTree.Muon = cms.untracked.InputTag("slimmedMuons") # -- miniAOD -- #
-process.recoTree.Electron = cms.untracked.InputTag("selectedElectrons") # -- miniAOD -- #
+process.recoTree.Electron = cms.untracked.InputTag("slimmedElectrons") # -- miniAOD -- #
 process.recoTree.UnCorrElectron = cms.untracked.InputTag("slimmedElectrons") # -- miniAOD: before applying energy scale correction -- #
 process.recoTree.Photon = cms.untracked.InputTag("slimmedPhotons") # -- miniAOD -- #
 process.recoTree.Jet = cms.untracked.InputTag("slimmedJets") # -- miniAOD -- #
@@ -248,8 +248,8 @@ process.p = cms.Path(
   process.FastFilters *
   #process.regressionApplication *
   #process.calibratedPatElectrons *
-  process.selectedElectrons *
+  #process.selectedElectrons *
   process.egmGsfElectronIDSequence *
   #process.fullPatMetSequence *  #This is the phi corrections part
- process.recoTree
+  process.recoTree
 )

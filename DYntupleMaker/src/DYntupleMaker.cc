@@ -177,8 +177,8 @@ eleMediumIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntra
 eleTightIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleTightIdMap")) ),
 eleMVAIdnoIsoWP80MapToken           ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP80Map")) ),
 eleMVAIdnoIsoWP90MapToken           ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP90Map")) ),
-eleMVAIdisoWP80MapToken           ( consumes< edm::ValueMap<bool> >                             (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP80Map")) ),
-eleMVAIdisoWP90MapToken           ( consumes< edm::ValueMap<bool> >                             (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP90Map")) ),
+eleMVAIdisoWP80MapToken             ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP80Map")) ),
+eleMVAIdisoWP90MapToken             ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP90Map")) ),
 eleMVAIdWP80MapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP80Map")) ),
 eleMVAIdWP90MapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP90Map")) ),
 eleHEEPIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleHEEPIdMap")) ),
@@ -739,7 +739,7 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	// cout << "##### Analyze:PU-Reweighting #####" << endl;
 
 	// fills
-	bool debug_suoh = true;
+	bool debug_suoh = false;
 	
 	if( theStoreHLTReportFlag ) hltReport(iEvent);
 	if(debug_suoh) cout << "theStorePriVtxFlag" << endl;
@@ -768,7 +768,7 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	if( theStoreMuonFlag ) fillMuons(iEvent, iSetup);
 	if(debug_suoh) cout << "theStoreElectronFlag" << endl;
 
-	//if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
+	if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
 	if(debug_suoh) cout << "theStoreTTFlag" << endl;
 
 	if( theStoreTTFlag ) fillTT(iEvent);
@@ -1645,7 +1645,7 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
 	// cout << "// -- HLT Report for MINIAOD is used -- //" << endl;
 
 	cout << "------------------" << endl;
-	cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
+	//cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
 	edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
 	iEvent.getByToken(TriggerObjectToken, triggerObject);
 
@@ -2209,7 +2209,9 @@ void DYntupleMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& i
 //////////////////////////////
 void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup& iSetup)
 {
-	// cout << "##### Start of fillElectrons #####" << endl;
+  
+  bool suoh_debug = true;
+  if(suoh_debug) cout << "##### Start of fillElectrons #####" << endl;
 	// -- BeamSpot -- //
 	edm::Handle<reco::BeamSpot> beamSpotHandle;
 	iEvent.getByToken(BeamSpotToken, beamSpotHandle);
@@ -2254,6 +2256,9 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 	edm::Handle<edm::ValueMap<bool> > mva_id_iso_wp90_decisions;
 	iEvent.getByToken(eleMVAIdisoWP90MapToken, mva_id_iso_wp90_decisions);
 	
+	if(suoh_debug) cout << "decision ends;" << endl;
+	
+
 	/*
 	edm::Handle<edm::ValueMap<bool> > mva_id_wp80_decisions;
 	iEvent.getByToken(eleMVAIdWP80MapToken, mva_id_wp80_decisions);
@@ -2275,10 +2280,12 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 	
 	int _nElectron = 0;
 	std::vector< double > _ambGsfTrkPt;
+	if(suoh_debug) cout << "for ElecHandle starts, ElecHandle->size() : " << ElecHandle->size() << endl;
+
 	for(int i=0; i< (int)ElecHandle->size(); i++)
 	{
 	        const auto el = ElecHandle->ptrAt(i);
-
+		
 		Electron_pT[_nElectron] = el->pt();
 		Electron_eta[_nElectron] = el->eta();
 		Electron_phi[_nElectron] = el->phi();
@@ -2290,7 +2297,9 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 		Electron_fbrem[_nElectron] = el->fbrem();
 		Electron_eOverP[_nElectron] = el->eSuperClusterOverP();
 		Electron_ecalDriven[_nElectron] = el->ecalDrivenSeed();
+		if(suoh_debug) cout << "basic info. input" << endl;
 
+		
 		// -- Information from SuperCluster -- //
 		Electron_EnergySC[_nElectron] = el->superCluster()->energy();
 		Electron_preEnergySC[_nElectron] = el->superCluster()->preshowerEnergy();
@@ -2300,6 +2309,9 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 		double R = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y() +el->superCluster()->z()*el->superCluster()->z());
 		double Rt = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y());
 		Electron_etSC[_nElectron] = el->superCluster()->energy()*(Rt/R);
+
+		if(suoh_debug) cout << "supercluster" << endl;
+
 
 		// -- Information from ECAL  -- //
 		Electron_sigmaIEtaIEta[_nElectron] = el->full5x5_sigmaIetaIeta();
@@ -2313,22 +2325,27 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 		Electron_phiWidth[_nElectron] = el->superCluster()->phiWidth();
 		Electron_r9[_nElectron] = el->r9();
 
+		if(suoh_debug) cout << "ECAL" << endl;
+
+
 		// -- Information from ECAL & Track -- //
 		Electron_dEtaIn[_nElectron] = el->deltaEtaSuperClusterTrackAtVtx();
 		Electron_dPhiIn[_nElectron] = el->deltaPhiSuperClusterTrackAtVtx();
-
+		
 		// -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleDEtaInSeedCut.cc#L30-L33 -- //
 		Electron_dEtaInSeed[_nElectron] = el->superCluster().isNonnull() && el->superCluster()->seed().isNonnull() ?
 		el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superCluster()->seed()->eta() : std::numeric_limits<float>::max();
-
+		
 		// -- |1/E-1/p| = |1/E - EoverPinner/E| is computed below. The if protects against ecalEnergy == inf or zero -- //
 		if( el->ecalEnergy() == 0 ) 
 			Electron_InvEminusInvP[_nElectron] = 1e30;
 		else if(  !std::isfinite( el->ecalEnergy() )  ) 
-			Electron_InvEminusInvP[_nElectron] = 1e30;
+		        Electron_InvEminusInvP[_nElectron] = 1e30;
 		else 
 			Electron_InvEminusInvP[_nElectron] = fabs( 1.0/el->ecalEnergy() - el->eSuperClusterOverP()/el->ecalEnergy() );
 
+
+		if(suoh_debug) cout << "ECAL & track" << endl;
 
 		// -- Isolation -- //
 		double pfCharged = el->pfIsolationVariables().sumChargedHadronPt;
@@ -2342,13 +2359,16 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 		Electron_RelPFIso_dBeta[_nElectron] = (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - 0.5 * pfChargedFromPU))/(el->pt());
 		
 		// -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt -- //
-		edm::FileInPath eaConstantsFile("RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt");
+		edm::FileInPath eaConstantsFile("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt");
 		EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
 		float abseta = fabs(el->superCluster()->eta());
 		float eA = effectiveAreas.getEffectiveArea(abseta);
 		Electron_RelPFIso_Rho[_nElectron] = (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - *rhoHandle * eA))/(el->pt());
-
+		
 		// cout << "##### fillElectrons: Before elecTrk #####" << endl;
+
+		if(suoh_debug) cout << "Isolation" << endl;
+
 
 		// -- Track - Impact Parameter, Conversion rejection, Converted -- //
 		reco::GsfTrackRef elecTrk = el->gsfTrack();
