@@ -2268,11 +2268,11 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 	// -- B-field for vertex variables (ee, emu) -- //
 	ESHandle<MagneticField> B;
 	iSetup.get<IdealMagneticFieldRecord>().get(B);
-
+	
 	// -- muon for emu vertex -- //
 	edm::Handle< std::vector<pat::Muon> > muonHandle;
 	iEvent.getByToken(MuonToken, muonHandle);
-
+	
 	int _nElectron = 0;
 	std::vector< double > _ambGsfTrkPt;
 	for(int i=0; i< (int)ElecHandle->size(); i++)
