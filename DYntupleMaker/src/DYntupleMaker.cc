@@ -1643,8 +1643,8 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
 	// -- MiniAOD -- //
 	///////////////////
 	// cout << "// -- HLT Report for MINIAOD is used -- //" << endl;
-
-	cout << "------------------" << endl;
+	
+	//cout << "------------------" << endl;
 	//cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
 	edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
 	iEvent.getByToken(TriggerObjectToken, triggerObject);
@@ -2210,7 +2210,7 @@ void DYntupleMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& i
 void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup& iSetup)
 {
   
-  bool suoh_debug = true;
+  bool suoh_debug = false;
   if(suoh_debug) cout << "##### Start of fillElectrons #####" << endl;
 	// -- BeamSpot -- //
 	edm::Handle<reco::BeamSpot> beamSpotHandle;
