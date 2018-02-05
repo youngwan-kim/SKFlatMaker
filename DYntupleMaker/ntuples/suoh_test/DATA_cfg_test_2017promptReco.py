@@ -7,13 +7,10 @@ isMC = False
 isSignalMC = False
 
 GT_MC = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
-#GT_DATA = '80X_dataRun2_2016SeptRepro_v7' # -- 2016 re-reco -- #
 GT_DATA = '90X_dataRun2_Prompt_v1' # -- 2017 prompt reco v1
 
 # TESTFILE_MC = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/ExampleMiniAODv2_ZMuMuPowheg_M120to200_Moriond17.root' # -- no signal -- #
 TESTFILE_MC = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/MINIAOD_DYLL_M50toInf_Morind17.root' # -- signal -- #
-# TESTFILE_DATA = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/ReMINIAOD_SingleMuon_Run2017H_Run281613.root' # -- prompt-reco -- #
-#TESTFILE_DATA = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/ExampleReMINIAOD_Run2016B_Run274250.root' # -- re-reco -- #
 TESTFILE_DATA = 'file:/afs/cern.ch/work/s/suoh/entuple_making/Test_Root_files/3804E121-34B2-E711-8E67-02163E01A599.root'
 ####################################################################################################################
 
@@ -54,13 +51,6 @@ else:
   process.GlobalTag.globaltag = cms.string(GT_DATA) #prompt-reco global tag
 
 
-# -- HLT Filters -- #
-# import HLTrigger.HLTfilters.hltHighLevel_cfi
-# process.dimuonsHLTFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone()
-
-# process.dimuonsHLTFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","HLT")
-# process.dimuonsHLTFilter.HLTPaths = ["HLT_Mu*","HLT_DoubleMu*","HLT_IsoMu*"]
-
 process.TFileService = cms.Service("TFileService",
   fileName = cms.string('ntuple_skim.root')
 )
@@ -73,14 +63,6 @@ process.goodOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
    filter = cms.bool(True),   # otherwise it won't filter the events, just produce an empty vertex collection.
 )
 
-# process.noscraping = cms.EDFilter("FilterOutScraping",
-#    applyfilter = cms.untracked.bool(True),
-#    debugOn = cms.untracked.bool(False),
-#    numtrack = cms.untracked.uint32(10),
-#    thresh = cms.untracked.double(0.25)
-# )
-
-# process.FastFilters = cms.Sequence( process.goodOfflinePrimaryVertices + process.noscraping )
 process.FastFilters = cms.Sequence( process.goodOfflinePrimaryVertices )
 
 ########################
@@ -123,7 +105,7 @@ dataFormat = DataFormat.MiniAOD
 switchOnVIDElectronIdProducer(process, dataFormat)
 switchOnVIDPhotonIdProducer(process, dataFormat)
 
-# define which IDs we want to produce
+# define which electron IDs we want to produce
 my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_Preliminary_cff', # -- 94X cut based electron ID
                  'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff', # -- 94X MVA based electron ID, noIso
                  'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff', # -- 94X MVA based electron ID, iso
@@ -133,6 +115,7 @@ my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElect
 for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
+# define which photon IDs we want to produce
 my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V1_Preliminary_cff', # -- 92X cut based photon ID 
                     'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_RunIIFall17_v1_cff'] # -- 94X MVA based photon ID
 
@@ -141,7 +124,7 @@ process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
 # process.electronIDValueMapProducer.srcMiniAOD = cms.InputTag('slimmedElectrons')
 # process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('slimmedElectrons')
 
-#add them to the VID producer
+#add phoid modules to the VID producer
 for idmod in my_phoid_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
 
@@ -152,21 +135,6 @@ for idmod in my_phoid_modules:
 #    cut = cms.string("pt>5 && abs(eta)")
 #)
 
-#process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('selectedElectrons')
-#process.electronIDValueMapProducer.srcMiniAOD = cms.InputTag('selectedElectrons')
-##process.electronRegressionValueMapProducer.srcMiniAOD = cms.InputTag('slimmedElectrons')
-#process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('selectedElectrons')
-#process.photonIDValueMapProducer.srcMiniAOD = cms.InputTag('slimmedPhotons')
-#process.photonMVAValueMapProducer.srcMiniAOD = cms.InputTag('slimmedPhotons')
-
-
-
-
-###################################
-# -- (reco) Photon Information -- #
-###################################
-
-# -- photon part should be updated! later when it is necessary -- #
 
 ######################
 # MET Phi Correction #
@@ -177,7 +145,6 @@ for idmod in my_phoid_modules:
 #################
 # -- DY Tree -- #
 #################
-#from Phys.DYntupleMaker.TriggerObj_cff import *
 from Phys.DYntupleMaker.DYntupleMaker_cfi import *
 from Phys.DYntupleMaker.PUreweight2012_cff import *
 
@@ -234,7 +201,7 @@ process.recoTree.ApplyFilter = False
 # -- Store Flags -- #
 process.recoTree.StoreMuonFlag = True
 process.recoTree.StoreElectronFlag = True
-process.recoTree.StorePhotonFlag = False # -- photon part should be updated! later when it is necessary -- #
+process.recoTree.StorePhotonFlag = True # -- photon part should be updated! later when it is necessary -- #
 process.recoTree.StoreJetFlag = True
 process.recoTree.StoreMETFlag = True
 process.recoTree.StoreGENFlag = isMC
