@@ -36,6 +36,11 @@ MetToken 			    ( consumes< std::vector<pat::MET> >				(iConfig.getUntrackedPara
 LHEEventProductToken		    ( consumes< LHEEventProduct >  			    	(iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
 LHERunInfoProductToken		    ( consumes< LHERunInfoProduct,edm::InRun > 			(iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
 GenParticleToken 		    ( consumes< std::vector<reco::GenParticle> >		(iConfig.getUntrackedParameter<edm::InputTag>("GenParticle")) ),
+// -- MET Filter tokens -- //
+METFilterResultsToken               (consumes<edm::TriggerResults>                              (iConfig.getParameter<edm::InputTag>("METFilterResults"))),
+//BadChCandFilterToken                (consumes<bool>                                             (iConfig.getParameter<edm::InputTag>("BadChargedCandidateFilter"))),
+//BadPFMuonFilterToken                (consumes<bool>                                             (iConfig.getParameter<edm::InputTag>("BadPFMuonFilter"))),
+
 // -- Electron tokens -- //
 RhoToken 			    ( consumes< double >					(iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
 eleVetoIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleVetoIdMap")) ),
@@ -1163,6 +1168,8 @@ void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   const int nTrigName = 7;
   string trigs[nTrigName] = 
     {
+      "HLT_Mu*", "HLT_Ele*", "HLT_DoubleEle*", "HLT_DoublePhoton*", "HLT_IsoMu*", "HLT_Photon*", 
+      /*
       // -- single muon triggers -- //
       "HLT_IsoMu27_v*",
       "HLT_Mu50_v*",
@@ -1180,10 +1187,13 @@ void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
       
       // -- Double Photon -- //
       "HLT_DoublePhoton33_CaloIdL_v*"
+      */
     };
   
   MuonHLT.clear();
   MuonHLTPS.clear();
+  ListHLT.clear();
+  ListHLTPS.clear();
   
   for( int i = 0; i < nTrigName; i++ )
     MuonHLT.push_back(trigs[i]);
@@ -1220,7 +1230,7 @@ void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 	  // -- find triggers in HLT configuration matched with a input trigger using wild card -- //
 	  std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(triggerNames, MuonHLT[itrigName]);
 	  
-	  cout << "\t[# matched trigger in HLT configuration for this trigger: " << matches.size() << endl;
+	  //cout << "\t[# matched trigger in HLT configuration for this trigger: " << matches.size() << endl;
 	  
 	  if( !matches.empty() )
 	    {
@@ -1230,6 +1240,7 @@ void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 	      BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches)
 		{
 		  cout << "\t\t[matched trigger = " << *match << "]" << endl;
+		  ListHLT.push_back(*match);//save HLT list as a vector
 		  
 		  // -- find modules corresponding to a trigger in HLT configuration -- //
 		  std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
@@ -1237,7 +1248,7 @@ void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 		  // -- find prescale value -- //
 		  int _preScaleValue = hltConfig_.prescaleValue(0, *match);
 		  MuonHLTPS.push_back(_preScaleValue);
-		  
+		  ListHLTPS.push_back(_preScaleValue);
 		  // cout << "Filter name: " << trigModuleNames[moduleNames.size()-2] << endl;
 		  // for( size_t j = 0; j < moduleNames.size(); j++)
 		  // {
@@ -1263,7 +1274,7 @@ void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 			}
 		    }
 		  
-		  break; // -- just take into account the case # mathced trigger = 1 -- //
+		  //break; // -- just take into account the case # mathced trigger = 1 -- //
 		  
 		} // -- end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
 	      
@@ -1394,7 +1405,15 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
   //cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
   edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
   iEvent.getByToken(TriggerObjectToken, triggerObject);
+ 
   
+  iEvent.getByToken(METFilterResultsToken, METFilterResults);
+  const edm::TriggerNames &metNames = iEvent.triggerNames(*METFilterResults);
+  for(unsigned int i = 0, n = METFilterResults->size(); i < n; ++i){
+    //cout << "metnames : " << metNames.triggerName(i).c_str() << endl;
+  }
+
+
   int ntrigTot = 0;
   
   if( !trigResult.failedToGet() )
@@ -1424,7 +1443,7 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
 	      else
 		filterName = fullname;
 	      
-	      // cout << "\t[" << i_filter << "th Filter] FullName = " << fullname << ", FilterName = " << filterName << endl;
+	      //cout << "\t[" << i_filter << "th Filter] FullName = " << fullname << ", FilterName = " << filterName << endl;
 	      
 	      // -- Loop for the triggers that a user inserted in this code -- //
 	      for( int itf = 0; itf < ntrigName; itf++ )

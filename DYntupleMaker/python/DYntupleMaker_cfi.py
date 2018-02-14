@@ -44,12 +44,13 @@ DYntupleMaker = cms.EDAnalyzer("DYntupleMaker",
 	BDiscriminant_ssv = cms.untracked.double(2.05),
 
 	# -- MET information -- #
-	pfMET = cms.untracked.InputTag("pfMet"),
+        METFilterResults = cms.InputTag("TriggerResults", "", "RECO"),
+        pfMET = cms.untracked.InputTag("pfMet"),
 
 	# -- Trigger -- #
         TriggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
         TriggerResultsPAT = cms.untracked.InputTag("TriggerResults", "", "PAT"),
-	##TriggerObject = cms.untracked.InputTag("selectedPatTrigger"),
+        ##TriggerObject = cms.untracked.InputTag("selectedPatTrigger"),
         TriggerObject = cms.untracked.InputTag("slimmedPatTrigger"),                       
                                
 	# -- Else -- #

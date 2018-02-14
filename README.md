@@ -1,6 +1,6 @@
-# NtupleMaker
-* Ntuple maker for physics analysis
-   * 80X ntuple (for Z'/DY analysis with 2016 dataset)
+# SKFlatMaker
+* SKFlat Entuple maker for physics analysis with 2017 CMS data
+   *  ntuple ()
 
 ## Environment
 	cmsrel CMSSW_9_4_2

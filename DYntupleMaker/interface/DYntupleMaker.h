@@ -202,7 +202,11 @@ class DYntupleMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< LHEEventProduct > 							LHEEventProductToken;
   edm::EDGetTokenT< LHERunInfoProduct >							LHERunInfoProductToken;
   edm::EDGetTokenT< std::vector<reco::GenParticle> > 				        GenParticleToken;
-  
+
+  edm::EDGetTokenT< edm::TriggerResults >                                               METFilterResultsToken;
+  //edm::EDGetTokenT<bool>                                                                BadChCandFilterToken;
+  //edm::EDGetTokenT<bool>                                                                BadPFMuonFilterToken;
+
   edm::EDGetTokenT< double > 						     		RhoToken;
   edm::EDGetTokenT< edm::ValueMap<bool> > 						eleVetoIdMapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> > 						eleLooseIdMapToken;
@@ -237,6 +241,11 @@ class DYntupleMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< reco::VertexCollection > 						PrimaryVertexToken;
   edm::EDGetTokenT< edm::View<reco::Track> > 						TrackToken;
   edm::EDGetTokenT< std::vector< PileupSummaryInfo > > 	                   		PileUpInfoToken;
+  
+  
+  //edm::Handle<bool> ifilterbadChCand;
+  //edm::Handle<bool> ifilterbadPFMuon;
+  edm::Handle<edm::TriggerResults> METFilterResults;
   
   // // -- Photon information -- //
   // edm::InputTag thePhotonLabel;
@@ -276,9 +285,11 @@ class DYntupleMaker : public edm::EDAnalyzer
   int theNHighQualLeptons;
   
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
-  
+
   std::vector<std::string > MuonHLT;
   std::vector<int > MuonHLTPS;
+  std::vector<std::string > ListHLT;
+  std::vector<int > ListHLTPS;
   std::vector<std::string > trigModuleNames;
   std::vector<std::string > trigModuleNames_preFil;
   
