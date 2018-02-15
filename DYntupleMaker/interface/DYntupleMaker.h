@@ -292,7 +292,17 @@ class DYntupleMaker : public edm::EDAnalyzer
   std::vector<int > ListHLTPS;
   std::vector<std::string > trigModuleNames;
   std::vector<std::string > trigModuleNames_preFil;
-    
+  
+  bool Flag_goodVertices;
+  bool Flag_globalTightHalo2016Filter;
+  bool Flag_HBHENoiseFilter;
+  bool Flag_HBHENoiseIsoFilter;
+  bool Flag_EcalDeadCellTriggerPrimitiveFilter;
+  bool Flag_BadPFMuonFilter;
+  bool Flag_BadChargedCandidateFilter;
+  bool Flag_eeBadScFilter;
+  bool Flag_ecalBadCalibFilter;
+  
   // Pile-up Reweight
   // edm::LumiReWeighting LumiWeights_;
   // reweight::PoissonMeanShifter PShiftUp_;

@@ -141,6 +141,17 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // pfMET_py = -999;
   // pfMET_phi = -999;
   
+  Flag_goodVertices = false;
+  Flag_globalTightHalo2016Filter = false;
+  Flag_HBHENoiseFilter = false;
+  Flag_HBHENoiseIsoFilter = false;
+  Flag_EcalDeadCellTriggerPrimitiveFilter = false;
+  Flag_BadPFMuonFilter = false;
+  Flag_BadChargedCandidateFilter = false;
+  Flag_eeBadScFilter = false;
+  Flag_ecalBadCalibFilter = false;
+
+  
   Flag_duplicateMuons = false;
   Flag_badMuons = false;
   Flag_noBadMuons = false;
@@ -652,11 +663,24 @@ void DYntupleMaker::beginJob()
   // DYTree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/D");
   // DYTree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/D");
   DYTree->Branch("nVertices",&nVertices,"nVertices/I");
-
+  
+  // -- Event filter Flags
   DYTree->Branch("Flag_badMuons",&Flag_badMuons,"Flag_badMuons/O");
   DYTree->Branch("Flag_duplicateMuons",&Flag_duplicateMuons,"Flag_duplicateMuons/O");
   DYTree->Branch("Flag_noBadMuons",&Flag_noBadMuons,"Flag_noBadMuons/O");
+  //MET Filters 2017
+  DYTree->Branch("Flag_goodVertices",&Flag_goodVertices,"Flag_goodVertices/O");
+  DYTree->Branch("Flag_globalTightHalo2016Filter",&Flag_globalTightHalo2016Filter,"Flag_globalTightHalo2016Filter/O");
+  DYTree->Branch("Flag_HBHENoiseFilter",&Flag_HBHENoiseFilter,"Flag_HBHENoiseFilter/O");
+  DYTree->Branch("Flag_HBHENoiseIsoFilter",&Flag_HBHENoiseIsoFilter,"Flag_HBHENoiseIsoFilter/O");
+  DYTree->Branch("Flag_EcalDeadCellTriggerPrimitiveFilter",&Flag_EcalDeadCellTriggerPrimitiveFilter,"Flag_EcalDeadCellTriggerPrimitiveFilter/O");
+  DYTree->Branch("Flag_BadPFMuonFilter",&Flag_BadPFMuonFilter,"Flag_BadPFMuonFilter/O");
+  DYTree->Branch("Flag_BadChargedCandidateFilter",&Flag_BadChargedCandidateFilter,"Flag_BadChargedCandidateFilter/O");
+  DYTree->Branch("Flag_eeBadScFilter",&Flag_eeBadScFilter,"Flag_eeBadScFilter/O");
+  DYTree->Branch("Flag_ecalBadCalibFilter",&Flag_ecalBadCalibFilter,"Flag_ecalBadCalibFilter/O");
 
+  
+  
   DYTree->Branch("PDFWeights", &PDFWeights);
   
   if(theStorePriVtxFlag)
@@ -1195,6 +1219,8 @@ void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   ListHLT.clear();
   ListHLTPS.clear();
   
+
+  
   for( int i = 0; i < nTrigName; i++ )
     MuonHLT.push_back(trigs[i]);
   
@@ -1407,12 +1433,21 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
   //cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
   edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
   iEvent.getByToken(TriggerObjectToken, triggerObject);
-  
+
+  //save event filter infomation
   iEvent.getByToken(METFilterResultsToken, METFilterResults);
   const edm::TriggerNames &metNames = iEvent.triggerNames(*METFilterResults);
   for(unsigned int i = 0, n = METFilterResults->size(); i < n; ++i){
-    
     //cout << "metnames : " << metNames.triggerName(i).c_str() << endl;
+    if(strcmp(metNames.triggerName(i).c_str(), "Flag_goodVertices") == 0) Flag_goodVertices = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalTightHalo2016Filter") == 0) Flag_globalTightHalo2016Filter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseFilter") == 0) Flag_HBHENoiseFilter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseIsoFilter") == 0) Flag_HBHENoiseIsoFilter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_EcalDeadCellTriggerPrimitiveFilter") == 0) Flag_EcalDeadCellTriggerPrimitiveFilter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0) Flag_BadPFMuonFilter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0) Flag_BadChargedCandidateFilter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0) Flag_eeBadScFilter = METFilterResults-> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0) Flag_ecalBadCalibFilter = METFilterResults -> accept(i);
   }
   
   int ntrigTot = 0;
