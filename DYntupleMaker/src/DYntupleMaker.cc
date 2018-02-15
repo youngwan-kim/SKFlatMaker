@@ -1303,17 +1303,18 @@ void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
       
       itmp++;
     }
-  ntrigName = MuonHLT.size();
+  //ntrigName = MuonHLT.size();
+  ntrigName = ListHLT.size();
   
   cout << "# triggers after removing un-available triggers: " << nTrigName << " -> " << ntrigName << endl;
   
   cout << "\n[Prescales]" << endl;
   for( int i = 0; i < ntrigName; i++ )
-    cout << "[" << MuonHLT[i] << "]\t\t" << MuonHLTPS[i] << endl;
+    cout << "[" << ListHLT[i] << "]\t\t" << ListHLTPS[i] << endl;
   
   // trigger filters
   for( int itrig = 0; itrig < ntrigName; itrig++ )
-    cout << "Filter name: " << itrig << " " << MuonHLT[itrig] << " " << trigModuleNames[itrig] << " " << trigModuleNames_preFil[itrig] << endl;
+    cout << "Filter name: " << itrig << " " << ListHLT[itrig] << " " << trigModuleNames[itrig] << " " << trigModuleNames_preFil[itrig] << endl;
   
   cout << "##### End of Begin Run #####" << endl;
 }
@@ -1331,7 +1332,7 @@ void DYntupleMaker::endJob()
 ///////////////////////////////////////////////////////
 void DYntupleMaker::hltReport(const edm::Event &iEvent)
 {
-  int ntrigName = MuonHLT.size();
+  int ntrigName = ListHLT.size();
   
   // -- read the whole HLT trigger lists fired in an event -- //
   bool *trigFired = new bool[ntrigName];
@@ -1352,15 +1353,16 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
       
       for( int itrigName = 0; itrigName < ntrigName; itrigName++ )
 	{
-	  std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), MuonHLT[itrigName]);
+	  std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), ListHLT[itrigName]);
 	  if( !matches.empty() )
 	    {
 	      BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches)
 		{
 		  //cout << "trigger match = " << *match << endl;
 		  if( trigName.triggerIndex(*match) >= (unsigned int)ntrigs ) continue;
-		  if( trigResult->accept(trigName.triggerIndex(*match)) ) trigFired[itrigName] = true;
-		  //cout << "trigger fire = " << trigFired[itrigName] << endl;
+		  if( trigResult->accept(trigName.triggerIndex(*match)) ){
+		    trigFired[itrigName] = true;
+		  }//if trigger fired
 		}
 	      
 	    }
@@ -1405,15 +1407,13 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
   //cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
   edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
   iEvent.getByToken(TriggerObjectToken, triggerObject);
- 
   
   iEvent.getByToken(METFilterResultsToken, METFilterResults);
   const edm::TriggerNames &metNames = iEvent.triggerNames(*METFilterResults);
   for(unsigned int i = 0, n = METFilterResults->size(); i < n; ++i){
     //cout << "metnames : " << metNames.triggerName(i).c_str() << endl;
   }
-
-
+  
   int ntrigTot = 0;
   
   if( !trigResult.failedToGet() )
@@ -1455,8 +1455,10 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
 		  if( filterName == trigModuleNames[itf] )
 		    {
 		      // cout << "\t\t\t[Matched]: filterName = " << filterName << ", Trigger Name = " << MuonHLT[itf] << endl;
-		      name = MuonHLT[itf];
-		      int _ps = MuonHLTPS[itf];
+		      //name = MuonHLT[itf];
+		      name = ListHLT[itf];
+		      //int _ps = MuonHLTPS[itf];
+		      int _ps = ListHLTPS[itf];
 		      _HLT_trigType[ntrigTot] = itf;
 		      _HLT_trigFired[ntrigTot] = trigFired[itf];
 		      _HLT_trigPt[ntrigTot] = obj.pt();

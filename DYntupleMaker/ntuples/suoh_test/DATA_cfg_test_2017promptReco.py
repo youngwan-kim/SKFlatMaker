@@ -36,7 +36,7 @@ process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring( FileName )
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 # -- Geometry and Detector Conditions (needed for a few patTuple production steps) -- #
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
@@ -216,6 +216,7 @@ process.p = cms.Path(
   #process.regressionApplication *
   #process.calibratedPatElectrons *
   #process.selectedElectrons *
+  process.egmPhotonIDSequence *
   process.egmGsfElectronIDSequence *
   #process.fullPatMetSequence *  #This is the phi corrections part
   process.recoTree
