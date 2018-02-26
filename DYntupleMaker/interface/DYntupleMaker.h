@@ -738,6 +738,8 @@ class DYntupleMaker : public edm::EDAnalyzer
   double GENEvt_QScale;
   double GENEvt_x1;
   double GENEvt_x2;
+  int GENEvt_id1;
+  int GENEvt_id2;
   double GENEvt_alphaQCD;
   double GENEvt_alphaQED;
   

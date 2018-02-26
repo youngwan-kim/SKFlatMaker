@@ -11,7 +11,8 @@ GT_DATA = '90X_dataRun2_Prompt_v1' # -- 2017 prompt reco v1
 
 # TESTFILE_MC = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/ExampleMiniAODv2_ZMuMuPowheg_M120to200_Moriond17.root' # -- no signal -- #
 TESTFILE_MC = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/MINIAOD_DYLL_M50toInf_Morind17.root' # -- signal -- #
-TESTFILE_DATA = 'file:/afs/cern.ch/work/s/suoh/entuple_making/Test_Root_files/3804E121-34B2-E711-8E67-02163E01A599.root'
+TESTFILE_DATA = 'file:/afs/cern.ch/work/s/suoh/entuple_making/KPLee_code/CMSSW_9_4_2/src/Phys/DYntupleMaker/ntuples/suoh_test/17Nov17_Rereco/DoubleMuon/00FB06B4-0DDF-E711-9291-02163E012A3F.root'
+
 ####################################################################################################################
 
 if not isMC: isSignalMC = False
@@ -36,7 +37,7 @@ process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring( FileName )
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 # -- Geometry and Detector Conditions (needed for a few patTuple production steps) -- #
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
@@ -204,7 +205,8 @@ process.recoTree.StoreElectronFlag = True
 process.recoTree.StorePhotonFlag = True # -- photon part should be updated! later when it is necessary -- #
 process.recoTree.StoreJetFlag = True
 process.recoTree.StoreMETFlag = True
-process.recoTree.StoreGENFlag = isMC
+process.recoTree.StoreGENFlag = True
+#process.recoTree.StoreGENFlag = isMC
 process.recoTree.StoreGenOthersFlag = isSignalMC
 process.recoTree.StoreLHEFlag = isSignalMC
 

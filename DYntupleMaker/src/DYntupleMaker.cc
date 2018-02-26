@@ -90,8 +90,8 @@ PileUpInfoToken 		    ( consumes< std::vector< PileupSummaryInfo > >  	        (
   
   // -- Store Flags -- //
   theStorePriVtxFlag                = iConfig.getUntrackedParameter<bool>("StorePriVtxFlag", true);
-  theStoreJetFlag                   = iConfig.getUntrackedParameter<bool>("StoreJetFlag", false);
-  theStoreMETFlag                   = iConfig.getUntrackedParameter<bool>("StoreMETFlag", false);
+  theStoreJetFlag                   = iConfig.getUntrackedParameter<bool>("StoreJetFlag", true);
+  theStoreMETFlag                   = iConfig.getUntrackedParameter<bool>("StoreMETFlag", true);
   theStoreHLTReportFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTReportFlag", true);
   
   theStoreMuonFlag              	  = iConfig.getUntrackedParameter<bool>("StoreMuonFlag", true);
@@ -466,6 +466,8 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       GENEvt_QScale = 0;
       GENEvt_x1 = 0;
       GENEvt_x2 = 0;
+      GENEvt_id1 = 0;
+      GENEvt_id2 = 0;
       GENEvt_alphaQCD = 0;
       GENEvt_alphaQED = 0;
       
@@ -597,10 +599,12 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   if( theStoreMETFlag ) fillMET(iEvent);
   if(debug_suoh) cout << "theStoreLHEFlag" << endl;
   
-  if( !isRD && theStoreLHEFlag ) fillLHEInfo(iEvent);
+  //if( !isRD && theStoreLHEFlag ) fillLHEInfo(iEvent);
+  if(theStoreLHEFlag ) fillLHEInfo(iEvent);
   if(debug_suoh) cout << "theStoreGENFlag" << endl;
   
-  if( !isRD && theStoreGENFlag ) fillGENInfo(iEvent);
+  //if( !isRD && theStoreGENFlag ) fillGENInfo(iEvent);
+  if(theStoreGENFlag ) fillGENInfo(iEvent);
   if(debug_suoh) cout << "theStoreGenOthersFlag" << endl;
   
   if( !isRD && theStoreGenOthersFlag ) fillGenOthersInfo(iEvent);
@@ -654,15 +658,15 @@ void DYntupleMaker::beginJob()
 
   // -- global event variables -- //
   DYTree->Branch("nTotal",&nEvt,"nTotal/I");
-  DYTree->Branch("runNum",&runNum,"runNum/I");
-  DYTree->Branch("evtNum",&evtNum,"evtNum/l");
-  DYTree->Branch("lumiBlock",&lumiBlock,"lumiBlock/I");
+  DYTree->Branch("run",&runNum,"runNum/I");
+  DYTree->Branch("event",&evtNum,"evtNum/l");
+  DYTree->Branch("lumi",&lumiBlock,"lumiBlock/I");
   DYTree->Branch("PUweight",&PUweight,"PUweight/D");
   // DYTree->Branch("sumEt",&sumEt,"sumEt/D");
   // DYTree->Branch("photonEt",&photonEt,"photonEt/D");
   // DYTree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/D");
   // DYTree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/D");
-  DYTree->Branch("nVertices",&nVertices,"nVertices/I");
+  DYTree->Branch("nPV",&nVertices,"nVertices/I");
   
   // -- Event filter Flags
   DYTree->Branch("Flag_badMuons",&Flag_badMuons,"Flag_badMuons/O");
@@ -689,9 +693,9 @@ void DYntupleMaker::beginJob()
       DYTree->Branch("PVchi2", &PVchi2,"PVchi2/D");
       DYTree->Branch("PVndof", &PVndof,"PVndof/D");
       DYTree->Branch("PVnormalizedChi2", &PVnormalizedChi2,"PVnormalizedChi2/D");
-      DYTree->Branch("PVx", &PVx,"PVx/D");
-      DYTree->Branch("PVy", &PVy,"PVy/D");
-      DYTree->Branch("PVz", &PVz,"PVz/D");
+      DYTree->Branch("vertex_X", &PVx,"PVx/D");
+      DYTree->Branch("vertex_Y", &PVy,"PVy/D");
+      DYTree->Branch("vertex_Z", &PVz,"PVz/D");
     }
 
   if(theStoreHLTReportFlag)
@@ -1065,9 +1069,11 @@ void DYntupleMaker::beginJob()
       DYTree->Branch("GENLepton_fromHardProcessFinalState",&GENLepton_fromHardProcessFinalState,"GENLepton_fromHardProcessFinalState[GENnPair]/I");
       DYTree->Branch("GENLepton_isMostlyLikePythia6Status3", &GENLepton_isMostlyLikePythia6Status3, "GENLepton_isMostlyLikePythia6Status3[GENnPair]/I");
       DYTree->Branch("GENEvt_weight",&GENEvt_weight,"GENEvt_weight/D");
-      DYTree->Branch("GENEvt_QScale",&GENEvt_QScale,"GENEvt_QScale/D");
+      DYTree->Branch("ScaleWeights",&GENEvt_QScale,"GENEvt_QScale/D");
       DYTree->Branch("GENEvt_x1",&GENEvt_x1,"GENEvt_x1/D");
       DYTree->Branch("GENEvt_x2",&GENEvt_x2,"GENEvt_x2/D");
+      DYTree->Branch("genWeight_id1",&GENEvt_id1,"GENEvt_id1/I");
+      DYTree->Branch("genWeight_id2",&GENEvt_id2,"GENEvt_id2/I");
       DYTree->Branch("GENEvt_alphaQCD",&GENEvt_alphaQCD,"GENEvt_alphaQCD/D");
       DYTree->Branch("GENEvt_alphaQED",&GENEvt_alphaQED,"GENEvt_alphaQED/D");
     }
@@ -2485,6 +2491,8 @@ void DYntupleMaker::fillLHEInfo(const edm::Event &iEvent)
 ////////////////////////
 void DYntupleMaker::fillGENInfo(const edm::Event &iEvent)
 {
+  cout << "fill pdf info" << endl;
+  
   edm::Handle < std::vector<reco::GenParticle> > particles;
   iEvent.getByToken(GenParticleToken, particles);
   
@@ -2530,15 +2538,18 @@ void DYntupleMaker::fillGENInfo(const edm::Event &iEvent)
     } // -- end of for( size_t ipar = 0; ipar < particles->size(); ipar++ ) -- //
   
   GENnPair = _GennPair;
-  
+ 
   edm::Handle<GenEventInfoProduct> genEvtInfo;
   iEvent.getByToken(GenEventInfoToken, genEvtInfo);
   GENEvt_weight = genEvtInfo->weight();
   GENEvt_QScale = genEvtInfo->qScale();
   GENEvt_x1 = genEvtInfo->pdf()->x.first;
   GENEvt_x2 = genEvtInfo->pdf()->x.second;
+  GENEvt_id1 = genEvtInfo->pdf()->id.first;
+  GENEvt_id2 = genEvtInfo->pdf()->id.second;
   GENEvt_alphaQCD = genEvtInfo->alphaQCD();
   GENEvt_alphaQED = genEvtInfo->alphaQED();
+  
 }
 
 ///////////////////////////////
