@@ -6,7 +6,7 @@ import FWCore.ParameterSet.Config as cms
 isMC = False
 isSignalMC = False
 
-GT_MC = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
+GT_MC = '94X_mc2017_realistic_v12' # -- 2017 Nov MC
 GT_DATA = '90X_dataRun2_Prompt_v1' # -- 2017 prompt reco v1
 
 # TESTFILE_MC = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/ExampleMiniAODv2_ZMuMuPowheg_M120to200_Moriond17.root' # -- no signal -- #
@@ -205,8 +205,8 @@ process.recoTree.StoreElectronFlag = True
 process.recoTree.StorePhotonFlag = True # -- photon part should be updated! later when it is necessary -- #
 process.recoTree.StoreJetFlag = True
 process.recoTree.StoreMETFlag = True
-process.recoTree.StoreGENFlag = True
-#process.recoTree.StoreGENFlag = isMC
+#process.recoTree.StoreGENFlag = False
+process.recoTree.StoreGENFlag = isMC
 process.recoTree.StoreGenOthersFlag = isSignalMC
 process.recoTree.StoreLHEFlag = isSignalMC
 
