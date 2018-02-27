@@ -5,7 +5,7 @@
 //   Description: Flat Ntuple maker for SNUCMS group data analysis framework
 //
 //
-//   Authors of DYNtupleMaker
+//   Authors of DYNtupleMaker (https://github.com/KyeongPil-Lee/NtupleMaker)
 //   H.D.Yoo           Purdue University
 //   K.P.Lee           Seoul National University
 //   D.M.Pai           Seoul National University (EGM corrections, emu variables, and Gen-level neutrinos)
