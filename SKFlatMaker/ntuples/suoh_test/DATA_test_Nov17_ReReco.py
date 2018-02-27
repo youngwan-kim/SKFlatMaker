@@ -207,7 +207,6 @@ process.recoTree.StoreJetFlag = True
 process.recoTree.StoreMETFlag = True
 #process.recoTree.StoreGENFlag = False
 process.recoTree.StoreGENFlag = isMC
-process.recoTree.StoreGenOthersFlag = isSignalMC
 process.recoTree.StoreLHEFlag = isSignalMC
 
 ####################

@@ -178,7 +178,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void hltReport(const edm::Event &iEvent);          // fill list of triggers fired in an event
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
-  virtual void fillGenOthersInfo(const edm::Event &iEvent);
   virtual void fillTT(const edm::Event&);
   
   bool reorder(double &a, double &b)
@@ -201,11 +200,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< std::vector<pat::MET> > 						MetToken;
   edm::EDGetTokenT< LHEEventProduct > 							LHEEventProductToken;
   edm::EDGetTokenT< LHERunInfoProduct >							LHERunInfoProductToken;
-  edm::EDGetTokenT< std::vector<reco::GenParticle> > 				        GenParticleToken;
-
+  edm::EDGetTokenT<reco::GenParticleCollection>                                         mcLabel_;
+  
   edm::EDGetTokenT< edm::TriggerResults >                                               METFilterResultsToken;
-  //edm::EDGetTokenT<bool>                                                                BadChCandFilterToken;
-  //edm::EDGetTokenT<bool>                                                                BadPFMuonFilterToken;
 
   edm::EDGetTokenT< double > 						     		RhoToken;
   edm::EDGetTokenT< edm::ValueMap<bool> > 						eleVetoIdMapToken;
@@ -267,9 +264,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStoreElectronFlag;
   bool theStoreLHEFlag;
   bool theStoreGENFlag;
-  bool theStoreGenOthersFlag;
   bool theStorePhotonFlag;
   bool theStoreTTFlag;
+  bool theKeepAllGen;
   bool isMC;  //turn gen on and off
   bool theApplyFilter;
   int theFilterType;
@@ -715,8 +712,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   double GENLepton_Py[MPSIZE];
   double GENLepton_Pz[MPSIZE];
   double GENLepton_E[MPSIZE];
-  double GENLepton_mother[MPSIZE];
+  int GENLepton_mother[MPSIZE];
   double GENLepton_mother_pT[MPSIZE];
+  int GENLepton_mother_index[MPSIZE];
   int GENLepton_charge[MPSIZE];
   int GENLepton_status[MPSIZE];
   int GENLepton_ID[MPSIZE];
@@ -743,32 +741,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   double GENEvt_alphaQCD;
   double GENEvt_alphaQED;
   
-  int nGenOthers;
-  double GenOthers_phi[MPSIZE];
-  double GenOthers_eta[MPSIZE];
-  double GenOthers_pT[MPSIZE];
-  double GenOthers_Px[MPSIZE];
-  double GenOthers_Py[MPSIZE];
-  double GenOthers_Pz[MPSIZE];
-  double GenOthers_E[MPSIZE];
-  double GenOthers_mother[MPSIZE];
-  int GenOthers_charge[MPSIZE];
-  int GenOthers_status[MPSIZE];
-  int GenOthers_ID[MPSIZE];
-  int GenOthers_isPrompt[MPSIZE];
-  int GenOthers_isPromptFinalState[MPSIZE];
-  int GenOthers_isTauDecayProduct[MPSIZE];
-  int GenOthers_isPromptTauDecayProduct[MPSIZE];
-  int GenOthers_isDirectPromptTauDecayProductFinalState[MPSIZE];
-  int GenOthers_isHardProcess[MPSIZE];
-  int GenOthers_isLastCopy[MPSIZE];
-  int GenOthers_isLastCopyBeforeFSR[MPSIZE];
-  int GenOthers_isPromptDecayed[MPSIZE];
-  int GenOthers_isDecayedLeptonHadron[MPSIZE];
-  int GenOthers_fromHardProcessBeforeFSR[MPSIZE];
-  int GenOthers_fromHardProcessDecayed[MPSIZE];
-  int GenOthers_fromHardProcessFinalState[MPSIZE];
-  int GenOthers_isMostlyLikePythia6Status3[MPSIZE];
   
   // -- Photon information -- //
   int nPhotons;
