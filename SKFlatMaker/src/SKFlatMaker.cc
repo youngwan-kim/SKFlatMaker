@@ -2,13 +2,17 @@
 //
 //   Class: SKFlatMaker
 //
-//   Description: Ntuple maker for DY analysis
+//   Description: Flat Ntuple maker for SNUCMS group data analysis framework
 //
 //
-//   Author:
+//   Authors of DYNtupleMaker
 //   H.D.Yoo           Purdue University
 //   K.P.Lee           Seoul National University
 //   D.M.Pai           Seoul National University (EGM corrections, emu variables, and Gen-level neutrinos)
+//
+//   Revised By
+//   S.B. Oh           Seoul National University
+//   
 //
 //--------------------------------------------------
 
@@ -2491,7 +2495,7 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 ////////////////////////
 void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
 {
-  cout << "fill pdf info" << endl;
+  //cout << "fill pdf info" << endl;
   
   edm::Handle < std::vector<reco::GenParticle> > particles;
   iEvent.getByToken(GenParticleToken, particles);
