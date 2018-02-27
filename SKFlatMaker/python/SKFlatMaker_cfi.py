@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-DYntupleMaker = cms.EDAnalyzer("DYntupleMaker",
+SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
 	isMC = cms.untracked.bool(True),
 	processName = cms.untracked.string("HLT"),
 	DebugLevel = cms.untracked.int32(0),

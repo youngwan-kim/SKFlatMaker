@@ -1,5 +1,5 @@
-#ifndef DYntupleMaker_H
-#define DYntupleMaker_H
+#ifndef SKFlatMaker_H
+#define SKFlatMaker_H
 
 ////////////////////////////////
 // -- system include files -- //
@@ -156,11 +156,11 @@ using namespace edm;
 
 namespace reco { class CandCommonVertexFitterBase; class VertexCompositeCandidate; class CandCommonVertexFitter; }
 
-class DYntupleMaker : public edm::EDAnalyzer
+class SKFlatMaker : public edm::EDAnalyzer
 {
  public:
-  explicit DYntupleMaker(const edm::ParameterSet&);
-  ~DYntupleMaker();
+  explicit SKFlatMaker(const edm::ParameterSet&);
+  ~SKFlatMaker();
   
  private:
   virtual void beginJob() ;

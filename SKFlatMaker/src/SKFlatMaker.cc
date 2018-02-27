@@ -1,6 +1,6 @@
 //-------------------------------------------------
 //
-//   Class: DYntupleMaker
+//   Class: SKFlatMaker
 //
 //   Description: Ntuple maker for DY analysis
 //
@@ -12,7 +12,7 @@
 //
 //--------------------------------------------------
 
-#include "Phys/DYntupleMaker/interface/DYntupleMaker.h"
+#include "Phys/SKFlatMaker/interface/SKFlatMaker.h"
 
 //
 // class decleration
@@ -25,7 +25,7 @@ using namespace pat;
 using namespace isodeposit;
 
 // -- Constructor -- //
-DYntupleMaker::DYntupleMaker(const edm::ParameterSet& iConfig):
+SKFlatMaker::SKFlatMaker(const edm::ParameterSet& iConfig):
 // -- object tokens -- //
 MuonToken			    ( consumes< std::vector<pat::Muon> > 			(iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
 ElectronToken			    ( consumes< edm::View<reco::GsfElectron> >			(iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
@@ -115,14 +115,14 @@ PileUpInfoToken 		    ( consumes< std::vector< PileupSummaryInfo > >  	        (
   
 }
 
-DYntupleMaker::~DYntupleMaker() { }
+SKFlatMaker::~SKFlatMaker() { }
 
 //
 // member functions
 //
 
 // ------------ method called to for each event  ------------ //
-void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
   
@@ -628,7 +628,7 @@ void DYntupleMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 }
 
 // ------------ method called once each job just before starting event loop  ------------ //
-void DYntupleMaker::beginJob()
+void SKFlatMaker::beginJob()
 {
   // if( isMC )
   // {
@@ -1193,7 +1193,7 @@ void DYntupleMaker::beginJob()
     }
 }
 
-void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
+void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
   const int nTrigName = 7;
   string trigs[nTrigName] = 
@@ -1352,7 +1352,7 @@ void DYntupleMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 }
 
 // ------------ method called once each job just after ending the event loop  ------------ //
-void DYntupleMaker::endJob()
+void SKFlatMaker::endJob()
 {
   std::cout <<"++++++++++++++++++++++++++++++++++++++" << std::endl;
   std::cout <<"analyzed " << nEvt << " events: " << std::endl;
@@ -1362,7 +1362,7 @@ void DYntupleMaker::endJob()
 ///////////////////////////////////////////////////////
 // -- makes hlt report and fills it to the ntuple -- //
 ///////////////////////////////////////////////////////
-void DYntupleMaker::hltReport(const edm::Event &iEvent)
+void SKFlatMaker::hltReport(const edm::Event &iEvent)
 {
   int ntrigName = ListHLT.size();
   
@@ -1530,7 +1530,7 @@ void DYntupleMaker::hltReport(const edm::Event &iEvent)
 ///////////////////////////////////
 // -- Get Primary vertex info -- //
 ///////////////////////////////////
-void DYntupleMaker::fillPrimaryVertex(const edm::Event &iEvent)
+void SKFlatMaker::fillPrimaryVertex(const edm::Event &iEvent)
 {
   edm::Handle<reco::VertexCollection> pvHandle;
   iEvent.getByToken(PrimaryVertexToken, pvHandle);
@@ -1554,7 +1554,7 @@ void DYntupleMaker::fillPrimaryVertex(const edm::Event &iEvent)
 //////////////////////////////
 // -- Get Muons info -- //
 //////////////////////////////
-void DYntupleMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSetup)
+void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSetup)
 {
   // -- BeamSpot -- //
   edm::Handle<reco::BeamSpot> beamSpotHandle;
@@ -2016,7 +2016,7 @@ void DYntupleMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& i
 //////////////////////////////
 // -- Get Electrons info -- //
 //////////////////////////////
-void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup& iSetup)
+void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup& iSetup)
 {
   
   bool suoh_debug = false;
@@ -2435,7 +2435,7 @@ void DYntupleMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetu
 ////////////////////////
 // -- Get LHE info -- //
 ////////////////////////
-void DYntupleMaker::fillLHEInfo(const edm::Event &iEvent)
+void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 {
   Handle<LHEEventProduct> LHEInfo;
   iEvent.getByToken(LHEEventProductToken, LHEInfo);
@@ -2489,7 +2489,7 @@ void DYntupleMaker::fillLHEInfo(const edm::Event &iEvent)
 ////////////////////////
 // -- Get GEN info -- //
 ////////////////////////
-void DYntupleMaker::fillGENInfo(const edm::Event &iEvent)
+void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
 {
   cout << "fill pdf info" << endl;
   
@@ -2555,7 +2555,7 @@ void DYntupleMaker::fillGENInfo(const edm::Event &iEvent)
 ///////////////////////////////
 // -- Get GEN Others info -- // 
 ///////////////////////////////
-void DYntupleMaker::fillGenOthersInfo(const edm::Event &iEvent)
+void SKFlatMaker::fillGenOthersInfo(const edm::Event &iEvent)
 {
   edm::Handle < std::vector<reco::GenParticle> > particles;
   iEvent.getByToken(GenParticleToken, particles);
@@ -2605,7 +2605,7 @@ void DYntupleMaker::fillGenOthersInfo(const edm::Event &iEvent)
 /////////////////////////
 // Get Photons info -- // 
 /////////////////////////
-void DYntupleMaker::fillPhotons(const edm::Event &iEvent)
+void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
 {
   
   //cout << "ukukuk" << endl;
@@ -2702,7 +2702,7 @@ void DYntupleMaker::fillPhotons(const edm::Event &iEvent)
 /////////////////////////
 // -- Get METs info -- // 
 /////////////////////////
-void DYntupleMaker::fillMET(const edm::Event &iEvent)
+void SKFlatMaker::fillMET(const edm::Event &iEvent)
 {
   edm::Handle< std::vector<pat::MET> > metHandle;
   iEvent.getByToken(MetToken,metHandle);
@@ -2755,7 +2755,7 @@ void DYntupleMaker::fillMET(const edm::Event &iEvent)
 /////////////////////////
 // -- Get Jets info -- // 
 /////////////////////////
-void DYntupleMaker::fillJet(const edm::Event &iEvent)
+void SKFlatMaker::fillJet(const edm::Event &iEvent)
 {
   int _njets = 0;
   // int _nbjets_alg1 = 0;
@@ -2805,7 +2805,7 @@ void DYntupleMaker::fillJet(const edm::Event &iEvent)
 //////////////////////////////////////////////////////
 // -- Get Tracker track info (all single tracks) -- //
 //////////////////////////////////////////////////////
-void DYntupleMaker::fillTT(const edm::Event &iEvent)
+void SKFlatMaker::fillTT(const edm::Event &iEvent)
 {
   edm::Handle<edm::View<reco::Track> > trackHandle;
   iEvent.getByToken(TrackToken, trackHandle);
@@ -2863,7 +2863,7 @@ void DYntupleMaker::fillTT(const edm::Event &iEvent)
   NTT = _nTT;
 }
 
-void DYntupleMaker::endRun(const Run & iRun, const EventSetup & iSetup)
+void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
 {
   
   if( this->theStoreLHEFlag ) // -- only when LHE information is available (ex> aMC@NLO, Powheg) case. Samples generated by pythia8 doesn't work! -- //
@@ -2888,4 +2888,4 @@ void DYntupleMaker::endRun(const Run & iRun, const EventSetup & iSetup)
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(DYntupleMaker);
+DEFINE_FWK_MODULE(SKFlatMaker);

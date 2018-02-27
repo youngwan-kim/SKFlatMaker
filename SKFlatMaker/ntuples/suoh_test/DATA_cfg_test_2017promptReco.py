@@ -11,7 +11,7 @@ GT_DATA = '90X_dataRun2_Prompt_v1' # -- 2017 prompt reco v1
 
 # TESTFILE_MC = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/ExampleMiniAODv2_ZMuMuPowheg_M120to200_Moriond17.root' # -- no signal -- #
 TESTFILE_MC = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/MINIAOD_DYLL_M50toInf_Morind17.root' # -- signal -- #
-TESTFILE_DATA = 'file:/afs/cern.ch/work/s/suoh/entuple_making/KPLee_code/CMSSW_9_4_2/src/Phys/DYntupleMaker/ntuples/suoh_test/17Nov17_Rereco/DoubleMuon/00FB06B4-0DDF-E711-9291-02163E012A3F.root'
+TESTFILE_DATA = 'file:/afs/cern.ch/work/s/suoh/entuple_making/KPLee_code/CMSSW_9_4_2/src/Phys/SKFlatMaker/ntuples/suoh_test/17Nov17_Rereco/DoubleMuon/00FB06B4-0DDF-E711-9291-02163E012A3F.root'
 
 ####################################################################################################################
 
@@ -146,10 +146,10 @@ for idmod in my_phoid_modules:
 #################
 # -- DY Tree -- #
 #################
-from Phys.DYntupleMaker.DYntupleMaker_cfi import *
-from Phys.DYntupleMaker.PUreweight2012_cff import *
+from Phys.SKFlatMaker.SKFlatMaker_cfi import *
+from Phys.SKFlatMaker.PUreweight2012_cff import *
 
-process.recoTree = DYntupleMaker.clone()
+process.recoTree = SKFlatMaker.clone()
 process.recoTree.isMC = isMC
 
 # -- Objects -- #
