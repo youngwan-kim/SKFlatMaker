@@ -15,6 +15,7 @@
    	#E/gamma related setting(https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2)
    	git cms-merge-topic lsoffi:CMSSW_9_4_0_pre3_TnP
    	git cms-merge-topic guitargeek:ElectronID_MVA2017_940pre3
+	scram b -j 8 # This will make additional directories 
 	cd $CMSSW_BASE/external
    	cd slc6_amd64_gcc630/	
    	git clone https://github.com/lsoffi/RecoEgamma-PhotonIdentification.git data/RecoEgamma/PhotonIdentification/data
@@ -38,7 +39,7 @@
 	cd $CMSSW_BASE/src
 
 	#copy this code
-	git clone https://github.com/sungbinoh/SKFlatMaker.git Phys -b SB_add_SKTree_variables
+	git clone https://github.com/sungbinoh/SKFlatMaker.git Phys -b MoveToSKFlat
 
 	#compile
 	scram b -j 8
@@ -46,4 +47,5 @@
 	#test cmsRun
 	cd Phys/DYntupleMaker/ntuples/suoh_test
 	#modify DATA_cfg_test_2017promptReco.py file, eg) TESTFILE_DATA for your test rootfile, isMC also
-	cmsRun DATA_cfg_test_2017promptReco.py		
+	voms-proxy-init --voms cms
+	cmsRun DATA_test_Nov17_ReReco.py #or DATA_test_2017_PromptReco.py, MC_test_94X_mc2017.py
