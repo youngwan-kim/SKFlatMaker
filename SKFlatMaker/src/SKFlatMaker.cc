@@ -41,7 +41,9 @@ LHEEventProductToken		    ( consumes< LHEEventProduct >  			    	(iConfig.getUnt
 LHERunInfoProductToken		    ( consumes< LHERunInfoProduct,edm::InRun > 			(iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
 mcLabel_                            ( consumes< reco::GenParticleCollection>                    (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
 // -- MET Filter tokens -- //
-METFilterResultsToken               (consumes<edm::TriggerResults>                              (iConfig.getParameter<edm::InputTag>("METFilterResults"))),
+METFilterResultsToken_PAT           (consumes<edm::TriggerResults>                              (iConfig.getParameter<edm::InputTag>("METFilterResults_PAT"))),
+METFilterResultsToken_RECO          (consumes<edm::TriggerResults>                              (iConfig.getParameter<edm::InputTag>("METFilterResults_RECO"))),
+
 
 // -- Electron tokens -- //
 RhoToken 			    ( consumes< double >					(iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
@@ -1392,12 +1394,23 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   //cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
   edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
   iEvent.getByToken(TriggerObjectToken, triggerObject);
-
+  
   //save event filter infomation
-  iEvent.getByToken(METFilterResultsToken, METFilterResults);
+  if (!iEvent.getByToken(METFilterResultsToken_PAT, METFilterResults)){
+    iEvent.getByToken(METFilterResultsToken_RECO, METFilterResults);
+  }
+  
   const edm::TriggerNames &metNames = iEvent.triggerNames(*METFilterResults);
+  
+  //*******************************************************************************
+  //For Debug printout
+  //*******************************************************************************
+  //cout << "----------------------------" << endl;
+  //for (unsigned int i = 0, n = METFilterResults->size(); i < n; ++i) {
+  //  std::cout << "MET Filter " << metNames.triggerName(i).c_str() << "\n";
+  //}
+    
   for(unsigned int i = 0, n = METFilterResults->size(); i < n; ++i){
-    //cout << "metnames : " << metNames.triggerName(i).c_str() << endl;
     if(strcmp(metNames.triggerName(i).c_str(), "Flag_goodVertices") == 0) Flag_goodVertices = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalTightHalo2016Filter") == 0) Flag_globalTightHalo2016Filter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseFilter") == 0) Flag_HBHENoiseFilter = METFilterResults -> accept(i);
