@@ -45,13 +45,13 @@
 	cd $CMSSW_BASE/src
 
 	#copy this code
-	git clone https://github.com/sungbinoh/SKFlatMaker.git Phys -b MoveToSKFlat
+	git clone https://github.com/sungbinoh/SKFlatMaker.git SKFlat -b <branch_name>
 
 	#compile
 	scram b -j 8
 
 	#test cmsRun
-	cd Phys/DYntupleMaker/ntuples/suoh_test
+	cd SKFlat/DYntupleMaker/ntuples/suoh_test
 	#modify DATA_cfg_test_2017promptReco.py file, eg) TESTFILE_DATA for your test rootfile, isMC also
 	voms-proxy-init --voms cms
 	cmsRun DATA_test_Nov17_ReReco.py #or DATA_test_2017_PromptReco.py, MC_test_94X_mc2017.py
