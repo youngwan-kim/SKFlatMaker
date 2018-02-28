@@ -109,7 +109,7 @@ switchOnVIDElectronIdProducer(process, dataFormat)
 switchOnVIDPhotonIdProducer(process, dataFormat)
 
 # define which electron IDs we want to produce
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_Preliminary_cff', # -- 94X cut based electron ID
+my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff', # -- 94X cut based electron ID
                  'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff', # -- 94X MVA based electron ID, noIso
                  'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff', # -- 94X MVA based electron ID, iso
                  'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']# -- HEEP V70 electron ID
@@ -119,8 +119,8 @@ for idmod in my_id_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 # define which photon IDs we want to produce
-my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V1_Preliminary_cff', # -- 92X cut based photon ID 
-                    'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_RunIIFall17_v1_cff'] # -- 94X MVA based photon ID
+my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V1_cff', # -- 92X cut based photon ID 
+                    'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V1_cff'] # -- 94X MVA based photon ID
 
 
 process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
@@ -166,10 +166,10 @@ process.recoTree.GenParticle = cms.untracked.InputTag("prunedGenParticles") # --
 # -- for electrons -- # chaged to 2017 ID Map
 process.recoTree.rho = cms.untracked.InputTag("fixedGridRhoFastjetAll")
 process.recoTree.conversionsInputTag = cms.untracked.InputTag("reducedEgamma:reducedConversions") # -- miniAOD -- #
-process.recoTree.eleVetoIdMap = cms.untracked.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-Preliminary-veto")
-process.recoTree.eleLooseIdMap = cms.untracked.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-Preliminary-loose")
-process.recoTree.eleMediumIdMap = cms.untracked.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-Preliminary-medium")
-process.recoTree.eleTightIdMap = cms.untracked.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-Preliminary-tight")
+process.recoTree.eleVetoIdMap = cms.untracked.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-veto")
+process.recoTree.eleLooseIdMap = cms.untracked.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-loose")
+process.recoTree.eleMediumIdMap = cms.untracked.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-medium")
+process.recoTree.eleTightIdMap = cms.untracked.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-tight")
 #process.recoTree.eleHEEPIdMap = cms.untracked.InputTag("RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff")
 process.recoTree.eleMVAIdnoIsoWP80Map = cms.untracked.InputTag("egmGsfElectronIDs:mvaEleID-Fall17-noIso-V1-wp80")
 process.recoTree.eleMVAIdnoIsoWP90Map = cms.untracked.InputTag("egmGsfElectronIDs:mvaEleID-Fall17-noIso-V1-wp90")
@@ -185,9 +185,9 @@ process.recoTree.effAreaChHadFile = cms.untracked.FileInPath("RecoEgamma/PhotonI
 process.recoTree.effAreaNeuHadFile= cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfNeutralHadrons_V2.txt")
 process.recoTree.effAreaPhoFile   = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfPhotons_V2.txt")
 #------------------------------------------- Photon IDs for 2017 analysis
-process.recoTree.phoLooseIdMap = cms.untracked.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-Preliminary-loose")
-process.recoTree.phoMediumIdMap = cms.untracked.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-Preliminary-medium")
-process.recoTree.phoTightIdMap = cms.untracked.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-Preliminary-tight")
+process.recoTree.phoLooseIdMap = cms.untracked.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-loose")
+process.recoTree.phoMediumIdMap = cms.untracked.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-medium")
+process.recoTree.phoTightIdMap = cms.untracked.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-tight")
 process.recoTree.phoMVAIDWP90Map = cms.untracked.InputTag("egmPhotonIDs:mvaPhoID-RunIIFall17-v1-wp90")
 process.recoTree.phoMVAIDWP80Map = cms.untracked.InputTag("egmPhotonIDs:mvaPhoID-RunIIFall17-v1-wp80")
 
