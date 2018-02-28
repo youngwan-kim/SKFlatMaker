@@ -5,7 +5,7 @@
 
 ## Environment
 	#setup for CMSSW_9_4_X
-	export SCRAM_ARCH=slc6_amd64_gcc630	
+	export SCRAM_ARCH=slc6_amd64_gcc630 #Only for machines with different default compiler. Applying this line at lxplus might cause crash or error during scram
 	cmsrel CMSSW_9_4_2
    	cd CMSSW_9_4_2/src
    	cmsenv	
