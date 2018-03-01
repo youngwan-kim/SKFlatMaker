@@ -416,8 +416,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   double Jet_eta[MPSIZE]; 
   double Jet_phi[MPSIZE]; 
   double Jet_Charge[MPSIZE]; 
+  double Jet_area[MPSIZE];
+  double Jet_rho[MPSIZE];
   int Jet_Flavor[MPSIZE]; 
-  
+  int Jet_Hadron[MPSIZE];
   double Jet_bTag[MPSIZE]; 
   double Jet_CHfrac[MPSIZE]; 
   double Jet_NHfrac[MPSIZE]; 

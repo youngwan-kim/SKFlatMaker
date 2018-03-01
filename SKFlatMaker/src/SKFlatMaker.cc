@@ -245,8 +245,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       Jet_eta[i] = -100; 
       Jet_phi[i] = -100; 
       Jet_Charge[i] = -100; 
+      Jet_area[i] = -100;
+      Jet_rho[i] = -100;
+      Jet_Flavor[i] = -100;
       Jet_Flavor[i] = -100; 
-      
+      Jet_Hadron[i] = -100;
       Jet_bTag[i] = -100; 
       Jet_CHfrac[i] = -100; 
       Jet_NHfrac[i] = -100; 
@@ -712,7 +715,10 @@ void SKFlatMaker::beginJob()
       DYTree->Branch("Jet_eta", &Jet_eta,"Jet_eta[Njets]/D");
       DYTree->Branch("Jet_phi", &Jet_phi,"Jet_phi[Njets]/D");
       DYTree->Branch("Jet_Charge", &Jet_Charge,"Jet_Charge[Njets]/D");
-      DYTree->Branch("Jet_Flavor", &Jet_Flavor,"Jet_Flavor[Njets]/I");
+      DYTree->Branch("Jet_Area", &Jet_area,"Jet_area[Njets]/D");
+      DYTree->Branch("Jet_Rho", &Jet_rho,"Jet_rho[Njets]/D");
+      DYTree->Branch("Jet_PartonFlavor", &Jet_Flavor,"Jet_Flavor[Njets]/I");
+      DYTree->Branch("Jet_HadronFlavor", &Jet_Hadron,"Jet_Hadron[Njets]/I");
 
       DYTree->Branch("Jet_bTag", &Jet_bTag,"Jet_bTag[Njets]/D");
       DYTree->Branch("Jet_CHfrac", &Jet_CHfrac,"Jet_CHfrac[Njets]/D");
@@ -2766,14 +2772,22 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
   Njets = jetHandle->size();
   if(Njets == 0) return;
   
+  edm::Handle< double > rhojet;
+  iEvent.getByToken(RhoToken,rhojet);
+  double rho_jet = *rhojet;
+
+
   for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter)
     {
       Jet_pT[_njets] = jets_iter->pt();
       Jet_eta[_njets] = jets_iter->eta();
       Jet_phi[_njets] = jets_iter->phi();
       Jet_Charge[_njets] = jets_iter->jetCharge();
+      Jet_area[_njets] = jets_iter->jetArea();
+      Jet_rho[_njets] = rho_jet;
       Jet_Flavor[_njets] = jets_iter->partonFlavour();
-      
+      Jet_Hadron[_njets] = jets_iter->hadronFlavour();
+
       Jet_bTag[_njets] = jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
       Jet_CHfrac[_njets] = jets_iter->chargedHadronEnergyFraction();
       Jet_NHfrac[_njets] = jets_iter->neutralHadronEnergyFraction();
