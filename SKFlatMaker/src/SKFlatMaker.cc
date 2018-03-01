@@ -28,6 +28,7 @@ using namespace edm;
 using namespace pat;
 using namespace isodeposit;
 
+
 // -- Constructor -- //
 SKFlatMaker::SKFlatMaker(const edm::ParameterSet& iConfig):
 // -- object tokens -- //
@@ -2178,7 +2179,9 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       
       //calculate IP3D
       const reco::TransientTrack &tt = theTTBuilder->build(elecTrk);
-      
+      //reco::TransientTrack &tt = theTTBuilder->build(elecTrk);
+
+      /*
       Vertex dummy;
       const Vertex *pv = &dummy;
       if (pvHandle->size() != 0) { 
@@ -2191,10 +2194,14 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
 	Vertex::Point p(0, 0, 0);
 	dummy = Vertex(p, e, 0, 0, 0);
       }
+      */
       
       const reco::Vertex &vtx = pvHandle->front();
+      //reco::Vertex &vtx = pvHandle->front();
+      
+      const std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt, vtx);
+      //std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt,vtx);
 
-      const std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt,*pv);
       const double gsfsign = ( (-elecTrk->dxy(vtx.position())) >=0 ) ? 1. : -1.;
       if (ip3dpv.first) {
 	double ip3d = gsfsign*ip3dpv.second.value();

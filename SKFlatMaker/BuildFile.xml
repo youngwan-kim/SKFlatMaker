@@ -24,12 +24,15 @@
 <use name="DataFormats/L1Trigger"/>
 <use name="HLTrigger/HLTcore"/>
 <use name="CommonTools/CandUtils"/>
+<use name="TrackingTools/TransientTrack"/>
+<use name="TrackingTools/Records"/>
+<use name="TrackingTools/IPTools"/>
 <!-- <use name="SHarper/HEEPAnalyzer"/> -->
 <use name="root"/>
 <use name="boost"/>
 <flags EDM_PLUGIN="1"/>
 <export>
-   <lib name="PhysDYntupleMaker"/>
+   <lib name="Phys/SKFlatMaker"/>
    <use name="FWCore/Framework"/>
    <use name="FWCore/PluginManager"/>
    <use name="FWCore/ParameterSet"/>

@@ -44,10 +44,12 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 # -- Geometry and Detector Conditions (needed for a few patTuple production steps) -- #
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
+#process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # -- Global Tags -- #
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
+
 if isMC == True:
   process.GlobalTag.globaltag = cms.string(GT_MC)
 else:
