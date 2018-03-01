@@ -47,6 +47,8 @@ METFilterResultsToken_RECO          (consumes<edm::TriggerResults>              
 
 // -- Electron tokens -- //
 RhoToken 			    ( consumes< double >					(iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
+mvaIsoValuesMapToken                ( consumes< edm::ValueMap<float> >                          (iConfig.getParameter<edm::InputTag>("mvaIsoValuesMap"))  ),
+mvaNoIsoValuesMapToken              ( consumes< edm::ValueMap<float> >                          (iConfig.getParameter<edm::InputTag>("mvaNoIsoValuesMap"))  ),
 eleVetoIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleVetoIdMap")) ),
 eleLooseIdMapToken 		    ( consumes< edm::ValueMap<bool> >			        (iConfig.getUntrackedParameter<edm::InputTag>("eleLooseIdMap")) ),
 eleMediumIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleMediumIdMap")) ),
@@ -254,6 +256,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       
       // electron
       Electron_Energy[i] = Electron_et[i] = Electron_pT[i] = Electron_eta[i] = Electron_phi[i] = -100;
+      Electron_MVAIso[i] = 0.;
+      Electron_MVANoIso[i] = 0.;
       Electron_caloEnergy[i] = -100;
       Electron_Px[i] = Electron_Py[i] = Electron_Pz[i] = -9999;
       Electron_charge[i] = -100;
@@ -278,7 +282,10 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       Electron_dxyVTX[i] = -9999;
       Electron_dzVTX[i] = -9999;
       Electron_dxy[i] = -9999;
+      Electron_sigdxy[i] = -9999.;
       Electron_dz[i] = -9999;
+      Electrron_ip3D[i] = -9999;
+      Electrron_sigip3D[i] = -9999.;
       Electron_dxyBS[i] = -9999;
       Electron_dzBS[i] = -9999;
       Electron_AEff03[i] = -9999;
@@ -639,7 +646,7 @@ void SKFlatMaker::beginJob()
   // }
 
   edm::Service<TFileService> fs;
-  DYTree = fs->make<TTree>("DYTree","DYTree");
+  DYTree = fs->make<TTree>("SKFlat","SKFlat");
 
   // -- global event variables -- //
   DYTree->Branch("nTotal",&nEvt,"nTotal/I");
@@ -738,6 +745,8 @@ void SKFlatMaker::beginJob()
   if( theStoreElectronFlag )
     {
       DYTree->Branch("Nelectrons", &Nelectrons,"Nelectrons/I");
+      DYTree->Branch("Electron_MVAIso", &Electron_MVAIso, "Electron_MVAIso[Nelectrons]/D");
+      DYTree->Branch("Electron_MVANoIso", &Electron_MVANoIso, "Electron_MVANoIso[Nelectrons]/D");
       DYTree->Branch("Electron_Energy", &Electron_Energy, "Electron_Energy[Nelectrons]/D");
       // DYTree->Branch("Electron_et", &Electron_et, "Electron_et[Nelectrons]/D");
       // DYTree->Branch("Electron_caloEnergy", &Electron_caloEnergy, "Electron_caloEnergy[Nelectrons]/D");
@@ -773,7 +782,10 @@ void SKFlatMaker::beginJob()
       DYTree->Branch("Electron_dxyVTX", &Electron_dxyVTX, "Electron_dxyVTX[Nelectrons]/D");
       DYTree->Branch("Electron_dzVTX", &Electron_dzVTX, "Electron_dzVTX[Nelectrons]/D");
       DYTree->Branch("Electron_dxy", &Electron_dxy, "Electron_dxy[Nelectrons]/D");
+      DYTree->Branch("Electron_sigdxy", &Electron_sigdxy, "Electron_sigdxy[Nelectrons]/D");
       DYTree->Branch("Electron_dz", &Electron_dz, "Electron_dz[Nelectrons]/D");
+      DYTree->Branch("Electrron_IP3D", &Electrron_ip3D, "Electrron_ip3D[Nelectrons]/D");
+      DYTree->Branch("Electrron_sigIP3D", &Electrron_sigip3D, "Electrron_sigip3D[Nelectrons]/D");
       DYTree->Branch("Electron_dxyBS", &Electron_dxyBS, "Electron_dxyBS[Nelectrons]/D");
       DYTree->Branch("Electron_dzBS", &Electron_dzBS, "Electron_dzBS[Nelectrons]/D");
       // DYTree->Branch("Electron_AEff03", &Electron_AEff03, "Electron_AEff03[Nelectrons]/D");
@@ -1026,42 +1038,42 @@ void SKFlatMaker::beginJob()
   // GEN info
   if( theStoreGENFlag )
     {
-      DYTree->Branch("GENnPair",&GENnPair,"GENnPair/I");
-      DYTree->Branch("GENLepton_phi", &GENLepton_phi,"GENLepton_phi[GENnPair]/D");
-      DYTree->Branch("GENLepton_eta", &GENLepton_eta,"GENLepton_eta[GENnPair]/D");
-      DYTree->Branch("GENLepton_pT", &GENLepton_pT,"GENLepton_pT[GENnPair]/D");
-      DYTree->Branch("GENLepton_Px", &GENLepton_Px,"GENLepton_Px[GENnPair]/D");
-      DYTree->Branch("GENLepton_Py", &GENLepton_Py,"GENLepton_Py[GENnPair]/D");
-      DYTree->Branch("GENLepton_Pz", &GENLepton_Pz,"GENLepton_Pz[GENnPair]/D");
-      DYTree->Branch("GENLepton_E", &GENLepton_E,"GENLepton_E[GENnPair]/D");
-      DYTree->Branch("GENLepton_mother", &GENLepton_mother,"GENLepton_mother[GENnPair]/I");
-      DYTree->Branch("GENLepton_mother_pT", &GENLepton_mother_pT,"GENLepton_mother_pT[GENnPair]/D");
-      DYTree->Branch("GENLepton_mother_index", &GENLepton_mother_index,"GENLepton_mother_index[GENnPair]/I");
-      DYTree->Branch("GENLepton_charge", &GENLepton_charge,"GENLepton_charge[GENnPair]/I");
-      DYTree->Branch("GENLepton_status", &GENLepton_status,"GENLepton_status[GENnPair]/I");
-      DYTree->Branch("GENLepton_ID", &GENLepton_ID,"GENLepton_ID[GENnPair]/I");
-      DYTree->Branch("GENLepton_isPrompt", &GENLepton_isPrompt,"GENLepton_isPrompt[GENnPair]/I");
-      DYTree->Branch("GENLepton_isPromptFinalState", &GENLepton_isPromptFinalState,"GENLepton_isPromptFinalState[GENnPair]/I");
-      DYTree->Branch("GENLepton_isTauDecayProduct", &GENLepton_isTauDecayProduct,"GENLepton_isTauDecayProduct[GENnPair]/I");
-      DYTree->Branch("GENLepton_isPromptTauDecayProduct", &GENLepton_isPromptTauDecayProduct,"GENLepton_isPromptTauDecayProduct[GENnPair]/I");
-      DYTree->Branch("GENLepton_isDirectPromptTauDecayProductFinalState", &GENLepton_isDirectPromptTauDecayProductFinalState,"GENLepton_isDirectPromptTauDecayProductFinalState[GENnPair]/I");
-      DYTree->Branch("GENLepton_isHardProcess",&GENLepton_isHardProcess,"GENLepton_isHardProcess[GENnPair]/I");
-      DYTree->Branch("GENLepton_isLastCopy",&GENLepton_isLastCopy,"GENLepton_isLastCopy[GENnPair]/I");
-      DYTree->Branch("GENLepton_isLastCopyBeforeFSR",&GENLepton_isLastCopyBeforeFSR,"GENLepton_isLastCopyBeforeFSR[GENnPair]/I");
-      DYTree->Branch("GENLepton_isPromptDecayed",&GENLepton_isPromptDecayed,"GENLepton_isPromptDecayed[GENnPair]/I");
-      DYTree->Branch("GENLepton_isDecayedLeptonHadron",&GENLepton_isDecayedLeptonHadron,"GENLepton_isDecayedLeptonHadron[GENnPair]/I");
-      DYTree->Branch("GENLepton_fromHardProcessBeforeFSR",&GENLepton_fromHardProcessBeforeFSR,"GENLepton_fromHardProcessBeforeFSR[GENnPair]/I");
-      DYTree->Branch("GENLepton_fromHardProcessDecayed",&GENLepton_fromHardProcessDecayed,"GENLepton_fromHardProcessDecayed[GENnPair]/I");
-      DYTree->Branch("GENLepton_fromHardProcessFinalState",&GENLepton_fromHardProcessFinalState,"GENLepton_fromHardProcessFinalState[GENnPair]/I");
-      DYTree->Branch("GENLepton_isMostlyLikePythia6Status3", &GENLepton_isMostlyLikePythia6Status3, "GENLepton_isMostlyLikePythia6Status3[GENnPair]/I");
-      DYTree->Branch("GENEvt_weight",&GENEvt_weight,"GENEvt_weight/D");
+      DYTree->Branch("gen_N",&GENnPair,"GENnPair/I");
+      DYTree->Branch("gen_phi", &GENLepton_phi,"GENLepton_phi[GENnPair]/D");
+      DYTree->Branch("gen_eta", &GENLepton_eta,"GENLepton_eta[GENnPair]/D");
+      DYTree->Branch("gen_pT", &GENLepton_pT,"GENLepton_pT[GENnPair]/D");
+      DYTree->Branch("gen_Px", &GENLepton_Px,"GENLepton_Px[GENnPair]/D");
+      DYTree->Branch("gen_Py", &GENLepton_Py,"GENLepton_Py[GENnPair]/D");
+      DYTree->Branch("gen_Pz", &GENLepton_Pz,"GENLepton_Pz[GENnPair]/D");
+      DYTree->Branch("gen_E", &GENLepton_E,"GENLepton_E[GENnPair]/D");
+      DYTree->Branch("gen_mother", &GENLepton_mother,"GENLepton_mother[GENnPair]/I");
+      DYTree->Branch("gen_mother_pT", &GENLepton_mother_pT,"GENLepton_mother_pT[GENnPair]/D");
+      DYTree->Branch("gen_mother_index", &GENLepton_mother_index,"GENLepton_mother_index[GENnPair]/I");
+      DYTree->Branch("gen_charge", &GENLepton_charge,"GENLepton_charge[GENnPair]/I");
+      DYTree->Branch("gen_status", &GENLepton_status,"GENLepton_status[GENnPair]/I");
+      DYTree->Branch("gen_ID", &GENLepton_ID,"GENLepton_ID[GENnPair]/I");
+      DYTree->Branch("gen_isPrompt", &GENLepton_isPrompt,"GENLepton_isPrompt[GENnPair]/I");
+      DYTree->Branch("gen_isPromptFinalState", &GENLepton_isPromptFinalState,"GENLepton_isPromptFinalState[GENnPair]/I");
+      DYTree->Branch("gen_isTauDecayProduct", &GENLepton_isTauDecayProduct,"GENLepton_isTauDecayProduct[GENnPair]/I");
+      DYTree->Branch("gen_isPromptTauDecayProduct", &GENLepton_isPromptTauDecayProduct,"GENLepton_isPromptTauDecayProduct[GENnPair]/I");
+      DYTree->Branch("gen_isDirectPromptTauDecayProductFinalState", &GENLepton_isDirectPromptTauDecayProductFinalState,"GENLepton_isDirectPromptTauDecayProductFinalState[GENnPair]/I");
+      DYTree->Branch("gen_isHardProcess",&GENLepton_isHardProcess,"GENLepton_isHardProcess[GENnPair]/I");
+      DYTree->Branch("gen_isLastCopy",&GENLepton_isLastCopy,"GENLepton_isLastCopy[GENnPair]/I");
+      DYTree->Branch("gen_isLastCopyBeforeFSR",&GENLepton_isLastCopyBeforeFSR,"GENLepton_isLastCopyBeforeFSR[GENnPair]/I");
+      DYTree->Branch("gen_isPromptDecayed",&GENLepton_isPromptDecayed,"GENLepton_isPromptDecayed[GENnPair]/I");
+      DYTree->Branch("gen_isDecayedLeptonHadron",&GENLepton_isDecayedLeptonHadron,"GENLepton_isDecayedLeptonHadron[GENnPair]/I");
+      DYTree->Branch("gen_fromHardProcessBeforeFSR",&GENLepton_fromHardProcessBeforeFSR,"GENLepton_fromHardProcessBeforeFSR[GENnPair]/I");
+      DYTree->Branch("gen_fromHardProcessDecayed",&GENLepton_fromHardProcessDecayed,"GENLepton_fromHardProcessDecayed[GENnPair]/I");
+      DYTree->Branch("gen_fromHardProcessFinalState",&GENLepton_fromHardProcessFinalState,"GENLepton_fromHardProcessFinalState[GENnPair]/I");
+      DYTree->Branch("gen_isMostlyLikePythia6Status3", &GENLepton_isMostlyLikePythia6Status3, "GENLepton_isMostlyLikePythia6Status3[GENnPair]/I");
+      DYTree->Branch("gen_weight",&GENEvt_weight,"GENEvt_weight/D");
       DYTree->Branch("ScaleWeights",&GENEvt_QScale,"GENEvt_QScale/D");
-      DYTree->Branch("GENEvt_x1",&GENEvt_x1,"GENEvt_x1/D");
-      DYTree->Branch("GENEvt_x2",&GENEvt_x2,"GENEvt_x2/D");
+      DYTree->Branch("genWeightX1",&GENEvt_x1,"GENEvt_x1/D");
+      DYTree->Branch("genWeightX2",&GENEvt_x2,"GENEvt_x2/D");
       DYTree->Branch("genWeight_id1",&GENEvt_id1,"GENEvt_id1/I");
       DYTree->Branch("genWeight_id2",&GENEvt_id2,"GENEvt_id2/I");
-      DYTree->Branch("GENEvt_alphaQCD",&GENEvt_alphaQCD,"GENEvt_alphaQCD/D");
-      DYTree->Branch("GENEvt_alphaQED",&GENEvt_alphaQED,"GENEvt_alphaQED/D");
+      DYTree->Branch("genWeight_alphaQCD",&GENEvt_alphaQCD,"GENEvt_alphaQCD/D");
+      DYTree->Branch("genWeight_alphaQED",&GENEvt_alphaQED,"GENEvt_alphaQED/D");
     }
   
   if( theStorePhotonFlag )
@@ -1995,10 +2007,19 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   // -- Primary vertex -- //
   edm::Handle<reco::VertexCollection> pvHandle;
   iEvent.getByToken(PrimaryVertexToken, pvHandle);
+  const reco::VertexCollection vtx = *(pvHandle.product());
   
   // -- electron -- //
   edm::Handle< edm::View<reco::GsfElectron> > ElecHandle;
   iEvent.getByToken(ElectronToken, ElecHandle);
+
+
+  // -- electron MVA value -- //
+  edm::Handle<edm::ValueMap<float> > mvaIsoValues;
+  iEvent.getByToken(mvaIsoValuesMapToken,mvaIsoValues);
+  
+  edm::Handle<edm::ValueMap<float> > mvaNoIsoValues;
+  iEvent.getByToken(mvaNoIsoValuesMapToken,mvaNoIsoValues);
   
   // -- Get rho value -- //
   edm::Handle< double > rhoHandle;
@@ -2061,6 +2082,8 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     {
       const auto el = ElecHandle->ptrAt(i);
       
+      Electron_MVAIso[_nElectron] = (*mvaIsoValues)[el];
+      Electron_MVANoIso[_nElectron] = (*mvaNoIsoValues)[el];
       Electron_pT[_nElectron] = el->pt();
       Electron_eta[_nElectron] = el->eta();
       Electron_phi[_nElectron] = el->phi();
@@ -2153,6 +2176,34 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       constexpr reco::HitPattern::HitCategory missingHitType = reco::HitPattern::MISSING_INNER_HITS;
       Electron_mHits[_nElectron] = elecTrk->hitPattern().numberOfAllHits(missingHitType);
       
+      //calculate IP3D
+      const reco::TransientTrack &tt = theTTBuilder->build(elecTrk);
+      
+      Vertex dummy;
+      const Vertex *pv = &dummy;
+      if (pvHandle->size() != 0) { 
+	pv = &*pvHandle->begin();
+      } else { // create a dummy PV
+	Vertex::Error e;
+	e(0, 0) = 0.0015 * 0.0015;
+	e(1, 1) = 0.0015 * 0.0015;
+	e(2, 2) = 15. * 15.;
+	Vertex::Point p(0, 0, 0);
+	dummy = Vertex(p, e, 0, 0, 0);
+      }
+      
+      const reco::Vertex &vtx = pvHandle->front();
+
+      const std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt,*pv);
+      const double gsfsign = ( (-elecTrk->dxy(vtx.position())) >=0 ) ? 1. : -1.;
+      if (ip3dpv.first) {
+	double ip3d = gsfsign*ip3dpv.second.value();
+	double ip3derr = ip3dpv.second.error();  
+	Electrron_ip3D[_nElectron] = ip3d; 
+	Electrron_sigip3D[_nElectron] = ip3d/ip3derr;
+      }
+      
+      Electron_sigdxy[_nElectron] = elecTrk->dxy() / elecTrk->dxyError();
       Electron_dxy[_nElectron] = elecTrk->dxy();
       Electron_dz[_nElectron] = elecTrk->dz();
       Electron_dxyBS[_nElectron] = elecTrk->dxy(beamSpot.position());
@@ -2171,7 +2222,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       
       if( !pvHandle->empty() && !pvHandle->front().isFake() )
 	{
-	  const reco::Vertex &vtx = pvHandle->front();
+	  //const reco::Vertex &vtx = pvHandle->front();
 	  Electron_dxyVTX[_nElectron] = elecTrk->dxy(vtx.position());
 	  Electron_dzVTX[_nElectron] = elecTrk->dz(vtx.position());
 	}

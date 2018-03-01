@@ -44,6 +44,7 @@
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
+
 ///////////////////
 // -- For MET -- //
 ///////////////////
@@ -81,6 +82,7 @@
 #include "PhysicsTools/RecoUtils/interface/CandCommonVertexFitter.h" // -- 
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h" // -- Helper class to build TransientTrack from the persistent Track.
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "DataFormats/PatCandidates/interface/Vertexing.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
@@ -88,6 +90,7 @@
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "RecoVertex/VertexTools/interface/InvariantMassFromVertex.h"
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
 
 ////////////////////
 // -- Triggers -- //
@@ -206,6 +209,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< edm::TriggerResults >                                               METFilterResultsToken_RECO;
   
   edm::EDGetTokenT< double > 						     		RhoToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >                                              mvaIsoValuesMapToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >                                              mvaNoIsoValuesMapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> > 						eleVetoIdMapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> > 						eleLooseIdMapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> > 						eleMediumIdMapToken;
@@ -423,6 +428,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   
   // PAT Electron
+  double Electron_MVAIso[MPSIZE];
+  double Electron_MVANoIso[MPSIZE];
   double Electron_et[MPSIZE];
   double Electron_caloEnergy[MPSIZE];
   double Electron_Energy[MPSIZE];
@@ -458,7 +465,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   double Electron_dxyVTX[MPSIZE];
   double Electron_dzVTX[MPSIZE];
   double Electron_dxy[MPSIZE];
+  double Electron_sigdxy[MPSIZE];
   double Electron_dz[MPSIZE];
+  double Electrron_ip3D[MPSIZE];
+  double Electrron_sigip3D[MPSIZE];
   double Electron_dxyBS[MPSIZE];
   double Electron_dzBS[MPSIZE];
   double Electron_AEff03[MPSIZE];
