@@ -196,11 +196,14 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   // -- Tokens (for 76X) -- //
   edm::EDGetTokenT< std::vector<pat::Muon> > 						MuonToken;
-  edm::EDGetTokenT< edm::View<reco::GsfElectron> > 				        ElectronToken;
-  edm::EDGetTokenT< edm::View<reco::GsfElectron> >                                      UnCorrElectronToken;
-  edm::EDGetTokenT< edm::View<reco::Photon> > 					        PhotonToken;
+  edm::EDGetTokenT< edm::View<pat::Electron> > 				                ElectronToken;
+  edm::EDGetTokenT< edm::View<pat::Electron> >                                          UnCorrElectronToken;
+  edm::EDGetTokenT< edm::View<pat::Photon> > 					        PhotonToken;
+  edm::EDGetTokenT< edm::View<pat::Photon> >                                            UnCorrPhotonToken;
   edm::EDGetTokenT< std::vector<pat::Jet> > 						JetToken;
   edm::EDGetTokenT< std::vector<pat::MET> > 						MetToken;
+  //edm::EDGetTokenT<pat::METCollection>                                           MetToken;
+
   edm::EDGetTokenT< LHEEventProduct > 							LHEEventProductToken;
   edm::EDGetTokenT< LHERunInfoProduct >							LHERunInfoProductToken;
   edm::EDGetTokenT< reco::GenParticleCollection>                                        mcLabel_;
@@ -776,6 +779,11 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool Photon_passLooseID[MPSIZE];
   bool Photon_passMediumID[MPSIZE];
   bool Photon_passTightID[MPSIZE];
+
+  int nUnCorrPhoton;
+  double Photon_pTUnCorr[MPSIZE];
+  double Photon_etaUnCorr[MPSIZE];
+  double Photon_phiUnCorr[MPSIZE];
   
   // Effective area constants for all isolation types
   // EffectiveAreas effAreaChHadrons_;

@@ -33,11 +33,14 @@ using namespace isodeposit;
 SKFlatMaker::SKFlatMaker(const edm::ParameterSet& iConfig):
 // -- object tokens -- //
 MuonToken			    ( consumes< std::vector<pat::Muon> > 			(iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
-ElectronToken			    ( consumes< edm::View<reco::GsfElectron> >			(iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
-UnCorrElectronToken	       	    ( consumes< edm::View<reco::GsfElectron> >			(iConfig.getUntrackedParameter<edm::InputTag>("UnCorrElectron")) ),
-PhotonToken 		      	    ( consumes< edm::View<reco::Photon> >			(iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
+ElectronToken			    ( consumes< edm::View<pat::Electron> >			(iConfig.getUntrackedParameter<edm::InputTag>("SmearedElectron")) ),
+UnCorrElectronToken	       	    ( consumes< edm::View<pat::Electron> >			(iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
+PhotonToken 		      	    ( consumes< edm::View<pat::Photon> >			(iConfig.getUntrackedParameter<edm::InputTag>("SmearedPhoton")) ),
+UnCorrPhotonToken                   ( consumes< edm::View<pat::Photon> >                        (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
 JetToken 		     	    ( consumes< std::vector<pat::Jet> >				(iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
-MetToken 			    ( consumes< std::vector<pat::MET> >				(iConfig.getUntrackedParameter<edm::InputTag>("MET")) ),
+MetToken 			    ( consumes< std::vector<pat::MET> >				(iConfig.getParameter<edm::InputTag>("MET")) ),
+//MetToken                            ( consumes< pat::METCollection>                               (iConfig.getParameter<edm::InputTag>("MET")) ),
+
 LHEEventProductToken		    ( consumes< LHEEventProduct >  			    	(iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
 LHERunInfoProductToken		    ( consumes< LHERunInfoProduct,edm::InRun > 			(iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
 mcLabel_                            ( consumes< reco::GenParticleCollection>                    (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
@@ -131,6 +134,8 @@ SKFlatMaker::~SKFlatMaker() { }
 // ------------ method called to for each event  ------------ //
 void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
+  bool suoh_debug = true;
+  if(suoh_debug) cout << "analyze" << endl;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
   
   ///////////////////////////////////////////
@@ -511,6 +516,10 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       Photon_passMediumID[i] = 0;
       Photon_passTightID[i] = 0;
       
+      nUnCorrPhoton = 0;
+      Photon_pTUnCorr[i] = 0;
+      Photon_etaUnCorr[i] = 0;
+      Photon_phiUnCorr[i] = 0;
 
       // -- MET -- //
       pfMET_pT = -100;
@@ -584,7 +593,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   // cout << "##### Analyze:PU-Reweighting #####" << endl;
   
   // fills
-  bool debug_suoh = false;
+  bool debug_suoh = true;
   
   if( theStoreHLTReportFlag ) hltReport(iEvent);
   if(debug_suoh) cout << "theStorePriVtxFlag" << endl;
@@ -626,6 +635,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 // ------------ method called once each job just before starting event loop  ------------ //
 void SKFlatMaker::beginJob()
 {
+  bool suoh_debug = true;
+  if(suoh_debug) cout << "beginJob" << endl;
   // if( isMC )
   // {
   // // Pileup Reweight: 2012, Summer12_S10
@@ -1106,6 +1117,11 @@ void SKFlatMaker::beginJob()
       DYTree->Branch("Photon_passTightID", &Photon_passTightID, "Photon_passTightID[nPhotons]/O");
       DYTree->Branch("Photon_passMVAID_WP80", &Photon_passMVAID_WP80, "Photon_passMVAID_WP80[nPhotons]/O");
       DYTree->Branch("Photon_passMVAID_WP90", &Photon_passMVAID_WP90, "Photon_passMVAID_WP90[nPhotons]/O");
+    
+      DYTree->Branch("nUnCorrPhoton",&nUnCorrPhoton,"nUnCorrPhoton/I");
+      DYTree->Branch("Photon_pTUnCorr",&Photon_pTUnCorr,"Photon_pTUnCorr[nPhotons]/D");
+      DYTree->Branch("Photon_etaUnCorr",&Photon_etaUnCorr,"Photon_etaUnCorr[nPhotons]/D");
+      DYTree->Branch("Photon_phiUnCorr",&Photon_phiUnCorr,"Photon_phiUnCorr[nPhotons]/D");
     }
   
   
@@ -1169,6 +1185,8 @@ void SKFlatMaker::beginJob()
 
 void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
+  bool suoh_debug = true;
+  if(suoh_debug) cout << "beginRun" << endl;
   const int nTrigName = 7;
   string trigs[nTrigName] = 
     {
@@ -1328,6 +1346,8 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 // ------------ method called once each job just after ending the event loop  ------------ //
 void SKFlatMaker::endJob()
 {
+  bool suoh_debug = true;
+  if(suoh_debug) cout << "endJob" << endl;
   std::cout <<"++++++++++++++++++++++++++++++++++++++" << std::endl;
   std::cout <<"analyzed " << nEvt << " events: " << std::endl;
   std::cout <<"++++++++++++++++++++++++++++++++++++++" << std::endl;
@@ -1338,6 +1358,10 @@ void SKFlatMaker::endJob()
 ///////////////////////////////////////////////////////
 void SKFlatMaker::hltReport(const edm::Event &iEvent)
 {
+
+  bool suoh_debug = true;
+  if(suoh_debug) cout << "hltRepot" << endl;
+  
   int ntrigName = ListHLT.size();
   
   // -- read the whole HLT trigger lists fired in an event -- //
@@ -2017,9 +2041,8 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   const reco::VertexCollection vtx = *(pvHandle.product());
   
   // -- electron -- //
-  edm::Handle< edm::View<reco::GsfElectron> > ElecHandle;
+  edm::Handle< edm::View<pat::Electron> > ElecHandle;
   iEvent.getByToken(ElectronToken, ElecHandle);
-
 
   // -- electron MVA value -- //
   edm::Handle<edm::ValueMap<float> > mvaIsoValues;
@@ -2430,7 +2453,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   // -- WARNING: the order of uncorrected electrons in array may not be same with the corrected one! ... 
   // -- so uncorrected one and corrected one should be matched via eta and phi comparison before using it! -- //
   
-  edm::Handle< edm::View<reco::GsfElectron> > UnCorrElecHandle;
+  edm::Handle< edm::View<pat::Electron> > UnCorrElecHandle;
   iEvent.getByToken(UnCorrElectronToken, UnCorrElecHandle);
   
   int _nUnCorrElectron = 0;
@@ -2602,10 +2625,12 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
 void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
 {
   
-  //cout << "ukukuk" << endl;
-  edm::Handle< edm::View<reco::Photon> > PhotonHandle;
+  edm::Handle< edm::View<pat::Photon> > PhotonHandle;
   iEvent.getByToken(PhotonToken, PhotonHandle);
   
+  edm::Handle< edm::View<pat::Photon> > UnCorrPhotonHandle;
+  iEvent.getByToken(UnCorrPhotonToken, UnCorrPhotonHandle);
+
   // Get rho
   edm::Handle< double > rhoH;
   iEvent.getByToken(RhoToken,rhoH);
@@ -2625,6 +2650,8 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   edm::Handle<edm::ValueMap<float> > phoPhotonIsolationMap;
   iEvent.getByToken(phoPhotonIsolationToken, phoPhotonIsolationMap);
 
+  cout << "1" << endl;
+
   edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
   iEvent.getByToken(phoLooseIdMapToken, loose_id_decisions);
   
@@ -2640,6 +2667,9 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   edm::Handle<edm::ValueMap<bool> > mva_id_wp80_decisions;
   iEvent.getByToken(phoMVAIDWP80MapToken, mva_id_wp80_decisions);  
 
+  cout << "2" << endl;
+
+  
   EffectiveAreas effAreaChHadrons_( effAreaChHadronsFile.fullPath() );
   EffectiveAreas effAreaNeuHadrons_( effAreaNeuHadronsFile.fullPath() );
   EffectiveAreas effAreaPhotons_( effAreaPhotonsFile.fullPath() );
@@ -2673,6 +2703,9 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
       Photon_NhIsoWithEA[_nPhotons] = std::max( (float)0.0, nhIso - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta) );
       Photon_PhIsoWithEA[_nPhotons] = std::max( (float)0.0, phIso - rho_*effAreaPhotons_.getEffectiveArea(abseta) );
       
+      cout << "3" << endl;
+
+      
       bool isPassLoose  = (*loose_id_decisions)[pho];
       bool isPassMedium  = (*medium_id_decisions)[pho];
       bool isPassTight  = (*tight_id_decisions)[pho];
@@ -2680,6 +2713,9 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
       bool isPassMVA_WP90 = (*mva_id_wp90_decisions)[pho];
       
       
+      cout << "5" << endl;
+
+
       Photon_passMVAID_WP80[_nPhotons] = isPassMVA_WP80;
       Photon_passMVAID_WP90[_nPhotons] = isPassMVA_WP90;
       Photon_passLooseID[_nPhotons] = isPassLoose;
@@ -2690,6 +2726,19 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
     }
   
   nPhotons = _nPhotons;
+
+  int _nUnCorrPhotons = 0;
+  for(size_t i=0; i< UnCorrPhotonHandle->size(); ++i)
+    {
+      const auto pho = UnCorrPhotonHandle->ptrAt(i);
+
+      Photon_pTUnCorr[_nUnCorrPhotons] = pho->pt();
+      Photon_etaUnCorr[_nUnCorrPhotons] = pho->eta();
+      Photon_phiUnCorr[_nUnCorrPhotons] = pho->phi();
+      
+      _nUnCorrPhotons++;
+    }
+  nUnCorrPhoton = _nUnCorrPhotons;
 }
 
 
@@ -2867,6 +2916,10 @@ void SKFlatMaker::fillTT(const edm::Event &iEvent)
 
 void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
 {
+  bool suoh_debug = true;
+  if(suoh_debug) cout << "endRun" << endl;
+
+
   
   if( this->theStoreLHEFlag ) // -- only when LHE information is available (ex> aMC@NLO, Powheg) case. Samples generated by pythia8 doesn't work! -- //
     {
