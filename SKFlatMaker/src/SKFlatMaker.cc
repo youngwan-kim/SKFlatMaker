@@ -16,7 +16,7 @@
 //
 //--------------------------------------------------
 
-#include "Phys/SKFlatMaker/interface/SKFlatMaker.h"
+#include "SKFlat/SKFlatMaker/interface/SKFlatMaker.h"
 
 //
 // class decleration
@@ -134,7 +134,7 @@ SKFlatMaker::~SKFlatMaker() { }
 // ------------ method called to for each event  ------------ //
 void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  bool suoh_debug = true;
+  bool suoh_debug = false;
   if(suoh_debug) cout << "analyze" << endl;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
   
@@ -593,7 +593,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   // cout << "##### Analyze:PU-Reweighting #####" << endl;
   
   // fills
-  bool debug_suoh = true;
+  bool debug_suoh = false;
   
   if( theStoreHLTReportFlag ) hltReport(iEvent);
   if(debug_suoh) cout << "theStorePriVtxFlag" << endl;
@@ -635,7 +635,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 // ------------ method called once each job just before starting event loop  ------------ //
 void SKFlatMaker::beginJob()
 {
-  bool suoh_debug = true;
+  bool suoh_debug = false;
   if(suoh_debug) cout << "beginJob" << endl;
   // if( isMC )
   // {
@@ -1185,7 +1185,7 @@ void SKFlatMaker::beginJob()
 
 void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
-  bool suoh_debug = true;
+  bool suoh_debug = false;
   if(suoh_debug) cout << "beginRun" << endl;
   const int nTrigName = 7;
   string trigs[nTrigName] = 
@@ -1346,7 +1346,7 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 // ------------ method called once each job just after ending the event loop  ------------ //
 void SKFlatMaker::endJob()
 {
-  bool suoh_debug = true;
+  bool suoh_debug = false;
   if(suoh_debug) cout << "endJob" << endl;
   std::cout <<"++++++++++++++++++++++++++++++++++++++" << std::endl;
   std::cout <<"analyzed " << nEvt << " events: " << std::endl;
@@ -1359,7 +1359,7 @@ void SKFlatMaker::endJob()
 void SKFlatMaker::hltReport(const edm::Event &iEvent)
 {
 
-  bool suoh_debug = true;
+  bool suoh_debug = false;
   if(suoh_debug) cout << "hltRepot" << endl;
   
   int ntrigName = ListHLT.size();
@@ -2112,15 +2112,22 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     {
       const auto el = ElecHandle->ptrAt(i);
       
-      Electron_MVAIso[_nElectron] = (*mvaIsoValues)[el];
-      Electron_MVANoIso[_nElectron] = (*mvaNoIsoValues)[el];
-      Electron_pT[_nElectron] = el->pt();
+      //Electron_MVAIso[_nElectron] = (*mvaIsoValues)[el];
+      //Electron_MVANoIso[_nElectron] = (*mvaNoIsoValues)[el];
+      Electron_MVAIso[_nElectron] = el -> userFloat("ElectronMVAEstimatorRun2Fall17IsoV1Values");
+      Electron_MVANoIso[_nElectron] = el -> userFloat("ElectronMVAEstimatorRun2Fall17NoIsoV1Values");
+      double ratio_E = el->userFloat("ecalTrkEnergyPostCorr") / el->energy();
+      Electron_pT[_nElectron] = el->pt() * ratio_E;
       Electron_eta[_nElectron] = el->eta();
       Electron_phi[_nElectron] = el->phi();
       Electron_Px[_nElectron] = el->px();
       Electron_Py[_nElectron] = el->py();
       Electron_Pz[_nElectron] = el->pz();
-      Electron_Energy[_nElectron] = el->energy();
+      //Electron_Energy[_nElectron] = el->energy();
+      Electron_Energy[_nElectron] = el->userFloat("ecalTrkEnergyPostCorr");
+      
+      //cout << "el->pt() :" << el->pt() << ", el->pt()*ratio :" << el->pt() * ratio_E << ", el->energy() : " << el->energy() << ", el->userFloat(ecalTrkEnergyPostCorr) : " << el->userFloat("ecalTrkEnergyPostCorr") << endl; 
+      
       Electron_charge[_nElectron] = el->charge();
       Electron_fbrem[_nElectron] = el->fbrem();
       Electron_eOverP[_nElectron] = el->eSuperClusterOverP();
@@ -2267,14 +2274,23 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       Electron_passConvVeto[_nElectron] = passConvVeto;
       
       // -- for ID variables -- //
-      bool isPassVeto  = (*veto_id_decisions)[el];
-      bool isPassLoose  = (*loose_id_decisions)[el];
-      bool isPassMedium = (*medium_id_decisions)[el];
-      bool isPassTight  = (*tight_id_decisions)[el];
-      bool isPassMVA_noIso_WP80 = (*mva_id_noIso_wp80_decisions)[el];
-      bool isPassMVA_noIso_WP90 = (*mva_id_noIso_wp90_decisions)[el];
-      bool isPassMVA_iso_WP80 = (*mva_id_iso_wp80_decisions)[el];
-      bool isPassMVA_iso_WP90 = (*mva_id_iso_wp90_decisions)[el];
+      //bool isPassVeto  = (*veto_id_decisions)[el];
+      //bool isPassLoose  = (*loose_id_decisions)[el];
+      //bool isPassMedium = (*medium_id_decisions)[el];
+      //bool isPassTight  = (*tight_id_decisions)[el];
+      //bool isPassMVA_noIso_WP80 = (*mva_id_noIso_wp80_decisions)[el];
+      //bool isPassMVA_noIso_WP90 = (*mva_id_noIso_wp90_decisions)[el];
+      //bool isPassMVA_iso_WP80 = (*mva_id_iso_wp80_decisions)[el];
+      //bool isPassMVA_iso_WP90 = (*mva_id_iso_wp90_decisions)[el];
+      
+      bool isPassVeto  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-veto");
+      bool isPassLoose  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-loose");
+      bool isPassMedium = el -> electronID("cutBasedElectronID-Fall17-94X-V1-medium");
+      bool isPassTight  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-tight");
+      bool isPassMVA_noIso_WP80 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp80");
+      bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
+      bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
+      bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
       /*
 	bool isPassMVA_WP80  = (*mva_id_wp80_decisions)[el];
 	bool isPassMVA_WP90  = (*mva_id_wp90_decisions)[el];
@@ -2650,7 +2666,7 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   edm::Handle<edm::ValueMap<float> > phoPhotonIsolationMap;
   iEvent.getByToken(phoPhotonIsolationToken, phoPhotonIsolationMap);
 
-  cout << "1" << endl;
+  //cout << "1" << endl;
 
   edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
   iEvent.getByToken(phoLooseIdMapToken, loose_id_decisions);
@@ -2667,33 +2683,50 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   edm::Handle<edm::ValueMap<bool> > mva_id_wp80_decisions;
   iEvent.getByToken(phoMVAIDWP80MapToken, mva_id_wp80_decisions);  
 
-  cout << "2" << endl;
+  //cout << "2" << endl;
 
   
   EffectiveAreas effAreaChHadrons_( effAreaChHadronsFile.fullPath() );
   EffectiveAreas effAreaNeuHadrons_( effAreaNeuHadronsFile.fullPath() );
   EffectiveAreas effAreaPhotons_( effAreaPhotonsFile.fullPath() );
   
-  
+  //cout << "2.1" << endl;
   int _nPhotons = 0;
   for(size_t i=0; i< PhotonHandle->size(); ++i)
     {
       const auto pho = PhotonHandle->ptrAt(i);
       
-      Photon_pT[_nPhotons] = pho->pt();
+      //cout << "2.2" << endl;
+      double ratio_E = pho -> userFloat("ecalEnergyPostCorr") / pho -> userFloat("ecalEnergyPreCorr");
+      Photon_pT[_nPhotons] = pho->pt() * ratio_E;
       Photon_eta[_nPhotons] = pho->eta();
       Photon_phi[_nPhotons] = pho->phi();
       
       Photon_etaSC[_nPhotons] = pho->superCluster()->eta();
       Photon_phiSC[_nPhotons] = pho->superCluster()->phi();
       
+      //cout << "2.3" << endl;
+
       Photon_HoverE[_nPhotons] = pho->hadTowOverEm();
+      //cout << "2.3.1" << endl;
       Photon_hasPixelSeed[_nPhotons] = (Int_t)pho->hasPixelSeed();
-      Photon_Full5x5_SigmaIEtaIEta[_nPhotons] = (*full5x5SigmaIEtaIEtaMap)[ pho ];
+      //cout << "2.3.2" << endl;
+      //Photon_Full5x5_SigmaIEtaIEta[_nPhotons] = (*full5x5SigmaIEtaIEtaMap)[ pho ];
+      Photon_Full5x5_SigmaIEtaIEta[_nPhotons] = pho -> full5x5_sigmaIetaIeta();
       
-      float chIso = (double)(*phoChargedIsolationMap)[pho];
-      float nhIso = (double)(*phoNeutralHadronIsolationMap)[pho];
-      float phIso = (double)(*phoPhotonIsolationMap)[pho];
+      
+      //cout << "2.4" << endl;
+      
+      //float chIso = (double)(*phoChargedIsolationMap)[pho];
+      //float nhIso = (double)(*phoNeutralHadronIsolationMap)[pho];
+      //float phIso = (double)(*phoPhotonIsolationMap)[pho];
+
+      float chIso = pho -> chargedHadronIso();
+      float nhIso = pho -> neutralHadronIso();
+      float phIso = pho -> photonIso();
+      
+      //cout << "2.5" << endl;
+      
       Photon_ChIso[_nPhotons] = chIso;
       Photon_NhIso[_nPhotons] = nhIso;
       Photon_PhIso[_nPhotons] = phIso;
@@ -2703,18 +2736,22 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
       Photon_NhIsoWithEA[_nPhotons] = std::max( (float)0.0, nhIso - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta) );
       Photon_PhIsoWithEA[_nPhotons] = std::max( (float)0.0, phIso - rho_*effAreaPhotons_.getEffectiveArea(abseta) );
       
-      cout << "3" << endl;
+      //cout << "3" << endl;
 
       
-      bool isPassLoose  = (*loose_id_decisions)[pho];
-      bool isPassMedium  = (*medium_id_decisions)[pho];
-      bool isPassTight  = (*tight_id_decisions)[pho];
-      bool isPassMVA_WP80 = (*mva_id_wp80_decisions)[pho];
-      bool isPassMVA_WP90 = (*mva_id_wp90_decisions)[pho];
-      
-      
-      cout << "5" << endl;
-
+      //bool isPassLoose  = (*loose_id_decisions)[pho];
+      //bool isPassMedium  = (*medium_id_decisions)[pho];
+      //bool isPassTight  = (*tight_id_decisions)[pho];
+      //bool isPassMVA_WP80 = (*mva_id_wp80_decisions)[pho];
+      //bool isPassMVA_WP90 = (*mva_id_wp90_decisions)[pho];
+        
+      bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
+      bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
+      bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V1-tight");
+      bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp80");
+      bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp90");
+    
+      //cout << "5" << endl;
 
       Photon_passMVAID_WP80[_nPhotons] = isPassMVA_WP80;
       Photon_passMVAID_WP90[_nPhotons] = isPassMVA_WP90;
@@ -2916,7 +2953,7 @@ void SKFlatMaker::fillTT(const edm::Event &iEvent)
 
 void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
 {
-  bool suoh_debug = true;
+  bool suoh_debug = false;
   if(suoh_debug) cout << "endRun" << endl;
 
 

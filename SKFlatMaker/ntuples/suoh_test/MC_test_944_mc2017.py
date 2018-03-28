@@ -71,97 +71,14 @@ process.goodOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
 
 process.FastFilters = cms.Sequence( process.goodOfflinePrimaryVertices )
 
-#For E/gamma correction and VID
+##################################
+# For E/gamma correction and VID #
+##################################
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 setupEgammaPostRecoSeq(process,applyEnergyCorrections=False,
                        applyVIDOnCorrectedEgamma=False,
                        isMiniAOD=True)
 
-#########################
-# -- EGM Correction -- ##
-#########################
-process.load('Configuration.StandardSequences.Services_cff')
-process.load('EgammaAnalysis.ElectronTools.calibratedPatElectronsRun2_cfi')
-process.RandomNumberGeneratorService.calibratedPatElectrons = cms.PSet(
-  initialSeed = cms.untracked.uint32(81),
-  engineName = cms.untracked.string('TRandom3')
-)
-process.calibratedPatElectrons.isMC = isMC
-
-process.load('EgammaAnalysis.ElectronTools.calibratedPatPhotonsRun2_cfi')
-process.RandomNumberGeneratorService.calibratedPatPhotons = cms.PSet(
-  initialSeed = cms.untracked.uint32(81),
-  engineName = cms.untracked.string('TRandom3')
-)
-process.calibratedPatPhotons.isMC = isMC
-
-################################
-# -- for electron/photon ID -- #
-################################
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-
-# turn on VID producer, indicate data format  to be
-# DataFormat.AOD or DataFormat.MiniAOD, as appropriate 
-dataFormat = DataFormat.MiniAOD
-# -- switchOnVIDElectronIdProducer: load RecoEgamma.ElectronIdentification.egmGsfElectronIDs_cff <- makes egmGsfElectronIDSequence
-# -- egmGsfElectronIDSequence = cms.Sequence( electronMVAValueMapProducer * egmGsfElectronIDs * electronRegressionValueMapProducer) -- #
-switchOnVIDElectronIdProducer(process, dataFormat)
-switchOnVIDPhotonIdProducer(process, dataFormat)
-
-print "switchOnVIDElectronIDProducer -> len(process.egmGsfElectronIDs.physicsObjectIDs) : " + str(len(process.egmGsfElectronIDs.physicsObjectIDs))
-print "switchOnVIDPhotonIdProducer -> len(process.egmPhotonIDs.physicsObjectIDs) : " + str(len(process.egmPhotonIDs.physicsObjectIDs))
-
-
-# define which electron IDs we want to produce 
-my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff', # -- 94X cut based electron ID
-                 'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff', # -- 94X MVA based electron ID, noIso
-                 'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff', # -- 94X MVA based electron ID, iso
-                 'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff']# -- HEEP V70 electron ID
-
-#add e_id modules to the VID producer
-for idmod in my_id_modules:
-  setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-
-# define which photon IDs we want to produce
-my_phoid_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V1_TrueVtx_cff', # -- 94X cut based photon ID 
-                    'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V1_cff'] # -- 94X MVA based photon ID
-
-#add phoid modules to the VID producer
-for idmod in my_phoid_modules:
-  setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
-
-
-process.load("RecoEgamma.PhotonIdentification.PhotonIDValueMapProducer_cfi")
-process.load("RecoEgamma.ElectronIdentification.ElectronIDValueMapProducer_cfi")
-
-process.selectedElectrons = cms.EDFilter("PATElectronSelector",
-    src = cms.InputTag("calibratedPatElectrons"),
-    cut = cms.string("pt>5 && abs(eta)")
-)
-process.selectedPhotons = cms.EDFilter("PATPhotonSelector",
-    src = cms.InputTag("calibratedPatPhotons"),
-    cut = cms.string("pt>5 && abs(eta)")
-)
-
-process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('selectedElectrons')
-print len(process.egmGsfElectronIDs.physicsObjectIDs)
-for psets in process.egmGsfElectronIDs.physicsObjectIDs:
-  print "---------------------"
-  print psets
-#print process.egmGsfElectronIDs.physicsObjectIDs[0]
-process.electronIDValueMapProducer.srcMiniAOD = cms.InputTag('selectedElectrons')
-process.electronRegressionValueMapProducer.srcMiniAOD = cms.InputTag('selectedElectrons')
-process.electronMVAValueMapProducer.srcMiniAOD = cms.InputTag('selectedElectrons')
-
-process.egmPhotonIDs.physicsObjectSrc = cms.InputTag('selectedPhotons')
-print len(process.egmPhotonIDs.physicsObjectIDs)
-for psets in process.egmPhotonIDs.physicsObjectIDs:
-  print"---------------------"
-  print psets
-process.egmPhotonIsolation.srcToIsolate = cms.InputTag('selectedPhotons')
-process.photonIDValueMapProducer.srcMiniAOD = cms.InputTag('selectedPhotons')
-process.photonRegressionValueMapProducer.srcMiniAOD = cms.InputTag('selectedPhotons')
-process.photonMVAValueMapProducer.srcMiniAOD = cms.InputTag('selectedPhotons')
 
 ######################
 # MET Phi Correction #
@@ -184,8 +101,8 @@ process.recoTree.Electron = cms.untracked.InputTag("slimmedElectrons") # -- mini
 process.recoTree.Photon = cms.untracked.InputTag("slimmedPhotons") # -- miniAOD -- #
 #process.recoTree.SmearedElectron = "calibratedPatElectrons" # -- Smeared Electron
 #process.recoTree.SmearedPhoton = "calibratedPatPhotons" # -- Smeared Photon
-process.recoTree.SmearedElectron = cms.untracked.InputTag("selectedElectrons")
-process.recoTree.SmearedPhoton = cms.untracked.InputTag("selectedPhotons")
+process.recoTree.SmearedElectron = cms.untracked.InputTag("slimmedElectrons")
+process.recoTree.SmearedPhoton = cms.untracked.InputTag("slimmedPhotons")
 #process.recoTree.SmearedElectron = cms.untracked.InputTag("calibratedPatElectrons") # -- Smeared Electron
 #process.recoTree.SmearedPhoton = cms.untracked.InputTag("calibratedPatPhotons") # -- Smeared Photon
 #process.recoTree.Jet = cms.untracked.InputTag("slimmedJets") # -- miniAOD -- #
@@ -270,7 +187,7 @@ process.recoTree.FatJet = cms.untracked.InputTag("slimmedJetsAK8")
 
 # -- MET Correction
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-runMetCorAndUncFromMiniAOD(process, isData= not isMC, electronColl=cms.InputTag('selectedElectrons'), jetCollUnskimmed=cms.InputTag('slimmedJets'))
+runMetCorAndUncFromMiniAOD(process, isData= not isMC, electronColl=cms.InputTag('slimmedElectrons'), jetCollUnskimmed=cms.InputTag('slimmedJets'))
 process.recoTree.MET = cms.InputTag("slimmedMETs","","PAT")
 
 # -- for Track & Vertex -- #
@@ -299,12 +216,12 @@ process.recoTree.StoreLHEFlag = isSignalMC
 process.p = cms.Path(
   process.FastFilters *
   process.egammaPostRecoSeq *
-  process.calibratedPatElectrons *
-  process.calibratedPatPhotons *  
-  process.selectedElectrons *
-  process.selectedPhotons *
-  process.egmPhotonIDSequence *
-  process.egmGsfElectronIDSequence *
+  #process.calibratedPatElectrons *
+  #process.calibratedPatPhotons *  
+  #process.selectedElectrons *
+  #process.selectedPhotons *
+  #process.egmPhotonIDSequence *
+  #process.egmGsfElectronIDSequence *
   #process.electronIDValueMapProducer *
   #process.fullPatMetSequence *  #This is the phi corrections part
   process.recoTree
