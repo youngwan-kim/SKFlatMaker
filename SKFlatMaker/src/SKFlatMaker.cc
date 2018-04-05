@@ -2116,8 +2116,14 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       //Electron_MVANoIso[_nElectron] = (*mvaNoIsoValues)[el];
       Electron_MVAIso[_nElectron] = el -> userFloat("ElectronMVAEstimatorRun2Fall17IsoV1Values");
       Electron_MVANoIso[_nElectron] = el -> userFloat("ElectronMVAEstimatorRun2Fall17NoIsoV1Values");
-      double ratio_E = el->userFloat("ecalTrkEnergyPostCorr") / el->energy();
-      Electron_pT[_nElectron] = el->pt() * ratio_E;
+      //double ratio_E = el->userFloat("ecalTrkEnergyPostCorr") / el->energy();
+      double elec_theta = el -> theta();
+      double sin_theta = sin(elec_theta);
+      //cout << "elec_theta : " << elec_theta << ", sin_theta : " << sin_theta << endl;
+      //Electron_pT[_nElectron] = el->pt() * ratio_E;
+      Electron_pT[_nElectron] = el->userFloat("ecalTrkEnergyPostCorr") * sin_theta;
+      //double energy_t = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta;
+      //cout << "el->pt() : " << el->pt() << ", E(non-cor) * sin(theta) : " << energy_t <<", pt(corrected) : " << Electron_pT[_nElectron] << endl;
       Electron_eta[_nElectron] = el->eta();
       Electron_phi[_nElectron] = el->phi();
       Electron_Px[_nElectron] = el->px();
@@ -2476,14 +2482,25 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   for(int i=0; i< (int)UnCorrElecHandle->size(); i++)
     {
       const auto el = UnCorrElecHandle->ptrAt(i);
+      double elec_theta = el -> theta();
+      double sin_theta = sin(elec_theta);
+      double cos_theta = cos(elec_theta);
       
-      Electron_pTUnCorr[_nUnCorrElectron] = el->pt();
+      Electron_pTUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta;
       Electron_etaUnCorr[_nUnCorrElectron] = el->eta();
       Electron_phiUnCorr[_nUnCorrElectron] = el->phi();
-      Electron_PxUnCorr[_nUnCorrElectron] = el->px();
-      Electron_PyUnCorr[_nUnCorrElectron] = el->py();
-      Electron_PzUnCorr[_nUnCorrElectron] = el->pz();
-      Electron_EnergyUnCorr[_nUnCorrElectron] = el->energy();
+      double el_phi = el->phi();
+      //Electron_PxUnCorr[_nUnCorrElectron] = el->px();
+      //Electron_PyUnCorr[_nUnCorrElectron] = el->py();
+      //Electron_PzUnCorr[_nUnCorrElectron] = el->pz();
+      Electron_PxUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta * cos(el_phi);
+      Electron_PyUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta * sin(el_phi);
+      Electron_PzUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr") * cos_theta;
+      //cout << "el->px() : " << el->px() << ", Electron_PxUnCorr[_nUnCorrElectron] : " << Electron_PxUnCorr[_nUnCorrElectron] << endl;
+      //cout << "el->py() : " << el->py() << ", Electron_PyUnCorr[_nUnCorrElectron] : " << Electron_PyUnCorr[_nUnCorrElectron] <<endl;
+      //cout << "el->pz() : " << el->pz() << ", Electron_PzUnCorr[_nUnCorrElectron] : " << Electron_PzUnCorr[_nUnCorrElectron] <<endl;
+
+      Electron_EnergyUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr");
       
       // -- Information from SuperCluster -- //
       Electron_EnergySCUnCorr[_nUnCorrElectron] = el->superCluster()->energy();
@@ -2697,8 +2714,11 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
       const auto pho = PhotonHandle->ptrAt(i);
       
       //cout << "2.2" << endl;
-      double ratio_E = pho -> userFloat("ecalEnergyPostCorr") / pho -> userFloat("ecalEnergyPreCorr");
-      Photon_pT[_nPhotons] = pho->pt() * ratio_E;
+      double sin_theta = sin(pho->theta());
+      Photon_pT[_nPhotons] = pho -> userFloat("ecalEnergyPostCorr") * sin_theta;
+      //double pho_pt_noncor = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
+      //cout << "pho->pt() : " << pho->pt() << ", pho_pt_noncor : " << pho_pt_noncor << ", Pt(cor) : " << Photon_pT[_nPhotons] << endl;
+      //Photon_pT[_nPhotons] = pho->pt() * ratio_E;
       Photon_eta[_nPhotons] = pho->eta();
       Photon_phi[_nPhotons] = pho->phi();
       
@@ -2768,8 +2788,8 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   for(size_t i=0; i< UnCorrPhotonHandle->size(); ++i)
     {
       const auto pho = UnCorrPhotonHandle->ptrAt(i);
-
-      Photon_pTUnCorr[_nUnCorrPhotons] = pho->pt();
+      double sin_theta = sin(pho->theta());
+      Photon_pTUnCorr[_nUnCorrPhotons] = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
       Photon_etaUnCorr[_nUnCorrPhotons] = pho->eta();
       Photon_phiUnCorr[_nUnCorrPhotons] = pho->phi();
       
