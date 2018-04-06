@@ -32,60 +32,60 @@ using namespace isodeposit;
 // -- Constructor -- //
 SKFlatMaker::SKFlatMaker(const edm::ParameterSet& iConfig):
 // -- object tokens -- //
-MuonToken          ( consumes< std::vector<pat::Muon> >       (iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
-ElectronToken          ( consumes< edm::View<pat::Electron> >      (iConfig.getUntrackedParameter<edm::InputTag>("SmearedElectron")) ),
-UnCorrElectronToken               ( consumes< edm::View<pat::Electron> >      (iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
-PhotonToken                 ( consumes< edm::View<pat::Photon> >      (iConfig.getUntrackedParameter<edm::InputTag>("SmearedPhoton")) ),
-UnCorrPhotonToken                   ( consumes< edm::View<pat::Photon> >                        (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
-JetToken                ( consumes< std::vector<pat::Jet> >        (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
-MetToken           ( consumes< std::vector<pat::MET> >        (iConfig.getParameter<edm::InputTag>("MET")) ),
+MuonToken                           ( consumes< std::vector<pat::Muon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
+ElectronToken                       ( consumes< edm::View<pat::Electron> >                  (iConfig.getUntrackedParameter<edm::InputTag>("SmearedElectron")) ),
+UnCorrElectronToken                 ( consumes< edm::View<pat::Electron> >                  (iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
+PhotonToken                         ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("SmearedPhoton")) ),
+UnCorrPhotonToken                   ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
+JetToken                            ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
+MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
 //MetToken                            ( consumes< pat::METCollection>                               (iConfig.getParameter<edm::InputTag>("MET")) ),
 
-LHEEventProductToken        ( consumes< LHEEventProduct >              (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
-LHERunInfoProductToken        ( consumes< LHERunInfoProduct,edm::InRun >       (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
-mcLabel_                            ( consumes< reco::GenParticleCollection>                    (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
-// -- MET Filter tokens -- //
-METFilterResultsToken_PAT           (consumes<edm::TriggerResults>                              (iConfig.getParameter<edm::InputTag>("METFilterResults_PAT"))),
-METFilterResultsToken_RECO          (consumes<edm::TriggerResults>                              (iConfig.getParameter<edm::InputTag>("METFilterResults_RECO"))),
+LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
+LHERunInfoProductToken              ( consumes< LHERunInfoProduct,edm::InRun >              (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
+mcLabel_                            ( consumes< reco::GenParticleCollection>                (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
 
+// -- MET Filter tokens -- //
+METFilterResultsToken_PAT           ( consumes<edm::TriggerResults>                         (iConfig.getParameter<edm::InputTag>("METFilterResults_PAT"))),
+METFilterResultsToken_RECO          ( consumes<edm::TriggerResults>                         (iConfig.getParameter<edm::InputTag>("METFilterResults_RECO"))),
 
 // -- Electron tokens -- //
-RhoToken           ( consumes< double >          (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
-mvaIsoValuesMapToken                ( consumes< edm::ValueMap<float> >                          (iConfig.getParameter<edm::InputTag>("mvaIsoValuesMap"))  ),
-mvaNoIsoValuesMapToken              ( consumes< edm::ValueMap<float> >                          (iConfig.getParameter<edm::InputTag>("mvaNoIsoValuesMap"))  ),
-eleVetoIdMapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleVetoIdMap")) ),
-eleLooseIdMapToken         ( consumes< edm::ValueMap<bool> >              (iConfig.getUntrackedParameter<edm::InputTag>("eleLooseIdMap")) ),
-eleMediumIdMapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleMediumIdMap")) ),
-eleTightIdMapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleTightIdMap")) ),
-eleMVAIdnoIsoWP80MapToken           ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP80Map")) ),
-eleMVAIdnoIsoWP90MapToken           ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP90Map")) ),
-eleMVAIdisoWP80MapToken             ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP80Map")) ),
-eleMVAIdisoWP90MapToken             ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP90Map")) ),
-eleMVAIdWP80MapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP80Map")) ),
-eleMVAIdWP90MapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP90Map")) ),
-eleHEEPIdMapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleHEEPIdMap")) ),
-ConversionsToken         ( consumes< std::vector<reco::Conversion> >     (iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
-GsfTrackToken          ( consumes< std::vector< reco::GsfTrack > >     (iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
+RhoToken                            ( consumes< double >                                    (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
+mvaIsoValuesMapToken                ( consumes< edm::ValueMap<float> >                      (iConfig.getParameter<edm::InputTag>("mvaIsoValuesMap"))  ),
+mvaNoIsoValuesMapToken              ( consumes< edm::ValueMap<float> >                      (iConfig.getParameter<edm::InputTag>("mvaNoIsoValuesMap"))  ),
+eleVetoIdMapToken                   ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleVetoIdMap")) ),
+eleLooseIdMapToken                  ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleLooseIdMap")) ),
+eleMediumIdMapToken                 ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMediumIdMap")) ),
+eleTightIdMapToken                  ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleTightIdMap")) ),
+eleMVAIdnoIsoWP80MapToken           ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP80Map")) ),
+eleMVAIdnoIsoWP90MapToken           ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP90Map")) ),
+eleMVAIdisoWP80MapToken             ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP80Map")) ),
+eleMVAIdisoWP90MapToken             ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP90Map")) ),
+eleMVAIdWP80MapToken                ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP80Map")) ),
+eleMVAIdWP90MapToken                ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP90Map")) ),
+eleHEEPIdMapToken                   ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleHEEPIdMap")) ),
+ConversionsToken                    ( consumes< std::vector<reco::Conversion> >             (iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
+GsfTrackToken                       ( consumes< std::vector< reco::GsfTrack > >             (iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
 // -- Photon tokens -- //
-phoLooseIdMapToken                  ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoLooseIdMap")) ),
-phoMediumIdMapToken                 ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoMediumIdMap")) ),
-phoTightIdMapToken                  ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoTightIdMap")) ),
-phoMVAIDWP90MapToken                ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoMVAIDWP90Map")) ),
-phoMVAIDWP80MapToken                ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoMVAIDWP80Map")) ),
-full5x5SigmaIEtaIEtaMapToken      ( consumes< edm::ValueMap<float> >         (iConfig.getUntrackedParameter<edm::InputTag>("full5x5SigmaIEtaIEtaMap")) ),
-phoChargedIsolationToken       ( consumes< edm::ValueMap<float> >         (iConfig.getUntrackedParameter<edm::InputTag>("phoChargedIsolation")) ),
-phoNeutralHadronIsolationToken       ( consumes< edm::ValueMap<float> >         (iConfig.getUntrackedParameter<edm::InputTag>("phoNeutralHadronIsolation")) ),
-phoPhotonIsolationToken       ( consumes< edm::ValueMap<float> >         (iConfig.getUntrackedParameter<edm::InputTag>("phoPhotonIsolation")) ),
+phoLooseIdMapToken                  ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoLooseIdMap")) ),
+phoMediumIdMapToken                 ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoMediumIdMap")) ),
+phoTightIdMapToken                  ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoTightIdMap")) ),
+phoMVAIDWP90MapToken                ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoMVAIDWP90Map")) ),
+phoMVAIDWP80MapToken                ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoMVAIDWP80Map")) ),
+full5x5SigmaIEtaIEtaMapToken        ( consumes< edm::ValueMap<float> >                      (iConfig.getUntrackedParameter<edm::InputTag>("full5x5SigmaIEtaIEtaMap")) ),
+phoChargedIsolationToken            ( consumes< edm::ValueMap<float> >                      (iConfig.getUntrackedParameter<edm::InputTag>("phoChargedIsolation")) ),
+phoNeutralHadronIsolationToken      ( consumes< edm::ValueMap<float> >                      (iConfig.getUntrackedParameter<edm::InputTag>("phoNeutralHadronIsolation")) ),
+phoPhotonIsolationToken             ( consumes< edm::ValueMap<float> >                      (iConfig.getUntrackedParameter<edm::InputTag>("phoPhotonIsolation")) ),
 // -- Trigger Token -- //
-TriggerToken           ( consumes< edm::TriggerResults >                (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
-TriggerTokenPAT         ( consumes< edm::TriggerResults >          (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResultsPAT")) ),
-TriggerObjectToken         ( consumes< std::vector<pat::TriggerObjectStandAlone> >    (iConfig.getUntrackedParameter<edm::InputTag>("TriggerObject")) ),
+TriggerToken                        ( consumes< edm::TriggerResults >                       (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
+TriggerTokenPAT                     ( consumes< edm::TriggerResults >                       (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResultsPAT")) ),
+TriggerObjectToken                  ( consumes< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("TriggerObject")) ),
 // -- Else -- //
-GenEventInfoToken         ( consumes< GenEventInfoProduct >                (iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")) ),
-BeamSpotToken          ( consumes< reco::BeamSpot >         (iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
-PrimaryVertexToken         ( consumes< reco::VertexCollection >       (iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
-TrackToken           ( consumes< edm::View<reco::Track> >        (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
-PileUpInfoToken         ( consumes< std::vector< PileupSummaryInfo > >            (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
+GenEventInfoToken                   ( consumes< GenEventInfoProduct >                       (iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")) ),
+BeamSpotToken                       ( consumes< reco::BeamSpot >                            (iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
+PrimaryVertexToken                  ( consumes< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
+TrackToken                          ( consumes< edm::View<reco::Track> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
+PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
 {
   nEvt = 0;
   
@@ -134,8 +134,8 @@ SKFlatMaker::~SKFlatMaker() { }
 // ------------ method called to for each event  ------------ //
 void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  bool suoh_debug = false;
-  if(suoh_debug) cout << "analyze" << endl;
+
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] called" << endl;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theTTBuilder);
   
   ///////////////////////////////////////////
@@ -235,314 +235,314 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   
   PDFWeights.clear();
   
-  for( int i = 0; i < MPSIZE; i++ )
-    {
-      // -- Trigger -- //
-      _HLT_trigType[i] = -1;
-      _HLT_trigFired[i] = -1;
-      _HLT_trigPt[i] = _HLT_trigEta[i] = _HLT_trigPhi[i] = -100;
-      
-      // -- Jet -- //
-      JETbDiscriminant[i] = JETcharge[i] = JETpt[i] = JETeta[i] = JETphi[i] = -100;
-      JETflavour[i] = JETntracks[i] = -100;
-      
-      Jet_pT[i] = -100; 
-      Jet_eta[i] = -100; 
-      Jet_phi[i] = -100; 
-      Jet_Charge[i] = -100; 
-      Jet_area[i] = -100;
-      Jet_rho[i] = -100;
-      Jet_Flavor[i] = -100;
-      Jet_Flavor[i] = -100; 
-      Jet_Hadron[i] = -100;
-      Jet_bTag[i] = -100; 
-      Jet_CHfrac[i] = -100; 
-      Jet_NHfrac[i] = -100; 
-      Jet_NHEMfrac[i] = -100; 
-      Jet_CHEMfrac[i] = -100; 
-      Jet_CHmulti[i] = -100; 
-      Jet_NHmulti[i] = -100;
-      
-      // electron
-      Electron_Energy[i] = Electron_et[i] = Electron_pT[i] = Electron_eta[i] = Electron_phi[i] = -100;
-      Electron_MVAIso[i] = 0.;
-      Electron_MVANoIso[i] = 0.;
-      Electron_caloEnergy[i] = -100;
-      Electron_Px[i] = Electron_Py[i] = Electron_Pz[i] = -9999;
-      Electron_charge[i] = -100;
-      Electron_gsfpT[i] = Electron_gsfEta[i] = Electron_gsfPhi[i] = -100;
-      Electron_gsfPx[i] = Electron_gsfPy[i] = Electron_gsfPz[i] = -9999;
-      Electron_gsfCharge[i] = -100;
-      Electron_etaSC[i] = -9999;
-      Electron_phiSC[i] = -9999;
-      Electron_etaWidth[i] = -9999;
-      Electron_phiWidth[i] = -9999;
-      Electron_dEtaIn[i] = -9999;
-      Electron_dEtaInSeed[i] = -9999;
-      Electron_dPhiIn[i] = -9999;
-      Electron_sigmaIEtaIEta[i] = -9999;
-      Electron_Full5x5_SigmaIEtaIEta[i] = -9999;
-      Electron_HoverE[i] = -9999;
-      Electron_fbrem[i] = -9999;
-      Electron_eOverP[i] = -9999;
-      Electron_energyEC[i] = -9999;
-      Electron_Pnorm[i] = -9999;
-      Electron_InvEminusInvP[i] = -9999;
-      Electron_dxyVTX[i] = -9999;
-      Electron_dzVTX[i] = -9999;
-      Electron_dxy[i] = -9999;
-      Electron_sigdxy[i] = -9999.;
-      Electron_dz[i] = -9999;
-      Electrron_ip3D[i] = -9999;
-      Electrron_sigip3D[i] = -9999.;
-      Electron_dxyBS[i] = -9999;
-      Electron_dzBS[i] = -9999;
-      Electron_AEff03[i] = -9999;
-      Electron_chIso03[i] = -9999;
-      Electron_chIso04[i] = -9999;
-      Electron_nhIso03[i] = -9999;
-      Electron_nhIso04[i] = -9999;
-      Electron_phIso03[i] = -9999;
-      Electron_phIso04[i] = -9999;
-      Electron_pcIso03[i] = -9999;
-      Electron_pcIso04[i] = -9999;
-      Electron_relIsoCom03[i] = -9999;
-      Electron_relIsoCom04[i] = -9999;
-      Electron_relIsoBeta03[i] = -9999;
-      Electron_relIsoBeta04[i] = -9999;
-      Electron_relIsoRho03[i] = -9999;
-      Electron_hasConversion[i] = false;
-      Electron_mHits[i] = -9999;
-      
-      Electron_crack[i] = -1;
-      Electron_ecalDriven[i] = -1;
-      Electron_isoEMHADDepth1[i] = -999;
-      Electron_25over55[i] = -999;
-      Electron_15over55[i] = -999;
-      Electron_isoHADDepth2[i] = -999;
-      Electron_isoPtTrks[i] = -999;
-      Electron_modIsoEMHADDepth1[i] = -999;
-      Electron_modIsoPtTrks[i] = -999;
-      Electron_modIsoEMHADDepth1Orig[i] = -999;
-      Electron_modIsoPtTrksOrig[i] = -999;
-      
-      Electron_ambGsf0Pt[i] = Electron_ambGsf0Eta[i] = Electron_ambGsf0Phi[i] = Electron_ambGsf0Charge[i] = -999;
-      Electron_ambGsf1Pt[i] = Electron_ambGsf1Eta[i] = Electron_ambGsf1Phi[i] = Electron_ambGsf1Charge[i] = -999;
-      Electron_ambGsf2Pt[i] = Electron_ambGsf2Eta[i] = Electron_ambGsf2Phi[i] = Electron_ambGsf2Charge[i] = -999;
-      Electron_ambGsf3Pt[i] = Electron_ambGsf3Eta[i] = Electron_ambGsf3Phi[i] = Electron_ambGsf3Charge[i] = -999;
-      
-      Electron_r9[i] = -999;
-      Electron_EnergySC[i] = -999;
-      Electron_preEnergySC[i] = -999;
-      Electron_rawEnergySC[i] = -999;
-      Electron_etSC[i] = -999;
-      Electron_E15[i] = -999;
-      Electron_E25[i] = -999;
-      Electron_E55[i] = -999;
-      Electron_ChIso03FromPU[i] = -999;
-      Electron_RelPFIso_dBeta[i] = -999;
-      Electron_RelPFIso_Rho[i] = -999;
-      Electron_passConvVeto[i] = 0;
-      Electron_passVetoID[i] = 0;
-      Electron_passLooseID[i] = 0;
-      Electron_passMediumID[i] = 0;
-      Electron_passTightID[i] = 0;
-      Electron_passMVAID_noIso_WP80[i] = 0;
-      Electron_passMVAID_noIso_WP90[i] = 0;
-      Electron_passMVAID_iso_WP80[i] = 0;
-      Electron_passMVAID_iso_WP90[i] = 0;
-      Electron_passMVAID_WP80[i] = 0;
-      Electron_passMVAID_WP90[i] = 0;
-      Electron_passHEEPID[i] = 0;
-      
-      Electron_pTUnCorr[i] = 0;
-      Electron_etaUnCorr[i] = 0;
-      Electron_phiUnCorr[i] = 0;
-      Electron_PxUnCorr[i] = 0;
-      Electron_PyUnCorr[i] = 0;
-      Electron_PzUnCorr[i] = 0;
-      Electron_EnergyUnCorr[i] = 0;
-      Electron_EnergySCUnCorr[i] = 0;
-      Electron_etaSCUnCorr[i] = 0;
-      Electron_phiSCUnCorr[i] = 0;
-      Electron_etSCUnCorr[i] = 0;
-      
-      // -- PF Isolation -- //
-      Muon_PfChargedHadronIsoR05[i] = -1;
-      Muon_PfNeutralHadronIsoR05[i] = -1;
-      Muon_PfGammaIsoR05[i] = -1;
-      Muon_PfChargedHadronIsoR04[i] = -1;
-      Muon_PfNeutralHadronIsoR04[i] = -1;
-      Muon_PfGammaIsoR04[i] = -1;
-      Muon_PFSumPUIsoR04[i] = -1;
-      Muon_PfChargedHadronIsoR03[i] = -1;
-      Muon_PfNeutralHadronIsoR03[i] = -1;
-      Muon_PfGammaIsoR03[i] = -1;
-      Muon_PFSumPUIsoR03[i] = -1;
-      
-      // muon type
-      Muon_muonType[i] = -1;
-      isPFmuon[i] = 0;
-      isGLBmuon[i] = 0;
-      isTRKmuon[i] = 0;
-      isSTAmuon[i] = 0;
-      
-      // trigger
-      Muon_nTrig[i] = Muon_triggerObjectType[i] = Muon_filterName[i] = -1;
-      
-      // Muon kinematics
-      Muon_phi[i] = Muon_eta[i] = Muon_cktpT[i] = Muon_pT[i] = -100;
-      Muon_dB[i] = -999;
-      Muon_cktPx[i] = Muon_cktPy[i] = Muon_cktPz[i] = -999;
-      Muon_cktpTError[i] = -999;
-      Muon_Px[i] = Muon_Py[i] = Muon_Pz[i] = -100;
-      Muon_trkiso[i] = Muon_hcaliso[i] = Muon_ecaliso[i] = Muon_chi2dof[i] = -100;
-      Muon_trkisoR05[i] = Muon_hcalisoR05[i] = Muon_ecalisoR05[i] = -100;
-      Muon_nChambers[i] = Muon_nMatches[i] = Muon_nMatchesRPCLayers[i] = Muon_stationMask[i] = Muon_nSegments[i] =  -1;
-      Muon_charge[i] = Muon_nhits[i] = -100;
-      Muon_trackerHits[i] = Muon_pixelHits[i] = Muon_muonHits[i] = -1;
-      Muon_trackerLayers[i] = -1;
-      Muon_trackerHitsGLB[i] = -1;
-      Muon_pixelHitsGLB[i] = -1;
-      Muon_trackerLayersGLB[i] = -1;
-      
-      Muon_qoverp[i] = Muon_theta[i] = Muon_lambda[i] = -100;
-      Muon_dxy[i] = Muon_d0[i] = Muon_dsz[i] = Muon_dz[i] = -100;
-      Muon_vx[i] = Muon_vy[i] = Muon_vz[i] = -100;
-      Muon_dxyBS[i] = Muon_dszBS[i] = Muon_dzBS[i] = -100;
-      Muon_dxyVTX[i] = Muon_dszVTX[i] = Muon_dzVTX[i] = -100;
-      Muon_dxycktVTX[i] = Muon_dszcktVTX[i] = Muon_dzcktVTX[i] = -100;
-      
-      //Various track informations
-      //MuonBestTrack
-      Muon_Best_pT[i] = -9999;
-      Muon_Best_pTError[i] = -9999;
-      Muon_Best_Px[i] = -9999;
-      Muon_Best_Py[i] = -9999;
-      Muon_Best_Pz[i] = -9999;
-      Muon_Best_eta[i] = -9999;
-      Muon_Best_phi[i] = -9999;
-      //Inner Track
-      Muon_Inner_pT[i] = -9999;
-      Muon_Inner_pTError[i] = -9999;
-      Muon_Inner_Px[i] = -9999;
-      Muon_Inner_Py[i] = -9999;
-      Muon_Inner_Pz[i] = -9999;
-      Muon_Inner_eta[i] = -9999;
-      Muon_Inner_phi[i] = -9999;
-      //Outer Track
-      Muon_Outer_pT[i] = -9999;
-      Muon_Outer_pTError[i] = -9999;
-      Muon_Outer_Px[i] = -9999;
-      Muon_Outer_Py[i] = -9999;
-      Muon_Outer_Pz[i] = -9999;
-      Muon_Outer_eta[i] = -9999;
-      Muon_Outer_phi[i] = -9999;
-      //Global Track
-      Muon_GLB_pT[i] = -9999;
-      Muon_GLB_pTError[i] = -9999;
-      Muon_GLB_Px[i] = -9999;
-      Muon_GLB_Py[i] = -9999;
-      Muon_GLB_Pz[i] = -9999;
-      Muon_GLB_eta[i] = -9999;
-      Muon_GLB_phi[i] = -9999;
-      
-      //tuneP MuonBestTrack
-      Muon_TuneP_pT[i] = -9999;
-      Muon_TuneP_pTError[i] = -9999;
-      Muon_TuneP_Px[i] = -9999;
-      Muon_TuneP_Py[i] = -9999;
-      Muon_TuneP_Pz[i] = -9999;
-      Muon_TuneP_eta[i] = -9999;
-      Muon_TuneP_phi[i] = -9999;
-      
-      // -- LHE -- //
-      LHELepton_Px[i] = 0;
-      LHELepton_Py[i] = 0;
-      LHELepton_Pz[i] = 0;
-      LHELepton_E[i] = 0;
-      LHELepton_ID[i] = 0;
-      LHELepton_status[i] = 0;
-      
-      // GEN
-      GENLepton_phi[i] = GENLepton_eta[i] = GENLepton_pT[i] = GENLepton_mother_pT[i] = -100;
-      GENLepton_mother_index[i] = -1;
-      GENLepton_mother[i] = 0;
-      GENLepton_Px[i] = GENLepton_Py[i] = GENLepton_Pz[i] = GENLepton_E[i] = -100;
-      GENLepton_charge[i] = GENLepton_status[i] = GENLepton_ID[i] = -100;
-      GENLepton_isPrompt[i] = 0;
-      GENLepton_isPromptFinalState[i] = 0;
-      GENLepton_isTauDecayProduct[i] = 0;
-      GENLepton_isPromptTauDecayProduct[i] = 0;
-      GENLepton_isDirectPromptTauDecayProductFinalState[i] = 0;
-      GENLepton_isHardProcess[i] = 0;
-      GENLepton_isLastCopy[i] = 0;
-      GENLepton_isLastCopyBeforeFSR[i] = 0;
-      GENLepton_isPromptDecayed[i] = 0;
-      GENLepton_isDecayedLeptonHadron[i] = 0;
-      GENLepton_fromHardProcessBeforeFSR[i] = 0;
-      GENLepton_fromHardProcessDecayed[i] = 0;
-      GENLepton_fromHardProcessFinalState[i] = 0;
-      GENLepton_isMostlyLikePythia6Status3[i] = 0;
-      GENEvt_weight = 0; //Weights for NLO generated events
-      GENEvt_QScale = 0;
-      GENEvt_x1 = 0;
-      GENEvt_x2 = 0;
-      GENEvt_id1 = 0;
-      GENEvt_id2 = 0;
-      GENEvt_alphaQCD = 0;
-      GENEvt_alphaQED = 0;
-      
-            
-      // -- Photon Information -- //
-      nPhotons = 0;
-      Photon_pT[i] = 0;
-      Photon_eta[i] = 0;
-      Photon_phi[i] = 0;
-      Photon_etaSC[i] = 0;
-      Photon_phiSC[i] = 0;
-      Photon_HoverE[i] = 0;
-      Photon_hasPixelSeed[i] = 0;
-      Photon_Full5x5_SigmaIEtaIEta[i] = 0;
-      Photon_ChIso[i] = 0;
-      Photon_NhIso[i] = 0;
-      Photon_PhIso[i] = 0;
-      Photon_ChIsoWithEA[i] = 0;
-      Photon_NhIsoWithEA[i] = 0;
-      Photon_PhIsoWithEA[i] = 0;
-      Photon_passMVAID_WP80[i] = 0;
-      Photon_passMVAID_WP90[i] = 0;
-      Photon_passLooseID[i] = 0;
-      Photon_passMediumID[i] = 0;
-      Photon_passTightID[i] = 0;
-      
-      nUnCorrPhoton = 0;
-      Photon_pTUnCorr[i] = 0;
-      Photon_etaUnCorr[i] = 0;
-      Photon_phiUnCorr[i] = 0;
+  for( int i = 0; i < MPSIZE; i++ ){
 
-      // -- MET -- //
-      pfMET_pT = -100;
-      pfMET_phi = -100; 
-      pfMET_Px = -100; 
-      pfMET_Py = -100; 
-      pfMET_SumEt = -100;
-      
-      pfMET_Type1_pT = -100;
-      pfMET_Type1_phi = -100; 
-      pfMET_Type1_Px = -100; 
-      pfMET_Type1_Py = -100; 
-      pfMET_Type1_SumEt = -100;
-      
-      pfMET_Type1_PhiCor_pT = -100;
-      pfMET_Type1_PhiCor_phi = -100; 
-      pfMET_Type1_PhiCor_Px = -100; 
-      pfMET_Type1_PhiCor_Py = -100; 
-      pfMET_Type1_PhiCor_SumEt = -100;
-      
-    } // -- End of "i" iteration -- //
+    // -- Trigger -- //
+    _HLT_trigType[i] = -1;
+    _HLT_trigFired[i] = -1;
+    _HLT_trigPt[i] = _HLT_trigEta[i] = _HLT_trigPhi[i] = -100;
+    
+    // -- Jet -- //
+    JETbDiscriminant[i] = JETcharge[i] = JETpt[i] = JETeta[i] = JETphi[i] = -100;
+    JETflavour[i] = JETntracks[i] = -100;
+    
+    Jet_pT[i] = -100; 
+    Jet_eta[i] = -100; 
+    Jet_phi[i] = -100; 
+    Jet_Charge[i] = -100; 
+    Jet_area[i] = -100;
+    Jet_rho[i] = -100;
+    Jet_Flavor[i] = -100;
+    Jet_Flavor[i] = -100; 
+    Jet_Hadron[i] = -100;
+    Jet_bTag[i] = -100; 
+    Jet_CHfrac[i] = -100; 
+    Jet_NHfrac[i] = -100; 
+    Jet_NHEMfrac[i] = -100; 
+    Jet_CHEMfrac[i] = -100; 
+    Jet_CHmulti[i] = -100; 
+    Jet_NHmulti[i] = -100;
+    
+    // electron
+    Electron_Energy[i] = Electron_et[i] = Electron_pT[i] = Electron_eta[i] = Electron_phi[i] = -100;
+    Electron_MVAIso[i] = 0.;
+    Electron_MVANoIso[i] = 0.;
+    Electron_caloEnergy[i] = -100;
+    Electron_Px[i] = Electron_Py[i] = Electron_Pz[i] = -9999;
+    Electron_charge[i] = -100;
+    Electron_gsfpT[i] = Electron_gsfEta[i] = Electron_gsfPhi[i] = -100;
+    Electron_gsfPx[i] = Electron_gsfPy[i] = Electron_gsfPz[i] = -9999;
+    Electron_gsfCharge[i] = -100;
+    Electron_etaSC[i] = -9999;
+    Electron_phiSC[i] = -9999;
+    Electron_etaWidth[i] = -9999;
+    Electron_phiWidth[i] = -9999;
+    Electron_dEtaIn[i] = -9999;
+    Electron_dEtaInSeed[i] = -9999;
+    Electron_dPhiIn[i] = -9999;
+    Electron_sigmaIEtaIEta[i] = -9999;
+    Electron_Full5x5_SigmaIEtaIEta[i] = -9999;
+    Electron_HoverE[i] = -9999;
+    Electron_fbrem[i] = -9999;
+    Electron_eOverP[i] = -9999;
+    Electron_energyEC[i] = -9999;
+    Electron_Pnorm[i] = -9999;
+    Electron_InvEminusInvP[i] = -9999;
+    Electron_dxyVTX[i] = -9999;
+    Electron_dzVTX[i] = -9999;
+    Electron_dxy[i] = -9999;
+    Electron_sigdxy[i] = -9999.;
+    Electron_dz[i] = -9999;
+    Electrron_ip3D[i] = -9999;
+    Electrron_sigip3D[i] = -9999.;
+    Electron_dxyBS[i] = -9999;
+    Electron_dzBS[i] = -9999;
+    Electron_AEff03[i] = -9999;
+    Electron_chIso03[i] = -9999;
+    Electron_chIso04[i] = -9999;
+    Electron_nhIso03[i] = -9999;
+    Electron_nhIso04[i] = -9999;
+    Electron_phIso03[i] = -9999;
+    Electron_phIso04[i] = -9999;
+    Electron_pcIso03[i] = -9999;
+    Electron_pcIso04[i] = -9999;
+    Electron_relIsoCom03[i] = -9999;
+    Electron_relIsoCom04[i] = -9999;
+    Electron_relIsoBeta03[i] = -9999;
+    Electron_relIsoBeta04[i] = -9999;
+    Electron_relIsoRho03[i] = -9999;
+    Electron_hasConversion[i] = false;
+    Electron_mHits[i] = -9999;
+    
+    Electron_crack[i] = -1;
+    Electron_ecalDriven[i] = -1;
+    Electron_isoEMHADDepth1[i] = -999;
+    Electron_25over55[i] = -999;
+    Electron_15over55[i] = -999;
+    Electron_isoHADDepth2[i] = -999;
+    Electron_isoPtTrks[i] = -999;
+    Electron_modIsoEMHADDepth1[i] = -999;
+    Electron_modIsoPtTrks[i] = -999;
+    Electron_modIsoEMHADDepth1Orig[i] = -999;
+    Electron_modIsoPtTrksOrig[i] = -999;
+    
+    Electron_ambGsf0Pt[i] = Electron_ambGsf0Eta[i] = Electron_ambGsf0Phi[i] = Electron_ambGsf0Charge[i] = -999;
+    Electron_ambGsf1Pt[i] = Electron_ambGsf1Eta[i] = Electron_ambGsf1Phi[i] = Electron_ambGsf1Charge[i] = -999;
+    Electron_ambGsf2Pt[i] = Electron_ambGsf2Eta[i] = Electron_ambGsf2Phi[i] = Electron_ambGsf2Charge[i] = -999;
+    Electron_ambGsf3Pt[i] = Electron_ambGsf3Eta[i] = Electron_ambGsf3Phi[i] = Electron_ambGsf3Charge[i] = -999;
+    
+    Electron_r9[i] = -999;
+    Electron_EnergySC[i] = -999;
+    Electron_preEnergySC[i] = -999;
+    Electron_rawEnergySC[i] = -999;
+    Electron_etSC[i] = -999;
+    Electron_E15[i] = -999;
+    Electron_E25[i] = -999;
+    Electron_E55[i] = -999;
+    Electron_ChIso03FromPU[i] = -999;
+    Electron_RelPFIso_dBeta[i] = -999;
+    Electron_RelPFIso_Rho[i] = -999;
+    Electron_passConvVeto[i] = 0;
+    Electron_passVetoID[i] = 0;
+    Electron_passLooseID[i] = 0;
+    Electron_passMediumID[i] = 0;
+    Electron_passTightID[i] = 0;
+    Electron_passMVAID_noIso_WP80[i] = 0;
+    Electron_passMVAID_noIso_WP90[i] = 0;
+    Electron_passMVAID_iso_WP80[i] = 0;
+    Electron_passMVAID_iso_WP90[i] = 0;
+    Electron_passMVAID_WP80[i] = 0;
+    Electron_passMVAID_WP90[i] = 0;
+    Electron_passHEEPID[i] = 0;
+    
+    Electron_pTUnCorr[i] = 0;
+    Electron_etaUnCorr[i] = 0;
+    Electron_phiUnCorr[i] = 0;
+    Electron_PxUnCorr[i] = 0;
+    Electron_PyUnCorr[i] = 0;
+    Electron_PzUnCorr[i] = 0;
+    Electron_EnergyUnCorr[i] = 0;
+    Electron_EnergySCUnCorr[i] = 0;
+    Electron_etaSCUnCorr[i] = 0;
+    Electron_phiSCUnCorr[i] = 0;
+    Electron_etSCUnCorr[i] = 0;
+    
+    // -- PF Isolation -- //
+    Muon_PfChargedHadronIsoR05[i] = -1;
+    Muon_PfNeutralHadronIsoR05[i] = -1;
+    Muon_PfGammaIsoR05[i] = -1;
+    Muon_PfChargedHadronIsoR04[i] = -1;
+    Muon_PfNeutralHadronIsoR04[i] = -1;
+    Muon_PfGammaIsoR04[i] = -1;
+    Muon_PFSumPUIsoR04[i] = -1;
+    Muon_PfChargedHadronIsoR03[i] = -1;
+    Muon_PfNeutralHadronIsoR03[i] = -1;
+    Muon_PfGammaIsoR03[i] = -1;
+    Muon_PFSumPUIsoR03[i] = -1;
+    
+    // muon type
+    Muon_muonType[i] = -1;
+    isPFmuon[i] = 0;
+    isGLBmuon[i] = 0;
+    isTRKmuon[i] = 0;
+    isSTAmuon[i] = 0;
+    
+    // trigger
+    Muon_nTrig[i] = Muon_triggerObjectType[i] = Muon_filterName[i] = -1;
+    
+    // Muon kinematics
+    Muon_phi[i] = Muon_eta[i] = Muon_cktpT[i] = Muon_pT[i] = -100;
+    Muon_dB[i] = -999;
+    Muon_cktPx[i] = Muon_cktPy[i] = Muon_cktPz[i] = -999;
+    Muon_cktpTError[i] = -999;
+    Muon_Px[i] = Muon_Py[i] = Muon_Pz[i] = -100;
+    Muon_trkiso[i] = Muon_hcaliso[i] = Muon_ecaliso[i] = Muon_chi2dof[i] = -100;
+    Muon_trkisoR05[i] = Muon_hcalisoR05[i] = Muon_ecalisoR05[i] = -100;
+    Muon_nChambers[i] = Muon_nMatches[i] = Muon_nMatchesRPCLayers[i] = Muon_stationMask[i] = Muon_nSegments[i] =  -1;
+    Muon_charge[i] = Muon_nhits[i] = -100;
+    Muon_trackerHits[i] = Muon_pixelHits[i] = Muon_muonHits[i] = -1;
+    Muon_trackerLayers[i] = -1;
+    Muon_trackerHitsGLB[i] = -1;
+    Muon_pixelHitsGLB[i] = -1;
+    Muon_trackerLayersGLB[i] = -1;
+    
+    Muon_qoverp[i] = Muon_theta[i] = Muon_lambda[i] = -100;
+    Muon_dxy[i] = Muon_d0[i] = Muon_dsz[i] = Muon_dz[i] = -100;
+    Muon_vx[i] = Muon_vy[i] = Muon_vz[i] = -100;
+    Muon_dxyBS[i] = Muon_dszBS[i] = Muon_dzBS[i] = -100;
+    Muon_dxyVTX[i] = Muon_dszVTX[i] = Muon_dzVTX[i] = -100;
+    Muon_dxycktVTX[i] = Muon_dszcktVTX[i] = Muon_dzcktVTX[i] = -100;
+    
+    //Various track informations
+    //MuonBestTrack
+    Muon_Best_pT[i] = -9999;
+    Muon_Best_pTError[i] = -9999;
+    Muon_Best_Px[i] = -9999;
+    Muon_Best_Py[i] = -9999;
+    Muon_Best_Pz[i] = -9999;
+    Muon_Best_eta[i] = -9999;
+    Muon_Best_phi[i] = -9999;
+    //Inner Track
+    Muon_Inner_pT[i] = -9999;
+    Muon_Inner_pTError[i] = -9999;
+    Muon_Inner_Px[i] = -9999;
+    Muon_Inner_Py[i] = -9999;
+    Muon_Inner_Pz[i] = -9999;
+    Muon_Inner_eta[i] = -9999;
+    Muon_Inner_phi[i] = -9999;
+    //Outer Track
+    Muon_Outer_pT[i] = -9999;
+    Muon_Outer_pTError[i] = -9999;
+    Muon_Outer_Px[i] = -9999;
+    Muon_Outer_Py[i] = -9999;
+    Muon_Outer_Pz[i] = -9999;
+    Muon_Outer_eta[i] = -9999;
+    Muon_Outer_phi[i] = -9999;
+    //Global Track
+    Muon_GLB_pT[i] = -9999;
+    Muon_GLB_pTError[i] = -9999;
+    Muon_GLB_Px[i] = -9999;
+    Muon_GLB_Py[i] = -9999;
+    Muon_GLB_Pz[i] = -9999;
+    Muon_GLB_eta[i] = -9999;
+    Muon_GLB_phi[i] = -9999;
+    
+    //tuneP MuonBestTrack
+    Muon_TuneP_pT[i] = -9999;
+    Muon_TuneP_pTError[i] = -9999;
+    Muon_TuneP_Px[i] = -9999;
+    Muon_TuneP_Py[i] = -9999;
+    Muon_TuneP_Pz[i] = -9999;
+    Muon_TuneP_eta[i] = -9999;
+    Muon_TuneP_phi[i] = -9999;
+    
+    // -- LHE -- //
+    LHELepton_Px[i] = 0;
+    LHELepton_Py[i] = 0;
+    LHELepton_Pz[i] = 0;
+    LHELepton_E[i] = 0;
+    LHELepton_ID[i] = 0;
+    LHELepton_status[i] = 0;
+    
+    // GEN
+    GENLepton_phi[i] = GENLepton_eta[i] = GENLepton_pT[i] = GENLepton_mother_pT[i] = -100;
+    GENLepton_mother_index[i] = -1;
+    GENLepton_mother[i] = 0;
+    GENLepton_Px[i] = GENLepton_Py[i] = GENLepton_Pz[i] = GENLepton_E[i] = -100;
+    GENLepton_charge[i] = GENLepton_status[i] = GENLepton_ID[i] = -100;
+    GENLepton_isPrompt[i] = 0;
+    GENLepton_isPromptFinalState[i] = 0;
+    GENLepton_isTauDecayProduct[i] = 0;
+    GENLepton_isPromptTauDecayProduct[i] = 0;
+    GENLepton_isDirectPromptTauDecayProductFinalState[i] = 0;
+    GENLepton_isHardProcess[i] = 0;
+    GENLepton_isLastCopy[i] = 0;
+    GENLepton_isLastCopyBeforeFSR[i] = 0;
+    GENLepton_isPromptDecayed[i] = 0;
+    GENLepton_isDecayedLeptonHadron[i] = 0;
+    GENLepton_fromHardProcessBeforeFSR[i] = 0;
+    GENLepton_fromHardProcessDecayed[i] = 0;
+    GENLepton_fromHardProcessFinalState[i] = 0;
+    GENLepton_isMostlyLikePythia6Status3[i] = 0;
+    GENEvt_weight = 0; //Weights for NLO generated events
+    GENEvt_QScale = 0;
+    GENEvt_x1 = 0;
+    GENEvt_x2 = 0;
+    GENEvt_id1 = 0;
+    GENEvt_id2 = 0;
+    GENEvt_alphaQCD = 0;
+    GENEvt_alphaQED = 0;
+    
+          
+    // -- Photon Information -- //
+    nPhotons = 0;
+    Photon_pT[i] = 0;
+    Photon_eta[i] = 0;
+    Photon_phi[i] = 0;
+    Photon_etaSC[i] = 0;
+    Photon_phiSC[i] = 0;
+    Photon_HoverE[i] = 0;
+    Photon_hasPixelSeed[i] = 0;
+    Photon_Full5x5_SigmaIEtaIEta[i] = 0;
+    Photon_ChIso[i] = 0;
+    Photon_NhIso[i] = 0;
+    Photon_PhIso[i] = 0;
+    Photon_ChIsoWithEA[i] = 0;
+    Photon_NhIsoWithEA[i] = 0;
+    Photon_PhIsoWithEA[i] = 0;
+    Photon_passMVAID_WP80[i] = 0;
+    Photon_passMVAID_WP90[i] = 0;
+    Photon_passLooseID[i] = 0;
+    Photon_passMediumID[i] = 0;
+    Photon_passTightID[i] = 0;
+    
+    nUnCorrPhoton = 0;
+    Photon_pTUnCorr[i] = 0;
+    Photon_etaUnCorr[i] = 0;
+    Photon_phiUnCorr[i] = 0;
+
+    // -- MET -- //
+    pfMET_pT = -100;
+    pfMET_phi = -100; 
+    pfMET_Px = -100; 
+    pfMET_Py = -100; 
+    pfMET_SumEt = -100;
+    
+    pfMET_Type1_pT = -100;
+    pfMET_Type1_phi = -100; 
+    pfMET_Type1_Px = -100; 
+    pfMET_Type1_Py = -100; 
+    pfMET_Type1_SumEt = -100;
+    
+    pfMET_Type1_PhiCor_pT = -100;
+    pfMET_Type1_PhiCor_phi = -100; 
+    pfMET_Type1_PhiCor_Px = -100; 
+    pfMET_Type1_PhiCor_Py = -100; 
+    pfMET_Type1_PhiCor_SumEt = -100;
+    
+  } // -- End of "i" iteration -- //
   
-  // cout << "##### Analyze:Initialization #####" << endl;
+  // cout << "[SKFlatMaker::analyze] Varialbe intilization done" << endl;
   
   nEvt++;
   // -- run number & event number -- //
@@ -564,79 +564,74 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   iSetup.get<GlobalTrackingGeometryRecord>().get(glbTrackingGeometry);
   
   // -- PileUp Reweighting -- //
-  if( isMC )
-    {
-      edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-      iEvent.getByToken(PileUpInfoToken, PupInfo);
-      std::vector<PileupSummaryInfo>::const_iterator PVI;
+  if( isMC ){
+    edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+    iEvent.getByToken(PileUpInfoToken, PupInfo);
+    std::vector<PileupSummaryInfo>::const_iterator PVI;
+
+    int npv = -1;
+    //int npvin = -1;
       
-      int npv = -1;
-      // int npvin = -1;
-      
-      for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI)
-  {
-    int BX = PVI->getBunchCrossing();
+    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI){
+      int BX = PVI->getBunchCrossing();
     
-    if( BX == 0 )
-      {
+      if( BX == 0 ){
         // npvin = PVI->getPU_NumInteractions(); // in time only
         npv = PVI->getTrueNumInteractions(); // in and out of time
         continue;
       }
     
-  }
-      
-      nPileUp = npv;
-      
     }
+      
+    nPileUp = npv;
+      
+  }
   
-  // cout << "##### Analyze:PU-Reweighting #####" << endl;
   
   // fills
-  bool debug_suoh = false;
   
   if( theStoreHLTReportFlag ) hltReport(iEvent);
-  if(debug_suoh) cout << "theStorePriVtxFlag" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePriVtxFlag" << endl;
   
   if( theStorePriVtxFlag ) fillPrimaryVertex(iEvent);
-  if(debug_suoh) cout << "theStoreJetFlag" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreJetFlag" << endl;
   
   if( theStoreJetFlag ) fillJet(iEvent);
-  if(debug_suoh) cout << "theStoreMETFlag" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreMETFlag" << endl;
   
   if( theStoreMETFlag ) fillMET(iEvent);
-  if(debug_suoh) cout << "theStoreLHEFlag" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreLHEFlag" << endl;
   
   //if( !isRD && theStoreLHEFlag ) fillLHEInfo(iEvent);
   if(theStoreLHEFlag ) fillLHEInfo(iEvent);
-  if(debug_suoh) cout << "theStoreGENFlag" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreGENFlag" << endl;
   
   //if( !isRD && theStoreGENFlag ) fillGENInfo(iEvent);
   if(theStoreGENFlag ) fillGENInfo(iEvent);
-  if(debug_suoh) cout << "theStorePhotonFlag" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePhotonFlag" << endl;
   
   if( theStorePhotonFlag ) fillPhotons(iEvent);
-  if(debug_suoh) cout << "theStoreMuonFlag" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreMuonFlag" << endl;
 
   if( theStoreMuonFlag ) fillMuons(iEvent, iSetup);
-  if(debug_suoh) cout << "theStoreElectronFlag" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreElectronFlag" << endl;
 
   if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
-  if(debug_suoh) cout << "theStoreTTFlag" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTTFlag" << endl;
 
   if( theStoreTTFlag ) fillTT(iEvent);
-  if(debug_suoh) cout << "Tree Fill" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill" << endl;
   
   DYTree->Fill();
-  if(debug_suoh) cout << "Tree Fill finished" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill finished" << endl;
 
 }
 
 // ------------ method called once each job just before starting event loop  ------------ //
 void SKFlatMaker::beginJob()
 {
-  bool suoh_debug = false;
-  if(suoh_debug) cout << "beginJob" << endl;
+
+  if(theDebugLevel) cout << "[SKFlatMaker::beginJob] called" << endl;
   // if( isMC )
   // {
   // // Pileup Reweight: 2012, Summer12_S10
@@ -1185,8 +1180,8 @@ void SKFlatMaker::beginJob()
 
 void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
-  bool suoh_debug = false;
-  if(suoh_debug) cout << "beginRun" << endl;
+
+  if(theDebugLevel) cout << "[SKFlatMaker::beginRun called" << endl;
   const int nTrigName = 7;
   string trigs[nTrigName] = 
     {
@@ -1236,14 +1231,14 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
       
       // -- print all trigger pathes -- // 
       for( size_t i = 0; i < triggerNames.size(); i++)
-  cout << "Trigger Path: " << triggerNames[i] << endl;
+  cout << "[SKFlatMaker::beginRun] Trigger Path: " << triggerNames[i] << endl;
       
       /////////////////////////////////////////////
       // -- iteration for each input triggers -- //
       /////////////////////////////////////////////
       for( int itrigName = 0; itrigName < ntrigName; itrigName++ )
   {
-    cout << "\t[" << itrigName << "th Input Trigger = " << MuonHLT[itrigName] << "]" << endl;
+    cout << "[SKFlatMaker::beginRun] \t[" << itrigName << "th Input Trigger = " << MuonHLT[itrigName] << "]" << endl;
     
     listRemoval[itrigName] = 0;
     
@@ -1263,7 +1258,7 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
         //////////////////////////////////////////////
         BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches)
     {
-      cout << "\t\t[matched trigger = " << *match << "]" << endl;
+      cout << "[SKFlatMaker::beginRun] \t\t[matched trigger = " << *match << "]" << endl;
       ListHLT.push_back(*match);//save HLT list as a vector
       
       // -- find modules corresponding to a trigger in HLT configuration -- //
@@ -1313,13 +1308,13 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
     } // -- end of else of if (!hltConfig_.init(iRun, iSetup, processName, changedConfig)) -- //
   
   // -- Remove unavailable triggers -- //
-  cout << "Check whether there are unavailable triggers ..." << endl;
+  cout << "[SKFlatMaker::beginRun] Check whether there are unavailable triggers ..." << endl;
   int itmp = 0;
   for( vector<string>::iterator iter = MuonHLT.begin(); iter != MuonHLT.end(); )
     {
       if( listRemoval[itmp] > 0 )
   {
-    cout << "\t" << *iter << " is not available in this HLT configuration .. remove it" << endl;
+    cout << "[SKFlatMaker::beginRun] \t" << *iter << " is not available in this HLT configuration .. remove it" << endl;
     iter = MuonHLT.erase(iter);
   }
       else
@@ -1330,27 +1325,26 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   //ntrigName = MuonHLT.size();
   ntrigName = ListHLT.size();
   
-  cout << "# triggers after removing un-available triggers: " << nTrigName << " -> " << ntrigName << endl;
+  cout << "[SKFlatMaker::beginRun] # triggers after removing un-available triggers: " << nTrigName << " -> " << ntrigName << endl;
   
-  cout << "\n[Prescales]" << endl;
+  cout << "[SKFlatMaker::beginRun] \n[Prescales]" << endl;
   for( int i = 0; i < ntrigName; i++ )
-    cout << "[" << ListHLT[i] << "]\t\t" << ListHLTPS[i] << endl;
+    cout << "[SKFlatMaker::beginRun] [" << ListHLT[i] << "]\t\t" << ListHLTPS[i] << endl;
   
   // trigger filters
   for( int itrig = 0; itrig < ntrigName; itrig++ )
-    cout << "Filter name: " << itrig << " " << ListHLT[itrig] << " " << trigModuleNames[itrig] << " " << trigModuleNames_preFil[itrig] << endl;
+    cout << "[SKFlatMaker::beginRun] Filter name: " << itrig << " " << ListHLT[itrig] << " " << trigModuleNames[itrig] << " " << trigModuleNames_preFil[itrig] << endl;
   
-  cout << "##### End of Begin Run #####" << endl;
+  cout << "[SKFlatMaker::beginRun] ##### End of Begin Run #####" << endl;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------ //
 void SKFlatMaker::endJob()
 {
-  bool suoh_debug = false;
-  if(suoh_debug) cout << "endJob" << endl;
-  std::cout <<"++++++++++++++++++++++++++++++++++++++" << std::endl;
-  std::cout <<"analyzed " << nEvt << " events: " << std::endl;
-  std::cout <<"++++++++++++++++++++++++++++++++++++++" << std::endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::endJob] endJob" << endl;
+  std::cout <<"[SKFlatMaker::endJob] ++++++++++++++++++++++++++++++++++++++" << std::endl;
+  std::cout <<"[SKFlatMaker::endJob] analyzed " << nEvt << " events: " << std::endl;
+  std::cout <<"[SKFlatMaker::endJob] ++++++++++++++++++++++++++++++++++++++" << std::endl;
 }
 
 ///////////////////////////////////////////////////////
@@ -1359,8 +1353,7 @@ void SKFlatMaker::endJob()
 void SKFlatMaker::hltReport(const edm::Event &iEvent)
 {
 
-  bool suoh_debug = false;
-  if(suoh_debug) cout << "hltRepot" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::hltReport] called" << endl;
   
   int ntrigName = ListHLT.size();
   
@@ -1419,9 +1412,9 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     if( trigResultPAT->accept(trigName.triggerIndex("Flag_duplicateMuons")) ) Flag_duplicateMuons = true;
     if( trigResultPAT->accept(trigName.triggerIndex("Flag_noBadMuons")) ) Flag_noBadMuons = true;
     
-    cout << "Flag_badMuons: " << Flag_badMuons << endl;
-    cout << "Flag_duplicateMuons: " << Flag_duplicateMuons << endl;
-    cout << "Flag_noBadMuons: " << Flag_noBadMuons << endl;
+    cout << "[SKFlatMaker::hltReport] Flag_badMuons: " << Flag_badMuons << endl;
+    cout << "[SKFlatMaker::hltReport] Flag_duplicateMuons: " << Flag_duplicateMuons << endl;
+    cout << "[SKFlatMaker::hltReport] Flag_noBadMuons: " << Flag_noBadMuons << endl;
     cout << endl;
   }
     }
@@ -1545,7 +1538,7 @@ void SKFlatMaker::fillPrimaryVertex(const edm::Event &iEvent)
   iEvent.getByToken(PrimaryVertexToken, pvHandle);
   const reco::VertexCollection vtx = *(pvHandle.product());
   
-  if( vtx.size() > 2 && theDebugLevel > 0) cout << "Reconstructed "<< vtx.size() << " vertices" << endl;
+  if( vtx.size() > 2 && theDebugLevel > 0) cout << "[SKFlatMaker::fillPrimaryVertex] Reconstructed "<< vtx.size() << " vertices" << endl;
   if (vtx.size() > 0 )
     {
       PVtrackSize = vtx.front().tracksSize();
@@ -2028,8 +2021,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
 void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup& iSetup)
 {
   
-  bool suoh_debug = false;
-  if(suoh_debug) cout << "##### Start of fillElectrons #####" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] called" << endl;
   // -- BeamSpot -- //
   edm::Handle<reco::BeamSpot> beamSpotHandle;
   iEvent.getByToken(BeamSpotToken, beamSpotHandle);
@@ -2082,7 +2074,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::Handle<edm::ValueMap<bool> > mva_id_iso_wp90_decisions;
   iEvent.getByToken(eleMVAIdisoWP90MapToken, mva_id_iso_wp90_decisions);
   
-  if(suoh_debug) cout << "decision ends;" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] decision ends;" << endl;
   
   
   /*
@@ -2106,7 +2098,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   
   int _nElectron = 0;
   std::vector< double > _ambGsfTrkPt;
-  if(suoh_debug) cout << "for ElecHandle starts, ElecHandle->size() : " << ElecHandle->size() << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] for ElecHandle starts, ElecHandle->size() : " << ElecHandle->size() << endl;
   
   for(int i=0; i< (int)ElecHandle->size(); i++)
     {
@@ -2138,7 +2130,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       Electron_fbrem[_nElectron] = el->fbrem();
       Electron_eOverP[_nElectron] = el->eSuperClusterOverP();
       Electron_ecalDriven[_nElectron] = el->ecalDrivenSeed();
-      if(suoh_debug) cout << "basic info. input" << endl;
+      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] basic info. input" << endl;
       
       
       // -- Information from SuperCluster -- //
@@ -2151,7 +2143,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       double Rt = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y());
       Electron_etSC[_nElectron] = el->superCluster()->energy()*(Rt/R);
       
-      if(suoh_debug) cout << "supercluster" << endl;
+      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] supercluster" << endl;
 
       
       // -- Information from ECAL  -- //
@@ -2166,7 +2158,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       Electron_phiWidth[_nElectron] = el->superCluster()->phiWidth();
       Electron_r9[_nElectron] = el->r9();
       
-      if(suoh_debug) cout << "ECAL" << endl;
+      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] ECAL" << endl;
       
       
       // -- Information from ECAL & Track -- //
@@ -2186,7 +2178,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   Electron_InvEminusInvP[_nElectron] = fabs( 1.0/el->ecalEnergy() - el->eSuperClusterOverP()/el->ecalEnergy() );
       
       
-      if(suoh_debug) cout << "ECAL & track" << endl;
+      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] ECAL & track" << endl;
       
       // -- Isolation -- //
       double pfCharged = el->pfIsolationVariables().sumChargedHadronPt;
@@ -2208,7 +2200,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       
       // cout << "##### fillElectrons: Before elecTrk #####" << endl;
       
-      if(suoh_debug) cout << "Isolation" << endl;
+      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] Isolation" << endl;
       
       
       // -- Track - Impact Parameter, Conversion rejection, Converted -- //
@@ -2807,7 +2799,7 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   edm::Handle< std::vector<pat::MET> > metHandle;
   iEvent.getByToken(MetToken,metHandle);
   
-  if( (metHandle->size() > 1) && (theDebugLevel > 0)) cout << "# of METs = " << metHandle->size() << endl;
+  if( (metHandle->size() > 1) && (theDebugLevel > 0)) cout << "[SKFlatMaker::fillMET] # of METs = " << metHandle->size() << endl;
   
   pfMET_pT = metHandle->front().uncorPt();
   pfMET_phi = metHandle->front().uncorPhi();
@@ -2873,7 +2865,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
   iEvent.getByToken(MuonToken,muonHandle);
   
   if( jetHandle->size() > 0 && theDebugLevel > 0) 
-    cout << "# of Jets = " << jetHandle->size() << endl;
+    cout << "[SKFlatMaker::fillJet] # of Jets = " << jetHandle->size() << endl;
   
   Njets = jetHandle->size();
   if(Njets == 0) return;
@@ -2973,8 +2965,7 @@ void SKFlatMaker::fillTT(const edm::Event &iEvent)
 
 void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
 {
-  bool suoh_debug = false;
-  if(suoh_debug) cout << "endRun" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::endRun] called" << endl;
 
 
   
@@ -2985,17 +2976,17 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
       edm::Handle<LHERunInfoProduct> LHERunInfo;
       iRun.getByToken(LHERunInfoProductToken, LHERunInfo);
       
-      cout << "##### Information about PDF weights #####" << endl;
+      cout << "[SKFlatMaker::endRun] ##### Information about PDF weights #####" << endl;
       LHERunInfoProduct myLHERunInfoProduct = *(LHERunInfo.product());
       typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
       for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++)
   {
-    std::cout << iter->tag() << std::endl;
+    std::cout << "[SKFlatMaker::endRun] " << iter->tag() << std::endl;
     std::vector<std::string> lines = iter->lines();
     for (unsigned int iLine = 0; iLine<lines.size(); iLine++)
-      std::cout << lines.at(iLine);
+      std::cout << "[SKFlatMaker::endRun] " << lines.at(iLine);
   }
-      cout << "##### End of information about PDF weights #####" << endl;
+      cout << "[SKFlatMaker::endRun] ##### End of information about PDF weights #####" << endl;
     }
 }
 
