@@ -1161,7 +1161,7 @@ void SKFlatMaker::beginJob()
 void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
 
-  if(theDebugLevel) cout << "[SKFlatMaker::beginRun called" << endl;
+  if(theDebugLevel) cout << "[SKFlatMaker::beginRun] called" << endl;
   const int nTrigName = 7;
   string trigs[nTrigName] = 
     {
