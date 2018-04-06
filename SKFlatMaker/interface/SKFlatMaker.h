@@ -256,8 +256,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStoreTTFlag;
   bool theKeepAllGen;
   bool isMC;  //turn gen on and off
-  bool theApplyFilter;
-  int theFilterType;
   
   // double theCrossSection;
   // double theFilterEfficiency;
@@ -575,7 +573,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   int isTRKmuon[MPSIZE];
   int isSTAmuon[MPSIZE];
   
-  int Muon_muonType[MPSIZE];
   int Muon_nTrig[MPSIZE];
   int Muon_triggerObjectType[MPSIZE];
   int Muon_filterName[MPSIZE];
@@ -632,19 +629,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   double Muon_vx[MPSIZE];
   double Muon_vy[MPSIZE];
   double Muon_vz[MPSIZE];
-  std::vector<double> CosAngle;
-  std::vector<double> vtxTrkChi2;
-  std::vector<double> vtxTrkProb;
-  std::vector<double> vtxTrkNdof;
-  std::vector<double> vtxTrkCkt1Pt;
-  std::vector<double> vtxTrkCkt2Pt;
-  
-  std::vector<double> CosAngle_TuneP;
-  std::vector<double> vtxTrk1Pt_TuneP;
-  std::vector<double> vtxTrk2Pt_TuneP;
-  std::vector<double> vtxTrkChi2_TuneP;
-  std::vector<double> vtxTrkNdof_TuneP;
-  std::vector<double> vtxTrkProb_TuneP;
   
   //Various track informations
   //MuonBestTrack

@@ -93,8 +93,6 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
   
   // -- Filters -- //
-  theApplyFilter                    = iConfig.getUntrackedParameter<bool>("ApplyFilter", false);
-  theFilterType                     = iConfig.getUntrackedParameter<int>("FilterType", 0); // 0: dilepton (default), 1: single muon (for fake rate), 2: single photon (fake rate)
   
   // if( isMC )
   // {
@@ -181,20 +179,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pileUpReweightPlus = pileUpReweightMinus = 0.0;
   pileUpReweightInMuonPhys = pileUpReweightMuonPhys = 1.0;
   pileUpReweightPlusMuonPhys = pileUpReweightMinusMuonPhys = 0.0;
-  
-  
-  CosAngle.clear();
-  vtxTrkCkt1Pt.clear();
-  vtxTrkCkt2Pt.clear();
-  vtxTrkProb.clear();
-  vtxTrkNdof.clear();
-  vtxTrkChi2.clear();
-  CosAngle_TuneP.clear();
-  vtxTrk1Pt_TuneP.clear();
-  vtxTrk2Pt_TuneP.clear();
-  vtxTrkChi2_TuneP.clear();
-  vtxTrkNdof_TuneP.clear();
-  vtxTrkProb_TuneP.clear();
   
   vtxTrkDiE1Pt.clear();
   vtxTrkDiE2Pt.clear();
@@ -361,7 +345,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     Muon_PFSumPUIsoR03[i] = -1;
     
     // muon type
-    Muon_muonType[i] = -1;
     isPFmuon[i] = 0;
     isGLBmuon[i] = 0;
     isTRKmuon[i] = 0;
@@ -882,7 +865,6 @@ void SKFlatMaker::beginJob()
   if( theStoreMuonFlag ){
     DYTree->Branch("nMuon",&nMuon,"nMuon/I");
     DYTree->Branch("Nmuons",&Nmuons,"Nmuons/I");
-    DYTree->Branch("Muon_muonType", &Muon_muonType,"Muon_muonType[nMuon]/I");
     DYTree->Branch("isPFmuon", &isPFmuon, "isPFmuon[nMuon]/I");
     DYTree->Branch("isGLBmuon", &isGLBmuon, "isGLBmuon[nMuon]/I");
     DYTree->Branch("isTRKmuon", &isTRKmuon, "isTRKmuon[nMuon]/I");
@@ -996,19 +978,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("Muon_vx", &Muon_vx,"Muon_vx[nMuon]/D");
     DYTree->Branch("Muon_vy", &Muon_vy,"Muon_vy[nMuon]/D");
     DYTree->Branch("Muon_vz", &Muon_vz,"Muon_vz[nMuon]/D");
-    DYTree->Branch("CosAngle", &CosAngle);
-    DYTree->Branch("vtxTrkCkt1Pt", &vtxTrkCkt1Pt);
-    DYTree->Branch("vtxTrkCkt2Pt", &vtxTrkCkt2Pt);
-    DYTree->Branch("vtxTrkChi2", &vtxTrkChi2);
-    DYTree->Branch("vtxTrkProb", &vtxTrkProb);
-    DYTree->Branch("vtxTrkNdof", &vtxTrkNdof);
 
-    DYTree->Branch("CosAngle_TuneP", &CosAngle_TuneP);
-    DYTree->Branch("vtxTrk1Pt_TuneP", &vtxTrk1Pt_TuneP);
-    DYTree->Branch("vtxTrk2Pt_TuneP", &vtxTrk2Pt_TuneP);
-    DYTree->Branch("vtxTrkChi2_TuneP", &vtxTrkChi2_TuneP);
-    DYTree->Branch("vtxTrkNdof_TuneP", &vtxTrkNdof_TuneP);
-    DYTree->Branch("vtxTrkProb_TuneP", &vtxTrkProb_TuneP);
   }
   
   // -- LHE info -- //
@@ -1526,8 +1496,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   }
   const reco::Vertex &vtx = pvHandle->front();
   
-  int nLepton = 0;
-  
   // muons
   ESHandle<MagneticField> B;
   iSetup.get<IdealMagneticFieldRecord>().get(B);
@@ -1549,27 +1517,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     if( imuon.isTrackerMuon() )   isTRKmuon[_nMuon] = 1;  
     if( imuon.isPFMuon() )       isPFmuon[_nMuon] = 1;
     
-    if( imuon.isStandAloneMuon() ){
-      if( imuon.isGlobalMuon() ){
-        if( imuon.isTrackerMuon() )
-          Muon_muonType[_nMuon] = 0; // -- STA + GLB + TRK -- //
-        else 
-          Muon_muonType[_nMuon] = 1; // -- STA + GLB -- //
-      }
-      else{
-        if( imuon.isTrackerMuon() ) 
-          Muon_muonType[_nMuon] = 2; // -- STA + TM -- //
-        else 
-          Muon_muonType[_nMuon] = 3; // -- STA -- //
-      }
-    } // -- End of isStandAloneMuon()
-    else{
-      if( imuon.isTrackerMuon() ) 
-        Muon_muonType[_nMuon] = 4; // -- TM -- //
-    }
-      
-    if( Muon_muonType[_nMuon] == 3 ) continue; // -- Dosen't store STA Muon (Not reconstructed in GLB)-- //
-      
     // -- bits 0-1-2-3 = DT stations 1-2-3-4 -- //
     // -- bits 4-5-6-7 = CSC stations 1-2-3-4 -- //
     int _segments = 0;
@@ -1771,157 +1718,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
 		Muon_nMatchesRPCLayers[_nMuon] = imuon.numberOfMatchedRPCLayers();
 		Muon_stationMask[_nMuon] = imuon.stationMask(); // -- bit map of stations with matched segments -- //
 		
-		// filter for high pt Tight muon
-		// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#New_Version_recommended
-    if( theApplyFilter ){
-      if( theFilterType == 0 ){
-        if( (Muon_cktpT[_nMuon] > 30.0 || Muon_pT[_nMuon] > 30.0)
-            && fabs(Muon_eta[_nMuon]) < 2.4 
-            && Muon_dxycktVTX[_nMuon] < 0.4 
-            && Muon_dzcktVTX[_nMuon] < 1.0 
-            && Muon_pixelHits[_nMuon] > 0 
-            && Muon_trackerLayers[_nMuon] > 5 
-        ){
-          nLepton++;
-        }
-        
-        //if( Muon_chi2dof[_nMuon] < 0 || Muon_chi2dof[_nMuon] > 10 ) continue;
-        //if( Muon_muonHits[_nMuon] <= 0 ) continue;
-        //if( Muon_nMatches[_nMuon] <= 1 ) continue;
-        //if( Muon_cktpTError[_nMuon]/Muon_cktpT[_nMuon] >= 0.3 ) continue;
-        // no isolation cut applied
-      }
-    
-      if( theFilterType == 1 ){
-        if( (Muon_cktpT[_nMuon] > 40.0 ||  Muon_pT[_nMuon] > 40.0)
-            && fabs(Muon_eta[_nMuon]) < 2.4 
-            && Muon_dxycktVTX[_nMuon] < 0.4
-            && Muon_dzcktVTX[_nMuon] < 1.0 
-        ){
-          nLepton++;
-        }
-      }
-    } // -- end of if( theApplyFilter ) -- //
-      
     _nMuon++;
-      
-    // -- dimuon variables -- //
-    for( unsigned j = 0; j != muonHandle->size(); j++ ){
-      if( i <= j ) continue; // -- prevent double-counting -- //
-    
-			const pat::Muon imuon2 = muonHandle->at(j);
-			int index_type = -1;
-    
-			if( imuon2.isStandAloneMuon() ){
-				if( imuon2.isGlobalMuon() ){
-					if( imuon2.isTrackerMuon() ) 
-						index_type = 0; // -- STA + GLB + TRK -- //
-					else
-						index_type = 1; // -- STA + GLB -- //
-				}
-				else{
-					if( imuon2.isTrackerMuon() ) 
-						index_type = 2; // -- STA + TRK -- //
-					else 
-						index_type = 3; // -- STA -- //
-				}
-			}
-      else{
-        if( imuon2.isTrackerMuon() )
-          index_type = 4; // -- TRK -- //
-      }
-    
-			if( index_type == 3 ) continue; // -- Don't check when 2nd muon is STA muon -- //
-			
-			// -- vertex variables are calculated using InnerTrack information -- //
-			reco::TrackRef InnerTrk = imuon.innerTrack();
-			reco::TrackRef InnerTrk2 = imuon2.innerTrack();
-    
-      if( InnerTrk.isNonnull() && InnerTrk2.isNonnull() ){
-        reco::TransientTrack muTransient1(InnerTrk, B.product());
-        reco::TransientTrack muTransient2(InnerTrk2, B.product());
-        
-        vector<reco::TransientTrack> dimuonTracksTrk;
-        dimuonTracksTrk.push_back(muTransient1);
-        dimuonTracksTrk.push_back(muTransient2);
-        KalmanVertexFitter KalmanFitterTrk(true);
-        CachingVertex<5> vertexTrk;
-        TransientVertex vtxtmpTrk;
-        bool isVertexTrk = true;
-        
-        try{
-					vertexTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
-					vtxtmpTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
-				}
-		  	catch( exception & err ){
-					isVertexTrk = false;
-				}
-        
-        if( isVertexTrk && vertexTrk.isValid() ){
-					// inv. mass refit using the dimuon vtx
-					InvariantMassFromVertex imfvTrk;
-					static const double muon_mass = 0.1056583;
-					const CachingVertex<5>& vtxTrk = vertexTrk;
-					Measurement1D new_massTrk = imfvTrk.invariantMass(vtxTrk, muon_mass);
-					
-					vtxTrkCkt1Pt.push_back(InnerTrk->pt());
-					vtxTrkCkt2Pt.push_back(InnerTrk2->pt());
-					vtxTrkChi2.push_back(vtxTrk.totalChiSquared());
-					vtxTrkNdof.push_back(vtxTrk.degreesOfFreedom());
-					vtxTrkProb.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
-        }
-        
-        // cosmic variable
-        double cosine = acos( -InnerTrk->momentum().Dot( InnerTrk2->momentum() / InnerTrk->p()/InnerTrk2->p()) );
-        CosAngle.push_back(cosine);
-        
-      } // -- end of if( InnerTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
-    
-			// --vertex variables are calculated using TuneP information -- //
-			reco::TrackRef TunePTrk = imuon.tunePMuonBestTrack();
-			reco::TrackRef TunePTrk2 = imuon2.tunePMuonBestTrack();
-    
-      if( TunePTrk.isNonnull() && TunePTrk2.isNonnull() ){
-        reco::TransientTrack muTransient1(TunePTrk, B.product());
-        reco::TransientTrack muTransient2(TunePTrk2, B.product());
-        
-        vector<reco::TransientTrack> dimuonTracksTrk;
-        dimuonTracksTrk.push_back(muTransient1);
-        dimuonTracksTrk.push_back(muTransient2);
-        KalmanVertexFitter KalmanFitterTrk(true);
-        CachingVertex<5> vertexTrk;
-        TransientVertex vtxtmpTrk;
-        bool isVertexTrk = true;
-        
-        try{
-          vertexTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
-          vtxtmpTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
-        }
-        catch( exception & err ){
-          isVertexTrk = false;
-        }
-        
-        if( isVertexTrk && vertexTrk.isValid() ){
-					// inv. mass refit using the dimuon vtx
-					InvariantMassFromVertex imfvTrk;
-					static const double muon_mass = 0.1056583;
-					const CachingVertex<5>& vtxTrk = vertexTrk;
-					Measurement1D new_massTrk = imfvTrk.invariantMass(vtxTrk, muon_mass);
-					
-					vtxTrk1Pt_TuneP.push_back(TunePTrk->pt());
-					vtxTrk2Pt_TuneP.push_back(TunePTrk2->pt());
-					vtxTrkChi2_TuneP.push_back(vtxTrk.totalChiSquared());
-					vtxTrkNdof_TuneP.push_back(vtxTrk.degreesOfFreedom());
-					vtxTrkProb_TuneP.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
-        }
-        
-        // cosmic variable
-        double cosine = acos( -TunePTrk->momentum().Dot( TunePTrk2->momentum() / TunePTrk->p()/TunePTrk2->p()) );
-        CosAngle_TuneP.push_back(cosine);
-        
-      } // -- end of if( TunePTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
-    
-    } // -- end of for( unsigned j = 0; j != muonHandle->size(); j++ ): iteration for 2nd muon -- //
       
   } // -- End of imuon iteration -- //
   
