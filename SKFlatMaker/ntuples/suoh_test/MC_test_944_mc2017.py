@@ -89,8 +89,8 @@ setupEgammaPostRecoSeq(process,applyEnergyCorrections=False,
 #################
 # -- DY Tree -- #
 #################
-from SKFlat.SKFlatMaker.SKFlatMaker_cfi import *
-from SKFlat.SKFlatMaker.PUreweight2012_cff import *
+from SKFlatMaker.SKFlatMaker.SKFlatMaker_cfi import *
+from SKFlatMaker.SKFlatMaker.PUreweight2012_cff import *
 
 process.recoTree = SKFlatMaker.clone()
 process.recoTree.isMC = isMC
@@ -133,7 +133,7 @@ else:
 from CondCore.CondDB.CondDB_cfi import CondDB
 if hasattr(CondDB, 'connect'): delattr(CondDB, 'connect')
 process.jec = cms.ESSource("PoolDBESSource",CondDB,
-    connect = cms.string('sqlite_fip:SKFlat/SKFlatMaker/data/JEC/db/%s.db'%jecFile),            
+    connect = cms.string('sqlite_fip:SKFlatMaker/SKFlatMaker/data/JEC/db/%s.db'%jecFile),            
     toGet = cms.VPSet(
         cms.PSet(
             record = cms.string("JetCorrectionsRecord"),
