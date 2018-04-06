@@ -32,17 +32,17 @@ using namespace isodeposit;
 // -- Constructor -- //
 SKFlatMaker::SKFlatMaker(const edm::ParameterSet& iConfig):
 // -- object tokens -- //
-MuonToken			    ( consumes< std::vector<pat::Muon> > 			(iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
-ElectronToken			    ( consumes< edm::View<pat::Electron> >			(iConfig.getUntrackedParameter<edm::InputTag>("SmearedElectron")) ),
-UnCorrElectronToken	       	    ( consumes< edm::View<pat::Electron> >			(iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
-PhotonToken 		      	    ( consumes< edm::View<pat::Photon> >			(iConfig.getUntrackedParameter<edm::InputTag>("SmearedPhoton")) ),
+MuonToken          ( consumes< std::vector<pat::Muon> >       (iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
+ElectronToken          ( consumes< edm::View<pat::Electron> >      (iConfig.getUntrackedParameter<edm::InputTag>("SmearedElectron")) ),
+UnCorrElectronToken               ( consumes< edm::View<pat::Electron> >      (iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
+PhotonToken                 ( consumes< edm::View<pat::Photon> >      (iConfig.getUntrackedParameter<edm::InputTag>("SmearedPhoton")) ),
 UnCorrPhotonToken                   ( consumes< edm::View<pat::Photon> >                        (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
-JetToken 		     	    ( consumes< std::vector<pat::Jet> >				(iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
-MetToken 			    ( consumes< std::vector<pat::MET> >				(iConfig.getParameter<edm::InputTag>("MET")) ),
+JetToken                ( consumes< std::vector<pat::Jet> >        (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
+MetToken           ( consumes< std::vector<pat::MET> >        (iConfig.getParameter<edm::InputTag>("MET")) ),
 //MetToken                            ( consumes< pat::METCollection>                               (iConfig.getParameter<edm::InputTag>("MET")) ),
 
-LHEEventProductToken		    ( consumes< LHEEventProduct >  			    	(iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
-LHERunInfoProductToken		    ( consumes< LHERunInfoProduct,edm::InRun > 			(iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
+LHEEventProductToken        ( consumes< LHEEventProduct >              (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
+LHERunInfoProductToken        ( consumes< LHERunInfoProduct,edm::InRun >       (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
 mcLabel_                            ( consumes< reco::GenParticleCollection>                    (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
 // -- MET Filter tokens -- //
 METFilterResultsToken_PAT           (consumes<edm::TriggerResults>                              (iConfig.getParameter<edm::InputTag>("METFilterResults_PAT"))),
@@ -50,42 +50,42 @@ METFilterResultsToken_RECO          (consumes<edm::TriggerResults>              
 
 
 // -- Electron tokens -- //
-RhoToken 			    ( consumes< double >					(iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
+RhoToken           ( consumes< double >          (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
 mvaIsoValuesMapToken                ( consumes< edm::ValueMap<float> >                          (iConfig.getParameter<edm::InputTag>("mvaIsoValuesMap"))  ),
 mvaNoIsoValuesMapToken              ( consumes< edm::ValueMap<float> >                          (iConfig.getParameter<edm::InputTag>("mvaNoIsoValuesMap"))  ),
-eleVetoIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleVetoIdMap")) ),
-eleLooseIdMapToken 		    ( consumes< edm::ValueMap<bool> >			        (iConfig.getUntrackedParameter<edm::InputTag>("eleLooseIdMap")) ),
-eleMediumIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleMediumIdMap")) ),
-eleTightIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleTightIdMap")) ),
+eleVetoIdMapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleVetoIdMap")) ),
+eleLooseIdMapToken         ( consumes< edm::ValueMap<bool> >              (iConfig.getUntrackedParameter<edm::InputTag>("eleLooseIdMap")) ),
+eleMediumIdMapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleMediumIdMap")) ),
+eleTightIdMapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleTightIdMap")) ),
 eleMVAIdnoIsoWP80MapToken           ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP80Map")) ),
 eleMVAIdnoIsoWP90MapToken           ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP90Map")) ),
 eleMVAIdisoWP80MapToken             ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP80Map")) ),
 eleMVAIdisoWP90MapToken             ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP90Map")) ),
-eleMVAIdWP80MapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP80Map")) ),
-eleMVAIdWP90MapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP90Map")) ),
-eleHEEPIdMapToken 		    ( consumes< edm::ValueMap<bool> >				(iConfig.getUntrackedParameter<edm::InputTag>("eleHEEPIdMap")) ),
-ConversionsToken 		    ( consumes< std::vector<reco::Conversion> > 		(iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
-GsfTrackToken			    ( consumes< std::vector< reco::GsfTrack > > 		(iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
+eleMVAIdWP80MapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP80Map")) ),
+eleMVAIdWP90MapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP90Map")) ),
+eleHEEPIdMapToken         ( consumes< edm::ValueMap<bool> >        (iConfig.getUntrackedParameter<edm::InputTag>("eleHEEPIdMap")) ),
+ConversionsToken         ( consumes< std::vector<reco::Conversion> >     (iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
+GsfTrackToken          ( consumes< std::vector< reco::GsfTrack > >     (iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
 // -- Photon tokens -- //
 phoLooseIdMapToken                  ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoLooseIdMap")) ),
 phoMediumIdMapToken                 ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoMediumIdMap")) ),
 phoTightIdMapToken                  ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoTightIdMap")) ),
 phoMVAIDWP90MapToken                ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoMVAIDWP90Map")) ),
 phoMVAIDWP80MapToken                ( consumes< edm::ValueMap<bool> >                           (iConfig.getUntrackedParameter<edm::InputTag>("phoMVAIDWP80Map")) ),
-full5x5SigmaIEtaIEtaMapToken	    ( consumes< edm::ValueMap<float> > 				(iConfig.getUntrackedParameter<edm::InputTag>("full5x5SigmaIEtaIEtaMap")) ),
-phoChargedIsolationToken 	    ( consumes< edm::ValueMap<float> > 				(iConfig.getUntrackedParameter<edm::InputTag>("phoChargedIsolation")) ),
-phoNeutralHadronIsolationToken 	    ( consumes< edm::ValueMap<float> > 				(iConfig.getUntrackedParameter<edm::InputTag>("phoNeutralHadronIsolation")) ),
-phoPhotonIsolationToken 	    ( consumes< edm::ValueMap<float> > 				(iConfig.getUntrackedParameter<edm::InputTag>("phoPhotonIsolation")) ),
+full5x5SigmaIEtaIEtaMapToken      ( consumes< edm::ValueMap<float> >         (iConfig.getUntrackedParameter<edm::InputTag>("full5x5SigmaIEtaIEtaMap")) ),
+phoChargedIsolationToken       ( consumes< edm::ValueMap<float> >         (iConfig.getUntrackedParameter<edm::InputTag>("phoChargedIsolation")) ),
+phoNeutralHadronIsolationToken       ( consumes< edm::ValueMap<float> >         (iConfig.getUntrackedParameter<edm::InputTag>("phoNeutralHadronIsolation")) ),
+phoPhotonIsolationToken       ( consumes< edm::ValueMap<float> >         (iConfig.getUntrackedParameter<edm::InputTag>("phoPhotonIsolation")) ),
 // -- Trigger Token -- //
-TriggerToken 			    ( consumes< edm::TriggerResults >  			        (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
-TriggerTokenPAT 		    ( consumes< edm::TriggerResults >  				(iConfig.getUntrackedParameter<edm::InputTag>("TriggerResultsPAT")) ),
-TriggerObjectToken 		    ( consumes< std::vector<pat::TriggerObjectStandAlone> >  	(iConfig.getUntrackedParameter<edm::InputTag>("TriggerObject")) ),
+TriggerToken           ( consumes< edm::TriggerResults >                (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
+TriggerTokenPAT         ( consumes< edm::TriggerResults >          (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResultsPAT")) ),
+TriggerObjectToken         ( consumes< std::vector<pat::TriggerObjectStandAlone> >    (iConfig.getUntrackedParameter<edm::InputTag>("TriggerObject")) ),
 // -- Else -- //
-GenEventInfoToken 		    ( consumes< GenEventInfoProduct >  			        (iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")) ),
-BeamSpotToken			    ( consumes< reco::BeamSpot > 				(iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
-PrimaryVertexToken 		    ( consumes< reco::VertexCollection > 			(iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
-TrackToken 			    ( consumes< edm::View<reco::Track> >  			(iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
-PileUpInfoToken 		    ( consumes< std::vector< PileupSummaryInfo > >  	        (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
+GenEventInfoToken         ( consumes< GenEventInfoProduct >                (iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")) ),
+BeamSpotToken          ( consumes< reco::BeamSpot >         (iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
+PrimaryVertexToken         ( consumes< reco::VertexCollection >       (iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
+TrackToken           ( consumes< edm::View<reco::Track> >        (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
+PileUpInfoToken         ( consumes< std::vector< PileupSummaryInfo > >            (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
 {
   nEvt = 0;
   
@@ -118,9 +118,9 @@ PileUpInfoToken 		    ( consumes< std::vector< PileupSummaryInfo > >  	        (
   
   // if( isMC )
   // {
-  // 	PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
-  // 	PileUpRDMuonPhys_ = iConfig.getParameter< std::vector<double> >("PileUpRDMuonPhys");
-  // 	PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC");
+  //   PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
+  //   PileUpRDMuonPhys_ = iConfig.getParameter< std::vector<double> >("PileUpRDMuonPhys");
+  //   PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC");
   // }
   
 }
@@ -555,9 +555,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   // iEvent.getByLabel("PUweight", weight_);
   
   // if(weight_.isValid())
-  // 	PUweight = *weight_;
+  //   PUweight = *weight_;
   // else
-  // 	PUweight = 1.0;
+  //   PUweight = 1.0;
   
   //get the geometry
   edm::ESHandle<GlobalTrackingGeometry> glbTrackingGeometry;
@@ -574,17 +574,17 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       // int npvin = -1;
       
       for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI)
-	{
-	  int BX = PVI->getBunchCrossing();
-	  
-	  if( BX == 0 )
-	    {
-	      // npvin = PVI->getPU_NumInteractions(); // in time only
-	      npv = PVI->getTrueNumInteractions(); // in and out of time
-	      continue;
-	    }
-	  
-	}
+  {
+    int BX = PVI->getBunchCrossing();
+    
+    if( BX == 0 )
+      {
+        // npvin = PVI->getPU_NumInteractions(); // in time only
+        npv = PVI->getTrueNumInteractions(); // in and out of time
+        continue;
+      }
+    
+  }
       
       nPileUp = npv;
       
@@ -1236,79 +1236,79 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
       
       // -- print all trigger pathes -- // 
       for( size_t i = 0; i < triggerNames.size(); i++)
-	cout << "Trigger Path: " << triggerNames[i] << endl;
+  cout << "Trigger Path: " << triggerNames[i] << endl;
       
       /////////////////////////////////////////////
       // -- iteration for each input triggers -- //
       /////////////////////////////////////////////
       for( int itrigName = 0; itrigName < ntrigName; itrigName++ )
-	{
-	  cout << "\t[" << itrigName << "th Input Trigger = " << MuonHLT[itrigName] << "]" << endl;
-	  
-	  listRemoval[itrigName] = 0;
-	  
-	  // check list of triggers
-	  //cout << "trigger = " << itrigName << " " << MuonHLT[itrigName] << endl;
-	  // bool isMatched = false;
-	  
-	  // -- find triggers in HLT configuration matched with a input trigger using wild card -- //
-	  std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(triggerNames, MuonHLT[itrigName]);
-	  
-	  //cout << "\t[# matched trigger in HLT configuration for this trigger: " << matches.size() << endl;
-	  
-	  if( !matches.empty() )
-	    {
-	      //////////////////////////////////////////////
-	      // -- iteration for each matched trigger -- //
-	      //////////////////////////////////////////////
-	      BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches)
-		{
-		  cout << "\t\t[matched trigger = " << *match << "]" << endl;
-		  ListHLT.push_back(*match);//save HLT list as a vector
-		  
-		  // -- find modules corresponding to a trigger in HLT configuration -- //
-		  std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
-		  
-		  // -- find prescale value -- //
-		  int _preScaleValue = hltConfig_.prescaleValue(0, *match);
-		  MuonHLTPS.push_back(_preScaleValue);
-		  ListHLTPS.push_back(_preScaleValue);
-		  // cout << "Filter name: " << trigModuleNames[moduleNames.size()-2] << endl;
-		  // for( size_t j = 0; j < moduleNames.size(); j++)
-		  // {
-		  // 	TString name = moduleNames[j];
-		  // 	cout << "\t  Fliter Name: "<<moduleNames[j] << endl;
-		  // }
-		  
-		  int nsize = moduleNames.size();
-		  
-		  if( nsize-2 >= 0 )
-		    {
-		      //cout << "module names = " << moduleNames[nsize-2] << " " << moduleNames[nsize-3] << endl;
-		      trigModuleNames.push_back(moduleNames[nsize-2]);
-		      //cout << "Filter name: " << trigModuleNames[trigModuleNames.size()-1] << endl;
-		      
-		      if( nsize-3 >= 0 )
-			{
-			  trigModuleNames_preFil.push_back(moduleNames[nsize-3]);
-			}
-		      else
-			{
-			  trigModuleNames_preFil.push_back("");
-			}
-		    }
-		  
-		  //break; // -- just take into account the case # mathced trigger = 1 -- //
-		  
-		} // -- end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
-	      
-	    } // -- end of if( !matches.empty() ) -- //
-	  else 
-	    listRemoval[itrigName] = 1;
-	  
-	  cout << endl;			
-	  
-	} // -- end of for( int itrigName = 0; itrigName < ntrigName; itrigName++ ): trigger iteration -- //
+  {
+    cout << "\t[" << itrigName << "th Input Trigger = " << MuonHLT[itrigName] << "]" << endl;
+    
+    listRemoval[itrigName] = 0;
+    
+    // check list of triggers
+    //cout << "trigger = " << itrigName << " " << MuonHLT[itrigName] << endl;
+    // bool isMatched = false;
+    
+    // -- find triggers in HLT configuration matched with a input trigger using wild card -- //
+    std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(triggerNames, MuonHLT[itrigName]);
+    
+    //cout << "\t[# matched trigger in HLT configuration for this trigger: " << matches.size() << endl;
+    
+    if( !matches.empty() )
+      {
+        //////////////////////////////////////////////
+        // -- iteration for each matched trigger -- //
+        //////////////////////////////////////////////
+        BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches)
+    {
+      cout << "\t\t[matched trigger = " << *match << "]" << endl;
+      ListHLT.push_back(*match);//save HLT list as a vector
+      
+      // -- find modules corresponding to a trigger in HLT configuration -- //
+      std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
+      
+      // -- find prescale value -- //
+      int _preScaleValue = hltConfig_.prescaleValue(0, *match);
+      MuonHLTPS.push_back(_preScaleValue);
+      ListHLTPS.push_back(_preScaleValue);
+      // cout << "Filter name: " << trigModuleNames[moduleNames.size()-2] << endl;
+      // for( size_t j = 0; j < moduleNames.size(); j++)
+      // {
+      //   TString name = moduleNames[j];
+      //   cout << "\t  Fliter Name: "<<moduleNames[j] << endl;
+      // }
+      
+      int nsize = moduleNames.size();
+      
+      if( nsize-2 >= 0 )
+        {
+          //cout << "module names = " << moduleNames[nsize-2] << " " << moduleNames[nsize-3] << endl;
+          trigModuleNames.push_back(moduleNames[nsize-2]);
+          //cout << "Filter name: " << trigModuleNames[trigModuleNames.size()-1] << endl;
+          
+          if( nsize-3 >= 0 )
+      {
+        trigModuleNames_preFil.push_back(moduleNames[nsize-3]);
+      }
+          else
+      {
+        trigModuleNames_preFil.push_back("");
+      }
+        }
+      
+      //break; // -- just take into account the case # mathced trigger = 1 -- //
+      
+    } // -- end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
+        
+      } // -- end of if( !matches.empty() ) -- //
+    else 
+      listRemoval[itrigName] = 1;
+    
+    cout << endl;      
+    
+  } // -- end of for( int itrigName = 0; itrigName < ntrigName; itrigName++ ): trigger iteration -- //
       
     } // -- end of else of if (!hltConfig_.init(iRun, iSetup, processName, changedConfig)) -- //
   
@@ -1318,12 +1318,12 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   for( vector<string>::iterator iter = MuonHLT.begin(); iter != MuonHLT.end(); )
     {
       if( listRemoval[itmp] > 0 )
-	{
-	  cout << "\t" << *iter << " is not available in this HLT configuration .. remove it" << endl;
-	  iter = MuonHLT.erase(iter);
-	}
+  {
+    cout << "\t" << *iter << " is not available in this HLT configuration .. remove it" << endl;
+    iter = MuonHLT.erase(iter);
+  }
       else
-	++iter;
+  ++iter;
       
       itmp++;
     }
@@ -1379,25 +1379,25 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
       
       // cout << "trigger names in trigger result (HLT)" << endl;
       // for(int itrig=0; itrig<(int)trigName.size(); itrig++)
-      // 	cout << "trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
+      //   cout << "trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
       
       for( int itrigName = 0; itrigName < ntrigName; itrigName++ )
-	{
-	  std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), ListHLT[itrigName]);
-	  if( !matches.empty() )
-	    {
-	      BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches)
-		{
-		  //cout << "trigger match = " << *match << endl;
-		  if( trigName.triggerIndex(*match) >= (unsigned int)ntrigs ) continue;
-		  if( trigResult->accept(trigName.triggerIndex(*match)) ){
-		    trigFired[itrigName] = true;
-		  }//if trigger fired
-		}
-	      
-	    }
-	  
-	} // -- end of for( int itrigName = 0; itrigName < ntrigName; itrigName++ ) -- //
+  {
+    std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), ListHLT[itrigName]);
+    if( !matches.empty() )
+      {
+        BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches)
+    {
+      //cout << "trigger match = " << *match << endl;
+      if( trigName.triggerIndex(*match) >= (unsigned int)ntrigs ) continue;
+      if( trigResult->accept(trigName.triggerIndex(*match)) ){
+        trigFired[itrigName] = true;
+      }//if trigger fired
+    }
+        
+      }
+    
+  } // -- end of for( int itrigName = 0; itrigName < ntrigName; itrigName++ ) -- //
       
     } // -- end of if( !trigResult.failedToGet() ) -- //
   
@@ -1408,22 +1408,22 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
       iEvent.getByToken(TriggerTokenPAT, trigResultPAT);
       
       if( !trigResultPAT.failedToGet() )
-	{
-	  const edm::TriggerNames trigName = iEvent.triggerNames(*trigResultPAT);
-	  
-	  // cout << "trigger names in trigger result (PAT)" << endl;
-	  // for(int itrig=0; itrig<(int)trigName.size(); itrig++)
-	  // 	cout << "trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
-	  
-	  if( trigResultPAT->accept(trigName.triggerIndex("Flag_badMuons")) ) Flag_badMuons = true;
-	  if( trigResultPAT->accept(trigName.triggerIndex("Flag_duplicateMuons")) ) Flag_duplicateMuons = true;
-	  if( trigResultPAT->accept(trigName.triggerIndex("Flag_noBadMuons")) ) Flag_noBadMuons = true;
-	  
-	  cout << "Flag_badMuons: " << Flag_badMuons << endl;
-	  cout << "Flag_duplicateMuons: " << Flag_duplicateMuons << endl;
-	  cout << "Flag_noBadMuons: " << Flag_noBadMuons << endl;
-	  cout << endl;
-	}
+  {
+    const edm::TriggerNames trigName = iEvent.triggerNames(*trigResultPAT);
+    
+    // cout << "trigger names in trigger result (PAT)" << endl;
+    // for(int itrig=0; itrig<(int)trigName.size(); itrig++)
+    //   cout << "trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
+    
+    if( trigResultPAT->accept(trigName.triggerIndex("Flag_badMuons")) ) Flag_badMuons = true;
+    if( trigResultPAT->accept(trigName.triggerIndex("Flag_duplicateMuons")) ) Flag_duplicateMuons = true;
+    if( trigResultPAT->accept(trigName.triggerIndex("Flag_noBadMuons")) ) Flag_noBadMuons = true;
+    
+    cout << "Flag_badMuons: " << Flag_badMuons << endl;
+    cout << "Flag_duplicateMuons: " << Flag_duplicateMuons << endl;
+    cout << "Flag_noBadMuons: " << Flag_noBadMuons << endl;
+    cout << endl;
+  }
     }
   
   
@@ -1473,62 +1473,62 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
       
       // cout << "[# of trigger object in this event: " << (*triggerObject).size() << endl;
       for (pat::TriggerObjectStandAlone obj : *triggerObject)
-	{
-	  obj.unpackPathNames(names);
-	  obj.unpackFilterLabels(iEvent, *trigResult);  //added Suoh
-	  
-	  // cout << "# Filters: " << obj.filterLabels().size() << endl;
-	  for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter )
-	    {
-	      // -- Get the full name of i-th filter -- //
-	      std::string fullname = obj.filterLabels()[i_filter];
-	      
-	      std::string filterName;
-	      
-	      // -- Find ":" in the full name -- //
-	      size_t m = fullname.find_first_of(':');
-	      
-	      // -- if ":" exists in the full name, takes the name before ":" as the filter name -- //
-	      if( m != std::string::npos )
-		filterName = fullname.substr(0, m);
-	      else
-		filterName = fullname;
-	      
-	      //cout << "\t[" << i_filter << "th Filter] FullName = " << fullname << ", FilterName = " << filterName << endl;
-	      
-	      // -- Loop for the triggers that a user inserted in this code -- //
-	      for( int itf = 0; itf < ntrigName; itf++ )
-		{
-		  // cout << "\t\t[" << itf << "th trigger] Name = " << MuonHLT[itf] << ", trigModuleName = " << trigModuleNames[itf] << endl;
-		  string name = "";
-		  
-		  // -- Store HLT object information only if trigModuleName is equal to this filter name -- //
-		  if( filterName == trigModuleNames[itf] )
-		    {
-		      // cout << "\t\t\t[Matched]: filterName = " << filterName << ", Trigger Name = " << MuonHLT[itf] << endl;
-		      //name = MuonHLT[itf];
-		      name = ListHLT[itf];
-		      //int _ps = MuonHLTPS[itf];
-		      int _ps = ListHLTPS[itf];
-		      _HLT_trigType[ntrigTot] = itf;
-		      _HLT_trigFired[ntrigTot] = trigFired[itf];
-		      _HLT_trigPt[ntrigTot] = obj.pt();
-		      _HLT_trigEta[ntrigTot] = obj.eta();
-		      _HLT_trigPhi[ntrigTot] = obj.phi();
-		      _HLT_trigName.push_back(name);
-		      _HLT_trigPS.push_back(_ps);
-		      ntrigTot++;
-		    }
-		  
-		  // cout << endl;
-		  
-		} // -- end of for( int itf = 0; itf < ntrigName; itf++ ) -- //
-	      
-	      // cout << endl;
-	      
-	    } // -- end of filter iteration -- //
-	  
-	} // -- end of trigger object iteration -- //
+  {
+    obj.unpackPathNames(names);
+    obj.unpackFilterLabels(iEvent, *trigResult);  //added Suoh
+    
+    // cout << "# Filters: " << obj.filterLabels().size() << endl;
+    for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter )
+      {
+        // -- Get the full name of i-th filter -- //
+        std::string fullname = obj.filterLabels()[i_filter];
+        
+        std::string filterName;
+        
+        // -- Find ":" in the full name -- //
+        size_t m = fullname.find_first_of(':');
+        
+        // -- if ":" exists in the full name, takes the name before ":" as the filter name -- //
+        if( m != std::string::npos )
+    filterName = fullname.substr(0, m);
+        else
+    filterName = fullname;
+        
+        //cout << "\t[" << i_filter << "th Filter] FullName = " << fullname << ", FilterName = " << filterName << endl;
+        
+        // -- Loop for the triggers that a user inserted in this code -- //
+        for( int itf = 0; itf < ntrigName; itf++ )
+    {
+      // cout << "\t\t[" << itf << "th trigger] Name = " << MuonHLT[itf] << ", trigModuleName = " << trigModuleNames[itf] << endl;
+      string name = "";
+      
+      // -- Store HLT object information only if trigModuleName is equal to this filter name -- //
+      if( filterName == trigModuleNames[itf] )
+        {
+          // cout << "\t\t\t[Matched]: filterName = " << filterName << ", Trigger Name = " << MuonHLT[itf] << endl;
+          //name = MuonHLT[itf];
+          name = ListHLT[itf];
+          //int _ps = MuonHLTPS[itf];
+          int _ps = ListHLTPS[itf];
+          _HLT_trigType[ntrigTot] = itf;
+          _HLT_trigFired[ntrigTot] = trigFired[itf];
+          _HLT_trigPt[ntrigTot] = obj.pt();
+          _HLT_trigEta[ntrigTot] = obj.eta();
+          _HLT_trigPhi[ntrigTot] = obj.phi();
+          _HLT_trigName.push_back(name);
+          _HLT_trigPS.push_back(_ps);
+          ntrigTot++;
+        }
+      
+      // cout << endl;
+      
+    } // -- end of for( int itf = 0; itf < ntrigName; itf++ ) -- //
+        
+        // cout << endl;
+        
+      } // -- end of filter iteration -- //
+    
+  } // -- end of trigger object iteration -- //
       
     } // -- end of !trigResult.failedToGet() -- //
   
@@ -1605,33 +1605,33 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       // cout << "##### Analyze:Start the loop for the muon #####" << endl;
       const pat::Muon imuon = muonHandle->at(i);
       
-      if( imuon.isStandAloneMuon() ) 	isSTAmuon[_nMuon] = 1;
-      if( imuon.isGlobalMuon() ) 		isGLBmuon[_nMuon] = 1;	   
-      if( imuon.isTrackerMuon() ) 	isTRKmuon[_nMuon] = 1;	
-      if( imuon.isPFMuon() ) 			isPFmuon[_nMuon] = 1;
+      if( imuon.isStandAloneMuon() )   isSTAmuon[_nMuon] = 1;
+      if( imuon.isGlobalMuon() )     isGLBmuon[_nMuon] = 1;     
+      if( imuon.isTrackerMuon() )   isTRKmuon[_nMuon] = 1;  
+      if( imuon.isPFMuon() )       isPFmuon[_nMuon] = 1;
       
       if( imuon.isStandAloneMuon() )
-	{
-	  if( imuon.isGlobalMuon() )
-	    {
-	      if( imuon.isTrackerMuon() )
-		Muon_muonType[_nMuon] = 0; // -- STA + GLB + TRK -- //
-	      else 
-		Muon_muonType[_nMuon] = 1; // -- STA + GLB -- //
-	    }
-	  else
-	    {
-	      if( imuon.isTrackerMuon() ) 
-		Muon_muonType[_nMuon] = 2; // -- STA + TM -- //
-	      else 
-		Muon_muonType[_nMuon] = 3; // -- STA -- //
-	    }
-	} // -- End of isStandAloneMuon()
+  {
+    if( imuon.isGlobalMuon() )
+      {
+        if( imuon.isTrackerMuon() )
+    Muon_muonType[_nMuon] = 0; // -- STA + GLB + TRK -- //
+        else 
+    Muon_muonType[_nMuon] = 1; // -- STA + GLB -- //
+      }
+    else
+      {
+        if( imuon.isTrackerMuon() ) 
+    Muon_muonType[_nMuon] = 2; // -- STA + TM -- //
+        else 
+    Muon_muonType[_nMuon] = 3; // -- STA -- //
+      }
+  } // -- End of isStandAloneMuon()
       else
-	{
-	  if( imuon.isTrackerMuon() ) 
-	    Muon_muonType[_nMuon] = 4; // -- TM -- //
-	}
+  {
+    if( imuon.isTrackerMuon() ) 
+      Muon_muonType[_nMuon] = 4; // -- TM -- //
+  }
       
       if( Muon_muonType[_nMuon] == 3 ) continue; // -- Dosen't store STA Muon (Not reconstructed in GLB)-- //
       
@@ -1640,14 +1640,14 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       int _segments = 0;
       
       for( int idet = 1; idet < 4; idet++ )
-	{
-	  // -- DT (1), CSC (2), RPC (3) -- //
-	  for( int istation = 1; istation < 5; istation++ )
-	    {
-	      // -- station 1, 2, 3, 4 -- //
-	      _segments += imuon.numberOfSegments(istation, idet);
-	    }
-	}
+  {
+    // -- DT (1), CSC (2), RPC (3) -- //
+    for( int istation = 1; istation < 5; istation++ )
+      {
+        // -- station 1, 2, 3, 4 -- //
+        _segments += imuon.numberOfSegments(istation, idet);
+      }
+  }
       Muon_nSegments[_nMuon] = _segments;
       
       // cout << "##### Analyze:Muon Type #####" << endl;
@@ -1657,91 +1657,91 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       reco::TrackRef trackerTrack = imuon.innerTrack();
       reco::TrackRef muonTrack    = imuon.outerTrack();
       reco::TrackRef glbTrack     = imuon.globalTrack();
-      // reco::TrackRef cktTrack 	= (muon::tevOptimized(imuon, 200, 17., 40., 0.25)).first;
+      // reco::TrackRef cktTrack   = (muon::tevOptimized(imuon, 200, 17., 40., 0.25)).first;
       
       // cout << "##### Analyze:Muon Tracks #####" << endl;
       
       
       // -- Global track information -- //
       if( glbTrack.isNonnull() )
-	{
-	  Muon_chi2dof[_nMuon] = glbTrack->normalizedChi2();
-	  Muon_nhits[_nMuon] = glbTrack->numberOfValidHits();
-	  
-	  Muon_qoverp[_nMuon] = glbTrack->qoverp();
-	  Muon_theta[_nMuon] = glbTrack->theta();
-	  Muon_lambda[_nMuon] = glbTrack->lambda();
-	  Muon_dxy[_nMuon] = glbTrack->dxy();
-	  Muon_d0[_nMuon] = glbTrack->d0();
-	  Muon_dsz[_nMuon] = glbTrack->dsz();
-	  Muon_dz[_nMuon] = glbTrack->dz();
-	  Muon_dxyBS[_nMuon] = glbTrack->dxy(beamSpot.position());
-	  Muon_dszBS[_nMuon] = glbTrack->dsz(beamSpot.position());
-	  Muon_dzBS[_nMuon] = glbTrack->dz(beamSpot.position());
-	  
-	  Muon_vx[_nMuon] = glbTrack->vx();
-	  Muon_vy[_nMuon] = glbTrack->vy();
-	  Muon_vz[_nMuon] = glbTrack->vz();
-	  
-	  const reco::HitPattern & glbhit = glbTrack->hitPattern();
-	  Muon_muonHits[_nMuon] = glbhit.numberOfValidMuonHits();
-	  
-	  Muon_trackerHitsGLB[_nMuon] = glbhit.numberOfValidTrackerHits();
-	  Muon_pixelHitsGLB[_nMuon] = glbhit.numberOfValidPixelHits();
-	  Muon_trackerLayersGLB[_nMuon] = glbhit.trackerLayersWithMeasurement();
-	  
-	} // -- end of if( glbTrack.isNonnull() ) -- //
+  {
+    Muon_chi2dof[_nMuon] = glbTrack->normalizedChi2();
+    Muon_nhits[_nMuon] = glbTrack->numberOfValidHits();
+    
+    Muon_qoverp[_nMuon] = glbTrack->qoverp();
+    Muon_theta[_nMuon] = glbTrack->theta();
+    Muon_lambda[_nMuon] = glbTrack->lambda();
+    Muon_dxy[_nMuon] = glbTrack->dxy();
+    Muon_d0[_nMuon] = glbTrack->d0();
+    Muon_dsz[_nMuon] = glbTrack->dsz();
+    Muon_dz[_nMuon] = glbTrack->dz();
+    Muon_dxyBS[_nMuon] = glbTrack->dxy(beamSpot.position());
+    Muon_dszBS[_nMuon] = glbTrack->dsz(beamSpot.position());
+    Muon_dzBS[_nMuon] = glbTrack->dz(beamSpot.position());
+    
+    Muon_vx[_nMuon] = glbTrack->vx();
+    Muon_vy[_nMuon] = glbTrack->vy();
+    Muon_vz[_nMuon] = glbTrack->vz();
+    
+    const reco::HitPattern & glbhit = glbTrack->hitPattern();
+    Muon_muonHits[_nMuon] = glbhit.numberOfValidMuonHits();
+    
+    Muon_trackerHitsGLB[_nMuon] = glbhit.numberOfValidTrackerHits();
+    Muon_pixelHitsGLB[_nMuon] = glbhit.numberOfValidPixelHits();
+    Muon_trackerLayersGLB[_nMuon] = glbhit.trackerLayersWithMeasurement();
+    
+  } // -- end of if( glbTrack.isNonnull() ) -- //
       else
-	{
-	  if( trackerTrack.isNonnull() )
-	    {
-	      Muon_chi2dof[_nMuon] = trackerTrack->normalizedChi2();
-	      Muon_nhits[_nMuon] = trackerTrack->numberOfValidHits();
-	      
-	      Muon_qoverp[_nMuon] = trackerTrack->qoverp();
-	      Muon_theta[_nMuon] = trackerTrack->theta();
-	      Muon_lambda[_nMuon] = trackerTrack->lambda();
-	      Muon_dxy[_nMuon] = trackerTrack->dxy();
-	      Muon_d0[_nMuon] = trackerTrack->d0();
-	      Muon_dsz[_nMuon] = trackerTrack->dsz();
-	      Muon_dz[_nMuon] = trackerTrack->dz();
-	      Muon_dxyBS[_nMuon] = trackerTrack->dxy(beamSpot.position());
-	      Muon_dszBS[_nMuon] = trackerTrack->dsz(beamSpot.position());
-	      Muon_dzBS[_nMuon] = trackerTrack->dz(beamSpot.position());
-	      
-	      Muon_vx[_nMuon] = trackerTrack->vx();
-	      Muon_vy[_nMuon] = trackerTrack->vy();
-	      Muon_vz[_nMuon] = trackerTrack->vz();
-	      
-	      if( muonTrack.isNonnull() )
-		{
-		  const reco::HitPattern & muonhit = muonTrack->hitPattern();
-		  Muon_muonHits[_nMuon] = muonhit.numberOfValidMuonHits();
-		}
-	      else
-		Muon_muonHits[_nMuon] = 0;
-	    }
-	} // -- end of else of if( glbTrack.isNonnull() ) -- //
+  {
+    if( trackerTrack.isNonnull() )
+      {
+        Muon_chi2dof[_nMuon] = trackerTrack->normalizedChi2();
+        Muon_nhits[_nMuon] = trackerTrack->numberOfValidHits();
+        
+        Muon_qoverp[_nMuon] = trackerTrack->qoverp();
+        Muon_theta[_nMuon] = trackerTrack->theta();
+        Muon_lambda[_nMuon] = trackerTrack->lambda();
+        Muon_dxy[_nMuon] = trackerTrack->dxy();
+        Muon_d0[_nMuon] = trackerTrack->d0();
+        Muon_dsz[_nMuon] = trackerTrack->dsz();
+        Muon_dz[_nMuon] = trackerTrack->dz();
+        Muon_dxyBS[_nMuon] = trackerTrack->dxy(beamSpot.position());
+        Muon_dszBS[_nMuon] = trackerTrack->dsz(beamSpot.position());
+        Muon_dzBS[_nMuon] = trackerTrack->dz(beamSpot.position());
+        
+        Muon_vx[_nMuon] = trackerTrack->vx();
+        Muon_vy[_nMuon] = trackerTrack->vy();
+        Muon_vz[_nMuon] = trackerTrack->vz();
+        
+        if( muonTrack.isNonnull() )
+    {
+      const reco::HitPattern & muonhit = muonTrack->hitPattern();
+      Muon_muonHits[_nMuon] = muonhit.numberOfValidMuonHits();
+    }
+        else
+    Muon_muonHits[_nMuon] = 0;
+      }
+  } // -- end of else of if( glbTrack.isNonnull() ) -- //
       
       if( trackerTrack.isNonnull() )
-	{
-	  const reco::HitPattern & inhit = trackerTrack->hitPattern();
-	  
-	  Muon_trackerHits[_nMuon] = inhit.numberOfValidTrackerHits();
-	  Muon_pixelHits[_nMuon] = inhit.numberOfValidPixelHits();
-	  Muon_trackerLayers[_nMuon] = inhit.trackerLayersWithMeasurement();
-	}
+  {
+    const reco::HitPattern & inhit = trackerTrack->hitPattern();
+    
+    Muon_trackerHits[_nMuon] = inhit.numberOfValidTrackerHits();
+    Muon_pixelHits[_nMuon] = inhit.numberOfValidPixelHits();
+    Muon_trackerLayers[_nMuon] = inhit.trackerLayersWithMeasurement();
+  }
       
       if( !pvHandle->empty() && !pvHandle->front().isFake() )
-	{
-	  Muon_dxyVTX[_nMuon] = imuon.muonBestTrack()->dxy(vtx.position());
-	  Muon_dszVTX[_nMuon] = imuon.muonBestTrack()->dsz(vtx.position());
-	  Muon_dzVTX[_nMuon] = imuon.muonBestTrack()->dz(vtx.position());
-	  
-	  // Muon_dxycktVTX[_nMuon] = cktTrack->dxy(vtx.position());
-	  // Muon_dszcktVTX[_nMuon] = cktTrack->dsz(vtx.position());
-	  // Muon_dzcktVTX[_nMuon] = cktTrack->dz(vtx.position());
-	}
+  {
+    Muon_dxyVTX[_nMuon] = imuon.muonBestTrack()->dxy(vtx.position());
+    Muon_dszVTX[_nMuon] = imuon.muonBestTrack()->dsz(vtx.position());
+    Muon_dzVTX[_nMuon] = imuon.muonBestTrack()->dz(vtx.position());
+    
+    // Muon_dxycktVTX[_nMuon] = cktTrack->dxy(vtx.position());
+    // Muon_dszcktVTX[_nMuon] = cktTrack->dsz(vtx.position());
+    // Muon_dzcktVTX[_nMuon] = cktTrack->dz(vtx.position());
+  }
       
       // muon1 kinematics
       // Muon_cktpT[_nMuon] = cktTrack->pt();
@@ -1762,64 +1762,64 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       // -- Various track informations -- //
       // -- MuonBestTrack -- //
       if( imuon.muonBestTrack().isNonnull() )
-	{
-	  Muon_Best_pT[_nMuon] = imuon.muonBestTrack()->pt();
-	  Muon_Best_pTError[_nMuon] = imuon.muonBestTrack()->ptError();
-	  Muon_Best_Px[_nMuon] = imuon.muonBestTrack()->px();
-	  Muon_Best_Py[_nMuon] = imuon.muonBestTrack()->py();
-	  Muon_Best_Pz[_nMuon] = imuon.muonBestTrack()->pz();
-	  Muon_Best_eta[_nMuon] = imuon.muonBestTrack()->eta();
-	  Muon_Best_phi[_nMuon] = imuon.muonBestTrack()->phi();
-	}
+  {
+    Muon_Best_pT[_nMuon] = imuon.muonBestTrack()->pt();
+    Muon_Best_pTError[_nMuon] = imuon.muonBestTrack()->ptError();
+    Muon_Best_Px[_nMuon] = imuon.muonBestTrack()->px();
+    Muon_Best_Py[_nMuon] = imuon.muonBestTrack()->py();
+    Muon_Best_Pz[_nMuon] = imuon.muonBestTrack()->pz();
+    Muon_Best_eta[_nMuon] = imuon.muonBestTrack()->eta();
+    Muon_Best_phi[_nMuon] = imuon.muonBestTrack()->phi();
+  }
       
       
       // -- Inner Track -- //
       if( imuon.innerTrack().isNonnull() )
-	{
-	  Muon_Inner_pT[_nMuon] = imuon.innerTrack()->pt();
-	  Muon_Inner_pTError[_nMuon] = imuon.innerTrack()->ptError();
-	  Muon_Inner_Px[_nMuon] = imuon.innerTrack()->px();
-	  Muon_Inner_Py[_nMuon] = imuon.innerTrack()->py();
-	  Muon_Inner_Pz[_nMuon] = imuon.innerTrack()->pz();
-	  Muon_Inner_eta[_nMuon] = imuon.innerTrack()->eta();
-	  Muon_Inner_phi[_nMuon] = imuon.innerTrack()->phi();
-	}
+  {
+    Muon_Inner_pT[_nMuon] = imuon.innerTrack()->pt();
+    Muon_Inner_pTError[_nMuon] = imuon.innerTrack()->ptError();
+    Muon_Inner_Px[_nMuon] = imuon.innerTrack()->px();
+    Muon_Inner_Py[_nMuon] = imuon.innerTrack()->py();
+    Muon_Inner_Pz[_nMuon] = imuon.innerTrack()->pz();
+    Muon_Inner_eta[_nMuon] = imuon.innerTrack()->eta();
+    Muon_Inner_phi[_nMuon] = imuon.innerTrack()->phi();
+  }
       
       // -- Outer Track -- //
       if( imuon.outerTrack().isNonnull() )
-	{
-	  Muon_Outer_pT[_nMuon] = imuon.outerTrack()->pt();
-	  Muon_Outer_pTError[_nMuon] = imuon.outerTrack()->ptError();
-	  Muon_Outer_Px[_nMuon] = imuon.outerTrack()->px();
-	  Muon_Outer_Py[_nMuon] = imuon.outerTrack()->py();
-	  Muon_Outer_Pz[_nMuon] = imuon.outerTrack()->pz();
-	  Muon_Outer_eta[_nMuon] = imuon.outerTrack()->eta();
-	  Muon_Outer_phi[_nMuon] = imuon.outerTrack()->phi();
-	}
+  {
+    Muon_Outer_pT[_nMuon] = imuon.outerTrack()->pt();
+    Muon_Outer_pTError[_nMuon] = imuon.outerTrack()->ptError();
+    Muon_Outer_Px[_nMuon] = imuon.outerTrack()->px();
+    Muon_Outer_Py[_nMuon] = imuon.outerTrack()->py();
+    Muon_Outer_Pz[_nMuon] = imuon.outerTrack()->pz();
+    Muon_Outer_eta[_nMuon] = imuon.outerTrack()->eta();
+    Muon_Outer_phi[_nMuon] = imuon.outerTrack()->phi();
+  }
       
       // -- Global Track -- //
       if( imuon.globalTrack().isNonnull() )
-	{
-	  Muon_GLB_pT[_nMuon] = imuon.globalTrack()->pt();
-	  Muon_GLB_pTError[_nMuon] = imuon.globalTrack()->ptError();
-	  Muon_GLB_Px[_nMuon] = imuon.globalTrack()->px();
-	  Muon_GLB_Py[_nMuon] = imuon.globalTrack()->py();
-	  Muon_GLB_Pz[_nMuon] = imuon.globalTrack()->pz();
-	  Muon_GLB_eta[_nMuon] = imuon.globalTrack()->eta();
-	  Muon_GLB_phi[_nMuon] = imuon.globalTrack()->phi();
-	}
+  {
+    Muon_GLB_pT[_nMuon] = imuon.globalTrack()->pt();
+    Muon_GLB_pTError[_nMuon] = imuon.globalTrack()->ptError();
+    Muon_GLB_Px[_nMuon] = imuon.globalTrack()->px();
+    Muon_GLB_Py[_nMuon] = imuon.globalTrack()->py();
+    Muon_GLB_Pz[_nMuon] = imuon.globalTrack()->pz();
+    Muon_GLB_eta[_nMuon] = imuon.globalTrack()->eta();
+    Muon_GLB_phi[_nMuon] = imuon.globalTrack()->phi();
+  }
       
       // -- tuneP MuonBestTrack -- //
       if( imuon.tunePMuonBestTrack().isNonnull() )
-	{
-	  Muon_TuneP_pT[_nMuon] = imuon.tunePMuonBestTrack()->pt();
-	  Muon_TuneP_pTError[_nMuon] = imuon.tunePMuonBestTrack()->ptError();
-	  Muon_TuneP_Px[_nMuon] = imuon.tunePMuonBestTrack()->px();
-	  Muon_TuneP_Py[_nMuon] = imuon.tunePMuonBestTrack()->py();
-	  Muon_TuneP_Pz[_nMuon] = imuon.tunePMuonBestTrack()->pz();
-	  Muon_TuneP_eta[_nMuon] = imuon.tunePMuonBestTrack()->eta();
-	  Muon_TuneP_phi[_nMuon] = imuon.tunePMuonBestTrack()->phi();
-	}
+  {
+    Muon_TuneP_pT[_nMuon] = imuon.tunePMuonBestTrack()->pt();
+    Muon_TuneP_pTError[_nMuon] = imuon.tunePMuonBestTrack()->ptError();
+    Muon_TuneP_Px[_nMuon] = imuon.tunePMuonBestTrack()->px();
+    Muon_TuneP_Py[_nMuon] = imuon.tunePMuonBestTrack()->py();
+    Muon_TuneP_Pz[_nMuon] = imuon.tunePMuonBestTrack()->pz();
+    Muon_TuneP_eta[_nMuon] = imuon.tunePMuonBestTrack()->eta();
+    Muon_TuneP_phi[_nMuon] = imuon.tunePMuonBestTrack()->phi();
+  }
       
       //-- ISOLATIONS GO HERE -- //
       // -- detector based -- //
@@ -1851,171 +1851,171 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       // filter for high pt Tight muon
       // https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#New_Version_recommended
       if( theApplyFilter )
-	{
-	  if( theFilterType == 0 )
-	    {
-	      if( (Muon_cktpT[_nMuon] > 30.0 || Muon_pT[_nMuon] > 30.0)
-		  && fabs(Muon_eta[_nMuon]) < 2.4 
-		  && Muon_dxycktVTX[_nMuon] < 0.4 
-		  && Muon_dzcktVTX[_nMuon] < 1.0 
-		  && Muon_pixelHits[_nMuon] > 0 
-		  && Muon_trackerLayers[_nMuon] > 5 ) 
-		{ 
-		  nLepton++;
-		}
-	      
-	      //if( Muon_chi2dof[_nMuon] < 0 || Muon_chi2dof[_nMuon] > 10 ) continue;
-	      //if( Muon_muonHits[_nMuon] <= 0 ) continue;
-	      //if( Muon_nMatches[_nMuon] <= 1 ) continue;
-	      //if( Muon_cktpTError[_nMuon]/Muon_cktpT[_nMuon] >= 0.3 ) continue;
-	      // no isolation cut applied
-	    }
-	  
-	  if( theFilterType == 1 )
-	    {
-	      if( (Muon_cktpT[_nMuon] > 40.0 ||  Muon_pT[_nMuon] > 40.0)
-		  && fabs(Muon_eta[_nMuon]) < 2.4 
-		  && Muon_dxycktVTX[_nMuon] < 0.4
-		  && Muon_dzcktVTX[_nMuon] < 1.0
-		  )
-		{
-		  nLepton++;
-		}
-	    }
-	} // -- end of if( theApplyFilter ) -- //
+  {
+    if( theFilterType == 0 )
+      {
+        if( (Muon_cktpT[_nMuon] > 30.0 || Muon_pT[_nMuon] > 30.0)
+      && fabs(Muon_eta[_nMuon]) < 2.4 
+      && Muon_dxycktVTX[_nMuon] < 0.4 
+      && Muon_dzcktVTX[_nMuon] < 1.0 
+      && Muon_pixelHits[_nMuon] > 0 
+      && Muon_trackerLayers[_nMuon] > 5 ) 
+    { 
+      nLepton++;
+    }
+        
+        //if( Muon_chi2dof[_nMuon] < 0 || Muon_chi2dof[_nMuon] > 10 ) continue;
+        //if( Muon_muonHits[_nMuon] <= 0 ) continue;
+        //if( Muon_nMatches[_nMuon] <= 1 ) continue;
+        //if( Muon_cktpTError[_nMuon]/Muon_cktpT[_nMuon] >= 0.3 ) continue;
+        // no isolation cut applied
+      }
+    
+    if( theFilterType == 1 )
+      {
+        if( (Muon_cktpT[_nMuon] > 40.0 ||  Muon_pT[_nMuon] > 40.0)
+      && fabs(Muon_eta[_nMuon]) < 2.4 
+      && Muon_dxycktVTX[_nMuon] < 0.4
+      && Muon_dzcktVTX[_nMuon] < 1.0
+      )
+    {
+      nLepton++;
+    }
+      }
+  } // -- end of if( theApplyFilter ) -- //
       
       _nMuon++;
       
       // -- dimuon variables -- //
       for( unsigned j = 0; j != muonHandle->size(); j++ )
-	{
-	  if( i <= j ) continue; // -- prevent double-counting -- //
-	  
-	  const pat::Muon imuon2 = muonHandle->at(j);
-	  int index_type = -1;
-	  
-	  if( imuon2.isStandAloneMuon() )
-	    {
-	      if( imuon2.isGlobalMuon() )
-		{
-		  if( imuon2.isTrackerMuon() ) 
-		    index_type = 0; // -- STA + GLB + TRK -- //
-		  else
-		    index_type = 1; // -- STA + GLB -- //
-		}
-	      else
-		{
-		  if( imuon2.isTrackerMuon() ) 
-		    index_type = 2; // -- STA + TRK -- //
-		  else 
-		    index_type = 3; // -- STA -- //
-		}
-	    }
-	  else
-	    {
-	      if( imuon2.isTrackerMuon() )
-		index_type = 4; // -- TRK -- //
-	    }
-	  
-	  if( index_type == 3 ) continue; // -- Don't check when 2nd muon is STA muon -- //
-	  
-	  // -- vertex variables are calculated using InnerTrack information -- //
-	  reco::TrackRef InnerTrk = imuon.innerTrack();
-	  reco::TrackRef InnerTrk2 = imuon2.innerTrack();
-	  
-	  if( InnerTrk.isNonnull() && InnerTrk2.isNonnull() )
-	    {
-	      reco::TransientTrack muTransient1(InnerTrk, B.product());
-	      reco::TransientTrack muTransient2(InnerTrk2, B.product());
-	      
-	      vector<reco::TransientTrack> dimuonTracksTrk;
-	      dimuonTracksTrk.push_back(muTransient1);
-	      dimuonTracksTrk.push_back(muTransient2);
-	      KalmanVertexFitter KalmanFitterTrk(true);
-	      CachingVertex<5> vertexTrk;
-	      TransientVertex vtxtmpTrk;
-	      bool isVertexTrk = true;
-	      
-	      try
-		{
-		  vertexTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
-		  vtxtmpTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
-		}
-	      catch( exception & err )
-		{
-		  isVertexTrk = false;
-		}
-	      
-	      if( isVertexTrk && vertexTrk.isValid() )
-		{
-		  // inv. mass refit using the dimuon vtx
-		  InvariantMassFromVertex imfvTrk;
-		  static const double muon_mass = 0.1056583;
-		  const CachingVertex<5>& vtxTrk = vertexTrk;
-		  Measurement1D new_massTrk = imfvTrk.invariantMass(vtxTrk, muon_mass);
-		  
-		  vtxTrkCkt1Pt.push_back(InnerTrk->pt());
-		  vtxTrkCkt2Pt.push_back(InnerTrk2->pt());
-		  vtxTrkChi2.push_back(vtxTrk.totalChiSquared());
-		  vtxTrkNdof.push_back(vtxTrk.degreesOfFreedom());
-		  vtxTrkProb.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
-		}
-	      
-	      // cosmic variable
-	      double cosine = acos( -InnerTrk->momentum().Dot( InnerTrk2->momentum() / InnerTrk->p()/InnerTrk2->p()) );
-	      CosAngle.push_back(cosine);
-	      
-	    } // -- end of if( InnerTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
-	  
-	  // --vertex variables are calculated using TuneP information -- //
-	  reco::TrackRef TunePTrk = imuon.tunePMuonBestTrack();
-	  reco::TrackRef TunePTrk2 = imuon2.tunePMuonBestTrack();
-	  
-	  if( TunePTrk.isNonnull() && TunePTrk2.isNonnull() )
-	    {
-	      reco::TransientTrack muTransient1(TunePTrk, B.product());
-	      reco::TransientTrack muTransient2(TunePTrk2, B.product());
-	      
-	      vector<reco::TransientTrack> dimuonTracksTrk;
-	      dimuonTracksTrk.push_back(muTransient1);
-	      dimuonTracksTrk.push_back(muTransient2);
-	      KalmanVertexFitter KalmanFitterTrk(true);
-	      CachingVertex<5> vertexTrk;
-	      TransientVertex vtxtmpTrk;
-	      bool isVertexTrk = true;
-	      
-	      try
-		{
-		  vertexTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
-		  vtxtmpTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
-		}
-	      catch( exception & err )
-		{
-		  isVertexTrk = false;
-		}
-	      
-	      if( isVertexTrk && vertexTrk.isValid() )
-		{
-		  // inv. mass refit using the dimuon vtx
-		  InvariantMassFromVertex imfvTrk;
-		  static const double muon_mass = 0.1056583;
-		  const CachingVertex<5>& vtxTrk = vertexTrk;
-		  Measurement1D new_massTrk = imfvTrk.invariantMass(vtxTrk, muon_mass);
-		  
-		  vtxTrk1Pt_TuneP.push_back(TunePTrk->pt());
-		  vtxTrk2Pt_TuneP.push_back(TunePTrk2->pt());
-		  vtxTrkChi2_TuneP.push_back(vtxTrk.totalChiSquared());
-		  vtxTrkNdof_TuneP.push_back(vtxTrk.degreesOfFreedom());
-		  vtxTrkProb_TuneP.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
-		}
-	      
-	      // cosmic variable
-	      double cosine = acos( -TunePTrk->momentum().Dot( TunePTrk2->momentum() / TunePTrk->p()/TunePTrk2->p()) );
-	      CosAngle_TuneP.push_back(cosine);
-	      
-	    } // -- end of if( TunePTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
-	  
-	} // -- end of for( unsigned j = 0; j != muonHandle->size(); j++ ): iteration for 2nd muon -- //
+  {
+    if( i <= j ) continue; // -- prevent double-counting -- //
+    
+    const pat::Muon imuon2 = muonHandle->at(j);
+    int index_type = -1;
+    
+    if( imuon2.isStandAloneMuon() )
+      {
+        if( imuon2.isGlobalMuon() )
+    {
+      if( imuon2.isTrackerMuon() ) 
+        index_type = 0; // -- STA + GLB + TRK -- //
+      else
+        index_type = 1; // -- STA + GLB -- //
+    }
+        else
+    {
+      if( imuon2.isTrackerMuon() ) 
+        index_type = 2; // -- STA + TRK -- //
+      else 
+        index_type = 3; // -- STA -- //
+    }
+      }
+    else
+      {
+        if( imuon2.isTrackerMuon() )
+    index_type = 4; // -- TRK -- //
+      }
+    
+    if( index_type == 3 ) continue; // -- Don't check when 2nd muon is STA muon -- //
+    
+    // -- vertex variables are calculated using InnerTrack information -- //
+    reco::TrackRef InnerTrk = imuon.innerTrack();
+    reco::TrackRef InnerTrk2 = imuon2.innerTrack();
+    
+    if( InnerTrk.isNonnull() && InnerTrk2.isNonnull() )
+      {
+        reco::TransientTrack muTransient1(InnerTrk, B.product());
+        reco::TransientTrack muTransient2(InnerTrk2, B.product());
+        
+        vector<reco::TransientTrack> dimuonTracksTrk;
+        dimuonTracksTrk.push_back(muTransient1);
+        dimuonTracksTrk.push_back(muTransient2);
+        KalmanVertexFitter KalmanFitterTrk(true);
+        CachingVertex<5> vertexTrk;
+        TransientVertex vtxtmpTrk;
+        bool isVertexTrk = true;
+        
+        try
+    {
+      vertexTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
+      vtxtmpTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
+    }
+        catch( exception & err )
+    {
+      isVertexTrk = false;
+    }
+        
+        if( isVertexTrk && vertexTrk.isValid() )
+    {
+      // inv. mass refit using the dimuon vtx
+      InvariantMassFromVertex imfvTrk;
+      static const double muon_mass = 0.1056583;
+      const CachingVertex<5>& vtxTrk = vertexTrk;
+      Measurement1D new_massTrk = imfvTrk.invariantMass(vtxTrk, muon_mass);
+      
+      vtxTrkCkt1Pt.push_back(InnerTrk->pt());
+      vtxTrkCkt2Pt.push_back(InnerTrk2->pt());
+      vtxTrkChi2.push_back(vtxTrk.totalChiSquared());
+      vtxTrkNdof.push_back(vtxTrk.degreesOfFreedom());
+      vtxTrkProb.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
+    }
+        
+        // cosmic variable
+        double cosine = acos( -InnerTrk->momentum().Dot( InnerTrk2->momentum() / InnerTrk->p()/InnerTrk2->p()) );
+        CosAngle.push_back(cosine);
+        
+      } // -- end of if( InnerTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
+    
+    // --vertex variables are calculated using TuneP information -- //
+    reco::TrackRef TunePTrk = imuon.tunePMuonBestTrack();
+    reco::TrackRef TunePTrk2 = imuon2.tunePMuonBestTrack();
+    
+    if( TunePTrk.isNonnull() && TunePTrk2.isNonnull() )
+      {
+        reco::TransientTrack muTransient1(TunePTrk, B.product());
+        reco::TransientTrack muTransient2(TunePTrk2, B.product());
+        
+        vector<reco::TransientTrack> dimuonTracksTrk;
+        dimuonTracksTrk.push_back(muTransient1);
+        dimuonTracksTrk.push_back(muTransient2);
+        KalmanVertexFitter KalmanFitterTrk(true);
+        CachingVertex<5> vertexTrk;
+        TransientVertex vtxtmpTrk;
+        bool isVertexTrk = true;
+        
+        try
+    {
+      vertexTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
+      vtxtmpTrk = KalmanFitterTrk.vertex(dimuonTracksTrk);
+    }
+        catch( exception & err )
+    {
+      isVertexTrk = false;
+    }
+        
+        if( isVertexTrk && vertexTrk.isValid() )
+    {
+      // inv. mass refit using the dimuon vtx
+      InvariantMassFromVertex imfvTrk;
+      static const double muon_mass = 0.1056583;
+      const CachingVertex<5>& vtxTrk = vertexTrk;
+      Measurement1D new_massTrk = imfvTrk.invariantMass(vtxTrk, muon_mass);
+      
+      vtxTrk1Pt_TuneP.push_back(TunePTrk->pt());
+      vtxTrk2Pt_TuneP.push_back(TunePTrk2->pt());
+      vtxTrkChi2_TuneP.push_back(vtxTrk.totalChiSquared());
+      vtxTrkNdof_TuneP.push_back(vtxTrk.degreesOfFreedom());
+      vtxTrkProb_TuneP.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
+    }
+        
+        // cosmic variable
+        double cosine = acos( -TunePTrk->momentum().Dot( TunePTrk2->momentum() / TunePTrk->p()/TunePTrk2->p()) );
+        CosAngle_TuneP.push_back(cosine);
+        
+      } // -- end of if( TunePTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
+    
+  } // -- end of for( unsigned j = 0; j != muonHandle->size(); j++ ): iteration for 2nd muon -- //
       
     } // -- End of imuon iteration -- //
   
@@ -2175,15 +2175,15 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       
       // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleDEtaInSeedCut.cc#L30-L33 -- //
       Electron_dEtaInSeed[_nElectron] = el->superCluster().isNonnull() && el->superCluster()->seed().isNonnull() ?
-	el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superCluster()->seed()->eta() : std::numeric_limits<float>::max();
+  el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superCluster()->seed()->eta() : std::numeric_limits<float>::max();
       
       // -- |1/E-1/p| = |1/E - EoverPinner/E| is computed below. The if protects against ecalEnergy == inf or zero -- //
       if( el->ecalEnergy() == 0 ) 
-	Electron_InvEminusInvP[_nElectron] = 1e30;
+  Electron_InvEminusInvP[_nElectron] = 1e30;
       else if(  !std::isfinite( el->ecalEnergy() )  ) 
-	Electron_InvEminusInvP[_nElectron] = 1e30;
+  Electron_InvEminusInvP[_nElectron] = 1e30;
       else 
-	Electron_InvEminusInvP[_nElectron] = fabs( 1.0/el->ecalEnergy() - el->eSuperClusterOverP()/el->ecalEnergy() );
+  Electron_InvEminusInvP[_nElectron] = fabs( 1.0/el->ecalEnergy() - el->eSuperClusterOverP()/el->ecalEnergy() );
       
       
       if(suoh_debug) cout << "ECAL & track" << endl;
@@ -2227,14 +2227,14 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       Vertex dummy;
       const Vertex *pv = &dummy;
       if (pvHandle->size() != 0) { 
-	pv = &*pvHandle->begin();
+  pv = &*pvHandle->begin();
       } else { // create a dummy PV
-	Vertex::Error e;
-	e(0, 0) = 0.0015 * 0.0015;
-	e(1, 1) = 0.0015 * 0.0015;
-	e(2, 2) = 15. * 15.;
-	Vertex::Point p(0, 0, 0);
-	dummy = Vertex(p, e, 0, 0, 0);
+  Vertex::Error e;
+  e(0, 0) = 0.0015 * 0.0015;
+  e(1, 1) = 0.0015 * 0.0015;
+  e(2, 2) = 15. * 15.;
+  Vertex::Point p(0, 0, 0);
+  dummy = Vertex(p, e, 0, 0, 0);
       }
       */
       
@@ -2246,10 +2246,10 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
 
       const double gsfsign = ( (-elecTrk->dxy(vtx.position())) >=0 ) ? 1. : -1.;
       if (ip3dpv.first) {
-	double ip3d = gsfsign*ip3dpv.second.value();
-	double ip3derr = ip3dpv.second.error();  
-	Electrron_ip3D[_nElectron] = ip3d; 
-	Electrron_sigip3D[_nElectron] = ip3d/ip3derr;
+  double ip3d = gsfsign*ip3dpv.second.value();
+  double ip3derr = ip3dpv.second.error();  
+  Electrron_ip3D[_nElectron] = ip3d; 
+  Electrron_sigip3D[_nElectron] = ip3d/ip3derr;
       }
       
       Electron_sigdxy[_nElectron] = elecTrk->dxy() / elecTrk->dxyError();
@@ -2259,22 +2259,22 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       Electron_dzBS[_nElectron] = elecTrk->dz(beamSpot.position());
       
       if( elecTrk.isNonnull() )
-	{
-	  Electron_gsfpT[_nElectron] = elecTrk->pt();
-	  Electron_gsfPx[_nElectron] = elecTrk->px();
-	  Electron_gsfPy[_nElectron] = elecTrk->py();
-	  Electron_gsfPz[_nElectron] = elecTrk->pz();
-	  Electron_gsfEta[_nElectron] = elecTrk->eta();
-	  Electron_gsfPhi[_nElectron] = elecTrk->phi();
-	  Electron_gsfCharge[_nElectron] = elecTrk->charge();
-	}
+  {
+    Electron_gsfpT[_nElectron] = elecTrk->pt();
+    Electron_gsfPx[_nElectron] = elecTrk->px();
+    Electron_gsfPy[_nElectron] = elecTrk->py();
+    Electron_gsfPz[_nElectron] = elecTrk->pz();
+    Electron_gsfEta[_nElectron] = elecTrk->eta();
+    Electron_gsfPhi[_nElectron] = elecTrk->phi();
+    Electron_gsfCharge[_nElectron] = elecTrk->charge();
+  }
       
       if( !pvHandle->empty() && !pvHandle->front().isFake() )
-	{
-	  //const reco::Vertex &vtx = pvHandle->front();
-	  Electron_dxyVTX[_nElectron] = elecTrk->dxy(vtx.position());
-	  Electron_dzVTX[_nElectron] = elecTrk->dz(vtx.position());
-	}
+  {
+    //const reco::Vertex &vtx = pvHandle->front();
+    Electron_dxyVTX[_nElectron] = elecTrk->dxy(vtx.position());
+    Electron_dzVTX[_nElectron] = elecTrk->dz(vtx.position());
+  }
       
       bool passConvVeto = !ConversionTools::hasMatchedConversion(*el, conversions, beamSpot.position());
       Electron_passConvVeto[_nElectron] = passConvVeto;
@@ -2298,8 +2298,8 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
       bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
       /*
-	bool isPassMVA_WP80  = (*mva_id_wp80_decisions)[el];
-	bool isPassMVA_WP90  = (*mva_id_wp90_decisions)[el];
+  bool isPassMVA_WP80  = (*mva_id_wp80_decisions)[el];
+  bool isPassMVA_WP90  = (*mva_id_wp90_decisions)[el];
       */
       // bool isPassHEEP  = (*heep_id_decisions)[el];
       
@@ -2313,8 +2313,8 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       Electron_passMVAID_iso_WP80[_nElectron] = isPassMVA_iso_WP80;
       Electron_passMVAID_iso_WP90[_nElectron] = isPassMVA_iso_WP90;
       /*
-	Electron_passMVAID_WP80[_nElectron] = isPassMVA_WP80;
-	Electron_passMVAID_WP90[_nElectron] = isPassMVA_WP90;
+  Electron_passMVAID_WP80[_nElectron] = isPassMVA_WP80;
+  Electron_passMVAID_WP90[_nElectron] = isPassMVA_WP90;
       */
       
       // Electron_passHEEPID[_nElectron] = isPassHEEP;
@@ -2322,145 +2322,145 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       // cout << "##### fillElectrons: Start Dielectron Loop #####" << endl;
       // -- Dielectron variables -- //
       for(int j=0; j<(int)ElecHandle->size(); j++)
-	{
-	  if( i <= j ) continue; // -- prevent double-counting -- //
-	  
-	  const auto el2 = ElecHandle->ptrAt(j);
-	  
-	  reco::GsfTrackRef elecTrk = el->gsfTrack();
-	  reco::GsfTrackRef elecTrk2 = el2->gsfTrack();
-	  
-	  if( elecTrk.isNonnull() && elecTrk2.isNonnull() )
-	    {
-	      vector<reco::TransientTrack> dielecTracksTrk;
-	      dielecTracksTrk.push_back(theTTBuilder->build(elecTrk));
-	      dielecTracksTrk.push_back(theTTBuilder->build(elecTrk2));
-	      KalmanVertexFitter KalmanFitterTrk(true);
-	      CachingVertex<5> vertexTrk;
-	      TransientVertex vtxtmpTrk;
-	      bool isVertexTrk = true;
-	      try
-		{
-		  vertexTrk = KalmanFitterTrk.vertex(dielecTracksTrk);
-		  vtxtmpTrk = KalmanFitterTrk.vertex(dielecTracksTrk);
-		}
-	      catch( exception & err ) 
-		{
-		  isVertexTrk = false;
-		}
-	      
-	      if( isVertexTrk && vertexTrk.isValid() )
-		{
-		  // inv. mass refit using the dielec vtx
-		  InvariantMassFromVertex imfvTrk;
-		  static const double elec_mass = 0.000511;
-		  const CachingVertex<5>& vtxTrk = vertexTrk;
-		  Measurement1D new_massTrk = imfvTrk.invariantMass(vtxTrk, elec_mass);
-		  
-		  vtxTrkDiE1Pt.push_back(elecTrk->pt());
-		  vtxTrkDiE2Pt.push_back(elecTrk2->pt());
-		  vtxTrkDiEChi2.push_back(vtxTrk.totalChiSquared());
-		  vtxTrkDiENdof.push_back(vtxTrk.degreesOfFreedom());
-		  vtxTrkDiEProb.push_back(TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()));
-		}
-	    } // -- end of if( elecTrk.isNonnull() && elecTrk2.isNonnull() ) -- // 
-	  
-	} // -- end of for(int j=0; j<(int)ElecHandle->size(); j++): 2nd electron iteration -- //
+  {
+    if( i <= j ) continue; // -- prevent double-counting -- //
+    
+    const auto el2 = ElecHandle->ptrAt(j);
+    
+    reco::GsfTrackRef elecTrk = el->gsfTrack();
+    reco::GsfTrackRef elecTrk2 = el2->gsfTrack();
+    
+    if( elecTrk.isNonnull() && elecTrk2.isNonnull() )
+      {
+        vector<reco::TransientTrack> dielecTracksTrk;
+        dielecTracksTrk.push_back(theTTBuilder->build(elecTrk));
+        dielecTracksTrk.push_back(theTTBuilder->build(elecTrk2));
+        KalmanVertexFitter KalmanFitterTrk(true);
+        CachingVertex<5> vertexTrk;
+        TransientVertex vtxtmpTrk;
+        bool isVertexTrk = true;
+        try
+    {
+      vertexTrk = KalmanFitterTrk.vertex(dielecTracksTrk);
+      vtxtmpTrk = KalmanFitterTrk.vertex(dielecTracksTrk);
+    }
+        catch( exception & err ) 
+    {
+      isVertexTrk = false;
+    }
+        
+        if( isVertexTrk && vertexTrk.isValid() )
+    {
+      // inv. mass refit using the dielec vtx
+      InvariantMassFromVertex imfvTrk;
+      static const double elec_mass = 0.000511;
+      const CachingVertex<5>& vtxTrk = vertexTrk;
+      Measurement1D new_massTrk = imfvTrk.invariantMass(vtxTrk, elec_mass);
+      
+      vtxTrkDiE1Pt.push_back(elecTrk->pt());
+      vtxTrkDiE2Pt.push_back(elecTrk2->pt());
+      vtxTrkDiEChi2.push_back(vtxTrk.totalChiSquared());
+      vtxTrkDiENdof.push_back(vtxTrk.degreesOfFreedom());
+      vtxTrkDiEProb.push_back(TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()));
+    }
+      } // -- end of if( elecTrk.isNonnull() && elecTrk2.isNonnull() ) -- // 
+    
+  } // -- end of for(int j=0; j<(int)ElecHandle->size(); j++): 2nd electron iteration -- //
       
       
       // cout << "##### fillElectrons: Start gsf track associated electron collector #####" << endl;
       
       // -- emu variables -- //
       for( unsigned j = 0; j != muonHandle->size(); j++ )
-	{
-	  const pat::Muon imuon2 = muonHandle->at(j);
-	  
-	  // -- vertex variables are calculated using InnerTrack information -- //
-	  reco::GsfTrackRef elecTrk = el->gsfTrack();
-	  reco::TrackRef InnerTrk2 = imuon2.innerTrack();
-	  
-	  if( elecTrk.isNonnull() && InnerTrk2.isNonnull() )
-	    {
-	      reco::TransientTrack muTransient2(InnerTrk2, B.product());
-	      
-	      vector<reco::TransientTrack> emuTracksTrk;
-	      emuTracksTrk.push_back(theTTBuilder->build(elecTrk));
-	      emuTracksTrk.push_back(muTransient2);
-	      KalmanVertexFitter KalmanFitterTrk(true);
-	      CachingVertex<5> vertexTrk;
-	      TransientVertex vtxtmpTrk;
-	      bool isVertexTrk = true;
-	      
-	      try
-		{
-		  vertexTrk = KalmanFitterTrk.vertex(emuTracksTrk);
-		  vtxtmpTrk = KalmanFitterTrk.vertex(emuTracksTrk);
-		}
-	      catch( exception & err )
-		{
-		  isVertexTrk = false;
-		}
-	      
-	      if( isVertexTrk && vertexTrk.isValid() )
-		{
-		  const CachingVertex<5>& vtxTrk = vertexTrk;
-		  
-		  vtxTrkEMu1Pt.push_back(elecTrk->pt());
-		  vtxTrkEMu2Pt.push_back(InnerTrk2->pt());
-		  vtxTrkEMuChi2.push_back(vtxTrk.totalChiSquared());
-		  vtxTrkEMuNdof.push_back(vtxTrk.degreesOfFreedom());
-		  vtxTrkEMuProb.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
-		}
-	      
-	      // cosmic variable
-	      //double cosine = acos( -elecTrk->momentum().Dot( InnerTrk2->momentum() / elecTrk->p()/InnerTrk2->p()) );
-	      //CosAngle.push_back(cosine);
-	      
-	    } // -- end of if( elecTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
-	  
-	  // --vertex variables are calculated using TuneP information -- //
-	  reco::TrackRef TunePTrk2 = imuon2.tunePMuonBestTrack();
-	  
-	  if( elecTrk.isNonnull() && TunePTrk2.isNonnull() )
-	    {
-	      reco::TransientTrack muTransient2(TunePTrk2, B.product());
-	      
-	      vector<reco::TransientTrack> emuTracksTrk;
-	      emuTracksTrk.push_back(theTTBuilder->build(elecTrk));
-	      emuTracksTrk.push_back(muTransient2);
-	      KalmanVertexFitter KalmanFitterTrk(true);
-	      CachingVertex<5> vertexTrk;
-	      TransientVertex vtxtmpTrk;
-	      bool isVertexTrk = true;
-	      
-	      try
-		{
-		  vertexTrk = KalmanFitterTrk.vertex(emuTracksTrk);
-		  vtxtmpTrk = KalmanFitterTrk.vertex(emuTracksTrk);
-		}
-	      catch( exception & err )
-		{
-		  isVertexTrk = false;
-		}
-	      
-	      if( isVertexTrk && vertexTrk.isValid() )
-		{
-		  const CachingVertex<5>& vtxTrk = vertexTrk;
-		  
-		  vtxTrkEMu1Pt_TuneP.push_back(elecTrk->pt());
-		  vtxTrkEMu2Pt_TuneP.push_back(TunePTrk2->pt());
-		  vtxTrkEMuChi2_TuneP.push_back(vtxTrk.totalChiSquared());
-		  vtxTrkEMuNdof_TuneP.push_back(vtxTrk.degreesOfFreedom());
-		  vtxTrkEMuProb_TuneP.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
-		}
-	      
-	      // cosmic variable
-	      //double cosine = acos( -elecTrk->momentum().Dot( TunePTrk2->momentum() / elecTrk->p()/TunePTrk2->p()) );
-	      //CosAngle_TuneP.push_back(cosine);
-	      
-	    } // -- end of if( TunePTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
-	  
-	} // -- end of for( unsigned j = 0; j != muonHandle->size(); j++ ): iteration for 2nd muon -- //
+  {
+    const pat::Muon imuon2 = muonHandle->at(j);
+    
+    // -- vertex variables are calculated using InnerTrack information -- //
+    reco::GsfTrackRef elecTrk = el->gsfTrack();
+    reco::TrackRef InnerTrk2 = imuon2.innerTrack();
+    
+    if( elecTrk.isNonnull() && InnerTrk2.isNonnull() )
+      {
+        reco::TransientTrack muTransient2(InnerTrk2, B.product());
+        
+        vector<reco::TransientTrack> emuTracksTrk;
+        emuTracksTrk.push_back(theTTBuilder->build(elecTrk));
+        emuTracksTrk.push_back(muTransient2);
+        KalmanVertexFitter KalmanFitterTrk(true);
+        CachingVertex<5> vertexTrk;
+        TransientVertex vtxtmpTrk;
+        bool isVertexTrk = true;
+        
+        try
+    {
+      vertexTrk = KalmanFitterTrk.vertex(emuTracksTrk);
+      vtxtmpTrk = KalmanFitterTrk.vertex(emuTracksTrk);
+    }
+        catch( exception & err )
+    {
+      isVertexTrk = false;
+    }
+        
+        if( isVertexTrk && vertexTrk.isValid() )
+    {
+      const CachingVertex<5>& vtxTrk = vertexTrk;
+      
+      vtxTrkEMu1Pt.push_back(elecTrk->pt());
+      vtxTrkEMu2Pt.push_back(InnerTrk2->pt());
+      vtxTrkEMuChi2.push_back(vtxTrk.totalChiSquared());
+      vtxTrkEMuNdof.push_back(vtxTrk.degreesOfFreedom());
+      vtxTrkEMuProb.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
+    }
+        
+        // cosmic variable
+        //double cosine = acos( -elecTrk->momentum().Dot( InnerTrk2->momentum() / elecTrk->p()/InnerTrk2->p()) );
+        //CosAngle.push_back(cosine);
+        
+      } // -- end of if( elecTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
+    
+    // --vertex variables are calculated using TuneP information -- //
+    reco::TrackRef TunePTrk2 = imuon2.tunePMuonBestTrack();
+    
+    if( elecTrk.isNonnull() && TunePTrk2.isNonnull() )
+      {
+        reco::TransientTrack muTransient2(TunePTrk2, B.product());
+        
+        vector<reco::TransientTrack> emuTracksTrk;
+        emuTracksTrk.push_back(theTTBuilder->build(elecTrk));
+        emuTracksTrk.push_back(muTransient2);
+        KalmanVertexFitter KalmanFitterTrk(true);
+        CachingVertex<5> vertexTrk;
+        TransientVertex vtxtmpTrk;
+        bool isVertexTrk = true;
+        
+        try
+    {
+      vertexTrk = KalmanFitterTrk.vertex(emuTracksTrk);
+      vtxtmpTrk = KalmanFitterTrk.vertex(emuTracksTrk);
+    }
+        catch( exception & err )
+    {
+      isVertexTrk = false;
+    }
+        
+        if( isVertexTrk && vertexTrk.isValid() )
+    {
+      const CachingVertex<5>& vtxTrk = vertexTrk;
+      
+      vtxTrkEMu1Pt_TuneP.push_back(elecTrk->pt());
+      vtxTrkEMu2Pt_TuneP.push_back(TunePTrk2->pt());
+      vtxTrkEMuChi2_TuneP.push_back(vtxTrk.totalChiSquared());
+      vtxTrkEMuNdof_TuneP.push_back(vtxTrk.degreesOfFreedom());
+      vtxTrkEMuProb_TuneP.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
+    }
+        
+        // cosmic variable
+        //double cosine = acos( -elecTrk->momentum().Dot( TunePTrk2->momentum() / elecTrk->p()/TunePTrk2->p()) );
+        //CosAngle_TuneP.push_back(cosine);
+        
+      } // -- end of if( TunePTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
+    
+  } // -- end of for( unsigned j = 0; j != muonHandle->size(); j++ ): iteration for 2nd muon -- //
       
       _nElectron++;
       
@@ -2535,23 +2535,23 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
       Int_t id = lheEvent.IDUP[idxParticle];
       
       if( fabs(id) == 13 || fabs(id) == 11 || fabs(id) == 15 )
-	{
-	  Double_t Px = lheParticles[idxParticle][0];
-	  Double_t Py = lheParticles[idxParticle][1];
-	  Double_t Pz = lheParticles[idxParticle][2];
-	  Double_t E = lheParticles[idxParticle][3];
-	  // Double_t M = lheParticles[idxParticle][4];		
-	  Int_t status = lheEvent.ISTUP[idxParticle];
-	  
-	  LHELepton_ID[_nLHEParticle] = id;
-	  LHELepton_status[_nLHEParticle] = status;
-	  LHELepton_Px[_nLHEParticle] = Px;
-	  LHELepton_Py[_nLHEParticle] = Py;
-	  LHELepton_Pz[_nLHEParticle] = Pz;
-	  LHELepton_E[_nLHEParticle] = E;
-	  
-	  _nLHEParticle++;
-	}
+  {
+    Double_t Px = lheParticles[idxParticle][0];
+    Double_t Py = lheParticles[idxParticle][1];
+    Double_t Pz = lheParticles[idxParticle][2];
+    Double_t E = lheParticles[idxParticle][3];
+    // Double_t M = lheParticles[idxParticle][4];    
+    Int_t status = lheEvent.ISTUP[idxParticle];
+    
+    LHELepton_ID[_nLHEParticle] = id;
+    LHELepton_status[_nLHEParticle] = status;
+    LHELepton_Px[_nLHEParticle] = Px;
+    LHELepton_Py[_nLHEParticle] = Py;
+    LHELepton_Pz[_nLHEParticle] = Pz;
+    LHELepton_E[_nLHEParticle] = E;
+    
+    _nLHEParticle++;
+  }
     }
   nLHEParticle = _nLHEParticle;
   
@@ -2624,8 +2624,8 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     int idx = -1;
     for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ) {
       if( it->mother()==&(*mit) ) {
-	idx = std::distance(genParticles->begin(),mit);
-	break;
+  idx = std::distance(genParticles->begin(),mit);
+  break;
       }
     }
     
@@ -2841,14 +2841,14 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   // iEvent.getByLabel(pfMetCollection_, pfMETcoll);
   // if( pfMETcoll.isValid() )
   // {
-  // 	const PFMETCollection *pfmetcol = pfMETcoll.product();
-  // 	const PFMET *pfmet;
-  // 	pfmet = &(pfmetcol->front());
-  // 	pfMET_sumEt = pfmet->sumEt();
-  // 	pfMET_pt = pfmet->pt();
-  // 	pfMET_px = pfmet->px();
-  // 	pfMET_py = pfmet->py();
-  // 	pfMET_phi = pfmet->phi();
+  //   const PFMETCollection *pfmetcol = pfMETcoll.product();
+  //   const PFMET *pfmet;
+  //   pfmet = &(pfmetcol->front());
+  //   pfMET_sumEt = pfmet->sumEt();
+  //   pfMET_pt = pfmet->pt();
+  //   pfMET_px = pfmet->px();
+  //   pfMET_py = pfmet->py();
+  //   pfMET_phi = pfmet->phi();
   // }
 }
 
@@ -2937,13 +2937,13 @@ void SKFlatMaker::fillTT(const edm::Event &iEvent)
       //if( iTT->pt() < 1.0 || iTT->pt() > 100000 ) continue;
       bool _isMatch = false;
       for( int i = 0; i < Nelectrons; i++ )
-	{
-	  double dpT = fabs(iTT->pt() - Electron_gsfpT[i]);
-	  double dR = deltaR(iTT->eta(), iTT->phi(), Electron_gsfEta[i], Electron_gsfPhi[i]);
-	  //cout << "elec = " << i << " " << Electron_gsfpT[i] << " " << Electron_gsfEta[i] << " " << Electron_gsfPhi[i] << " " << dR << endl;
-	  if( dR < 0.001 && dpT < 1.0 ) 
-	    _isMatch = true;
-	}
+  {
+    double dpT = fabs(iTT->pt() - Electron_gsfpT[i]);
+    double dR = deltaR(iTT->eta(), iTT->phi(), Electron_gsfEta[i], Electron_gsfPhi[i]);
+    //cout << "elec = " << i << " " << Electron_gsfpT[i] << " " << Electron_gsfEta[i] << " " << Electron_gsfPhi[i] << " " << dR << endl;
+    if( dR < 0.001 && dpT < 1.0 ) 
+      _isMatch = true;
+  }
       if( _isMatch ) continue;
       
       TTrack_dxy[_nTT] = iTT->dxy(vtx.position());
@@ -2989,12 +2989,12 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
       LHERunInfoProduct myLHERunInfoProduct = *(LHERunInfo.product());
       typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
       for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++)
-	{
-	  std::cout << iter->tag() << std::endl;
-	  std::vector<std::string> lines = iter->lines();
-	  for (unsigned int iLine = 0; iLine<lines.size(); iLine++)
-	    std::cout << lines.at(iLine);
-	}
+  {
+    std::cout << iter->tag() << std::endl;
+    std::vector<std::string> lines = iter->lines();
+    for (unsigned int iLine = 0; iLine<lines.size(); iLine++)
+      std::cout << lines.at(iLine);
+  }
       cout << "##### End of information about PDF weights #####" << endl;
     }
 }

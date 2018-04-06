@@ -195,58 +195,58 @@ class SKFlatMaker : public edm::EDAnalyzer
   HLTConfigProvider hltConfig_;
   
   // -- Tokens (for 76X) -- //
-  edm::EDGetTokenT< std::vector<pat::Muon> > 						MuonToken;
-  edm::EDGetTokenT< edm::View<pat::Electron> > 				                ElectronToken;
+  edm::EDGetTokenT< std::vector<pat::Muon> >             MuonToken;
+  edm::EDGetTokenT< edm::View<pat::Electron> >                         ElectronToken;
   edm::EDGetTokenT< edm::View<pat::Electron> >                                          UnCorrElectronToken;
-  edm::EDGetTokenT< edm::View<pat::Photon> > 					        PhotonToken;
+  edm::EDGetTokenT< edm::View<pat::Photon> >                   PhotonToken;
   edm::EDGetTokenT< edm::View<pat::Photon> >                                            UnCorrPhotonToken;
-  edm::EDGetTokenT< std::vector<pat::Jet> > 						JetToken;
-  edm::EDGetTokenT< std::vector<pat::MET> > 						MetToken;
+  edm::EDGetTokenT< std::vector<pat::Jet> >             JetToken;
+  edm::EDGetTokenT< std::vector<pat::MET> >             MetToken;
   //edm::EDGetTokenT<pat::METCollection>                                           MetToken;
 
-  edm::EDGetTokenT< LHEEventProduct > 							LHEEventProductToken;
-  edm::EDGetTokenT< LHERunInfoProduct >							LHERunInfoProductToken;
+  edm::EDGetTokenT< LHEEventProduct >               LHEEventProductToken;
+  edm::EDGetTokenT< LHERunInfoProduct >              LHERunInfoProductToken;
   edm::EDGetTokenT< reco::GenParticleCollection>                                        mcLabel_;
   
   edm::EDGetTokenT< edm::TriggerResults >                                               METFilterResultsToken_PAT;
   edm::EDGetTokenT< edm::TriggerResults >                                               METFilterResultsToken_RECO;
   
-  edm::EDGetTokenT< double > 						     		RhoToken;
+  edm::EDGetTokenT< double >                      RhoToken;
   edm::EDGetTokenT< edm::ValueMap<float> >                                              mvaIsoValuesMapToken;
   edm::EDGetTokenT< edm::ValueMap<float> >                                              mvaNoIsoValuesMapToken;
-  edm::EDGetTokenT< edm::ValueMap<bool> > 						eleVetoIdMapToken;
-  edm::EDGetTokenT< edm::ValueMap<bool> > 						eleLooseIdMapToken;
-  edm::EDGetTokenT< edm::ValueMap<bool> > 						eleMediumIdMapToken;
-  edm::EDGetTokenT< edm::ValueMap<bool> > 						eleTightIdMapToken;
+  edm::EDGetTokenT< edm::ValueMap<bool> >             eleVetoIdMapToken;
+  edm::EDGetTokenT< edm::ValueMap<bool> >             eleLooseIdMapToken;
+  edm::EDGetTokenT< edm::ValueMap<bool> >             eleMediumIdMapToken;
+  edm::EDGetTokenT< edm::ValueMap<bool> >             eleTightIdMapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> >                                               eleMVAIdnoIsoWP80MapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> >                                               eleMVAIdnoIsoWP90MapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> >                                               eleMVAIdisoWP80MapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> >                                               eleMVAIdisoWP90MapToken;
-  edm::EDGetTokenT< edm::ValueMap<bool> > 						eleMVAIdWP80MapToken;
-  edm::EDGetTokenT< edm::ValueMap<bool> > 						eleMVAIdWP90MapToken;
-  edm::EDGetTokenT< edm::ValueMap<bool> > 						eleHEEPIdMapToken;
-  edm::EDGetTokenT< std::vector<reco::Conversion> > 		           		ConversionsToken;
-  edm::EDGetTokenT< std::vector< reco::GsfTrack > > 			         	GsfTrackToken;
+  edm::EDGetTokenT< edm::ValueMap<bool> >             eleMVAIdWP80MapToken;
+  edm::EDGetTokenT< edm::ValueMap<bool> >             eleMVAIdWP90MapToken;
+  edm::EDGetTokenT< edm::ValueMap<bool> >             eleHEEPIdMapToken;
+  edm::EDGetTokenT< std::vector<reco::Conversion> >                    ConversionsToken;
+  edm::EDGetTokenT< std::vector< reco::GsfTrack > >                  GsfTrackToken;
   
   edm::EDGetTokenT< edm::ValueMap<bool> >                                               phoLooseIdMapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> >                                               phoMediumIdMapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> >                                               phoTightIdMapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> >                                               phoMVAIDWP90MapToken;
   edm::EDGetTokenT< edm::ValueMap<bool> >                                               phoMVAIDWP80MapToken;
-  edm::EDGetTokenT< edm::ValueMap<float> > 						full5x5SigmaIEtaIEtaMapToken;
-  edm::EDGetTokenT< edm::ValueMap<float> > 						phoChargedIsolationToken;
-  edm::EDGetTokenT< edm::ValueMap<float> > 						phoNeutralHadronIsolationToken;
-  edm::EDGetTokenT< edm::ValueMap<float> > 						phoPhotonIsolationToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >             full5x5SigmaIEtaIEtaMapToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >             phoChargedIsolationToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >             phoNeutralHadronIsolationToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >             phoPhotonIsolationToken;
   
-  edm::EDGetTokenT< edm::TriggerResults > 						TriggerToken;
-  edm::EDGetTokenT< edm::TriggerResults > 						TriggerTokenPAT;
-  edm::EDGetTokenT< std::vector<pat::TriggerObjectStandAlone> > 	                TriggerObjectToken;
+  edm::EDGetTokenT< edm::TriggerResults >             TriggerToken;
+  edm::EDGetTokenT< edm::TriggerResults >             TriggerTokenPAT;
+  edm::EDGetTokenT< std::vector<pat::TriggerObjectStandAlone> >                   TriggerObjectToken;
   
-  edm::EDGetTokenT< GenEventInfoProduct > 						GenEventInfoToken;
-  edm::EDGetTokenT< reco::BeamSpot > 						       	BeamSpotToken;
-  edm::EDGetTokenT< reco::VertexCollection > 						PrimaryVertexToken;
-  edm::EDGetTokenT< edm::View<reco::Track> > 						TrackToken;
-  edm::EDGetTokenT< std::vector< PileupSummaryInfo > > 	                   		PileUpInfoToken;
+  edm::EDGetTokenT< GenEventInfoProduct >             GenEventInfoToken;
+  edm::EDGetTokenT< reco::BeamSpot >                      BeamSpotToken;
+  edm::EDGetTokenT< reco::VertexCollection >             PrimaryVertexToken;
+  edm::EDGetTokenT< edm::View<reco::Track> >             TrackToken;
+  edm::EDGetTokenT< std::vector< PileupSummaryInfo > >                          PileUpInfoToken;
   
   
   //edm::Handle<bool> ifilterbadChCand;
