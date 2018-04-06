@@ -53,29 +53,9 @@ METFilterResultsToken_RECO          ( consumes<edm::TriggerResults>             
 RhoToken                            ( consumes< double >                                    (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
 mvaIsoValuesMapToken                ( consumes< edm::ValueMap<float> >                      (iConfig.getParameter<edm::InputTag>("mvaIsoValuesMap"))  ),
 mvaNoIsoValuesMapToken              ( consumes< edm::ValueMap<float> >                      (iConfig.getParameter<edm::InputTag>("mvaNoIsoValuesMap"))  ),
-eleVetoIdMapToken                   ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleVetoIdMap")) ),
-eleLooseIdMapToken                  ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleLooseIdMap")) ),
-eleMediumIdMapToken                 ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMediumIdMap")) ),
-eleTightIdMapToken                  ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleTightIdMap")) ),
-eleMVAIdnoIsoWP80MapToken           ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP80Map")) ),
-eleMVAIdnoIsoWP90MapToken           ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdnoIsoWP90Map")) ),
-eleMVAIdisoWP80MapToken             ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP80Map")) ),
-eleMVAIdisoWP90MapToken             ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdisoWP90Map")) ),
-eleMVAIdWP80MapToken                ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP80Map")) ),
-eleMVAIdWP90MapToken                ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleMVAIdWP90Map")) ),
-eleHEEPIdMapToken                   ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("eleHEEPIdMap")) ),
 ConversionsToken                    ( consumes< std::vector<reco::Conversion> >             (iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
 GsfTrackToken                       ( consumes< std::vector< reco::GsfTrack > >             (iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
-// -- Photon tokens -- //
-phoLooseIdMapToken                  ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoLooseIdMap")) ),
-phoMediumIdMapToken                 ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoMediumIdMap")) ),
-phoTightIdMapToken                  ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoTightIdMap")) ),
-phoMVAIDWP90MapToken                ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoMVAIDWP90Map")) ),
-phoMVAIDWP80MapToken                ( consumes< edm::ValueMap<bool> >                       (iConfig.getUntrackedParameter<edm::InputTag>("phoMVAIDWP80Map")) ),
-full5x5SigmaIEtaIEtaMapToken        ( consumes< edm::ValueMap<float> >                      (iConfig.getUntrackedParameter<edm::InputTag>("full5x5SigmaIEtaIEtaMap")) ),
-phoChargedIsolationToken            ( consumes< edm::ValueMap<float> >                      (iConfig.getUntrackedParameter<edm::InputTag>("phoChargedIsolation")) ),
-phoNeutralHadronIsolationToken      ( consumes< edm::ValueMap<float> >                      (iConfig.getUntrackedParameter<edm::InputTag>("phoNeutralHadronIsolation")) ),
-phoPhotonIsolationToken             ( consumes< edm::ValueMap<float> >                      (iConfig.getUntrackedParameter<edm::InputTag>("phoPhotonIsolation")) ),
+
 // -- Trigger Token -- //
 TriggerToken                        ( consumes< edm::TriggerResults >                       (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
 TriggerTokenPAT                     ( consumes< edm::TriggerResults >                       (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResultsPAT")) ),
@@ -2050,44 +2030,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::Handle< std::vector<reco::Conversion> > conversions;
   iEvent.getByToken(ConversionsToken, conversions);
   
-  edm::Handle<edm::ValueMap<bool> > veto_id_decisions;
-  iEvent.getByToken(eleVetoIdMapToken, veto_id_decisions);
-  
-  edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
-  iEvent.getByToken(eleLooseIdMapToken, loose_id_decisions);
-  
-  edm::Handle<edm::ValueMap<bool> > medium_id_decisions;
-  iEvent.getByToken(eleMediumIdMapToken, medium_id_decisions);
-  
-  edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
-  iEvent.getByToken(eleTightIdMapToken, tight_id_decisions);
-  
-  edm::Handle<edm::ValueMap<bool> > mva_id_noIso_wp80_decisions;
-  iEvent.getByToken(eleMVAIdnoIsoWP80MapToken, mva_id_noIso_wp80_decisions);
-  
-  edm::Handle<edm::ValueMap<bool> > mva_id_noIso_wp90_decisions;
-  iEvent.getByToken(eleMVAIdnoIsoWP90MapToken, mva_id_noIso_wp90_decisions);
-  
-  edm::Handle<edm::ValueMap<bool> > mva_id_iso_wp80_decisions;
-  iEvent.getByToken(eleMVAIdisoWP80MapToken, mva_id_iso_wp80_decisions);
-  
-  edm::Handle<edm::ValueMap<bool> > mva_id_iso_wp90_decisions;
-  iEvent.getByToken(eleMVAIdisoWP90MapToken, mva_id_iso_wp90_decisions);
-  
-  if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] decision ends;" << endl;
-  
-  
-  /*
-    edm::Handle<edm::ValueMap<bool> > mva_id_wp80_decisions;
-    iEvent.getByToken(eleMVAIdWP80MapToken, mva_id_wp80_decisions);
-    
-    edm::Handle<edm::ValueMap<bool> > mva_id_wp90_decisions;
-    iEvent.getByToken(eleMVAIdWP90MapToken, mva_id_wp90_decisions);
-  */
-  // -- HEEP recipe is not working under 80X regression recipe (why?): temporarily disabled -- //
-  // edm::Handle<edm::ValueMap<bool> > heep_id_decisions;
-  // iEvent.getByToken(eleHEEPIdMapToken, heep_id_decisions);
-  
   // -- B-field for vertex variables (ee, emu) -- //
   ESHandle<MagneticField> B;
   iSetup.get<IdealMagneticFieldRecord>().get(B);
@@ -2272,15 +2214,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       Electron_passConvVeto[_nElectron] = passConvVeto;
       
       // -- for ID variables -- //
-      //bool isPassVeto  = (*veto_id_decisions)[el];
-      //bool isPassLoose  = (*loose_id_decisions)[el];
-      //bool isPassMedium = (*medium_id_decisions)[el];
-      //bool isPassTight  = (*tight_id_decisions)[el];
-      //bool isPassMVA_noIso_WP80 = (*mva_id_noIso_wp80_decisions)[el];
-      //bool isPassMVA_noIso_WP90 = (*mva_id_noIso_wp90_decisions)[el];
-      //bool isPassMVA_iso_WP80 = (*mva_id_iso_wp80_decisions)[el];
-      //bool isPassMVA_iso_WP90 = (*mva_id_iso_wp90_decisions)[el];
-      
       bool isPassVeto  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-veto");
       bool isPassLoose  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-loose");
       bool isPassMedium = el -> electronID("cutBasedElectronID-Fall17-94X-V1-medium");
@@ -2289,11 +2222,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
       bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
       bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
-      /*
-  bool isPassMVA_WP80  = (*mva_id_wp80_decisions)[el];
-  bool isPassMVA_WP90  = (*mva_id_wp90_decisions)[el];
-      */
-      // bool isPassHEEP  = (*heep_id_decisions)[el];
       
       // cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
       Electron_passVetoID[_nElectron] = isPassVeto;
@@ -2304,10 +2232,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       Electron_passMVAID_noIso_WP90[_nElectron] = isPassMVA_noIso_WP90;
       Electron_passMVAID_iso_WP80[_nElectron] = isPassMVA_iso_WP80;
       Electron_passMVAID_iso_WP90[_nElectron] = isPassMVA_iso_WP90;
-      /*
-  Electron_passMVAID_WP80[_nElectron] = isPassMVA_WP80;
-  Electron_passMVAID_WP90[_nElectron] = isPassMVA_WP90;
-      */
       
       // Electron_passHEEPID[_nElectron] = isPassHEEP;
       
@@ -2661,40 +2585,6 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   iEvent.getByToken(RhoToken,rhoH);
   float rho_ = *rhoH;
   
-  // Get the full5x5 map
-  edm::Handle<edm::ValueMap<float> > full5x5SigmaIEtaIEtaMap;
-  iEvent.getByToken(full5x5SigmaIEtaIEtaMapToken, full5x5SigmaIEtaIEtaMap);
-  
-  // Get the isolation maps
-  edm::Handle<edm::ValueMap<float> > phoChargedIsolationMap;
-  iEvent.getByToken(phoChargedIsolationToken, phoChargedIsolationMap);
-  
-  edm::Handle<edm::ValueMap<float> > phoNeutralHadronIsolationMap;
-  iEvent.getByToken(phoNeutralHadronIsolationToken, phoNeutralHadronIsolationMap);
-  
-  edm::Handle<edm::ValueMap<float> > phoPhotonIsolationMap;
-  iEvent.getByToken(phoPhotonIsolationToken, phoPhotonIsolationMap);
-
-  //cout << "1" << endl;
-
-  edm::Handle<edm::ValueMap<bool> > loose_id_decisions;
-  iEvent.getByToken(phoLooseIdMapToken, loose_id_decisions);
-  
-  edm::Handle<edm::ValueMap<bool> > medium_id_decisions;
-  iEvent.getByToken(phoMediumIdMapToken, medium_id_decisions);
-  
-  edm::Handle<edm::ValueMap<bool> > tight_id_decisions;
-  iEvent.getByToken(phoTightIdMapToken, tight_id_decisions);
-
-  edm::Handle<edm::ValueMap<bool> > mva_id_wp90_decisions;
-  iEvent.getByToken(phoMVAIDWP90MapToken, mva_id_wp90_decisions);
-
-  edm::Handle<edm::ValueMap<bool> > mva_id_wp80_decisions;
-  iEvent.getByToken(phoMVAIDWP80MapToken, mva_id_wp80_decisions);  
-
-  //cout << "2" << endl;
-
-  
   EffectiveAreas effAreaChHadrons_( effAreaChHadronsFile.fullPath() );
   EffectiveAreas effAreaNeuHadrons_( effAreaNeuHadronsFile.fullPath() );
   EffectiveAreas effAreaPhotons_( effAreaPhotonsFile.fullPath() );
@@ -2729,10 +2619,6 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
       
       //cout << "2.4" << endl;
       
-      //float chIso = (double)(*phoChargedIsolationMap)[pho];
-      //float nhIso = (double)(*phoNeutralHadronIsolationMap)[pho];
-      //float phIso = (double)(*phoPhotonIsolationMap)[pho];
-
       float chIso = pho -> chargedHadronIso();
       float nhIso = pho -> neutralHadronIso();
       float phIso = pho -> photonIso();
@@ -2748,15 +2634,6 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
       Photon_NhIsoWithEA[_nPhotons] = std::max( (float)0.0, nhIso - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta) );
       Photon_PhIsoWithEA[_nPhotons] = std::max( (float)0.0, phIso - rho_*effAreaPhotons_.getEffectiveArea(abseta) );
       
-      //cout << "3" << endl;
-
-      
-      //bool isPassLoose  = (*loose_id_decisions)[pho];
-      //bool isPassMedium  = (*medium_id_decisions)[pho];
-      //bool isPassTight  = (*tight_id_decisions)[pho];
-      //bool isPassMVA_WP80 = (*mva_id_wp80_decisions)[pho];
-      //bool isPassMVA_WP90 = (*mva_id_wp90_decisions)[pho];
-        
       bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
       bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
       bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V1-tight");
