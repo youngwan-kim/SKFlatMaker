@@ -14,7 +14,7 @@ GT_MC = '94X_mc2017_realistic_v10'
 # TESTFILE_MC = 'file:/u/user/kplee/scratch/ROOTFiles_Test/80X/ExampleMiniAODv2_ZMuMuPowheg_M120to200_Moriond17.root' # -- no signal -- #
 #TESTFILE_MC = 'root://cms-xrd-global.cern.ch//store/mc/RunIIFall17MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/RECOSIMstep_94X_mc2017_realistic_v10-v1/00000/0293A280-B5F3-E711-8303-3417EBE33927.root' # -- a root file of DYJetsToLL_M-50, MG
 TESTFILE_MC = 'root://cms-xrd-global.cern.ch//store/mc/RunIIFall17MiniAOD/ZToEE_NNPDF31_13TeV-powheg_M_3500_4500/MINIAODSIM/94X_mc2017_realistic_v10-v2/00000/201990FB-B306-E811-9A19-782BCB678094.root' # -- a root file of /ZToEE_NNPDF31_13TeV-powheg_M_3500_4500/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM
-TESTFILE_DATA = 'file:/afs/cern.ch/work/s/suoh/entuple_making/KPLee_code/CMSSW_9_4_2/src/Phys/SKFlatMaker/ntuples/suoh_test/17Nov17_Rereco/DoubleMuon/00FB06B4-0DDF-E711-9291-02163E012A3F.root'
+TESTFILE_DATA = 'root://cms-xrd-global.cern.ch//store/data/Run2017F/DoubleMuon/MINIAOD/17Nov2017-v1/50000/00FB06B4-0DDF-E711-9291-02163E012A3F.root'
 
 ####################################################################################################################
 
@@ -40,7 +40,7 @@ process.source = cms.Source("PoolSource",
 	fileNames = cms.untracked.vstring( FileName )
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # -- Geometry and Detector Conditions (needed for a few patTuple production steps) -- #
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
