@@ -16,7 +16,7 @@
 //
 //--------------------------------------------------
 
-#include "SKFlat/SKFlatMaker/interface/SKFlatMaker.h"
+#include "SKFlatMaker/SKFlatMaker/interface/SKFlatMaker.h"
 
 //
 // class decleration
