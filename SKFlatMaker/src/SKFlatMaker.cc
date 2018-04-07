@@ -119,7 +119,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   ///////////////////////////////////////////
   // -- initialize for ntuple variables -- //
   ///////////////////////////////////////////
-  nMuon = -1; 
   // MET_sumEt = -999;
   // MET_pt = -999;
   // MET_px = -999;
@@ -147,7 +146,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Flag_noBadMuons = false;
   
   nVertices = -1;
-  Nmuons = Njets = Nbtagged = NbtaggedCloseMuon = -1;
+  Njets = Nbtagged = NbtaggedCloseMuon = -1;
   Nelectrons = -1;
   nUnCorrElectron = -1;
   PVtrackSize = -1;
@@ -198,6 +197,112 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   vtxTrkEMuChi2_TuneP.clear();
   
   PDFWeights.clear();
+
+  //==== Muon
+  muon_PfChargedHadronIsoR05.clear();
+  muon_PfNeutralHadronIsoR05.clear();
+  muon_PfGammaIsoR05.clear();
+  muon_PfChargedHadronIsoR04.clear();
+  muon_PfNeutralHadronIsoR04.clear();
+  muon_PfGammaIsoR04.clear();
+  muon_PFSumPUIsoR04.clear();
+  muon_PfChargedHadronIsoR03.clear();
+  muon_PfNeutralHadronIsoR03.clear();
+  muon_PfGammaIsoR03.clear();
+  muon_PFSumPUIsoR03.clear();
+  muon_isPF.clear();
+  muon_isGlobal.clear();
+  muon_isTracker.clear();
+  muon_isStandAlone.clear();
+  muon_filterName.clear();
+  muon_trigmatch.clear();
+  muon_dB.clear();
+  muon_phi.clear();
+  muon_eta.clear();
+  muon_pt.clear();
+  muon_cktpt.clear();
+  muon_cktPx.clear();
+  muon_cktPy.clear();
+  muon_cktPz.clear();
+  muon_cktptError.clear();
+  muon_Px.clear();
+  muon_Py.clear();
+  muon_Pz.clear();
+  muon_sumtrkpt.clear();
+  muon_trkiso.clear();
+  muon_hcaliso.clear();
+  muon_ecaliso.clear();
+  muon_trkisoR05.clear();
+  muon_hcalisoR05.clear();
+  muon_ecalisoR05.clear();
+  muon_charge.clear();
+  muon_nChambers.clear();
+  muon_matchedstations.clear();
+  muon_stationMask.clear();
+  muon_nSegments.clear();
+  muon_chi2dof.clear();
+  muon_validhits.clear();
+  muon_trackerHits.clear();
+  muon_pixelHits.clear();
+  muon_validmuonhits.clear();
+  muon_trackerLayers.clear();
+  muon_trackerHitsGLB.clear();
+  muon_trackerLayersGLB.clear();
+  muon_pixelHitsGLB.clear();
+  muon_qoverp.clear();
+  muon_theta.clear();
+  muon_lambda.clear();
+  muon_dxy.clear();
+  muon_d0.clear();
+  muon_dsz.clear();
+  muon_dz.clear();
+  muon_dxyBS.clear();
+  muon_dzBS.clear();
+  muon_dszBS.clear();
+  muon_dxyVTX.clear();
+  muon_dzVTX.clear();
+  muon_dszVTX.clear();
+  muon_dxycktVTX.clear();
+  muon_dzcktVTX.clear();
+  muon_dszcktVTX.clear();
+  muon_vx.clear();
+  muon_vy.clear();
+  muon_vz.clear();
+  muon_Best_pt.clear();
+  muon_Best_ptError.clear();
+  muon_Best_Px.clear();
+  muon_Best_Py.clear();
+  muon_Best_Pz.clear();
+  muon_Best_eta.clear();
+  muon_Best_phi.clear();
+  muon_Inner_pt.clear();
+  muon_Inner_ptError.clear();
+  muon_Inner_Px.clear();
+  muon_Inner_Py.clear();
+  muon_Inner_Pz.clear();
+  muon_Inner_eta.clear();
+  muon_Inner_phi.clear();
+  muon_Outer_pt.clear();
+  muon_Outer_ptError.clear();
+  muon_Outer_Px.clear();
+  muon_Outer_Py.clear();
+  muon_Outer_Pz.clear();
+  muon_Outer_eta.clear();
+  muon_Outer_phi.clear();
+  muon_GLB_pt.clear();
+  muon_GLB_ptError.clear();
+  muon_GLB_Px.clear();
+  muon_GLB_Py.clear();
+  muon_GLB_Pz.clear();
+  muon_GLB_eta.clear();
+  muon_GLB_phi.clear();
+  muon_TuneP_pt.clear();
+  muon_TuneP_ptError.clear();
+  muon_TuneP_Px.clear();
+  muon_TuneP_Py.clear();
+  muon_TuneP_Pz.clear();
+  muon_TuneP_eta.clear();
+  muon_TuneP_phi.clear();
   
   for( int i = 0; i < MPSIZE; i++ ){
 
@@ -330,94 +435,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     Electron_etaSCUnCorr[i] = 0;
     Electron_phiSCUnCorr[i] = 0;
     Electron_etSCUnCorr[i] = 0;
-    
-    // -- PF Isolation -- //
-    Muon_PfChargedHadronIsoR05[i] = -1;
-    Muon_PfNeutralHadronIsoR05[i] = -1;
-    Muon_PfGammaIsoR05[i] = -1;
-    Muon_PfChargedHadronIsoR04[i] = -1;
-    Muon_PfNeutralHadronIsoR04[i] = -1;
-    Muon_PfGammaIsoR04[i] = -1;
-    Muon_PFSumPUIsoR04[i] = -1;
-    Muon_PfChargedHadronIsoR03[i] = -1;
-    Muon_PfNeutralHadronIsoR03[i] = -1;
-    Muon_PfGammaIsoR03[i] = -1;
-    Muon_PFSumPUIsoR03[i] = -1;
-    
-    // muon type
-    isPFmuon[i] = 0;
-    isGLBmuon[i] = 0;
-    isTRKmuon[i] = 0;
-    isSTAmuon[i] = 0;
-    
-    // trigger
-    Muon_nTrig[i] = Muon_triggerObjectType[i] = Muon_filterName[i] = -1;
-    
-    // Muon kinematics
-    Muon_phi[i] = Muon_eta[i] = Muon_cktpT[i] = Muon_pT[i] = -100;
-    Muon_dB[i] = -999;
-    Muon_cktPx[i] = Muon_cktPy[i] = Muon_cktPz[i] = -999;
-    Muon_cktpTError[i] = -999;
-    Muon_Px[i] = Muon_Py[i] = Muon_Pz[i] = -100;
-    Muon_trkiso[i] = Muon_hcaliso[i] = Muon_ecaliso[i] = Muon_chi2dof[i] = -100;
-    Muon_trkisoR05[i] = Muon_hcalisoR05[i] = Muon_ecalisoR05[i] = -100;
-    Muon_nChambers[i] = Muon_nMatches[i] = Muon_nMatchesRPCLayers[i] = Muon_stationMask[i] = Muon_nSegments[i] =  -1;
-    Muon_charge[i] = Muon_nhits[i] = -100;
-    Muon_trackerHits[i] = Muon_pixelHits[i] = Muon_muonHits[i] = -1;
-    Muon_trackerLayers[i] = -1;
-    Muon_trackerHitsGLB[i] = -1;
-    Muon_pixelHitsGLB[i] = -1;
-    Muon_trackerLayersGLB[i] = -1;
-    
-    Muon_qoverp[i] = Muon_theta[i] = Muon_lambda[i] = -100;
-    Muon_dxy[i] = Muon_d0[i] = Muon_dsz[i] = Muon_dz[i] = -100;
-    Muon_vx[i] = Muon_vy[i] = Muon_vz[i] = -100;
-    Muon_dxyBS[i] = Muon_dszBS[i] = Muon_dzBS[i] = -100;
-    Muon_dxyVTX[i] = Muon_dszVTX[i] = Muon_dzVTX[i] = -100;
-    Muon_dxycktVTX[i] = Muon_dszcktVTX[i] = Muon_dzcktVTX[i] = -100;
-    
-    //Various track informations
-    //MuonBestTrack
-    Muon_Best_pT[i] = -9999;
-    Muon_Best_pTError[i] = -9999;
-    Muon_Best_Px[i] = -9999;
-    Muon_Best_Py[i] = -9999;
-    Muon_Best_Pz[i] = -9999;
-    Muon_Best_eta[i] = -9999;
-    Muon_Best_phi[i] = -9999;
-    //Inner Track
-    Muon_Inner_pT[i] = -9999;
-    Muon_Inner_pTError[i] = -9999;
-    Muon_Inner_Px[i] = -9999;
-    Muon_Inner_Py[i] = -9999;
-    Muon_Inner_Pz[i] = -9999;
-    Muon_Inner_eta[i] = -9999;
-    Muon_Inner_phi[i] = -9999;
-    //Outer Track
-    Muon_Outer_pT[i] = -9999;
-    Muon_Outer_pTError[i] = -9999;
-    Muon_Outer_Px[i] = -9999;
-    Muon_Outer_Py[i] = -9999;
-    Muon_Outer_Pz[i] = -9999;
-    Muon_Outer_eta[i] = -9999;
-    Muon_Outer_phi[i] = -9999;
-    //Global Track
-    Muon_GLB_pT[i] = -9999;
-    Muon_GLB_pTError[i] = -9999;
-    Muon_GLB_Px[i] = -9999;
-    Muon_GLB_Py[i] = -9999;
-    Muon_GLB_Pz[i] = -9999;
-    Muon_GLB_eta[i] = -9999;
-    Muon_GLB_phi[i] = -9999;
-    
-    //tuneP MuonBestTrack
-    Muon_TuneP_pT[i] = -9999;
-    Muon_TuneP_pTError[i] = -9999;
-    Muon_TuneP_Px[i] = -9999;
-    Muon_TuneP_Py[i] = -9999;
-    Muon_TuneP_Pz[i] = -9999;
-    Muon_TuneP_eta[i] = -9999;
-    Muon_TuneP_phi[i] = -9999;
     
     // -- LHE -- //
     LHELepton_Px[i] = 0;
@@ -709,9 +726,9 @@ void SKFlatMaker::beginJob()
     // DYTree->Branch("Nbtagged", &Nbtagged,"Nbtagged/I");
     // DYTree->Branch("NbtaggedCloseMuon", &NbtaggedCloseMuon,"NbtaggedCloseMuon/I");
     // DYTree->Branch("Nbtagged_alg1", &Nbtagged_alg1,"Nbtagged_alg1/I");
-    // DYTree->Branch("NbtaggedCloseMuon_alg1", &NbtaggedCloseMuon_alg1,"NbtaggedCloseMuon_alg1/I");
+    // DYTree->Branch("NbtaggedClosemuon_alg1", &NbtaggedClosemuon_alg1,"NbtaggedClosemuon_alg1/I");
     // DYTree->Branch("Nbtagged_alg2", &Nbtagged_alg2,"Nbtagged_alg2/I");
-    // DYTree->Branch("NbtaggedCloseMuon_alg2", &NbtaggedCloseMuon_alg2,"NbtaggedCloslg3", &NbtaggedCloseMuon_alg3,"NbtaggedCloseMuon_alg3/I");
+    // DYTree->Branch("NbtaggedClosemuon_alg2", &NbtaggedClosemuon_alg2,"NbtaggedCloslg3", &NbtaggedClosemuon_alg3,"NbtaggedClosemuon_alg3/I");
   }
   
   // Electron
@@ -863,121 +880,111 @@ void SKFlatMaker::beginJob()
   
   // -- muon variables -- //
   if( theStoreMuonFlag ){
-    DYTree->Branch("nMuon",&nMuon,"nMuon/I");
-    DYTree->Branch("Nmuons",&Nmuons,"Nmuons/I");
-    DYTree->Branch("isPFmuon", &isPFmuon, "isPFmuon[nMuon]/I");
-    DYTree->Branch("isGLBmuon", &isGLBmuon, "isGLBmuon[nMuon]/I");
-    DYTree->Branch("isTRKmuon", &isTRKmuon, "isTRKmuon[nMuon]/I");
-    DYTree->Branch("isSTAmuon", &isSTAmuon, "isSTAmuon[nMuon]/I");
-    DYTree->Branch("Muon_nTrig", &Muon_nTrig,"Muon_nTrig[nMuon]/I");
-    DYTree->Branch("Muon_triggerObjectType", &Muon_triggerObjectType,"Muon_triggerObjectType[nMuon]/I");
-    DYTree->Branch("Muon_filterName", &Muon_filterName,"Muon_filterName[nMuon]/I");
-    DYTree->Branch("Muon_phi", &Muon_phi,"Muon_phi[nMuon]/D");
-    DYTree->Branch("Muon_dB", &Muon_dB, "Muon_dB[nMuon]/D");
-    DYTree->Branch("Muon_eta", &Muon_eta,"Muon_eta[nMuon]/D");
-    DYTree->Branch("Muon_pT", &Muon_pT,"Muon_pT[nMuon]/D");
-    DYTree->Branch("Muon_cktpT", &Muon_cktpT,"Muon_cktpT[nMuon]/D");
-    DYTree->Branch("Muon_cktPx", &Muon_cktPx,"Muon_cktPx[nMuon]/D");
-    DYTree->Branch("Muon_cktPy", &Muon_cktPy,"Muon_cktPy[nMuon]/D");
-    DYTree->Branch("Muon_cktPz", &Muon_cktPz,"Muon_cktPz[nMuon]/D");
-    DYTree->Branch("Muon_cktpTError", &Muon_cktpTError,"Muon_cktpTError[nMuon]/D");
-    DYTree->Branch("Muon_Px", &Muon_Px,"Muon_Px[nMuon]/D");
-    DYTree->Branch("Muon_Py", &Muon_Py,"Muon_Py[nMuon]/D");
-    DYTree->Branch("Muon_Pz", &Muon_Pz,"Muon_Pz[nMuon]/D");
-    DYTree->Branch("Muon_trkiso", &Muon_trkiso,"Muon_trkiso[nMuon]/D");
-    DYTree->Branch("Muon_hcaliso", &Muon_hcaliso,"Muon_hcaliso[nMuon]/D");
-    DYTree->Branch("Muon_ecaliso", &Muon_ecaliso,"Muon_ecaliso[nMuon]/D");
-    DYTree->Branch("Muon_trkisoR05", &Muon_trkisoR05,"Muon_trkisoR05[nMuon]/D");
-    DYTree->Branch("Muon_hcalisoR05", &Muon_hcalisoR05,"Muon_hcalisoR05[nMuon]/D");
-    DYTree->Branch("Muon_ecalisoR05", &Muon_ecalisoR05,"Muon_ecalisoR05[nMuon]/D");
-    
-    //Various track informations
-    DYTree->Branch("Muon_Best_pT", &Muon_Best_pT, "Muon_Best_pT[nMuon]/D");
-    DYTree->Branch("Muon_Best_pTError", &Muon_Best_pTError, "Muon_Best_pTError[nMuon]/D");
-    DYTree->Branch("Muon_Best_Px", &Muon_Best_Px, "Muon_Best_Px[nMuon]/D");
-    DYTree->Branch("Muon_Best_Py", &Muon_Best_Py, "Muon_Best_Py[nMuon]/D");
-    DYTree->Branch("Muon_Best_Pz", &Muon_Best_Pz, "Muon_Best_Pz[nMuon]/D");
-    DYTree->Branch("Muon_Best_eta", &Muon_Best_eta, "Muon_Best_eta[nMuon]/D");
-    DYTree->Branch("Muon_Best_phi", &Muon_Best_phi, "Muon_Best_phi[nMuon]/D");
 
-    DYTree->Branch("Muon_Inner_pT", &Muon_Inner_pT, "Muon_Inner_pT[nMuon]/D");
-    DYTree->Branch("Muon_Inner_pTError", &Muon_Inner_pTError, "Muon_Inner_pTError[nMuon]/D");
-    DYTree->Branch("Muon_Inner_Px", &Muon_Inner_Px, "Muon_Inner_Px[nMuon]/D");
-    DYTree->Branch("Muon_Inner_Py", &Muon_Inner_Py, "Muon_Inner_Py[nMuon]/D");
-    DYTree->Branch("Muon_Inner_Pz", &Muon_Inner_Pz, "Muon_Inner_Pz[nMuon]/D");
-    DYTree->Branch("Muon_Inner_eta", &Muon_Inner_eta, "Muon_Inner_eta[nMuon]/D");
-    DYTree->Branch("Muon_Inner_phi", &Muon_Inner_phi, "Muon_Inner_phi[nMuon]/D");
-
-    DYTree->Branch("Muon_Outer_pT", &Muon_Outer_pT, "Muon_Outer_pT[nMuon]/D");
-    DYTree->Branch("Muon_Outer_pTError", &Muon_Outer_pTError, "Muon_Outer_pTError[nMuon]/D");
-    DYTree->Branch("Muon_Outer_Px", &Muon_Outer_Px, "Muon_Outer_Px[nMuon]/D");
-    DYTree->Branch("Muon_Outer_Py", &Muon_Outer_Py, "Muon_Outer_Py[nMuon]/D");
-    DYTree->Branch("Muon_Outer_Pz", &Muon_Outer_Pz, "Muon_Outer_Pz[nMuon]/D");
-    DYTree->Branch("Muon_Outer_eta", &Muon_Outer_eta, "Muon_Outer_eta[nMuon]/D");
-    DYTree->Branch("Muon_Outer_phi", &Muon_Outer_phi, "Muon_Outer_phi[nMuon]/D");
-
-    DYTree->Branch("Muon_GLB_pT", &Muon_GLB_pT, "Muon_GLB_pT[nMuon]/D");
-    DYTree->Branch("Muon_GLB_pTError", &Muon_GLB_pTError, "Muon_GLB_pTError[nMuon]/D");
-    DYTree->Branch("Muon_GLB_Px", &Muon_GLB_Px, "Muon_GLB_Px[nMuon]/D");
-    DYTree->Branch("Muon_GLB_Py", &Muon_GLB_Py, "Muon_GLB_Py[nMuon]/D");
-    DYTree->Branch("Muon_GLB_Pz", &Muon_GLB_Pz, "Muon_GLB_Pz[nMuon]/D");
-    DYTree->Branch("Muon_GLB_eta", &Muon_GLB_eta, "Muon_GLB_eta[nMuon]/D");
-    DYTree->Branch("Muon_GLB_phi", &Muon_GLB_phi, "Muon_GLB_phi[nMuon]/D");
-
-    DYTree->Branch("Muon_TuneP_pT", &Muon_TuneP_pT, "Muon_TuneP_pT[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_pTError", &Muon_TuneP_pTError, "Muon_TuneP_pTError[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_Px", &Muon_TuneP_Px, "Muon_TuneP_Px[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_Py", &Muon_TuneP_Py, "Muon_TuneP_Py[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_Pz", &Muon_TuneP_Pz, "Muon_TuneP_Pz[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_eta", &Muon_TuneP_eta, "Muon_TuneP_eta[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_phi", &Muon_TuneP_phi, "Muon_TuneP_phi[nMuon]/D");
-    
-    //pf iso
-    DYTree->Branch("Muon_PfChargedHadronIsoR05", &Muon_PfChargedHadronIsoR05,"Muon_PfChargedHadronIsoR05[nMuon]/D");
-    DYTree->Branch("Muon_PfNeutralHadronIsoR05", &Muon_PfNeutralHadronIsoR05,"Muon_PfNeutralHadronIsoR05[nMuon]/D");
-    DYTree->Branch("Muon_PfGammaIsoR05", &Muon_PfGammaIsoR05,"Muon_PfGammaIsoR05[nMuon]/D");
-    DYTree->Branch("Muon_PfChargedHadronIsoR04", &Muon_PfChargedHadronIsoR04,"Muon_PfChargedHadronIsoR04[nMuon]/D");
-    DYTree->Branch("Muon_PfNeutralHadronIsoR04", &Muon_PfNeutralHadronIsoR04,"Muon_PfNeutralHadronIsoR04[nMuon]/D");
-    DYTree->Branch("Muon_PfGammaIsoR04", &Muon_PfGammaIsoR04,"Muon_PfGammaIsoR04[nMuon]/D");
-    DYTree->Branch("Muon_PFSumPUIsoR04", &Muon_PFSumPUIsoR04, "Muon_PFSumPUIsoR04[nMuon]/D");
-    DYTree->Branch("Muon_PfChargedHadronIsoR03", &Muon_PfChargedHadronIsoR03,"Muon_PfChargedHadronIsoR03[nMuon]/D");
-    DYTree->Branch("Muon_PfNeutralHadronIsoR03", &Muon_PfNeutralHadronIsoR03,"Muon_PfNeutralHadronIsoR03[nMuon]/D");
-    DYTree->Branch("Muon_PfGammaIsoR03", &Muon_PfGammaIsoR03,"Muon_PfGammaIsoR03[nMuon]/D");
-    DYTree->Branch("Muon_PFSumPUIsoR03", &Muon_PFSumPUIsoR03, "Muon_PFSumPUIsoR03[nMuon]/D");
-    DYTree->Branch("Muon_charge", &Muon_charge,"Muon_charge[nMuon]/I");
-    DYTree->Branch("Muon_nChambers", &Muon_nChambers,"Muon_nChambers[nMuon]/I");
-    DYTree->Branch("Muon_nMatches", &Muon_nMatches,"Muon_nMatches[nMuon]/I");
-    DYTree->Branch("Muon_nMatchesRPCLayers", &Muon_nMatchesRPCLayers,"Muon_nMatchesRPCLayers[nMuon]/I");
-    DYTree->Branch("Muon_stationMask", &Muon_stationMask,"Muon_stationMask[nMuon]/I");
-    DYTree->Branch("Muon_nSegments", &Muon_nSegments,"Muon_nSegments[nMuon]/I");
-    DYTree->Branch("Muon_chi2dof", &Muon_chi2dof,"Muon_chi2dof[nMuon]/D");
-    DYTree->Branch("Muon_nhits", &Muon_nhits,"Muon_nhits[nMuon]/I");
-    DYTree->Branch("Muon_trackerHits", &Muon_trackerHits,"Muon_trackerHits[nMuon]/I");
-    DYTree->Branch("Muon_trackerLayers", &Muon_trackerLayers,"Muon_trackerLayers[nMuon]/I");
-    DYTree->Branch("Muon_pixelHits", &Muon_pixelHits,"Muon_pixelHits[nMuon]/I");
-    DYTree->Branch("Muon_trackerHitsGLB", &Muon_trackerHitsGLB,"Muon_trackerHitsGLB[nMuon]/I");
-    DYTree->Branch("Muon_trackerLayersGLB", &Muon_trackerLayersGLB,"Muon_trackerLayersGLB[nMuon]/I");
-    DYTree->Branch("Muon_pixelHitsGLB", &Muon_pixelHitsGLB,"Muon_pixelHitsGLB[nMuon]/I");
-    DYTree->Branch("Muon_muonHits", &Muon_muonHits,"Muon_muonHits[nMuon]/I");
-    DYTree->Branch("Muon_qoverp", &Muon_qoverp,"Muon_qoverp[nMuon]/D");
-    DYTree->Branch("Muon_theta", &Muon_theta,"Muon_theta[nMuon]/D");
-    DYTree->Branch("Muon_lambda", &Muon_lambda,"Muon_lambda[nMuon]/D");
-    DYTree->Branch("Muon_dxy", &Muon_dxy,"Muon_dxy[nMuon]/D");
-    DYTree->Branch("Muon_d0", &Muon_d0,"Muon_d0[nMuon]/D");
-    DYTree->Branch("Muon_dsz", &Muon_dsz,"Muon_dsz[nMuon]/D");
-    DYTree->Branch("Muon_dz", &Muon_dz,"Muon_dz[nMuon]/D");
-    DYTree->Branch("Muon_dxyBS", &Muon_dxyBS,"Muon_dxyBS[nMuon]/D");
-    DYTree->Branch("Muon_dszBS", &Muon_dszBS,"Muon_dszBS[nMuon]/D");
-    DYTree->Branch("Muon_dzBS", &Muon_dzBS,"Muon_dzBS[nMuon]/D");
-    DYTree->Branch("Muon_dxyVTX", &Muon_dxyVTX,"Muon_dxyVTX[nMuon]/D");
-    DYTree->Branch("Muon_dszVTX", &Muon_dszVTX,"Muon_dszVTX[nMuon]/D");
-    DYTree->Branch("Muon_dzVTX", &Muon_dzVTX,"Muon_dzVTX[nMuon]/D");
-    DYTree->Branch("Muon_dxycktVTX", &Muon_dxycktVTX,"Muon_dxycktVTX[nMuon]/D");
-    DYTree->Branch("Muon_dszcktVTX", &Muon_dszcktVTX,"Muon_dszcktVTX[nMuon]/D");
-    DYTree->Branch("Muon_dzcktVTX", &Muon_dzcktVTX,"Muon_dzcktVTX[nMuon]/D");
-    DYTree->Branch("Muon_vx", &Muon_vx,"Muon_vx[nMuon]/D");
-    DYTree->Branch("Muon_vy", &Muon_vy,"Muon_vy[nMuon]/D");
-    DYTree->Branch("Muon_vz", &Muon_vz,"Muon_vz[nMuon]/D");
+  DYTree->Branch("muon_PfChargedHadronIsoR05", "vector<double>", &muon_PfChargedHadronIsoR05);
+  DYTree->Branch("muon_PfNeutralHadronIsoR05", "vector<double>", &muon_PfNeutralHadronIsoR05);
+  DYTree->Branch("muon_PfGammaIsoR05", "vector<double>", &muon_PfGammaIsoR05);
+  DYTree->Branch("muon_PfChargedHadronIsoR04", "vector<double>", &muon_PfChargedHadronIsoR04);
+  DYTree->Branch("muon_PfNeutralHadronIsoR04", "vector<double>", &muon_PfNeutralHadronIsoR04);
+  DYTree->Branch("muon_PfGammaIsoR04", "vector<double>", &muon_PfGammaIsoR04);
+  DYTree->Branch("muon_PFSumPUIsoR04", "vector<double>", &muon_PFSumPUIsoR04);
+  DYTree->Branch("muon_PfChargedHadronIsoR03", "vector<double>", &muon_PfChargedHadronIsoR03);
+  DYTree->Branch("muon_PfNeutralHadronIsoR03", "vector<double>", &muon_PfNeutralHadronIsoR03);
+  DYTree->Branch("muon_PfGammaIsoR03", "vector<double>", &muon_PfGammaIsoR03);
+  DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
+  DYTree->Branch("muon_isPF", "vector<int>", &muon_isPF);
+  DYTree->Branch("muon_isGlobal", "vector<int>", &muon_isGlobal);
+  DYTree->Branch("muon_isTracker", "vector<int>", &muon_isTracker);
+  DYTree->Branch("muon_isStandAlone", "vector<int>", &muon_isStandAlone);
+  DYTree->Branch("muon_filterName", "vector<int>", &muon_filterName);
+  DYTree->Branch("muon_trigmatch", "vector<string>", &muon_trigmatch);
+  DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
+  DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
+  DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
+  DYTree->Branch("muon_pt", "vector<double>", &muon_pt);
+  DYTree->Branch("muon_cktpt", "vector<double>", &muon_cktpt);
+  DYTree->Branch("muon_cktPx", "vector<double>", &muon_cktPx);
+  DYTree->Branch("muon_cktPy", "vector<double>", &muon_cktPy);
+  DYTree->Branch("muon_cktPz", "vector<double>", &muon_cktPz);
+  DYTree->Branch("muon_cktptError", "vector<double>", &muon_cktptError);
+  DYTree->Branch("muon_Px", "vector<double>", &muon_Px);
+  DYTree->Branch("muon_Py", "vector<double>", &muon_Py);
+  DYTree->Branch("muon_Pz", "vector<double>", &muon_Pz);
+  DYTree->Branch("muon_sumtrkpt", "vector<double>", &muon_sumtrkpt);
+  DYTree->Branch("muon_trkiso", "vector<double>", &muon_trkiso);
+  DYTree->Branch("muon_hcaliso", "vector<double>", &muon_hcaliso);
+  DYTree->Branch("muon_ecaliso", "vector<double>", &muon_ecaliso);
+  DYTree->Branch("muon_trkisoR05", "vector<double>", &muon_trkisoR05);
+  DYTree->Branch("muon_hcalisoR05", "vector<double>", &muon_hcalisoR05);
+  DYTree->Branch("muon_ecalisoR05", "vector<double>", &muon_ecalisoR05);
+  DYTree->Branch("muon_charge", "vector<int>", &muon_charge);
+  DYTree->Branch("muon_nChambers", "vector<int>", &muon_nChambers);
+  DYTree->Branch("muon_matchedstations", "vector<int>", &muon_matchedstations);
+  DYTree->Branch("muon_stationMask", "vector<int>", &muon_stationMask);
+  DYTree->Branch("muon_nSegments", "vector<int>", &muon_nSegments);
+  DYTree->Branch("muon_chi2dof", "vector<double>", &muon_chi2dof);
+  DYTree->Branch("muon_validhits", "vector<int>", &muon_validhits);
+  DYTree->Branch("muon_trackerHits", "vector<int>", &muon_trackerHits);
+  DYTree->Branch("muon_pixelHits", "vector<int>", &muon_pixelHits);
+  DYTree->Branch("muon_validmuonhits", "vector<int>", &muon_validmuonhits);
+  DYTree->Branch("muon_trackerLayers", "vector<int>", &muon_trackerLayers);
+  DYTree->Branch("muon_trackerHitsGLB", "vector<int>", &muon_trackerHitsGLB);
+  DYTree->Branch("muon_trackerLayersGLB", "vector<int>", &muon_trackerLayersGLB);
+  DYTree->Branch("muon_pixelHitsGLB", "vector<int>", &muon_pixelHitsGLB);
+  DYTree->Branch("muon_qoverp", "vector<double>", &muon_qoverp);
+  DYTree->Branch("muon_theta", "vector<double>", &muon_theta);
+  DYTree->Branch("muon_lambda", "vector<double>", &muon_lambda);
+  DYTree->Branch("muon_dxy", "vector<double>", &muon_dxy);
+  DYTree->Branch("muon_d0", "vector<double>", &muon_d0);
+  DYTree->Branch("muon_dsz", "vector<double>", &muon_dsz);
+  DYTree->Branch("muon_dz", "vector<double>", &muon_dz);
+  DYTree->Branch("muon_dxyBS", "vector<double>", &muon_dxyBS);
+  DYTree->Branch("muon_dzBS", "vector<double>", &muon_dzBS);
+  DYTree->Branch("muon_dszBS", "vector<double>", &muon_dszBS);
+  DYTree->Branch("muon_dxyVTX", "vector<double>", &muon_dxyVTX);
+  DYTree->Branch("muon_dzVTX", "vector<double>", &muon_dzVTX);
+  DYTree->Branch("muon_dszVTX", "vector<double>", &muon_dszVTX);
+  DYTree->Branch("muon_dxycktVTX", "vector<double>", &muon_dxycktVTX);
+  DYTree->Branch("muon_dzcktVTX", "vector<double>", &muon_dzcktVTX);
+  DYTree->Branch("muon_dszcktVTX", "vector<double>", &muon_dszcktVTX);
+  DYTree->Branch("muon_vx", "vector<double>", &muon_vx);
+  DYTree->Branch("muon_vy", "vector<double>", &muon_vy);
+  DYTree->Branch("muon_vz", "vector<double>", &muon_vz);
+  DYTree->Branch("muon_Best_pt", "vector<double>", &muon_Best_pt);
+  DYTree->Branch("muon_Best_ptError", "vector<double>", &muon_Best_ptError);
+  DYTree->Branch("muon_Best_Px", "vector<double>", &muon_Best_Px);
+  DYTree->Branch("muon_Best_Py", "vector<double>", &muon_Best_Py);
+  DYTree->Branch("muon_Best_Pz", "vector<double>", &muon_Best_Pz);
+  DYTree->Branch("muon_Best_eta", "vector<double>", &muon_Best_eta);
+  DYTree->Branch("muon_Best_phi", "vector<double>", &muon_Best_phi);
+  DYTree->Branch("muon_Inner_pt", "vector<double>", &muon_Inner_pt);
+  DYTree->Branch("muon_Inner_ptError", "vector<double>", &muon_Inner_ptError);
+  DYTree->Branch("muon_Inner_Px", "vector<double>", &muon_Inner_Px);
+  DYTree->Branch("muon_Inner_Py", "vector<double>", &muon_Inner_Py);
+  DYTree->Branch("muon_Inner_Pz", "vector<double>", &muon_Inner_Pz);
+  DYTree->Branch("muon_Inner_eta", "vector<double>", &muon_Inner_eta);
+  DYTree->Branch("muon_Inner_phi", "vector<double>", &muon_Inner_phi);
+  DYTree->Branch("muon_Outer_pt", "vector<double>", &muon_Outer_pt);
+  DYTree->Branch("muon_Outer_ptError", "vector<double>", &muon_Outer_ptError);
+  DYTree->Branch("muon_Outer_Px", "vector<double>", &muon_Outer_Px);
+  DYTree->Branch("muon_Outer_Py", "vector<double>", &muon_Outer_Py);
+  DYTree->Branch("muon_Outer_Pz", "vector<double>", &muon_Outer_Pz);
+  DYTree->Branch("muon_Outer_eta", "vector<double>", &muon_Outer_eta);
+  DYTree->Branch("muon_Outer_phi", "vector<double>", &muon_Outer_phi);
+  DYTree->Branch("muon_GLB_pt", "vector<double>", &muon_GLB_pt);
+  DYTree->Branch("muon_GLB_ptError", "vector<double>", &muon_GLB_ptError);
+  DYTree->Branch("muon_GLB_Px", "vector<double>", &muon_GLB_Px);
+  DYTree->Branch("muon_GLB_Py", "vector<double>", &muon_GLB_Py);
+  DYTree->Branch("muon_GLB_Pz", "vector<double>", &muon_GLB_Pz);
+  DYTree->Branch("muon_GLB_eta", "vector<double>", &muon_GLB_eta);
+  DYTree->Branch("muon_GLB_phi", "vector<double>", &muon_GLB_phi);
+  DYTree->Branch("muon_TuneP_pt", "vector<double>", &muon_TuneP_pt);
+  DYTree->Branch("muon_TuneP_ptError", "vector<double>", &muon_TuneP_ptError);
+  DYTree->Branch("muon_TuneP_Px", "vector<double>", &muon_TuneP_Px);
+  DYTree->Branch("muon_TuneP_Py", "vector<double>", &muon_TuneP_Py);
+  DYTree->Branch("muon_TuneP_Pz", "vector<double>", &muon_TuneP_Pz);
+  DYTree->Branch("muon_TuneP_eta", "vector<double>", &muon_TuneP_eta);
+  DYTree->Branch("muon_TuneP_phi", "vector<double>", &muon_TuneP_phi);
 
   }
   
@@ -1506,16 +1513,14 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   using reco::MuonCollection;
   MuonCollection::const_iterator imuon;
   
-  int _nMuon = 0;
-  Nmuons = muonHandle->size();
   for( unsigned i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
     const pat::Muon imuon = muonHandle->at(i);
     
-    if( imuon.isStandAloneMuon() )   isSTAmuon[_nMuon] = 1;
-    if( imuon.isGlobalMuon() )     isGLBmuon[_nMuon] = 1;     
-    if( imuon.isTrackerMuon() )   isTRKmuon[_nMuon] = 1;  
-    if( imuon.isPFMuon() )       isPFmuon[_nMuon] = 1;
+    if( imuon.isStandAloneMuon() )   muon_isStandAlone.push_back( 1 );
+    if( imuon.isGlobalMuon() )     muon_isGlobal.push_back( 1 );     
+    if( imuon.isTrackerMuon() )   muon_isTracker.push_back( 1 );  
+    if( imuon.isPFMuon() )       muon_isPF.push_back( 1 );
     
     // -- bits 0-1-2-3 = DT stations 1-2-3-4 -- //
     // -- bits 4-5-6-7 = CSC stations 1-2-3-4 -- //
@@ -1528,7 +1533,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
         _segments += imuon.numberOfSegments(istation, idet);
       }
     }
-    Muon_nSegments[_nMuon] = _segments;
+    muon_nSegments.push_back( _segments );
       
     // cout << "##### Analyze:Muon Type #####" << endl;
       
@@ -1544,58 +1549,58 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     
     // -- Global track information -- //
     if( glbTrack.isNonnull() ){
-			Muon_chi2dof[_nMuon] = glbTrack->normalizedChi2();
-			Muon_nhits[_nMuon] = glbTrack->numberOfValidHits();
+			muon_chi2dof.push_back( glbTrack->normalizedChi2() );
+			muon_validhits.push_back( glbTrack->numberOfValidHits() );
 			
-			Muon_qoverp[_nMuon] = glbTrack->qoverp();
-			Muon_theta[_nMuon] = glbTrack->theta();
-			Muon_lambda[_nMuon] = glbTrack->lambda();
-			Muon_dxy[_nMuon] = glbTrack->dxy();
-			Muon_d0[_nMuon] = glbTrack->d0();
-			Muon_dsz[_nMuon] = glbTrack->dsz();
-			Muon_dz[_nMuon] = glbTrack->dz();
-			Muon_dxyBS[_nMuon] = glbTrack->dxy(beamSpot.position());
-			Muon_dszBS[_nMuon] = glbTrack->dsz(beamSpot.position());
-			Muon_dzBS[_nMuon] = glbTrack->dz(beamSpot.position());
+			muon_qoverp.push_back( glbTrack->qoverp() );
+			muon_theta.push_back( glbTrack->theta() );
+			muon_lambda.push_back( glbTrack->lambda() );
+			muon_dxy.push_back( glbTrack->dxy() );
+			muon_d0.push_back( glbTrack->d0() );
+			muon_dsz.push_back( glbTrack->dsz() );
+			muon_dz.push_back( glbTrack->dz() );
+			muon_dxyBS.push_back( glbTrack->dxy(beamSpot.position()) );
+			muon_dszBS.push_back( glbTrack->dsz(beamSpot.position()) );
+			muon_dzBS.push_back( glbTrack->dz(beamSpot.position()) );
 			
-			Muon_vx[_nMuon] = glbTrack->vx();
-			Muon_vy[_nMuon] = glbTrack->vy();
-			Muon_vz[_nMuon] = glbTrack->vz();
+			muon_vx.push_back( glbTrack->vx() );
+			muon_vy.push_back( glbTrack->vy() );
+			muon_vz.push_back( glbTrack->vz() );
 			
 			const reco::HitPattern & glbhit = glbTrack->hitPattern();
-			Muon_muonHits[_nMuon] = glbhit.numberOfValidMuonHits();
+			muon_validmuonhits.push_back( glbhit.numberOfValidMuonHits() );
 			
-			Muon_trackerHitsGLB[_nMuon] = glbhit.numberOfValidTrackerHits();
-			Muon_pixelHitsGLB[_nMuon] = glbhit.numberOfValidPixelHits();
-			Muon_trackerLayersGLB[_nMuon] = glbhit.trackerLayersWithMeasurement();
+			muon_trackerHitsGLB.push_back( glbhit.numberOfValidTrackerHits() );
+			muon_pixelHitsGLB.push_back( glbhit.numberOfValidPixelHits() );
+			muon_trackerLayersGLB.push_back( glbhit.trackerLayersWithMeasurement() );
 			
 		} // -- end of if( glbTrack.isNonnull() ) -- //
     else{
       if( trackerTrack.isNonnull() ){
-        Muon_chi2dof[_nMuon] = trackerTrack->normalizedChi2();
-        Muon_nhits[_nMuon] = trackerTrack->numberOfValidHits();
+        muon_chi2dof.push_back( trackerTrack->normalizedChi2() );
+        muon_validhits.push_back( trackerTrack->numberOfValidHits() );
         
-        Muon_qoverp[_nMuon] = trackerTrack->qoverp();
-        Muon_theta[_nMuon] = trackerTrack->theta();
-        Muon_lambda[_nMuon] = trackerTrack->lambda();
-        Muon_dxy[_nMuon] = trackerTrack->dxy();
-        Muon_d0[_nMuon] = trackerTrack->d0();
-        Muon_dsz[_nMuon] = trackerTrack->dsz();
-        Muon_dz[_nMuon] = trackerTrack->dz();
-        Muon_dxyBS[_nMuon] = trackerTrack->dxy(beamSpot.position());
-        Muon_dszBS[_nMuon] = trackerTrack->dsz(beamSpot.position());
-        Muon_dzBS[_nMuon] = trackerTrack->dz(beamSpot.position());
+        muon_qoverp.push_back( trackerTrack->qoverp() );
+        muon_theta.push_back( trackerTrack->theta() );
+        muon_lambda.push_back( trackerTrack->lambda() );
+        muon_dxy.push_back( trackerTrack->dxy() );
+        muon_d0.push_back( trackerTrack->d0() );
+        muon_dsz.push_back( trackerTrack->dsz() );
+        muon_dz.push_back( trackerTrack->dz() );
+        muon_dxyBS.push_back( trackerTrack->dxy(beamSpot.position()) );
+        muon_dszBS.push_back( trackerTrack->dsz(beamSpot.position()) );
+        muon_dzBS.push_back( trackerTrack->dz(beamSpot.position()) );
         
-        Muon_vx[_nMuon] = trackerTrack->vx();
-        Muon_vy[_nMuon] = trackerTrack->vy();
-        Muon_vz[_nMuon] = trackerTrack->vz();
+        muon_vx.push_back( trackerTrack->vx() );
+        muon_vy.push_back( trackerTrack->vy() );
+        muon_vz.push_back( trackerTrack->vz() );
         
         if( muonTrack.isNonnull() ){
 					const reco::HitPattern & muonhit = muonTrack->hitPattern();
-					Muon_muonHits[_nMuon] = muonhit.numberOfValidMuonHits();
+					muon_validmuonhits.push_back( muonhit.numberOfValidMuonHits() );
         }
         else
-          Muon_muonHits[_nMuon] = 0;
+          muon_validmuonhits.push_back( 0 );
 
       }
     } // -- end of else of if( glbTrack.isNonnull() ) -- //
@@ -1603,126 +1608,122 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     if( trackerTrack.isNonnull() ){
 			const reco::HitPattern & inhit = trackerTrack->hitPattern();
 			
-			Muon_trackerHits[_nMuon] = inhit.numberOfValidTrackerHits();
-			Muon_pixelHits[_nMuon] = inhit.numberOfValidPixelHits();
-			Muon_trackerLayers[_nMuon] = inhit.trackerLayersWithMeasurement();
+			muon_trackerHits.push_back( inhit.numberOfValidTrackerHits() );
+			muon_pixelHits.push_back( inhit.numberOfValidPixelHits() );
+			muon_trackerLayers.push_back( inhit.trackerLayersWithMeasurement() );
 		}
       
 		if( !pvHandle->empty() && !pvHandle->front().isFake() ){
-			Muon_dxyVTX[_nMuon] = imuon.muonBestTrack()->dxy(vtx.position());
-			Muon_dszVTX[_nMuon] = imuon.muonBestTrack()->dsz(vtx.position());
-			Muon_dzVTX[_nMuon] = imuon.muonBestTrack()->dz(vtx.position());
+			muon_dxyVTX.push_back( imuon.muonBestTrack()->dxy(vtx.position()) );
+			muon_dszVTX.push_back( imuon.muonBestTrack()->dsz(vtx.position()) );
+			muon_dzVTX.push_back( imuon.muonBestTrack()->dz(vtx.position()) );
 	
-			// Muon_dxycktVTX[_nMuon] = cktTrack->dxy(vtx.position());
-			// Muon_dszcktVTX[_nMuon] = cktTrack->dsz(vtx.position());
-			// Muon_dzcktVTX[_nMuon] = cktTrack->dz(vtx.position());
+			// muon_dxycktVTX.push_back( cktTrack->dxy(vtx.position()) );
+			// muon_dszcktVTX.push_back( cktTrack->dsz(vtx.position()) );
+			// muon_dzcktVTX.push_back( cktTrack->dz(vtx.position()) );
 		}
       
 		// muon1 kinematics
-		// Muon_cktpT[_nMuon] = cktTrack->pt();
-		// Muon_cktPx[_nMuon] = cktTrack->px();
-		// Muon_cktPy[_nMuon] = cktTrack->py();
-		// Muon_cktPz[_nMuon] = cktTrack->pz();
-		// Muon_cktpTError[_nMuon] = cktTrack->ptError();
+		// muon_cktpT.push_back( cktTrack->pt() );
+		// muon_cktPx.push_back( cktTrack->px() );
+		// muon_cktPy.push_back( cktTrack->py() );
+		// muon_cktPz.push_back( cktTrack->pz() );
+		// muon_cktpTError.push_back( cktTrack->ptError() );
 		
-		Muon_pT[_nMuon] = imuon.pt();
-		Muon_Px[_nMuon] = imuon.px();
-		Muon_Py[_nMuon] = imuon.py();
-		Muon_Pz[_nMuon] = imuon.pz();
-		Muon_eta[_nMuon] = imuon.eta();
-		Muon_phi[_nMuon] = imuon.phi();
+		muon_pt.push_back( imuon.pt() );
+		muon_Px.push_back( imuon.px() );
+		muon_Py.push_back( imuon.py() );
+		muon_Pz.push_back( imuon.pz() );
+		muon_eta.push_back( imuon.eta() );
+		muon_phi.push_back( imuon.phi() );
 		
-		Muon_dB[_nMuon] = imuon.dB();
+		muon_dB.push_back( imuon.dB() );
       
 		// -- Various track informations -- //
 		// -- MuonBestTrack -- //
 		if( imuon.muonBestTrack().isNonnull() ){
-			Muon_Best_pT[_nMuon] = imuon.muonBestTrack()->pt();
-			Muon_Best_pTError[_nMuon] = imuon.muonBestTrack()->ptError();
-			Muon_Best_Px[_nMuon] = imuon.muonBestTrack()->px();
-			Muon_Best_Py[_nMuon] = imuon.muonBestTrack()->py();
-			Muon_Best_Pz[_nMuon] = imuon.muonBestTrack()->pz();
-			Muon_Best_eta[_nMuon] = imuon.muonBestTrack()->eta();
-			Muon_Best_phi[_nMuon] = imuon.muonBestTrack()->phi();
+			muon_Best_pt.push_back( imuon.muonBestTrack()->pt() );
+			muon_Best_ptError.push_back( imuon.muonBestTrack()->ptError() );
+			muon_Best_Px.push_back( imuon.muonBestTrack()->px() );
+			muon_Best_Py.push_back( imuon.muonBestTrack()->py() );
+			muon_Best_Pz.push_back( imuon.muonBestTrack()->pz() );
+			muon_Best_eta.push_back( imuon.muonBestTrack()->eta() );
+			muon_Best_phi.push_back( imuon.muonBestTrack()->phi() );
     }
       
       
     // -- Inner Track -- //
     if( imuon.innerTrack().isNonnull() ){
-			Muon_Inner_pT[_nMuon] = imuon.innerTrack()->pt();
-			Muon_Inner_pTError[_nMuon] = imuon.innerTrack()->ptError();
-			Muon_Inner_Px[_nMuon] = imuon.innerTrack()->px();
-			Muon_Inner_Py[_nMuon] = imuon.innerTrack()->py();
-			Muon_Inner_Pz[_nMuon] = imuon.innerTrack()->pz();
-			Muon_Inner_eta[_nMuon] = imuon.innerTrack()->eta();
-			Muon_Inner_phi[_nMuon] = imuon.innerTrack()->phi();
+			muon_Inner_pt.push_back( imuon.innerTrack()->pt() );
+			muon_Inner_ptError.push_back( imuon.innerTrack()->ptError() );
+			muon_Inner_Px.push_back( imuon.innerTrack()->px() );
+			muon_Inner_Py.push_back( imuon.innerTrack()->py() );
+			muon_Inner_Pz.push_back( imuon.innerTrack()->pz() );
+			muon_Inner_eta.push_back( imuon.innerTrack()->eta() );
+			muon_Inner_phi.push_back( imuon.innerTrack()->phi() );
 		}
       
 		// -- Outer Track -- //
 		if( imuon.outerTrack().isNonnull() ){
-			Muon_Outer_pT[_nMuon] = imuon.outerTrack()->pt();
-			Muon_Outer_pTError[_nMuon] = imuon.outerTrack()->ptError();
-			Muon_Outer_Px[_nMuon] = imuon.outerTrack()->px();
-			Muon_Outer_Py[_nMuon] = imuon.outerTrack()->py();
-			Muon_Outer_Pz[_nMuon] = imuon.outerTrack()->pz();
-			Muon_Outer_eta[_nMuon] = imuon.outerTrack()->eta();
-			Muon_Outer_phi[_nMuon] = imuon.outerTrack()->phi();
+			muon_Outer_pt.push_back( imuon.outerTrack()->pt() );
+			muon_Outer_ptError.push_back( imuon.outerTrack()->ptError() );
+			muon_Outer_Px.push_back( imuon.outerTrack()->px() );
+			muon_Outer_Py.push_back( imuon.outerTrack()->py() );
+			muon_Outer_Pz.push_back( imuon.outerTrack()->pz() );
+			muon_Outer_eta.push_back( imuon.outerTrack()->eta() );
+			muon_Outer_phi.push_back( imuon.outerTrack()->phi() );
     }
       
     // -- Global Track -- //
     if( imuon.globalTrack().isNonnull() ){
-			Muon_GLB_pT[_nMuon] = imuon.globalTrack()->pt();
-			Muon_GLB_pTError[_nMuon] = imuon.globalTrack()->ptError();
-			Muon_GLB_Px[_nMuon] = imuon.globalTrack()->px();
-			Muon_GLB_Py[_nMuon] = imuon.globalTrack()->py();
-			Muon_GLB_Pz[_nMuon] = imuon.globalTrack()->pz();
-			Muon_GLB_eta[_nMuon] = imuon.globalTrack()->eta();
-			Muon_GLB_phi[_nMuon] = imuon.globalTrack()->phi();
+			muon_GLB_pt.push_back( imuon.globalTrack()->pt() );
+			muon_GLB_ptError.push_back( imuon.globalTrack()->ptError() );
+			muon_GLB_Px.push_back( imuon.globalTrack()->px() );
+			muon_GLB_Py.push_back( imuon.globalTrack()->py() );
+			muon_GLB_Pz.push_back( imuon.globalTrack()->pz() );
+			muon_GLB_eta.push_back( imuon.globalTrack()->eta() );
+			muon_GLB_phi.push_back( imuon.globalTrack()->phi() );
     }
       
     // -- tuneP MuonBestTrack -- //
     if( imuon.tunePMuonBestTrack().isNonnull() ){
-			Muon_TuneP_pT[_nMuon] = imuon.tunePMuonBestTrack()->pt();
-			Muon_TuneP_pTError[_nMuon] = imuon.tunePMuonBestTrack()->ptError();
-			Muon_TuneP_Px[_nMuon] = imuon.tunePMuonBestTrack()->px();
-			Muon_TuneP_Py[_nMuon] = imuon.tunePMuonBestTrack()->py();
-			Muon_TuneP_Pz[_nMuon] = imuon.tunePMuonBestTrack()->pz();
-			Muon_TuneP_eta[_nMuon] = imuon.tunePMuonBestTrack()->eta();
-			Muon_TuneP_phi[_nMuon] = imuon.tunePMuonBestTrack()->phi();
+			muon_TuneP_pt.push_back( imuon.tunePMuonBestTrack()->pt() );
+			muon_TuneP_ptError.push_back( imuon.tunePMuonBestTrack()->ptError() );
+			muon_TuneP_Px.push_back( imuon.tunePMuonBestTrack()->px() );
+			muon_TuneP_Py.push_back( imuon.tunePMuonBestTrack()->py() );
+			muon_TuneP_Pz.push_back( imuon.tunePMuonBestTrack()->pz() );
+			muon_TuneP_eta.push_back( imuon.tunePMuonBestTrack()->eta() );
+			muon_TuneP_phi.push_back( imuon.tunePMuonBestTrack()->phi() );
     }
       
 		//-- ISOLATIONS GO HERE -- //
 		// -- detector based -- //
-		Muon_trkiso[_nMuon] = imuon.isolationR03().sumPt;
-		Muon_hcaliso[_nMuon] = imuon.isolationR03().hadEt;
-		Muon_ecaliso[_nMuon] = imuon.isolationR03().emEt;
-		Muon_trkisoR05[_nMuon] = imuon.isolationR05().sumPt;
-		Muon_hcalisoR05[_nMuon] = imuon.isolationR05().hadEt;
-		Muon_ecalisoR05[_nMuon] = imuon.isolationR05().emEt; 
+		muon_trkiso.push_back( imuon.isolationR03().sumPt );
+		muon_hcaliso.push_back( imuon.isolationR03().hadEt );
+		muon_ecaliso.push_back( imuon.isolationR03().emEt );
+		muon_trkisoR05.push_back( imuon.isolationR05().sumPt );
+		muon_hcalisoR05.push_back( imuon.isolationR05().hadEt );
+		muon_ecalisoR05.push_back( imuon.isolationR05().emEt ); 
 		
 		// -- pf isolation -- // 
-		Muon_PfChargedHadronIsoR04[_nMuon] = imuon.pfIsolationR04().sumChargedHadronPt;
-		Muon_PfNeutralHadronIsoR04[_nMuon] = imuon.pfIsolationR04().sumNeutralHadronEt;
-		Muon_PfGammaIsoR04[_nMuon] = imuon.pfIsolationR04().sumPhotonEt;
-		Muon_PFSumPUIsoR04[_nMuon] = imuon.pfIsolationR04().sumPUPt;
+		muon_PfChargedHadronIsoR04.push_back( imuon.pfIsolationR04().sumChargedHadronPt );
+		muon_PfNeutralHadronIsoR04.push_back( imuon.pfIsolationR04().sumNeutralHadronEt );
+		muon_PfGammaIsoR04.push_back( imuon.pfIsolationR04().sumPhotonEt );
+		muon_PFSumPUIsoR04.push_back( imuon.pfIsolationR04().sumPUPt );
 		
-		Muon_PfChargedHadronIsoR03[_nMuon] = imuon.pfIsolationR03().sumChargedHadronPt;
-		Muon_PfNeutralHadronIsoR03[_nMuon] = imuon.pfIsolationR03().sumNeutralHadronEt;
-		Muon_PfGammaIsoR03[_nMuon] = imuon.pfIsolationR03().sumPhotonEt;
-		Muon_PFSumPUIsoR03[_nMuon] = imuon.pfIsolationR03().sumPUPt;
+		muon_PfChargedHadronIsoR03.push_back( imuon.pfIsolationR03().sumChargedHadronPt );
+		muon_PfNeutralHadronIsoR03.push_back( imuon.pfIsolationR03().sumNeutralHadronEt );
+		muon_PfGammaIsoR03.push_back( imuon.pfIsolationR03().sumPhotonEt );
+		muon_PFSumPUIsoR03.push_back( imuon.pfIsolationR03().sumPUPt );
 		
 		// -- Else -- //
-		Muon_charge[_nMuon] = imuon.charge();
-		Muon_nChambers[_nMuon] = imuon.numberOfChambers(); // -- # of chambers -- //
-		Muon_nMatches[_nMuon] = imuon.numberOfMatchedStations(); // -- # of chambers with matched segments -- //
-		Muon_nMatchesRPCLayers[_nMuon] = imuon.numberOfMatchedRPCLayers();
-		Muon_stationMask[_nMuon] = imuon.stationMask(); // -- bit map of stations with matched segments -- //
+		muon_charge.push_back( imuon.charge() );
+		muon_nChambers.push_back( imuon.numberOfChambers() ); // -- # of chambers -- //
+		muon_matchedstations.push_back( imuon.numberOfMatchedStations() ); // -- # of chambers with matched segments -- //
+		muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
 		
-    _nMuon++;
-      
   } // -- End of imuon iteration -- //
   
-  nMuon = _nMuon;
 }
 
 //////////////////////////////
