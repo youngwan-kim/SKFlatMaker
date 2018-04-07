@@ -1,6 +1,7 @@
 import os
 
-lines = open('varlist_Muon.txt').readlines()
+#lines = open('varlist_Muon.txt').readlines()
+lines = open('varlist_Electron.txt').readlines()
 
 # 0 = header
 # 1 = src, initilize
@@ -20,7 +21,7 @@ for line in lines:
     elif WhatToPrint==1:
       print '  '+varname+'.clear();'
     elif WhatToPrint==2:
-      print '  DYTree->Branch("'+varname+'", "vector<'+vartype+'>", &'+varname+');'
+      print '    DYTree->Branch("'+varname+'", "vector<'+vartype+'>", &'+varname+');'
 
   else:
     if WhatToPrint==0:
@@ -37,4 +38,4 @@ for line in lines:
       elif vartype=="bool":
         vartypechar = "O"
 
-      print '  DYTree->Branch("'+varname+'", &'+varname+', "'+varname+'/'+vartypechar+'");'
+      print '    DYTree->Branch("'+varname+'", &'+varname+', "'+varname+'/'+vartypechar+'");'
