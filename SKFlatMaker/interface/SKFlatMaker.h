@@ -371,42 +371,31 @@ class SKFlatMaker : public edm::EDAnalyzer
   double _HLT_trigEta[MPSIZE];
   double _HLT_trigPhi[MPSIZE];
   
-  // Jet
-  double JETbDiscriminant[MPSIZE];
-  double JETcharge[MPSIZE];
-  int JETflavour[MPSIZE];
-  int JETntracks[MPSIZE];
-  double JETpt[MPSIZE];
-  double JETeta[MPSIZE];
-  double JETphi[MPSIZE];
-  
-  int Nbtagged_alg1;
-  int NbtaggedCloseMuon_alg1;
-  int Nbtagged_alg2;
-  int NbtaggedCloseMuon_alg2;
-  int Nbtagged_alg3;
-  int NbtaggedCloseMuon_alg3;
-  double JETbDiscriminant_alg1[MPSIZE];
-  double JETbDiscriminant_alg2[MPSIZE];
-  double JETbDiscriminant_alg3[MPSIZE];
-  
-  double Jet_pT[MPSIZE]; 
-  double Jet_eta[MPSIZE]; 
-  double Jet_phi[MPSIZE]; 
-  double Jet_Charge[MPSIZE]; 
-  double Jet_area[MPSIZE];
-  double Jet_rho[MPSIZE];
-  int Jet_Flavor[MPSIZE]; 
-  int Jet_Hadron[MPSIZE];
-  double Jet_bTag[MPSIZE]; 
-  double Jet_CHfrac[MPSIZE]; 
-  double Jet_NHfrac[MPSIZE]; 
-  double Jet_NHEMfrac[MPSIZE]; 
-  double Jet_CHEMfrac[MPSIZE]; 
-  int Jet_CHmulti[MPSIZE]; 
-  int Jet_NHmulti[MPSIZE];
-  
-  
+  //==== Jet
+
+  vector<double> jet_pt;
+  vector<double> jet_eta;
+  vector<double> jet_phi;
+  vector<double> jet_charge;
+  vector<double> jet_area;
+  vector<double> jet_rho;
+  vector<int> jet_partonFlavour;
+  vector<int> jet_hadronFlavour;
+  vector<double> jet_bTag;
+  vector<double> jet_chargedHadronEnergyFraction;
+  vector<double> jet_neutralHadronEnergyFraction;
+  vector<double> jet_neutralEmEnergyFraction;
+  vector<double> jet_chargedEmEnergyFraction;
+  vector<int> jet_chargedMultiplicity;
+  vector<int> jet_neutralMultiplicity;
+  vector<bool> jet_looseJetID;
+  vector<bool> jet_tightJetID;
+  vector<bool> jet_tightLepVetoJetID;
+  vector<int> jet_partonPdgId;
+  vector<int> jet_vtxNtracks;
+  vector<double> jet_m;
+  vector<double> jet_energy;
+
   //==== Electron
 
   vector<double> electron_MVAIso;

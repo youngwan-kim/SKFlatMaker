@@ -146,7 +146,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Flag_noBadMuons = false;
   
   nVertices = -1;
-  Njets = Nbtagged = NbtaggedCloseMuon = -1;
   PVtrackSize = -1;
   PVchi2 = -1;
   PVndof = -1;
@@ -411,34 +410,38 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_TuneP_Pz.clear();
   muon_TuneP_eta.clear();
   muon_TuneP_phi.clear();
-  
+
+  //==== Jet
+
+  jet_pt.clear();
+  jet_eta.clear();
+  jet_phi.clear();
+  jet_charge.clear();
+  jet_area.clear();
+  jet_rho.clear();
+  jet_partonFlavour.clear();
+  jet_hadronFlavour.clear();
+  jet_bTag.clear();
+  jet_chargedHadronEnergyFraction.clear();
+  jet_neutralHadronEnergyFraction.clear();
+  jet_neutralEmEnergyFraction.clear();
+  jet_chargedEmEnergyFraction.clear();
+  jet_chargedMultiplicity.clear();
+  jet_neutralMultiplicity.clear();
+  jet_looseJetID.clear();
+  jet_tightJetID.clear();
+  jet_tightLepVetoJetID.clear();
+  jet_partonPdgId.clear();
+  jet_vtxNtracks.clear();
+  jet_m.clear();
+  jet_energy.clear();
+
   for( int i = 0; i < MPSIZE; i++ ){
 
     // -- Trigger -- //
     _HLT_trigType[i] = -1;
     _HLT_trigFired[i] = -1;
     _HLT_trigPt[i] = _HLT_trigEta[i] = _HLT_trigPhi[i] = -100;
-    
-    // -- Jet -- //
-    JETbDiscriminant[i] = JETcharge[i] = JETpt[i] = JETeta[i] = JETphi[i] = -100;
-    JETflavour[i] = JETntracks[i] = -100;
-    
-    Jet_pT[i] = -100; 
-    Jet_eta[i] = -100; 
-    Jet_phi[i] = -100; 
-    Jet_Charge[i] = -100; 
-    Jet_area[i] = -100;
-    Jet_rho[i] = -100;
-    Jet_Flavor[i] = -100;
-    Jet_Flavor[i] = -100; 
-    Jet_Hadron[i] = -100;
-    Jet_bTag[i] = -100; 
-    Jet_CHfrac[i] = -100; 
-    Jet_NHfrac[i] = -100; 
-    Jet_NHEMfrac[i] = -100; 
-    Jet_CHEMfrac[i] = -100; 
-    Jet_CHmulti[i] = -100; 
-    Jet_NHmulti[i] = -100;
     
     // -- LHE -- //
     LHELepton_Px[i] = 0;
@@ -695,44 +698,30 @@ void SKFlatMaker::beginJob()
   }
 
   if(theStoreJetFlag){
-    // Jet
-    DYTree->Branch("Njets", &Njets,"Njets/I");
 
-    DYTree->Branch("Jet_pT", &Jet_pT,"Jet_pT[Njets]/D");
-    DYTree->Branch("Jet_eta", &Jet_eta,"Jet_eta[Njets]/D");
-    DYTree->Branch("Jet_phi", &Jet_phi,"Jet_phi[Njets]/D");
-    DYTree->Branch("Jet_Charge", &Jet_Charge,"Jet_Charge[Njets]/D");
-    DYTree->Branch("Jet_Area", &Jet_area,"Jet_area[Njets]/D");
-    DYTree->Branch("Jet_Rho", &Jet_rho,"Jet_rho[Njets]/D");
-    DYTree->Branch("Jet_PartonFlavor", &Jet_Flavor,"Jet_Flavor[Njets]/I");
-    DYTree->Branch("Jet_HadronFlavor", &Jet_Hadron,"Jet_Hadron[Njets]/I");
+    DYTree->Branch("jet_pt", "vector<double>", &jet_pt);
+    DYTree->Branch("jet_eta", "vector<double>", &jet_eta);
+    DYTree->Branch("jet_phi", "vector<double>", &jet_phi);
+    DYTree->Branch("jet_charge", "vector<double>", &jet_charge);
+    DYTree->Branch("jet_area", "vector<double>", &jet_area);
+    DYTree->Branch("jet_rho", "vector<double>", &jet_rho);
+    DYTree->Branch("jet_partonFlavour", "vector<int>", &jet_partonFlavour);
+    DYTree->Branch("jet_hadronFlavour", "vector<int>", &jet_hadronFlavour);
+    DYTree->Branch("jet_bTag", "vector<double>", &jet_bTag);
+    DYTree->Branch("jet_chargedHadronEnergyFraction", "vector<double>", &jet_chargedHadronEnergyFraction);
+    DYTree->Branch("jet_neutralHadronEnergyFraction", "vector<double>", &jet_neutralHadronEnergyFraction);
+    DYTree->Branch("jet_neutralEmEnergyFraction", "vector<double>", &jet_neutralEmEnergyFraction);
+    DYTree->Branch("jet_chargedEmEnergyFraction", "vector<double>", &jet_chargedEmEnergyFraction);
+    DYTree->Branch("jet_chargedMultiplicity", "vector<int>", &jet_chargedMultiplicity);
+    DYTree->Branch("jet_neutralMultiplicity", "vector<int>", &jet_neutralMultiplicity);
+    DYTree->Branch("jet_looseJetID", "vector<bool>", &jet_looseJetID);
+    DYTree->Branch("jet_tightJetID", "vector<bool>", &jet_tightJetID);
+    DYTree->Branch("jet_tightLepVetoJetID", "vector<bool>", &jet_tightLepVetoJetID);
+    DYTree->Branch("jet_partonPdgId", "vector<int>", &jet_partonPdgId);
+    DYTree->Branch("jet_vtxNtracks", "vector<int>", &jet_vtxNtracks);
+    DYTree->Branch("jet_m", "vector<double>", &jet_m);
+    DYTree->Branch("jet_energy", "vector<double>", &jet_energy);
 
-    DYTree->Branch("Jet_bTag", &Jet_bTag,"Jet_bTag[Njets]/D");
-    DYTree->Branch("Jet_CHfrac", &Jet_CHfrac,"Jet_CHfrac[Njets]/D");
-    DYTree->Branch("Jet_NHfrac", &Jet_NHfrac,"Jet_NHfrac[Njets]/D");
-    DYTree->Branch("Jet_NHEMfrac", &Jet_NHEMfrac,"Jet_NHEMfrac[Njets]/D");
-    DYTree->Branch("Jet_CHEMfrac", &Jet_CHEMfrac,"Jet_CHEMfrac[Njets]/D");
-    DYTree->Branch("Jet_CHmulti", &Jet_CHmulti,"Jet_CHmulti[Njets]/I");
-    DYTree->Branch("Jet_NHmulti", &Jet_NHmulti,"Jet_NHmulti[Njets]/I");
-
-
-    // DYTree->Branch("JETbDiscriminant", &JETbDiscriminant, "JETbDiscriminant[Njets]/D");
-    // DYTree->Branch("JETbDiscriminant_alg1", &JETbDiscriminant_alg1, "JETbDiscriminant_alg1[Njets]/D");
-    // DYTree->Branch("JETbDiscriminant_alg2", &JETbDiscriminant_alg2, "JETbDiscriminant_alg2[Njets]/D");
-    // DYTree->Branch("JETbDiscriminant_alg3", &JETbDiscriminant_alg3, "JETbDiscriminant_alg3[Njets]/D");
-    // DYTree->Branch("JETflavour", &JETflavour, "JETflavour[Njets]/I");
-    // DYTree->Branch("JETcharge", &JETcharge, "JETcharge[Njets]/D");
-    // DYTree->Branch("JETntracks", &JETntracks, "JETntracks[Njets]/I");
-    // DYTree->Branch("JETpt", &JETpt, "JETpt[Njets]/D");
-    // DYTree->Branch("JETeta", &JETeta, "JETeta[Njets]/D");
-    // DYTree->Branch("JETphi", &JETphi, "JETphi[Njets]/D");
-    // // b-tagging
-    // DYTree->Branch("Nbtagged", &Nbtagged,"Nbtagged/I");
-    // DYTree->Branch("NbtaggedCloseMuon", &NbtaggedCloseMuon,"NbtaggedCloseMuon/I");
-    // DYTree->Branch("Nbtagged_alg1", &Nbtagged_alg1,"Nbtagged_alg1/I");
-    // DYTree->Branch("NbtaggedClosemuon_alg1", &NbtaggedClosemuon_alg1,"NbtaggedClosemuon_alg1/I");
-    // DYTree->Branch("Nbtagged_alg2", &Nbtagged_alg2,"Nbtagged_alg2/I");
-    // DYTree->Branch("NbtaggedClosemuon_alg2", &NbtaggedClosemuon_alg2,"NbtaggedCloslg3", &NbtaggedClosemuon_alg3,"NbtaggedClosemuon_alg3/I");
   }
   
   // Electron
@@ -2278,14 +2267,7 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
 /////////////////////////
 void SKFlatMaker::fillJet(const edm::Event &iEvent)
 {
-  int _njets = 0;
-  // int _nbjets_alg1 = 0;
-  // int _nbjets_alg2 = 0;
-  // int _nbjets_alg3 = 0;
-  // int _nbjets_alg1_closemu = 0;
-  // int _nbjets_alg2_closemu = 0;
-  // int _nbjets_alg3_closemu = 0;
-  
+
   // edm::Handle<edm::View<pat::Jet> > jetHandle;
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(JetToken,jetHandle);
@@ -2296,39 +2278,33 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
   if( jetHandle->size() > 0 && theDebugLevel > 0) 
     cout << "[SKFlatMaker::fillJet] # of Jets = " << jetHandle->size() << endl;
   
-  Njets = jetHandle->size();
-  if(Njets == 0) return;
+  if(jetHandle->size() == 0) return;
   
   edm::Handle< double > rhojet;
   iEvent.getByToken(RhoToken,rhojet);
   double rho_jet = *rhojet;
 
+  for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter){
 
-  for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter)
-    {
-      Jet_pT[_njets] = jets_iter->pt();
-      Jet_eta[_njets] = jets_iter->eta();
-      Jet_phi[_njets] = jets_iter->phi();
-      Jet_Charge[_njets] = jets_iter->jetCharge();
-      Jet_area[_njets] = jets_iter->jetArea();
-      Jet_rho[_njets] = rho_jet;
-      Jet_Flavor[_njets] = jets_iter->partonFlavour();
-      Jet_Hadron[_njets] = jets_iter->hadronFlavour();
+    jet_pt.push_back( jets_iter->pt() );
+    jet_eta.push_back( jets_iter->eta() );
+    jet_phi.push_back( jets_iter->phi() );
+    jet_charge.push_back( jets_iter->jetCharge() );
+    jet_area.push_back( jets_iter->jetArea() );
+    jet_rho.push_back( rho_jet );
+    jet_partonFlavour.push_back( jets_iter->partonFlavour() );
+    jet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
-      Jet_bTag[_njets] = jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-      Jet_CHfrac[_njets] = jets_iter->chargedHadronEnergyFraction();
-      Jet_NHfrac[_njets] = jets_iter->neutralHadronEnergyFraction();
-      Jet_NHEMfrac[_njets] = jets_iter->neutralEmEnergyFraction();
-      Jet_CHEMfrac[_njets] = jets_iter->chargedEmEnergyFraction();
-      Jet_CHmulti[_njets] = jets_iter->chargedMultiplicity();
-      Jet_NHmulti[_njets] = jets_iter->neutralMultiplicity();
-      
-      _njets++;
-    } 
+    jet_bTag.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
+    jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
+    jet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
+    jet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
+    jet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
+    jet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
+
+  } 
   
-  // cout << "# Jets in this event = " << _njets << endl;
-  
-  Njets = _njets;
 }
 
 //////////////////////////////////////////////////////
