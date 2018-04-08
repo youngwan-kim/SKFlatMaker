@@ -727,23 +727,22 @@ class SKFlatMaker : public edm::EDAnalyzer
   double TTrack_phi[MPSIZE];
   double TTrack_charge[MPSIZE];
   
-  // -- MET -- //
-  double pfMET_pT;
-  double pfMET_phi; 
-  double pfMET_Px; 
-  double pfMET_Py; 
+  //==== MET
+  double pfMET_pt;
+  double pfMET_phi;
+  double pfMET_Px;
+  double pfMET_Py;
   double pfMET_SumEt;
-  
-  double pfMET_Type1_pT;
-  double pfMET_Type1_phi; 
-  double pfMET_Type1_Px; 
-  double pfMET_Type1_Py; 
+  double pfMET_Type1_pt;
+  double pfMET_Type1_phi;
+  double pfMET_Type1_Px;
+  double pfMET_Type1_Py;
   double pfMET_Type1_SumEt;
-  
-  double pfMET_Type1_PhiCor_pT;
-  double pfMET_Type1_PhiCor_phi; 
-  double pfMET_Type1_PhiCor_Px; 
-  double pfMET_Type1_PhiCor_Py; 
+  double pfMET_Type1_PhiCor_pt;
+  double pfMET_Type1_PhiCor_phi;
+  double pfMET_Type1_PhiCor_Px;
+  double pfMET_Type1_PhiCor_Py;
   double pfMET_Type1_PhiCor_SumEt;
+
 };
 #endif

@@ -1,0 +1,15 @@
+double	pfMET_pt	0
+double	pfMET_phi	0
+double	pfMET_Px	0
+double	pfMET_Py	0
+double	pfMET_SumEt	0
+double	pfMET_Type1_pt	0
+double	pfMET_Type1_phi	0
+double	pfMET_Type1_Px	0
+double	pfMET_Type1_Py	0
+double	pfMET_Type1_SumEt	0
+double	pfMET_Type1_PhiCor_pt	0
+double	pfMET_Type1_PhiCor_phi	0
+double	pfMET_Type1_PhiCor_Px	0
+double	pfMET_Type1_PhiCor_Py	0
+double	pfMET_Type1_PhiCor_SumEt	0

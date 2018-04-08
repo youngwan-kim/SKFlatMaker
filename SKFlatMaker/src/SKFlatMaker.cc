@@ -119,16 +119,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   ///////////////////////////////////////////
   // -- initialize for ntuple variables -- //
   ///////////////////////////////////////////
-  // MET_sumEt = -999;
-  // MET_pt = -999;
-  // MET_px = -999;
-  // MET_py = -999;
-  // MET_phi = -999;
-  // pfMET_sumEt = -999;
-  // pfMET_pt = -999;
-  // pfMET_px = -999;
-  // pfMET_py = -999;
-  // pfMET_phi = -999;
   
   Flag_goodVertices = false;
   Flag_globalTightHalo2016Filter = false;
@@ -160,7 +150,24 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   photonEt = 0;
   chargedHadronEt = 0;
   neutralHadronEt = 0;
-  
+
+  //==== MET
+  pfMET_pt=-999;
+  pfMET_phi=-999;
+  pfMET_Px=-999;
+  pfMET_Py=-999;
+  pfMET_SumEt=-999;
+  pfMET_Type1_pt=-999;
+  pfMET_Type1_phi=-999;
+  pfMET_Type1_Px=-999;
+  pfMET_Type1_Py=-999;
+  pfMET_Type1_SumEt=-999;
+  pfMET_Type1_PhiCor_pt=-999;
+  pfMET_Type1_PhiCor_phi=-999;
+  pfMET_Type1_PhiCor_Px=-999;
+  pfMET_Type1_PhiCor_Py=-999;
+  pfMET_Type1_PhiCor_SumEt=-999;
+
   //====trigger object
   HLTObject_Type.clear();
   HLTObject_Fired.clear();
@@ -509,29 +516,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   photon_etaUnCorr.clear();
   photon_phiUnCorr.clear();
 
-  for( int i = 0; i < MPSIZE; i++ ){
-
-    // -- MET -- //
-    pfMET_pT = -100;
-    pfMET_phi = -100; 
-    pfMET_Px = -100; 
-    pfMET_Py = -100; 
-    pfMET_SumEt = -100;
-    
-    pfMET_Type1_pT = -100;
-    pfMET_Type1_phi = -100; 
-    pfMET_Type1_Px = -100; 
-    pfMET_Type1_Py = -100; 
-    pfMET_Type1_SumEt = -100;
-    
-    pfMET_Type1_PhiCor_pT = -100;
-    pfMET_Type1_PhiCor_phi = -100; 
-    pfMET_Type1_PhiCor_Px = -100; 
-    pfMET_Type1_PhiCor_Py = -100; 
-    pfMET_Type1_PhiCor_SumEt = -100;
-    
-  } // -- End of "i" iteration -- //
-  
   // cout << "[SKFlatMaker::analyze] Varialbe intilization done" << endl;
   
   nEvt++;
@@ -1080,24 +1064,21 @@ void SKFlatMaker::beginJob()
   }
   
   if( theStoreMETFlag ){
-    // -- MET -- //
-    DYTree->Branch("pfMET_pT", &pfMET_pT,"pfMET_pT/D");
-    DYTree->Branch("pfMET_phi", &pfMET_phi,"pfMET_phi/D");
-    DYTree->Branch("pfMET_Px", &pfMET_Px,"pfMET_Px/D");
-    DYTree->Branch("pfMET_Py", &pfMET_Py,"pfMET_Py/D");
-    DYTree->Branch("pfMET_SumEt", &pfMET_SumEt,"pfMET_SumEt/D");
-    
-    DYTree->Branch("pfMET_Type1_pT", &pfMET_Type1_pT,"pfMET_Type1_pT/D");
-    DYTree->Branch("pfMET_Type1_phi", &pfMET_Type1_phi,"pfMET_Type1_phi/D");
-    DYTree->Branch("pfMET_Type1_Px", &pfMET_Type1_Px,"pfMET_Type1_Px/D");
-    DYTree->Branch("pfMET_Type1_Py", &pfMET_Type1_Py,"pfMET_Type1_Py/D");
-    DYTree->Branch("pfMET_Type1_SumEt", &pfMET_Type1_SumEt,"pfMET_Type1_SumEt/D");
-    
-    DYTree->Branch("pfMET_Type1_PhiCor_pT", &pfMET_Type1_PhiCor_pT,"pfMET_Type1_PhiCor_pT/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_phi", &pfMET_Type1_PhiCor_phi,"pfMET_Type1_PhiCor_phi/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_Px", &pfMET_Type1_PhiCor_Px,"pfMET_Type1_PhiCor_Px/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_Py", &pfMET_Type1_PhiCor_Py,"pfMET_Type1_PhiCor_Py/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_SumEt", &pfMET_Type1_PhiCor_SumEt,"pfMET_Type1_PhiCor_SumEt/D");
+    DYTree->Branch("pfMET_pt", &pfMET_pt, "pfMET_pt/D");
+    DYTree->Branch("pfMET_phi", &pfMET_phi, "pfMET_phi/D");
+    DYTree->Branch("pfMET_Px", &pfMET_Px, "pfMET_Px/D");
+    DYTree->Branch("pfMET_Py", &pfMET_Py, "pfMET_Py/D");
+    DYTree->Branch("pfMET_SumEt", &pfMET_SumEt, "pfMET_SumEt/D");
+    DYTree->Branch("pfMET_Type1_pt", &pfMET_Type1_pt, "pfMET_Type1_pt/D");
+    DYTree->Branch("pfMET_Type1_phi", &pfMET_Type1_phi, "pfMET_Type1_phi/D");
+    DYTree->Branch("pfMET_Type1_Px", &pfMET_Type1_Px, "pfMET_Type1_Px/D");
+    DYTree->Branch("pfMET_Type1_Py", &pfMET_Type1_Py, "pfMET_Type1_Py/D");
+    DYTree->Branch("pfMET_Type1_SumEt", &pfMET_Type1_SumEt, "pfMET_Type1_SumEt/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_pt", &pfMET_Type1_PhiCor_pt, "pfMET_Type1_PhiCor_pt/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_phi", &pfMET_Type1_PhiCor_phi, "pfMET_Type1_PhiCor_phi/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_Px", &pfMET_Type1_PhiCor_Px, "pfMET_Type1_PhiCor_Px/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_Py", &pfMET_Type1_PhiCor_Py, "pfMET_Type1_PhiCor_Py/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_SumEt", &pfMET_Type1_PhiCor_SumEt, "pfMET_Type1_PhiCor_SumEt/D");
   }
 }
 
@@ -2152,7 +2133,7 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   
   if( (metHandle->size() > 1) && (theDebugLevel > 0)) cout << "[SKFlatMaker::fillMET] # of METs = " << metHandle->size() << endl;
   
-  pfMET_pT = metHandle->front().uncorPt();
+  pfMET_pt = metHandle->front().uncorPt();
   pfMET_phi = metHandle->front().uncorPhi();
   pfMET_Px = metHandle->front().uncorPx();
   pfMET_Py = metHandle->front().uncorPy();
@@ -2160,13 +2141,13 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   
   // printf("[pfMET] (pT, phi, Px, Py, sumEt) = (%.3lf, %.3lf, %.3lf, %.3lf, %.3lf)\n", pfMET_pT, pfMET_phi, pfMET_Px, pfMET_Py, pfMET_SumEt);
   
-  pfMET_Type1_pT = metHandle->front().pt();
+  pfMET_Type1_pt = metHandle->front().pt();
   pfMET_Type1_phi = metHandle->front().phi();
   pfMET_Type1_Px = metHandle->front().px();
   pfMET_Type1_Py = metHandle->front().py();
   pfMET_Type1_SumEt = metHandle->front().sumEt();
   
-  pfMET_Type1_PhiCor_pT = metHandle->front().corPt(pat::MET::Type1XY);
+  pfMET_Type1_PhiCor_pt = metHandle->front().corPt(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_phi = metHandle->front().corPhi(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_Px = metHandle->front().corPx(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_Py = metHandle->front().corPy(pat::MET::Type1XY);
