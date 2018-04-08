@@ -1,0 +1,10 @@
+int	HLTObject_Type	1
+int	HLTObject_Fired	1
+string	HLTObject_Name	1
+int	HLTObject_PS	1
+double	HLTObject_pt	1
+double	HLTObject_eta	1
+double	HLTObject_phi	1
+string HLT_TriggerName 1
+bool HLT_TriggerFired 1
+int HLT_TriggerPrescale 1

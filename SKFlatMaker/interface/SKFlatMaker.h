@@ -269,8 +269,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
 
-  std::vector<std::string > MuonHLT;
-  std::vector<int > MuonHLTPS;
+  std::vector<std::string > HLTName_WildCard;
   std::vector<std::string > ListHLT;
   std::vector<int > ListHLTPS;
   std::vector<std::string > trigModuleNames;
@@ -361,16 +360,19 @@ class SKFlatMaker : public edm::EDAnalyzer
   double PVz;
   double PVprob;
   
-  // trigger object
-  int _HLT_ntrig;
-  int _HLT_trigType[MPSIZE];
-  int _HLT_trigFired[MPSIZE];
-  std::vector<std::string> _HLT_trigName;
-  std::vector<int> _HLT_trigPS;
-  double _HLT_trigPt[MPSIZE];
-  double _HLT_trigEta[MPSIZE];
-  double _HLT_trigPhi[MPSIZE];
-  
+  //==== trigger object
+
+  vector<int> HLTObject_Type;
+  vector<int> HLTObject_Fired;
+  vector<string> HLTObject_Name;
+  vector<int> HLTObject_PS;
+  vector<double> HLTObject_pt;
+  vector<double> HLTObject_eta;
+  vector<double> HLTObject_phi;
+  vector<string> HLT_TriggerName;
+  vector<bool> HLT_TriggerFired;
+  vector<int> HLT_TriggerPrescale;
+
   //==== Jet
 
   vector<double> jet_pt;

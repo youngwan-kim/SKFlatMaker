@@ -165,10 +165,17 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   neutralHadronEt = 0;
   
   // -- trigger object -- //
-  _HLT_ntrig = -1;
-  _HLT_trigName.clear();
-  _HLT_trigPS.clear();
-  
+  HLTObject_Type.clear();
+  HLTObject_Fired.clear();
+  HLTObject_Name.clear();
+  HLTObject_PS.clear();
+  HLTObject_pt.clear();
+  HLTObject_eta.clear();
+  HLTObject_phi.clear();
+  HLT_TriggerName.clear();
+  HLT_TriggerFired.clear();
+  HLT_TriggerPrescale.clear();
+
   // -- PU reweight -- //
   PUweight = -1;
   pileUpReweightIn = pileUpReweight = 1.0;
@@ -438,11 +445,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   for( int i = 0; i < MPSIZE; i++ ){
 
-    // -- Trigger -- //
-    _HLT_trigType[i] = -1;
-    _HLT_trigFired[i] = -1;
-    _HLT_trigPt[i] = _HLT_trigEta[i] = _HLT_trigPhi[i] = -100;
-    
     // -- LHE -- //
     LHELepton_Px[i] = 0;
     LHELepton_Py[i] = 0;
@@ -687,14 +689,18 @@ void SKFlatMaker::beginJob()
   }
 
   if(theStoreHLTReportFlag){
-    DYTree->Branch("HLT_ntrig", &_HLT_ntrig,"HLT_ntrig/I");
-    DYTree->Branch("HLT_trigType", &_HLT_trigType,"HLT_trigType[HLT_ntrig]/I");
-    DYTree->Branch("HLT_trigFired", &_HLT_trigFired,"HLT_trigFired[HLT_ntrig]/I");
-    DYTree->Branch("HLT_trigName", &_HLT_trigName);
-    DYTree->Branch("HLT_trigPS", &_HLT_trigPS);
-    DYTree->Branch("HLT_trigPt", &_HLT_trigPt,"HLT_trigPt[HLT_ntrig]/D");
-    DYTree->Branch("HLT_trigEta", &_HLT_trigEta,"HLT_trigEta[HLT_ntrig]/D");
-    DYTree->Branch("HLT_trigPhi", &_HLT_trigPhi,"HLT_trigPhi[HLT_ntrig]/D");
+
+    DYTree->Branch("HLTObject_Type", "vector<int>", &HLTObject_Type);
+    DYTree->Branch("HLTObject_Fired", "vector<int>", &HLTObject_Fired);
+    DYTree->Branch("HLTObject_Name", "vector<string>", &HLTObject_Name);
+    DYTree->Branch("HLTObject_PS", "vector<int>", &HLTObject_PS);
+    DYTree->Branch("HLTObject_pt", "vector<double>", &HLTObject_pt);
+    DYTree->Branch("HLTObject_eta", "vector<double>", &HLTObject_eta);
+    DYTree->Branch("HLTObject_phi", "vector<double>", &HLTObject_phi);
+    DYTree->Branch("HLT_TriggerName", "vector<string>", &HLT_TriggerName);
+    DYTree->Branch("HLT_TriggerFired", "vector<bool>", &HLT_TriggerFired);
+    DYTree->Branch("HLT_TriggerPrescale", "vector<int>", &HLT_TriggerPrescale);
+
   }
 
   if(theStoreJetFlag){
@@ -1104,41 +1110,37 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginRun] called" << endl;
-  const int nTrigName = 7;
-  string trigs[nTrigName] = {
+
+  vector<string> temp_trigs = {
       "HLT_Mu*", "HLT_Ele*", "HLT_DoubleEle*", "HLT_DoublePhoton*", "HLT_IsoMu*", "HLT_Photon*", 
-      /*
-      // -- single muon triggers -- //
+
+/*
+      //==== single muon triggers
       "HLT_IsoMu27_v*",
       "HLT_Mu50_v*",
             
-      // -- double muon triggers -- //
+      //==== double muon triggers
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*",
       
-      // -- for Electrons -- //
-      // -- Single Electron -- //
+      //==== Single Electron
       "HLT_Ele35_WPTight_Gsf_v*",
       
-      // -- Double Electron -- //
-      "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*", // -- low pt, loose ID & iso, unprescaled 
-      "HLT_DoubleEle33_CaloIdL_MW_v*", // -- loose ID, no isolation
+      //==== Double Electron
+      "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*", // low pt, loose ID & iso, unprescaled 
+      "HLT_DoubleEle33_CaloIdL_MW_v*", // loose ID, no isolation
       
-      // -- Double Photon -- //
+      //==== Double Photon
       "HLT_DoublePhoton33_CaloIdL_v*"
-      */
+*/
+
   };
-  
-  MuonHLT.clear();
-  MuonHLTPS.clear();
+  //==== copy this to member variable, HLTName_WildCard
+  HLTName_WildCard.clear();
+  for(unsigned int i=0; i<temp_trigs.size(); i++ ) HLTName_WildCard.push_back(temp_trigs.at(i));
+
   ListHLT.clear();
   ListHLTPS.clear();
   
-
-  
-  for( int i = 0; i < nTrigName; i++ ) MuonHLT.push_back(trigs[i]);
-  
-  int listRemoval[nTrigName] = {-1};
-  int ntrigName = MuonHLT.size();
   bool changedConfig;
   if(!hltConfig_.init(iRun, iSetup, processName, changedConfig)){
     LogError("HLTMuonVal") << "Initialization of HLTConfigProvider failed!!";
@@ -1147,55 +1149,37 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   else{
     std::vector<std::string> triggerNames = hltConfig_.triggerNames();
       
-    // -- print all trigger pathes -- // 
+    //==== print all trigger pathes inthe inputfile
     for( size_t i = 0; i < triggerNames.size(); i++)
       cout << "[SKFlatMaker::beginRun] Trigger Path: " << triggerNames[i] << endl;
       
-    /////////////////////////////////////////////
-    // -- iteration for each input triggers -- //
-    /////////////////////////////////////////////
-    for( int itrigName = 0; itrigName < ntrigName; itrigName++ ){
-      cout << "[SKFlatMaker::beginRun] \t[" << itrigName << "th Input Trigger = " << MuonHLT[itrigName] << "]" << endl;
+    //==== iteration for each Trigger Name WildCards
+    for(unsigned int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ){
+      cout << "[SKFlatMaker::beginRun] [" << it_HLTWC << "th Input Trigger Name WildCard = " << HLTName_WildCard[it_HLTWC] << "]" << endl;
     
-      listRemoval[itrigName] = 0;
-      
-      // check list of triggers
-      //cout << "trigger = " << itrigName << " " << MuonHLT[itrigName] << endl;
-      // bool isMatched = false;
-      
-      // -- find triggers in HLT configuration matched with a input trigger using wild card -- //
-      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(triggerNames, MuonHLT[itrigName]);
-      
-      //cout << "\t[# matched trigger in HLT configuration for this trigger: " << matches.size() << endl;
+      //==== find triggers in HLT configuration matched with a input trigger using wild card -- //
+      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(triggerNames, HLTName_WildCard[it_HLTWC]);
       
       if( !matches.empty() ){
-        //////////////////////////////////////////////
-        // -- iteration for each matched trigger -- //
-        //////////////////////////////////////////////
+
+        //==== iteration for each wildcard-matched trigger
+
         BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
-          cout << "[SKFlatMaker::beginRun] \t\t[matched trigger = " << *match << "]" << endl;
+          cout << "[SKFlatMaker::beginRun]   [matched trigger = " << *match << "]" << endl;
           ListHLT.push_back(*match);//save HLT list as a vector
         
-          // -- find modules corresponding to a trigger in HLT configuration -- //
+          //==== find modules corresponding to a trigger in HLT configuration
           std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
-          
-          // -- find prescale value -- //
-          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
-          MuonHLTPS.push_back(_preScaleValue);
-          ListHLTPS.push_back(_preScaleValue);
-          // cout << "Filter name: " << trigModuleNames[moduleNames.size()-2] << endl;
-          // for( size_t j = 0; j < moduleNames.size(); j++)
-          // {
-          //   TString name = moduleNames[j];
-          //   cout << "\t  Fliter Name: "<<moduleNames[j] << endl;
-          // }
-          
+          if(theDebugLevel>=2){
+            for(unsigned int it_md=0; it_md<moduleNames.size(); it_md++){
+            cout << "[SKFlatMaker::beginRun]      " << moduleNames.at(it_md) << endl;
+            }
+          }
+
           int nsize = moduleNames.size();
-          
+          //==== Last module = moduleNames[nsize-1] is always "hltBoolEnd"
           if( nsize-2 >= 0 ){
-            //cout << "module names = " << moduleNames[nsize-2] << " " << moduleNames[nsize-3] << endl;
             trigModuleNames.push_back(moduleNames[nsize-2]);
-            //cout << "Filter name: " << trigModuleNames[trigModuleNames.size()-1] << endl;
           
             if( nsize-3 >= 0 ){
               trigModuleNames_preFil.push_back(moduleNames[nsize-3]);
@@ -1204,47 +1188,27 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
               trigModuleNames_preFil.push_back("");
             }
           }
+
+          //==== find prescale value
+          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
+          ListHLTPS.push_back(_preScaleValue);
       
-          //break; // -- just take into account the case # mathced trigger = 1 -- //
-      
-        } // -- end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
+        } //==== end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
         
-      } // -- end of if( !matches.empty() ) -- //
-      else{
-        listRemoval[itrigName] = 1;
-      }
+      } //==== end of if( !matches.empty() ) -- //
     
       cout << endl;      
     
-    } // -- end of for( int itrigName = 0; itrigName < ntrigName; itrigName++ ): trigger iteration -- //
+    } // -- end of for( int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ): trigger iteration -- //
       
   } // -- end of else of if (!hltConfig_.init(iRun, iSetup, processName, changedConfig)) -- //
   
-  // -- Remove unavailable triggers -- //
-  cout << "[SKFlatMaker::beginRun] Check whether there are unavailable triggers ..." << endl;
-  int itmp = 0;
-  for( vector<string>::iterator iter = MuonHLT.begin(); iter != MuonHLT.end(); ){
-    if( listRemoval[itmp] > 0 ){
-      cout << "[SKFlatMaker::beginRun] \t" << *iter << " is not available in this HLT configuration .. remove it" << endl;
-      iter = MuonHLT.erase(iter);
-    }
-    else{
-      ++iter;
-    }
-      
-    itmp++;
-  }
-  //ntrigName = MuonHLT.size();
-  ntrigName = ListHLT.size();
-  
-  cout << "[SKFlatMaker::beginRun] # triggers after removing un-available triggers: " << nTrigName << " -> " << ntrigName << endl;
-  
-  cout << "[SKFlatMaker::beginRun] \n[Prescales]" << endl;
-  for( int i = 0; i < ntrigName; i++ )
+  cout << "[SKFlatMaker::beginRun] #### Prescales ####" << endl;
+  for(unsigned int i = 0; i < ListHLT.size(); i++ )
     cout << "[SKFlatMaker::beginRun] [" << ListHLT[i] << "]\t\t" << ListHLTPS[i] << endl;
   
   // trigger filters
-  for( int itrig = 0; itrig < ntrigName; itrig++ )
+  for(unsigned int itrig = 0; itrig < ListHLT.size(); itrig++ )
     cout << "[SKFlatMaker::beginRun] Filter name: " << itrig << " " << ListHLT[itrig] << " " << trigModuleNames[itrig] << " " << trigModuleNames_preFil[itrig] << endl;
   
   cout << "[SKFlatMaker::beginRun] ##### End of Begin Run #####" << endl;
@@ -1269,31 +1233,38 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   
   int ntrigName = ListHLT.size();
   
-  // -- read the whole HLT trigger lists fired in an event -- //
-  bool *trigFired = new bool[ntrigName];
-  for( int i = 0; i < ntrigName; i++ ) 
-    trigFired[i] = false;
-  
   Handle<TriggerResults> trigResult;
   iEvent.getByToken(TriggerToken, trigResult);
   
   if( !trigResult.failedToGet() ){
     int ntrigs = trigResult->size();
+    //==== all trigger pathes inthe inputfile
     const edm::TriggerNames trigName = iEvent.triggerNames(*trigResult);
-    
-    // cout << "trigger names in trigger result (HLT)" << endl;
-    // for(int itrig=0; itrig<(int)trigName.size(); itrig++)
-    //   cout << "trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
-    
+
+    if(theDebugLevel){
+      cout << "[SKFlatMaker::hltReport] trigger names in trigger result (HLT)" << endl;
+      for(int itrig=0; itrig<(int)trigName.size(); itrig++)
+        cout << "[SKFlatMaker::hltReport] trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
+    }
+
+    //==== Loop over triggers we are interested in (i.e., ListHLT)
     for( int itrigName = 0; itrigName < ntrigName; itrigName++ ){
-    std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), ListHLT[itrigName]);
-    if( !matches.empty() ){
+      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), ListHLT[itrigName]);
+
+      HLT_TriggerName.push_back(ListHLT[itrigName]);
+      HLT_TriggerPrescale.push_back(ListHLTPS[itrigName]);
+
+      if( !matches.empty() ){
         BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
-          //cout << "trigger match = " << *match << endl;
           if( trigName.triggerIndex(*match) >= (unsigned int)ntrigs ) continue;
+
+          //==== Check if this trigger is fired
           if( trigResult->accept(trigName.triggerIndex(*match)) ){
-            trigFired[itrigName] = true;
-          }//if trigger fired
+            HLT_TriggerFired.push_back(true);
+          }
+          else{
+            HLT_TriggerFired.push_back(false);
+          }
         }
         
       }
@@ -1326,14 +1297,10 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   }
   
   
+  //==============
+  //==== MiniAOD
+  //==============
   
-  ///////////////////
-  // -- MiniAOD -- //
-  ///////////////////
-  // cout << "// -- HLT Report for MINIAOD is used -- //" << endl;
-  
-  //cout << "------------------" << endl;
-  //cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
   edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
   iEvent.getByToken(TriggerObjectToken, triggerObject);
   
@@ -1363,22 +1330,23 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0) Flag_eeBadScFilter = METFilterResults-> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0) Flag_ecalBadCalibFilter = METFilterResults -> accept(i);
   }
-  
-  int ntrigTot = 0;
-  
+
+  //==== Loop for Trigger Object
+  //==== We can check mu_mathced_trigger etc..
   if( !trigResult.failedToGet() ){
     const edm::TriggerNames names = iEvent.triggerNames(*trigResult);
-    
-    // cout << "[# of trigger object in this event: " << (*triggerObject).size() << endl;
+
+    //cout << "[# of trigger object in this event: " << (*triggerObject).size() << endl;
     for (pat::TriggerObjectStandAlone obj : *triggerObject){
       obj.unpackPathNames(names);
       obj.unpackFilterLabels(iEvent, *trigResult);  //added Suoh
       
-      // cout << "# Filters: " << obj.filterLabels().size() << endl;
+      //cout << "# Filters: " << obj.filterLabels().size() << endl;
       for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter ){
-        // -- Get the full name of i-th filter -- //
+
+        //==== Get the full name of i-th filter -- //
         std::string fullname = obj.filterLabels()[i_filter];
-        
+        //cout << "[JSKIM] fullname = " << fullname << endl;
         std::string filterName;
         
         // -- Find ":" in the full name -- //
@@ -1389,29 +1357,25 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
           filterName = fullname.substr(0, m);
         else
           filterName = fullname;
+
+        //cout << "[JSKIM] filterName = " << filterName << endl;
         
-        //cout << "\t[" << i_filter << "th Filter] FullName = " << fullname << ", FilterName = " << filterName << endl;
-        
-        // -- Loop for the triggers that a user inserted in this code -- //
+        //==== Loop for the triggers that a user inserted in this code
         for( int itf = 0; itf < ntrigName; itf++ ){
-          // cout << "\t\t[" << itf << "th trigger] Name = " << MuonHLT[itf] << ", trigModuleName = " << trigModuleNames[itf] << endl;
           string name = "";
       
-          // -- Store HLT object information only if trigModuleName is equal to this filter name -- //
+          //==== Store HLT object information only if trigModuleName is equal to this filter name
           if( filterName == trigModuleNames[itf] ){
-            // cout << "\t\t\t[Matched]: filterName = " << filterName << ", Trigger Name = " << MuonHLT[itf] << endl;
-            //name = MuonHLT[itf];
             name = ListHLT[itf];
-            //int _ps = MuonHLTPS[itf];
             int _ps = ListHLTPS[itf];
-            _HLT_trigType[ntrigTot] = itf;
-            _HLT_trigFired[ntrigTot] = trigFired[itf];
-            _HLT_trigPt[ntrigTot] = obj.pt();
-            _HLT_trigEta[ntrigTot] = obj.eta();
-            _HLT_trigPhi[ntrigTot] = obj.phi();
-            _HLT_trigName.push_back(name);
-            _HLT_trigPS.push_back(_ps);
-            ntrigTot++;
+
+            HLTObject_Type.push_back( itf );
+            HLTObject_Fired.push_back( HLT_TriggerFired[itf] );
+            HLTObject_pt.push_back( obj.pt() );
+            HLTObject_eta.push_back( obj.eta() );
+            HLTObject_phi.push_back( obj.phi() );
+            HLTObject_Name.push_back(name);
+            HLTObject_PS.push_back(_ps);
           }
       
           // cout << endl;
@@ -1425,8 +1389,6 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     } // -- end of trigger object iteration -- //
       
   } // -- end of !trigResult.failedToGet() -- //
-  
-  _HLT_ntrig = ntrigTot;
   
 }
 
