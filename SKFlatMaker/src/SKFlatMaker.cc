@@ -155,8 +155,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   PVz = -1000;
   PVprob = -1;
   
-  GENnPair = -1;
-  
   // -- PF iso deposits -- // 
   sumEt = 0;
   photonEt = 0;
@@ -182,6 +180,43 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   LHELepton_E.clear();
   LHELepton_ID.clear();
   LHELepton_status.clear();
+
+  //==== GEN
+  gen_phi.clear();
+  gen_eta.clear();
+  gen_pt.clear();
+  gen_Px.clear();
+  gen_Py.clear();
+  gen_Pz.clear();
+  gen_E.clear();
+  gen_mother_PID.clear();
+  gen_mother_pt.clear();
+  gen_mother_index.clear();
+  gen_charge.clear();
+  gen_status.clear();
+  gen_PID.clear();
+  gen_isPrompt.clear();
+  gen_isPromptFinalState.clear();
+  gen_isTauDecayProduct.clear();
+  gen_isPromptTauDecayProduct.clear();
+  gen_isDirectPromptTauDecayProductFinalState.clear();
+  gen_isHardProcess.clear();
+  gen_isLastCopy.clear();
+  gen_isLastCopyBeforeFSR.clear();
+  gen_isPromptDecayed.clear();
+  gen_isDecayedLeptonHadron.clear();
+  gen_fromHardProcessBeforeFSR.clear();
+  gen_fromHardProcessDecayed.clear();
+  gen_fromHardProcessFinalState.clear();
+  gen_isMostlyLikePythia6Status3.clear();
+  gen_weight=-999;
+  genWeight_Q=-999;
+  genWeight_X1=-999;
+  genWeight_X2=-999;
+  genWeight_id1=-999;
+  genWeight_id2=-999;
+  genWeight_alphaQCD=-999;
+  genWeight_alphaQED=-999;
 
   // -- PU reweight -- //
   PUweight = -1;
@@ -452,36 +487,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   for( int i = 0; i < MPSIZE; i++ ){
 
-    // GEN
-    GENLepton_phi[i] = GENLepton_eta[i] = GENLepton_pT[i] = GENLepton_mother_pT[i] = -100;
-    GENLepton_mother_index[i] = -1;
-    GENLepton_mother[i] = 0;
-    GENLepton_Px[i] = GENLepton_Py[i] = GENLepton_Pz[i] = GENLepton_E[i] = -100;
-    GENLepton_charge[i] = GENLepton_status[i] = GENLepton_ID[i] = -100;
-    GENLepton_isPrompt[i] = 0;
-    GENLepton_isPromptFinalState[i] = 0;
-    GENLepton_isTauDecayProduct[i] = 0;
-    GENLepton_isPromptTauDecayProduct[i] = 0;
-    GENLepton_isDirectPromptTauDecayProductFinalState[i] = 0;
-    GENLepton_isHardProcess[i] = 0;
-    GENLepton_isLastCopy[i] = 0;
-    GENLepton_isLastCopyBeforeFSR[i] = 0;
-    GENLepton_isPromptDecayed[i] = 0;
-    GENLepton_isDecayedLeptonHadron[i] = 0;
-    GENLepton_fromHardProcessBeforeFSR[i] = 0;
-    GENLepton_fromHardProcessDecayed[i] = 0;
-    GENLepton_fromHardProcessFinalState[i] = 0;
-    GENLepton_isMostlyLikePythia6Status3[i] = 0;
-    GENEvt_weight = 0; //Weights for NLO generated events
-    GENEvt_QScale = 0;
-    GENEvt_x1 = 0;
-    GENEvt_x2 = 0;
-    GENEvt_id1 = 0;
-    GENEvt_id2 = 0;
-    GENEvt_alphaQCD = 0;
-    GENEvt_alphaQED = 0;
-    
-          
     // -- Photon Information -- //
     nPhotons = 0;
     Photon_pT[i] = 0;
@@ -980,42 +985,41 @@ void SKFlatMaker::beginJob()
   
   // GEN info
   if( theStoreGENFlag ){
-    DYTree->Branch("gen_N",&GENnPair,"GENnPair/I");
-    DYTree->Branch("gen_phi", &GENLepton_phi,"GENLepton_phi[GENnPair]/D");
-    DYTree->Branch("gen_eta", &GENLepton_eta,"GENLepton_eta[GENnPair]/D");
-    DYTree->Branch("gen_pT", &GENLepton_pT,"GENLepton_pT[GENnPair]/D");
-    DYTree->Branch("gen_Px", &GENLepton_Px,"GENLepton_Px[GENnPair]/D");
-    DYTree->Branch("gen_Py", &GENLepton_Py,"GENLepton_Py[GENnPair]/D");
-    DYTree->Branch("gen_Pz", &GENLepton_Pz,"GENLepton_Pz[GENnPair]/D");
-    DYTree->Branch("gen_E", &GENLepton_E,"GENLepton_E[GENnPair]/D");
-    DYTree->Branch("gen_mother", &GENLepton_mother,"GENLepton_mother[GENnPair]/I");
-    DYTree->Branch("gen_mother_pT", &GENLepton_mother_pT,"GENLepton_mother_pT[GENnPair]/D");
-    DYTree->Branch("gen_mother_index", &GENLepton_mother_index,"GENLepton_mother_index[GENnPair]/I");
-    DYTree->Branch("gen_charge", &GENLepton_charge,"GENLepton_charge[GENnPair]/I");
-    DYTree->Branch("gen_status", &GENLepton_status,"GENLepton_status[GENnPair]/I");
-    DYTree->Branch("gen_ID", &GENLepton_ID,"GENLepton_ID[GENnPair]/I");
-    DYTree->Branch("gen_isPrompt", &GENLepton_isPrompt,"GENLepton_isPrompt[GENnPair]/I");
-    DYTree->Branch("gen_isPromptFinalState", &GENLepton_isPromptFinalState,"GENLepton_isPromptFinalState[GENnPair]/I");
-    DYTree->Branch("gen_isTauDecayProduct", &GENLepton_isTauDecayProduct,"GENLepton_isTauDecayProduct[GENnPair]/I");
-    DYTree->Branch("gen_isPromptTauDecayProduct", &GENLepton_isPromptTauDecayProduct,"GENLepton_isPromptTauDecayProduct[GENnPair]/I");
-    DYTree->Branch("gen_isDirectPromptTauDecayProductFinalState", &GENLepton_isDirectPromptTauDecayProductFinalState,"GENLepton_isDirectPromptTauDecayProductFinalState[GENnPair]/I");
-    DYTree->Branch("gen_isHardProcess",&GENLepton_isHardProcess,"GENLepton_isHardProcess[GENnPair]/I");
-    DYTree->Branch("gen_isLastCopy",&GENLepton_isLastCopy,"GENLepton_isLastCopy[GENnPair]/I");
-    DYTree->Branch("gen_isLastCopyBeforeFSR",&GENLepton_isLastCopyBeforeFSR,"GENLepton_isLastCopyBeforeFSR[GENnPair]/I");
-    DYTree->Branch("gen_isPromptDecayed",&GENLepton_isPromptDecayed,"GENLepton_isPromptDecayed[GENnPair]/I");
-    DYTree->Branch("gen_isDecayedLeptonHadron",&GENLepton_isDecayedLeptonHadron,"GENLepton_isDecayedLeptonHadron[GENnPair]/I");
-    DYTree->Branch("gen_fromHardProcessBeforeFSR",&GENLepton_fromHardProcessBeforeFSR,"GENLepton_fromHardProcessBeforeFSR[GENnPair]/I");
-    DYTree->Branch("gen_fromHardProcessDecayed",&GENLepton_fromHardProcessDecayed,"GENLepton_fromHardProcessDecayed[GENnPair]/I");
-    DYTree->Branch("gen_fromHardProcessFinalState",&GENLepton_fromHardProcessFinalState,"GENLepton_fromHardProcessFinalState[GENnPair]/I");
-    DYTree->Branch("gen_isMostlyLikePythia6Status3", &GENLepton_isMostlyLikePythia6Status3, "GENLepton_isMostlyLikePythia6Status3[GENnPair]/I");
-    DYTree->Branch("gen_weight",&GENEvt_weight,"GENEvt_weight/D");
-    DYTree->Branch("ScaleWeights",&GENEvt_QScale,"GENEvt_QScale/D");
-    DYTree->Branch("genWeightX1",&GENEvt_x1,"GENEvt_x1/D");
-    DYTree->Branch("genWeightX2",&GENEvt_x2,"GENEvt_x2/D");
-    DYTree->Branch("genWeight_id1",&GENEvt_id1,"GENEvt_id1/I");
-    DYTree->Branch("genWeight_id2",&GENEvt_id2,"GENEvt_id2/I");
-    DYTree->Branch("genWeight_alphaQCD",&GENEvt_alphaQCD,"GENEvt_alphaQCD/D");
-    DYTree->Branch("genWeight_alphaQED",&GENEvt_alphaQED,"GENEvt_alphaQED/D");
+    DYTree->Branch("gen_phi", "vector<double>", &gen_phi);
+    DYTree->Branch("gen_eta", "vector<double>", &gen_eta);
+    DYTree->Branch("gen_pt", "vector<double>", &gen_pt);
+    DYTree->Branch("gen_Px", "vector<double>", &gen_Px);
+    DYTree->Branch("gen_Py", "vector<double>", &gen_Py);
+    DYTree->Branch("gen_Pz", "vector<double>", &gen_Pz);
+    DYTree->Branch("gen_E", "vector<double>", &gen_E);
+    DYTree->Branch("gen_mother_PID", "vector<int>", &gen_mother_PID);
+    DYTree->Branch("gen_mother_pt", "vector<double>", &gen_mother_pt);
+    DYTree->Branch("gen_mother_index", "vector<int>", &gen_mother_index);
+    DYTree->Branch("gen_charge", "vector<int>", &gen_charge);
+    DYTree->Branch("gen_status", "vector<int>", &gen_status);
+    DYTree->Branch("gen_PID", "vector<int>", &gen_PID);
+    DYTree->Branch("gen_isPrompt", "vector<int>", &gen_isPrompt);
+    DYTree->Branch("gen_isPromptFinalState", "vector<int>", &gen_isPromptFinalState);
+    DYTree->Branch("gen_isTauDecayProduct", "vector<int>", &gen_isTauDecayProduct);
+    DYTree->Branch("gen_isPromptTauDecayProduct", "vector<int>", &gen_isPromptTauDecayProduct);
+    DYTree->Branch("gen_isDirectPromptTauDecayProductFinalState", "vector<int>", &gen_isDirectPromptTauDecayProductFinalState);
+    DYTree->Branch("gen_isHardProcess", "vector<int>", &gen_isHardProcess);
+    DYTree->Branch("gen_isLastCopy", "vector<int>", &gen_isLastCopy);
+    DYTree->Branch("gen_isLastCopyBeforeFSR", "vector<int>", &gen_isLastCopyBeforeFSR);
+    DYTree->Branch("gen_isPromptDecayed", "vector<int>", &gen_isPromptDecayed);
+    DYTree->Branch("gen_isDecayedLeptonHadron", "vector<int>", &gen_isDecayedLeptonHadron);
+    DYTree->Branch("gen_fromHardProcessBeforeFSR", "vector<int>", &gen_fromHardProcessBeforeFSR);
+    DYTree->Branch("gen_fromHardProcessDecayed", "vector<int>", &gen_fromHardProcessDecayed);
+    DYTree->Branch("gen_fromHardProcessFinalState", "vector<int>", &gen_fromHardProcessFinalState);
+    DYTree->Branch("gen_isMostlyLikePythia6Status3", "vector<int>", &gen_isMostlyLikePythia6Status3);
+    DYTree->Branch("gen_weight", &gen_weight, "gen_weight/D");
+    DYTree->Branch("genWeight_Q", &genWeight_Q, "genWeight_Q/D");
+    DYTree->Branch("genWeight_X1", &genWeight_X1, "genWeight_X1/D");
+    DYTree->Branch("genWeight_X2", &genWeight_X2, "genWeight_X2/D");
+    DYTree->Branch("genWeight_id1", &genWeight_id1, "genWeight_id1/I");
+    DYTree->Branch("genWeight_id2", &genWeight_id2, "genWeight_id2/I");
+    DYTree->Branch("genWeight_alphaQCD", &genWeight_alphaQCD, "genWeight_alphaQCD/D");
+    DYTree->Branch("genWeight_alphaQED", &genWeight_alphaQED, "genWeight_alphaQED/D");
   }
   
   if( theStorePhotonFlag ){
@@ -2000,65 +2004,68 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
 
     if(!theKeepAllGen && counter > 30) continue;
     
-    GENLepton_ID[_GennPair] = it->pdgId();
-    GENLepton_pT[_GennPair] = it->pt();
-    GENLepton_Px[_GennPair] = it->px();
-    GENLepton_Py[_GennPair] = it->py();
-    GENLepton_Pz[_GennPair] = it->pz();
-    GENLepton_E[_GennPair] = it->energy();
-    GENLepton_eta[_GennPair] = it->eta();
-    GENLepton_phi[_GennPair] = it->phi();
-    GENLepton_charge[_GennPair] = it->charge();
-    GENLepton_status[_GennPair] = it->status();
+    gen_PID.push_back( it->pdgId() );
+    gen_pt.push_back( it->pt() );
+    gen_Px.push_back( it->px() );
+    gen_Py.push_back( it->py() );
+    gen_Pz.push_back( it->pz() );
+    gen_E.push_back( it->energy() );
+    gen_eta.push_back( it->eta() );
+    gen_phi.push_back( it->phi() );
+    gen_charge.push_back( it->charge() );
+    gen_status.push_back( it->status() );
     
     //Flags (Ref: https://indico.cern.ch/event/402279/contribution/5/attachments/805964/1104514/mcaod-Jun17-2015.pdf)
-    GENLepton_isPrompt[_GennPair] = it->statusFlags().isPrompt(); //not from hadron, muon or tau decay 
-    GENLepton_isPromptFinalState[_GennPair] = it->isPromptFinalState(); //isPrompt && final state (status==1)
-    GENLepton_isTauDecayProduct[_GennPair] = it->statusFlags().isTauDecayProduct(); //is directly or indirectly from a tau decay
-    GENLepton_isPromptTauDecayProduct[_GennPair] = it->statusFlags().isPromptTauDecayProduct(); //is directly or indirectly from a tau decay, where the tau did not come from a hadron decay
-    GENLepton_isDirectPromptTauDecayProductFinalState[_GennPair] = it->isDirectPromptTauDecayProductFinalState(); // is the direct decay product from a tau decay (ie no intermediate hadron), where the tau did not come from a hadron decay && final state
-    GENLepton_isHardProcess[_GennPair] = it->isHardProcess();
-    GENLepton_isLastCopy[_GennPair] = it->isLastCopy();
-    GENLepton_isLastCopyBeforeFSR[_GennPair] = it->isLastCopyBeforeFSR();
-    GENLepton_isPromptDecayed[_GennPair] = it->isPromptDecayed();
-    GENLepton_isDecayedLeptonHadron[_GennPair] = it->statusFlags().isDecayedLeptonHadron();
-    GENLepton_fromHardProcessBeforeFSR[_GennPair] = it->fromHardProcessBeforeFSR();
-    GENLepton_fromHardProcessDecayed[_GennPair] = it->fromHardProcessDecayed();
-    GENLepton_fromHardProcessFinalState[_GennPair] = it->fromHardProcessFinalState();
-    GENLepton_isMostlyLikePythia6Status3[_GennPair] = it->fromHardProcessBeforeFSR();
+    gen_isPrompt.push_back( it->statusFlags().isPrompt() ); //not from hadron, muon or tau decay 
+    gen_isPromptFinalState.push_back( it->isPromptFinalState() ); //isPrompt && final state (status==1)
+    gen_isTauDecayProduct.push_back( it->statusFlags().isTauDecayProduct() ); //is directly or indirectly from a tau decay
+    gen_isPromptTauDecayProduct.push_back( it->statusFlags().isPromptTauDecayProduct() ); //is directly or indirectly from a tau decay, where the tau did not come from a hadron decay
+    gen_isDirectPromptTauDecayProductFinalState.push_back( it->isDirectPromptTauDecayProductFinalState() ); // is the direct decay product from a tau decay (ie no intermediate hadron), where the tau did not come from a hadron decay && final state
+    gen_isHardProcess.push_back( it->isHardProcess() );
+    gen_isLastCopy.push_back( it->isLastCopy() );
+    gen_isLastCopyBeforeFSR.push_back( it->isLastCopyBeforeFSR() );
+    gen_isPromptDecayed.push_back( it->isPromptDecayed() );
+    gen_isDecayedLeptonHadron.push_back( it->statusFlags().isDecayedLeptonHadron() );
+    gen_fromHardProcessBeforeFSR.push_back( it->fromHardProcessBeforeFSR() );
+    gen_fromHardProcessDecayed.push_back( it->fromHardProcessDecayed() );
+    gen_fromHardProcessFinalState.push_back( it->fromHardProcessFinalState() );
+    gen_isMostlyLikePythia6Status3.push_back( it->fromHardProcessBeforeFSR() );
     
     if(it->numberOfMothers() > 0){
-      GENLepton_mother[_GennPair] = it->mother(0)->pdgId();
-      GENLepton_mother_pT[_GennPair] = it->mother(0)->pt();
+      gen_mother_PID.push_back( it->mother(0)->pdgId() );
+      gen_mother_pt.push_back( it->mother(0)->pt() );
     }
     
     int idx = -1;
-    for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ) {
-      if( it->mother()==&(*mit) ) {
-  idx = std::distance(genParticles->begin(),mit);
-  break;
+    for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ){
+      if( it->mother()==&(*mit) ){
+        idx = std::distance(genParticles->begin(),mit);
+        break;
       }
     }
     
-    GENLepton_mother_index[_GennPair] = idx;
-    //cout << "GENLepton_mother_index : " << GENLepton_mother_index[_GennPair] << endl;
+    gen_mother_index.push_back( idx );
     
     _GennPair++;
     
   }
    
-  GENnPair = _GennPair;
-  
   edm::Handle<GenEventInfoProduct> genEvtInfo;
   iEvent.getByToken(GenEventInfoToken, genEvtInfo);
-  GENEvt_weight = genEvtInfo->weight();
-  GENEvt_QScale = genEvtInfo->qScale();
-  GENEvt_x1 = genEvtInfo->pdf()->x.first;
-  GENEvt_x2 = genEvtInfo->pdf()->x.second;
-  GENEvt_id1 = genEvtInfo->pdf()->id.first;
-  GENEvt_id2 = genEvtInfo->pdf()->id.second;
-  GENEvt_alphaQCD = genEvtInfo->alphaQCD();
-  GENEvt_alphaQED = genEvtInfo->alphaQED();
+  gen_weight = genEvtInfo->weight();
+
+  genWeight_Q = genEvtInfo->pdf()->scalePDF;
+
+  //==== I think they are same..
+  //cout << "[JSKIM] genEvtInfo->pdf()->scalePDF = " << genEvtInfo->pdf()->scalePDF << endl;
+  //cout << "[JSKIM] genEvtInfo->qScale() = " << genEvtInfo->qScale() << endl << endl;
+
+  genWeight_X1 = genEvtInfo->pdf()->x.first;
+  genWeight_X2 = genEvtInfo->pdf()->x.second;
+  genWeight_id1 = genEvtInfo->pdf()->id.first;
+  genWeight_id2 = genEvtInfo->pdf()->id.second;
+  genWeight_alphaQCD = genEvtInfo->alphaQCD();
+  genWeight_alphaQED = genEvtInfo->alphaQED();
   
 }
 
