@@ -1701,7 +1701,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::Handle< std::vector<pat::Muon> > muonHandle;
   iEvent.getByToken(MuonToken, muonHandle);
   
-  int _nElectron = 0;
   std::vector< double > _ambGsfTrkPt;
   if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] for ElecHandle starts, ElecHandle->size() : " << ElecHandle->size() << endl;
   
@@ -1883,8 +1882,6 @@ dummy = Vertex(p, e, 0, 0, 0);
     
     // electron_passHEEPID.push_back( isPassHEEP );
     
-    _nElectron++;
-      
   } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   
   /////////////////////////////////
@@ -1992,7 +1989,6 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
   
   
   int counter=0;
-  int _GennPair = 0;
   for( reco::GenParticleCollection::const_iterator it = genParticles->begin(); it != genParticles->end(); ++it , ++counter) {      
 
     if(!theKeepAllGen && counter > 30) continue;
@@ -2038,8 +2034,6 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     }
     
     gen_mother_index.push_back( idx );
-    
-    _GennPair++;
     
   }
    
