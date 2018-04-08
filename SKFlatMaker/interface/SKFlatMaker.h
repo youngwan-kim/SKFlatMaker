@@ -633,15 +633,14 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_TuneP_eta;
   vector<double> muon_TuneP_phi;
 
-  // LHE
-  int nLHEParticle;
-  double LHELepton_Px[MPSIZE];
-  double LHELepton_Py[MPSIZE];
-  double LHELepton_Pz[MPSIZE];
-  double LHELepton_E[MPSIZE];
-  int LHELepton_ID[MPSIZE];
-  int LHELepton_status[MPSIZE];
-  
+  //==== LHE
+  vector<double> LHELepton_Px;
+  vector<double> LHELepton_Py;
+  vector<double> LHELepton_Pz;
+  vector<double> LHELepton_E;
+  vector<int> LHELepton_ID;
+  vector<int> LHELepton_status;
+ 
   // GEN
   int GENnPair;
   double GENLepton_phi[MPSIZE];

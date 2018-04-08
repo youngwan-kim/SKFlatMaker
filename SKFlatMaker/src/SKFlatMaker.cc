@@ -155,7 +155,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   PVz = -1000;
   PVprob = -1;
   
-  nLHEParticle = -1;
   GENnPair = -1;
   
   // -- PF iso deposits -- // 
@@ -164,7 +163,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   chargedHadronEt = 0;
   neutralHadronEt = 0;
   
-  // -- trigger object -- //
+  //====trigger object
   HLTObject_Type.clear();
   HLTObject_Fired.clear();
   HLTObject_Name.clear();
@@ -175,6 +174,14 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   HLT_TriggerName.clear();
   HLT_TriggerFired.clear();
   HLT_TriggerPrescale.clear();
+
+  //==== LHE
+  LHELepton_Px.clear();
+  LHELepton_Py.clear();
+  LHELepton_Pz.clear();
+  LHELepton_E.clear();
+  LHELepton_ID.clear();
+  LHELepton_status.clear();
 
   // -- PU reweight -- //
   PUweight = -1;
@@ -445,14 +452,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   for( int i = 0; i < MPSIZE; i++ ){
 
-    // -- LHE -- //
-    LHELepton_Px[i] = 0;
-    LHELepton_Py[i] = 0;
-    LHELepton_Pz[i] = 0;
-    LHELepton_E[i] = 0;
-    LHELepton_ID[i] = 0;
-    LHELepton_status[i] = 0;
-    
     // GEN
     GENLepton_phi[i] = GENLepton_eta[i] = GENLepton_pT[i] = GENLepton_mother_pT[i] = -100;
     GENLepton_mother_index[i] = -1;
@@ -971,13 +970,12 @@ void SKFlatMaker::beginJob()
   
   // -- LHE info -- //
   if( theStoreLHEFlag ){
-    DYTree->Branch("nLHEParticle",&nLHEParticle,"nLHEParticle/I");
-    DYTree->Branch("LHELepton_Px", &LHELepton_Px,"LHELepton_Px[nLHEParticle]/D");
-    DYTree->Branch("LHELepton_Py", &LHELepton_Py,"LHELepton_Py[nLHEParticle]/D");
-    DYTree->Branch("LHELepton_Pz", &LHELepton_Pz,"LHELepton_Pz[nLHEParticle]/D");
-    DYTree->Branch("LHELepton_E", &LHELepton_E,"LHELepton_E[nLHEParticle]/D");
-    DYTree->Branch("LHELepton_ID", &LHELepton_ID,"LHELepton_ID[nLHEParticle]/I");
-    DYTree->Branch("LHELepton_status", &LHELepton_status,"LHELepton_status[nLHEParticle]/I");
+    DYTree->Branch("LHELepton_Px", "vector<double>", &LHELepton_Px);
+    DYTree->Branch("LHELepton_Py", "vector<double>", &LHELepton_Py);
+    DYTree->Branch("LHELepton_Pz", "vector<double>", &LHELepton_Pz);
+    DYTree->Branch("LHELepton_E", "vector<double>", &LHELepton_E);
+    DYTree->Branch("LHELepton_ID", "vector<int>", &LHELepton_ID);
+    DYTree->Branch("LHELepton_status", "vector<int>", &LHELepton_status);
   }
   
   // GEN info
@@ -1948,31 +1946,26 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   const lhef::HEPEUP& lheEvent = LHEInfo->hepeup();
   std::vector<lhef::HEPEUP::FiveVector> lheParticles = lheEvent.PUP;
   
-  Int_t _nLHEParticle = 0;
-  for( size_t idxParticle = 0; idxParticle < lheParticles.size(); ++idxParticle )
-    {
-      Int_t id = lheEvent.IDUP[idxParticle];
+  for( size_t idxParticle = 0; idxParticle < lheParticles.size(); ++idxParticle ){
+    Int_t id = lheEvent.IDUP[idxParticle];
+    
+    if( fabs(id) == 13 || fabs(id) == 11 || fabs(id) == 15 ){
+      Double_t Px = lheParticles[idxParticle][0];
+      Double_t Py = lheParticles[idxParticle][1];
+      Double_t Pz = lheParticles[idxParticle][2];
+      Double_t E = lheParticles[idxParticle][3];
+      // Double_t M = lheParticles[idxParticle][4];    
+      Int_t status = lheEvent.ISTUP[idxParticle];
       
-      if( fabs(id) == 13 || fabs(id) == 11 || fabs(id) == 15 )
-  {
-    Double_t Px = lheParticles[idxParticle][0];
-    Double_t Py = lheParticles[idxParticle][1];
-    Double_t Pz = lheParticles[idxParticle][2];
-    Double_t E = lheParticles[idxParticle][3];
-    // Double_t M = lheParticles[idxParticle][4];    
-    Int_t status = lheEvent.ISTUP[idxParticle];
-    
-    LHELepton_ID[_nLHEParticle] = id;
-    LHELepton_status[_nLHEParticle] = status;
-    LHELepton_Px[_nLHEParticle] = Px;
-    LHELepton_Py[_nLHEParticle] = Py;
-    LHELepton_Pz[_nLHEParticle] = Pz;
-    LHELepton_E[_nLHEParticle] = E;
-    
-    _nLHEParticle++;
-  }
+      LHELepton_ID.push_back( id );
+      LHELepton_status.push_back( status );
+      LHELepton_Px.push_back( Px );
+      LHELepton_Py.push_back( Py );
+      LHELepton_Pz.push_back( Pz );
+      LHELepton_E.push_back( E );
+      
     }
-  nLHEParticle = _nLHEParticle;
+  }
   
   // -- PDf weights for theoretical uncertainties: scale, PDF replica and alphaS variation -- //
   // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW -- //
@@ -1981,14 +1974,13 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   int nWeight = (int)LHEInfo->weights().size();
   // std::cout << "nWeight: " << nWeight << endl;
   
-  for(int i=0; i<nWeight; i++)
-    {
-      double weight = LHEInfo->weights()[i].wgt;
-      double ratio = weight / OriginalWeight;
-      PDFWeights.push_back( ratio );
+  for(int i=0; i<nWeight; i++){
+    double weight = LHEInfo->weights()[i].wgt;
+    double ratio = weight / OriginalWeight;
+    PDFWeights.push_back( ratio );
       
-      // std::cout << i << "th weight = " << weight << "(ID=" << LHEInfo->weights()[i].id <<"), ratio w.r.t. original: " << ratio << endl;
-    }
+    // std::cout << i << "th weight = " << weight << "(ID=" << LHEInfo->weights()[i].id <<"), ratio w.r.t. original: " << ratio << endl;
+  }
 }
 
 ////////////////////////
