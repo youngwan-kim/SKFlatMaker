@@ -706,27 +706,27 @@ class SKFlatMaker : public edm::EDAnalyzer
   // EffectiveAreas effAreaChHadrons_;
   // EffectiveAreas effAreaNeuHadrons_;
   // EffectiveAreas effAreaPhotons_;
-  
-  int NTT;
-  double TTrack_dxy[MPSIZE];
-  double TTrack_dxyErr[MPSIZE];
-  double TTrack_d0[MPSIZE];
-  double TTrack_d0Err[MPSIZE];
-  double TTrack_dsz[MPSIZE];
-  double TTrack_dszErr[MPSIZE];
-  double TTrack_dz[MPSIZE];
-  double TTrack_dzErr[MPSIZE];
-  double TTrack_dxyBS[MPSIZE];
-  double TTrack_dszBS[MPSIZE];
-  double TTrack_dzBS[MPSIZE];
-  double TTrack_pT[MPSIZE];
-  double TTrack_Px[MPSIZE];
-  double TTrack_Py[MPSIZE];
-  double TTrack_Pz[MPSIZE];
-  double TTrack_eta[MPSIZE];
-  double TTrack_phi[MPSIZE];
-  double TTrack_charge[MPSIZE];
-  
+
+  //==== Tracker Track
+  vector<double> TrackerTrack_dxy;
+  vector<double> TrackerTrack_dxyErr;
+  vector<double> TrackerTrack_d0;
+  vector<double> TrackerTrack_d0Err;
+  vector<double> TrackerTrack_dsz;
+  vector<double> TrackerTrack_dszErr;
+  vector<double> TrackerTrack_dz;
+  vector<double> TrackerTrack_dzErr;
+  vector<double> TrackerTrack_dxyBS;
+  vector<double> TrackerTrack_dszBS;
+  vector<double> TrackerTrack_dzBS;
+  vector<double> TrackerTrack_pt;
+  vector<double> TrackerTrack_Px;
+  vector<double> TrackerTrack_Py;
+  vector<double> TrackerTrack_Pz;
+  vector<double> TrackerTrack_eta;
+  vector<double> TrackerTrack_phi;
+  vector<double> TrackerTrack_charge; 
+ 
   //==== MET
   double pfMET_pt;
   double pfMET_phi;

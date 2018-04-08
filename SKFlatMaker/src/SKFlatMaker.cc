@@ -168,7 +168,27 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pfMET_Type1_PhiCor_Py=-999;
   pfMET_Type1_PhiCor_SumEt=-999;
 
-  //====trigger object
+  //==== Tracker Track
+  TrackerTrack_dxy.clear();
+  TrackerTrack_dxyErr.clear();
+  TrackerTrack_d0.clear();
+  TrackerTrack_d0Err.clear();
+  TrackerTrack_dsz.clear();
+  TrackerTrack_dszErr.clear();
+  TrackerTrack_dz.clear();
+  TrackerTrack_dzErr.clear();
+  TrackerTrack_dxyBS.clear();
+  TrackerTrack_dszBS.clear();
+  TrackerTrack_dzBS.clear();
+  TrackerTrack_pt.clear();
+  TrackerTrack_Px.clear();
+  TrackerTrack_Py.clear();
+  TrackerTrack_Pz.clear();
+  TrackerTrack_eta.clear();
+  TrackerTrack_phi.clear();
+  TrackerTrack_charge.clear();
+
+  //==== Trigger (object)
   HLTObject_Type.clear();
   HLTObject_Fired.clear();
   HLTObject_Name.clear();
@@ -1042,25 +1062,24 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("pileUpReweightMinusMuonPhys",&pileUpReweightMinusMuonPhys,"pileUpReweightMinusMuonPhys/D");
   
   if( theStoreTTFlag ){
-    DYTree->Branch("NTT", &NTT,"NTT/I");
-    DYTree->Branch("TTrack_dxy", &TTrack_dxy,"TTrack_dxy[NTT]/D");
-    DYTree->Branch("TTrack_dxyErr", &TTrack_dxyErr,"TTrack_dxyErr[NTT]/D");
-    DYTree->Branch("TTrack_d0", &TTrack_d0,"TTrack_d0[NTT]/D");
-    DYTree->Branch("TTrack_d0Err", &TTrack_d0Err,"TTrack_d0Err[NTT]/D");
-    DYTree->Branch("TTrack_dsz", &TTrack_dsz,"TTrack_dsz[NTT]/D");
-    DYTree->Branch("TTrack_dszErr", &TTrack_dszErr,"TTrack_dszErr[NTT]/D");
-    DYTree->Branch("TTrack_dz", &TTrack_dz,"TTrack_dz[NTT]/D");
-    DYTree->Branch("TTrack_dzErr", &TTrack_dzErr,"TTrack_dzErr[NTT]/D");
-    DYTree->Branch("TTrack_dxyBS", &TTrack_dxyBS,"TTrack_dxyBS[NTT]/D");
-    DYTree->Branch("TTrack_dszBS", &TTrack_dszBS,"TTrack_dszBS[NTT]/D");
-    DYTree->Branch("TTrack_dzBS", &TTrack_dzBS,"TTrack_dzBS[NTT]/D");
-    DYTree->Branch("TTrack_pT", &TTrack_pT,"TTrack_pT[NTT]/D");
-    DYTree->Branch("TTrack_Px", &TTrack_Px,"TTrack_Px[NTT]/D");
-    DYTree->Branch("TTrack_Py", &TTrack_Py,"TTrack_Py[NTT]/D");
-    DYTree->Branch("TTrack_Pz", &TTrack_Pz,"TTrack_Pz[NTT]/D");
-    DYTree->Branch("TTrack_eta", &TTrack_eta,"TTrack_eta[NTT]/D");
-    DYTree->Branch("TTrack_phi", &TTrack_phi,"TTrack_phi[NTT]/D");
-    DYTree->Branch("TTrack_charge", &TTrack_charge,"TTrack_charge[NTT]/D");
+    DYTree->Branch("TrackerTrack_dxy", "vector<double>", &TrackerTrack_dxy);
+    DYTree->Branch("TrackerTrack_dxyErr", "vector<double>", &TrackerTrack_dxyErr);
+    DYTree->Branch("TrackerTrack_d0", "vector<double>", &TrackerTrack_d0);
+    DYTree->Branch("TrackerTrack_d0Err", "vector<double>", &TrackerTrack_d0Err);
+    DYTree->Branch("TrackerTrack_dsz", "vector<double>", &TrackerTrack_dsz);
+    DYTree->Branch("TrackerTrack_dszErr", "vector<double>", &TrackerTrack_dszErr);
+    DYTree->Branch("TrackerTrack_dz", "vector<double>", &TrackerTrack_dz);
+    DYTree->Branch("TrackerTrack_dzErr", "vector<double>", &TrackerTrack_dzErr);
+    DYTree->Branch("TrackerTrack_dxyBS", "vector<double>", &TrackerTrack_dxyBS);
+    DYTree->Branch("TrackerTrack_dszBS", "vector<double>", &TrackerTrack_dszBS);
+    DYTree->Branch("TrackerTrack_dzBS", "vector<double>", &TrackerTrack_dzBS);
+    DYTree->Branch("TrackerTrack_pt", "vector<double>", &TrackerTrack_pt);
+    DYTree->Branch("TrackerTrack_Px", "vector<double>", &TrackerTrack_Px);
+    DYTree->Branch("TrackerTrack_Py", "vector<double>", &TrackerTrack_Py);
+    DYTree->Branch("TrackerTrack_Pz", "vector<double>", &TrackerTrack_Pz);
+    DYTree->Branch("TrackerTrack_eta", "vector<double>", &TrackerTrack_eta);
+    DYTree->Branch("TrackerTrack_phi", "vector<double>", &TrackerTrack_phi);
+    DYTree->Branch("TrackerTrack_charge", "vector<double>", &TrackerTrack_charge);
   }
   
   if( theStoreMETFlag ){
@@ -2241,45 +2260,39 @@ void SKFlatMaker::fillTT(const edm::Event &iEvent)
   edm::Handle< std::vector< reco::GsfTrack > > gsfTracks; 
   iEvent.getByToken(GsfTrackToken, gsfTracks);
   
-  int _nTT = 0;
-  for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ )
-    {
-      GsfTrackRef iTT(gsfTracks, igsf);
-      //if( iTT->pt() < 1.0 || iTT->pt() > 100000 ) continue;
-      bool _isMatch = false;
-      for( int i = 0; i < Nelectrons; i++ )
-  {
-    double dpT = fabs(iTT->pt() - electron_gsfpt[i]);
-    double dR = deltaR(iTT->eta(), iTT->phi(), electron_gsfEta[i], electron_gsfPhi[i]);
-    //cout << "elec = " << i << " " << electron_gsfpt[i] << " " << electron_gsfEta[i] << " " << electron_gsfPhi[i] << " " << dR << endl;
-    if( dR < 0.001 && dpT < 1.0 ) 
-      _isMatch = true;
-  }
-      if( _isMatch ) continue;
-      
-      TTrack_dxy[_nTT] = iTT->dxy(vtx.position());
-      TTrack_dxyErr[_nTT] = iTT->dxyError();
-      TTrack_d0[_nTT] = iTT->d0();
-      TTrack_d0Err[_nTT] = iTT->d0Error(); 
-      TTrack_dsz[_nTT] = iTT->dsz(vtx.position());
-      TTrack_dszErr[_nTT] = iTT->dszError();
-      TTrack_dz[_nTT] = iTT->dz(vtx.position());
-      TTrack_dzErr[_nTT] = iTT->dzError();
-      TTrack_dxyBS[_nTT] = iTT->dxy(beamSpot.position());
-      TTrack_dszBS[_nTT] = iTT->dsz(beamSpot.position());
-      TTrack_dzBS[_nTT] = iTT->dz(beamSpot.position());
-      TTrack_pT[_nTT] = iTT->pt();
-      TTrack_Px[_nTT] = iTT->px();
-      TTrack_Py[_nTT] = iTT->py();
-      TTrack_Pz[_nTT] = iTT->pz();
-      TTrack_eta[_nTT] = iTT->eta();
-      TTrack_phi[_nTT] = iTT->phi();
-      TTrack_charge[_nTT] = iTT->charge();
-      _nTT++;
-      
-    } // -- end of for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ): GSFTrack iteration -- //
+  for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ){
+    GsfTrackRef iTT(gsfTracks, igsf);
+
+    //if( iTT->pt() < 1.0 || iTT->pt() > 100000 ) continue;
+    bool _isMatch = false;
+    for( int i = 0; i < Nelectrons; i++ ){
+      double dpT = fabs(iTT->pt() - electron_gsfpt[i]);
+      double dR = deltaR(iTT->eta(), iTT->phi(), electron_gsfEta[i], electron_gsfPhi[i]);
+      //cout << "elec = " << i << " " << electron_gsfpt[i] << " " << electron_gsfEta[i] << " " << electron_gsfPhi[i] << " " << dR << endl;
+      if( dR < 0.001 && dpT < 1.0 ) _isMatch = true;
+    }
+    if( _isMatch ) continue;
+    
+    TrackerTrack_dxy.push_back( iTT->dxy(vtx.position()) );
+    TrackerTrack_dxyErr.push_back( iTT->dxyError() );
+    TrackerTrack_d0.push_back( iTT->d0() );
+    TrackerTrack_d0Err.push_back( iTT->d0Error() );
+    TrackerTrack_dsz.push_back( iTT->dsz(vtx.position()) );
+    TrackerTrack_dszErr.push_back( iTT->dszError() );
+    TrackerTrack_dz.push_back( iTT->dz(vtx.position()) );
+    TrackerTrack_dzErr.push_back( iTT->dzError() );
+    TrackerTrack_dxyBS.push_back( iTT->dxy(beamSpot.position()) );
+    TrackerTrack_dszBS.push_back( iTT->dsz(beamSpot.position()) );
+    TrackerTrack_dzBS.push_back( iTT->dz(beamSpot.position()) );
+    TrackerTrack_pt.push_back( iTT->pt() );
+    TrackerTrack_Px.push_back( iTT->px() );
+    TrackerTrack_Py.push_back( iTT->py() );
+    TrackerTrack_Pz.push_back( iTT->pz() );
+    TrackerTrack_eta.push_back( iTT->eta() );
+    TrackerTrack_phi.push_back( iTT->phi() );
+    TrackerTrack_charge.push_back( iTT->charge() );
+  } // -- end of for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ): GSFTrack iteration -- //
   
-  NTT = _nTT;
 }
 
 void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
