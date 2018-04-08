@@ -678,33 +678,30 @@ class SKFlatMaker : public edm::EDAnalyzer
   double genWeight_alphaQCD;
   double genWeight_alphaQED;
   
-  // -- Photon information -- //
-  int nPhotons;
-  double Photon_pT[MPSIZE];
-  double Photon_eta[MPSIZE];
-  double Photon_phi[MPSIZE];
-  double Photon_scEta[MPSIZE];
-  double Photon_scPhi[MPSIZE];
-  double Photon_HoverE[MPSIZE];
-  int Photon_hasPixelSeed[MPSIZE];
-  double Photon_Full5x5_SigmaIEtaIEta[MPSIZE];
-  double Photon_ChIso[MPSIZE];
-  double Photon_NhIso[MPSIZE];
-  double Photon_PhIso[MPSIZE];
-  double Photon_ChIsoWithEA[MPSIZE];
-  double Photon_NhIsoWithEA[MPSIZE];
-  double Photon_PhIsoWithEA[MPSIZE];
-  bool Photon_passMVAID_WP80[MPSIZE];
-  bool Photon_passMVAID_WP90[MPSIZE];
-  bool Photon_passLooseID[MPSIZE];
-  bool Photon_passMediumID[MPSIZE];
-  bool Photon_passTightID[MPSIZE];
+  //==== Photon information
+  vector<double> photon_pt;
+  vector<double> photon_eta;
+  vector<double> photon_phi;
+  vector<double> photon_scEta;
+  vector<double> photon_scPhi;
+  vector<double> photon_HoverE;
+  vector<int> photon_hasPixelSeed;
+  vector<double> photon_Full5x5_SigmaIEtaIEta;
+  vector<double> photon_ChIso;
+  vector<double> photon_NhIso;
+  vector<double> photon_PhIso;
+  vector<double> photon_ChIsoWithEA;
+  vector<double> photon_NhIsoWithEA;
+  vector<double> photon_PhIsoWithEA;
+  vector<bool> photon_passMVAID_WP80;
+  vector<bool> photon_passMVAID_WP90;
+  vector<bool> photon_passLooseID;
+  vector<bool> photon_passMediumID;
+  vector<bool> photon_passTightID;
+  vector<double> photon_ptUnCorr;
+  vector<double> photon_etaUnCorr;
+  vector<double> photon_phiUnCorr;
 
-  int nUnCorrPhoton;
-  double Photon_pTUnCorr[MPSIZE];
-  double Photon_etaUnCorr[MPSIZE];
-  double Photon_phiUnCorr[MPSIZE];
-  
   // Effective area constants for all isolation types
   // EffectiveAreas effAreaChHadrons_;
   // EffectiveAreas effAreaNeuHadrons_;

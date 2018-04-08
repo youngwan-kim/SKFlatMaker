@@ -485,34 +485,31 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_m.clear();
   jet_energy.clear();
 
-  for( int i = 0; i < MPSIZE; i++ ){
+  //==== Photon
+  photon_pt.clear();
+  photon_eta.clear();
+  photon_phi.clear();
+  photon_scEta.clear();
+  photon_scPhi.clear();
+  photon_HoverE.clear();
+  photon_hasPixelSeed.clear();
+  photon_Full5x5_SigmaIEtaIEta.clear();
+  photon_ChIso.clear();
+  photon_NhIso.clear();
+  photon_PhIso.clear();
+  photon_ChIsoWithEA.clear();
+  photon_NhIsoWithEA.clear();
+  photon_PhIsoWithEA.clear();
+  photon_passMVAID_WP80.clear();
+  photon_passMVAID_WP90.clear();
+  photon_passLooseID.clear();
+  photon_passMediumID.clear();
+  photon_passTightID.clear();
+  photon_ptUnCorr.clear();
+  photon_etaUnCorr.clear();
+  photon_phiUnCorr.clear();
 
-    // -- Photon Information -- //
-    nPhotons = 0;
-    Photon_pT[i] = 0;
-    Photon_eta[i] = 0;
-    Photon_phi[i] = 0;
-    Photon_scEta[i] = 0;
-    Photon_scPhi[i] = 0;
-    Photon_HoverE[i] = 0;
-    Photon_hasPixelSeed[i] = 0;
-    Photon_Full5x5_SigmaIEtaIEta[i] = 0;
-    Photon_ChIso[i] = 0;
-    Photon_NhIso[i] = 0;
-    Photon_PhIso[i] = 0;
-    Photon_ChIsoWithEA[i] = 0;
-    Photon_NhIsoWithEA[i] = 0;
-    Photon_PhIsoWithEA[i] = 0;
-    Photon_passMVAID_WP80[i] = 0;
-    Photon_passMVAID_WP90[i] = 0;
-    Photon_passLooseID[i] = 0;
-    Photon_passMediumID[i] = 0;
-    Photon_passTightID[i] = 0;
-    
-    nUnCorrPhoton = 0;
-    Photon_pTUnCorr[i] = 0;
-    Photon_etaUnCorr[i] = 0;
-    Photon_phiUnCorr[i] = 0;
+  for( int i = 0; i < MPSIZE; i++ ){
 
     // -- MET -- //
     pfMET_pT = -100;
@@ -1023,32 +1020,28 @@ void SKFlatMaker::beginJob()
   }
   
   if( theStorePhotonFlag ){
-    // -- Photon Information -- //
-    DYTree->Branch("nPhotons",&nPhotons,"nPhotons/I");
-    DYTree->Branch("Photon_hasPixelSeed",&Photon_hasPixelSeed,"Photon_hasPixelSeed[nPhotons]/I");
-    DYTree->Branch("Photon_pT",&Photon_pT,"Photon_pT[nPhotons]/D");
-    DYTree->Branch("Photon_eta",&Photon_eta,"Photon_eta[nPhotons]/D");
-    DYTree->Branch("Photon_phi",&Photon_phi,"Photon_phi[nPhotons]/D");
-    DYTree->Branch("Photon_scEta",&Photon_scEta,"Photon_scEta[nPhotons]/D");
-    DYTree->Branch("Photon_scPhi",&Photon_scPhi,"Photon_scPhi[nPhotons]/D");
-    DYTree->Branch("Photon_HoverE",&Photon_HoverE,"Photon_HoverE[nPhotons]/D");
-    DYTree->Branch("Photon_Full5x5_SigmaIEtaIEta",&Photon_Full5x5_SigmaIEtaIEta,"Photon_Full5x5_SigmaIEtaIEta[nPhotons]/D");
-    DYTree->Branch("Photon_ChIso",&Photon_ChIso,"Photon_ChIso[nPhotons]/D");
-    DYTree->Branch("Photon_NhIso",&Photon_NhIso,"Photon_NhIso[nPhotons]/D");
-    DYTree->Branch("Photon_PhIso",&Photon_PhIso,"Photon_PhIso[nPhotons]/D");
-    DYTree->Branch("Photon_ChIsoWithEA",&Photon_ChIsoWithEA,"Photon_ChIsoWithEA[nPhotons]/D");
-    DYTree->Branch("Photon_NhIsoWithEA",&Photon_NhIsoWithEA,"Photon_NhIsoWithEA[nPhotons]/D");
-    DYTree->Branch("Photon_PhIsoWithEA",&Photon_PhIsoWithEA,"Photon_PhIsoWithEA[nPhotons]/D");
-    DYTree->Branch("Photon_passLooseID", &Photon_passLooseID, "Photon_passLooseID[nPhotons]/O");
-    DYTree->Branch("Photon_passMediumID", &Photon_passMediumID, "Photon_passMediumID[nPhotons]/O");
-    DYTree->Branch("Photon_passTightID", &Photon_passTightID, "Photon_passTightID[nPhotons]/O");
-    DYTree->Branch("Photon_passMVAID_WP80", &Photon_passMVAID_WP80, "Photon_passMVAID_WP80[nPhotons]/O");
-    DYTree->Branch("Photon_passMVAID_WP90", &Photon_passMVAID_WP90, "Photon_passMVAID_WP90[nPhotons]/O");
-  
-    DYTree->Branch("nUnCorrPhoton",&nUnCorrPhoton,"nUnCorrPhoton/I");
-    DYTree->Branch("Photon_pTUnCorr",&Photon_pTUnCorr,"Photon_pTUnCorr[nPhotons]/D");
-    DYTree->Branch("Photon_etaUnCorr",&Photon_etaUnCorr,"Photon_etaUnCorr[nPhotons]/D");
-    DYTree->Branch("Photon_phiUnCorr",&Photon_phiUnCorr,"Photon_phiUnCorr[nPhotons]/D");
+    DYTree->Branch("photon_pt", "vector<double>", &photon_pt);
+    DYTree->Branch("photon_eta", "vector<double>", &photon_eta);
+    DYTree->Branch("photon_phi", "vector<double>", &photon_phi);
+    DYTree->Branch("photon_scEta", "vector<double>", &photon_scEta);
+    DYTree->Branch("photon_scPhi", "vector<double>", &photon_scPhi);
+    DYTree->Branch("photon_HoverE", "vector<double>", &photon_HoverE);
+    DYTree->Branch("photon_hasPixelSeed", "vector<int>", &photon_hasPixelSeed);
+    DYTree->Branch("photon_Full5x5_SigmaIEtaIEta", "vector<double>", &photon_Full5x5_SigmaIEtaIEta);
+    DYTree->Branch("photon_ChIso", "vector<double>", &photon_ChIso);
+    DYTree->Branch("photon_NhIso", "vector<double>", &photon_NhIso);
+    DYTree->Branch("photon_PhIso", "vector<double>", &photon_PhIso);
+    DYTree->Branch("photon_ChIsoWithEA", "vector<double>", &photon_ChIsoWithEA);
+    DYTree->Branch("photon_NhIsoWithEA", "vector<double>", &photon_NhIsoWithEA);
+    DYTree->Branch("photon_PhIsoWithEA", "vector<double>", &photon_PhIsoWithEA);
+    DYTree->Branch("photon_passMVAID_WP80", "vector<bool>", &photon_passMVAID_WP80);
+    DYTree->Branch("photon_passMVAID_WP90", "vector<bool>", &photon_passMVAID_WP90);
+    DYTree->Branch("photon_passLooseID", "vector<bool>", &photon_passLooseID);
+    DYTree->Branch("photon_passMediumID", "vector<bool>", &photon_passMediumID);
+    DYTree->Branch("photon_passTightID", "vector<bool>", &photon_passTightID);
+    DYTree->Branch("photon_ptUnCorr", "vector<double>", &photon_ptUnCorr);
+    DYTree->Branch("photon_etaUnCorr", "vector<double>", &photon_etaUnCorr);
+    DYTree->Branch("photon_phiUnCorr", "vector<double>", &photon_phiUnCorr);
   }
   
   
@@ -2091,82 +2084,61 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   EffectiveAreas effAreaNeuHadrons_( effAreaNeuHadronsFile.fullPath() );
   EffectiveAreas effAreaPhotons_( effAreaPhotonsFile.fullPath() );
   
-  //cout << "2.1" << endl;
-  int _nPhotons = 0;
-  for(size_t i=0; i< PhotonHandle->size(); ++i)
-    {
-      const auto pho = PhotonHandle->ptrAt(i);
-      
-      //cout << "2.2" << endl;
-      double sin_theta = sin(pho->theta());
-      Photon_pT[_nPhotons] = pho -> userFloat("ecalEnergyPostCorr") * sin_theta;
-      //double pho_pt_noncor = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
-      //cout << "pho->pt() : " << pho->pt() << ", pho_pt_noncor : " << pho_pt_noncor << ", Pt(cor) : " << Photon_pT[_nPhotons] << endl;
-      //Photon_pT[_nPhotons] = pho->pt() * ratio_E;
-      Photon_eta[_nPhotons] = pho->eta();
-      Photon_phi[_nPhotons] = pho->phi();
-      
-      Photon_scEta[_nPhotons] = pho->superCluster()->eta();
-      Photon_scPhi[_nPhotons] = pho->superCluster()->phi();
-      
-      //cout << "2.3" << endl;
-
-      Photon_HoverE[_nPhotons] = pho->hadTowOverEm();
-      //cout << "2.3.1" << endl;
-      Photon_hasPixelSeed[_nPhotons] = (Int_t)pho->hasPixelSeed();
-      //cout << "2.3.2" << endl;
-      //Photon_Full5x5_SigmaIEtaIEta[_nPhotons] = (*full5x5SigmaIEtaIEtaMap)[ pho ];
-      Photon_Full5x5_SigmaIEtaIEta[_nPhotons] = pho -> full5x5_sigmaIetaIeta();
-      
-      
-      //cout << "2.4" << endl;
-      
-      float chIso = pho -> chargedHadronIso();
-      float nhIso = pho -> neutralHadronIso();
-      float phIso = pho -> photonIso();
-      
-      //cout << "2.5" << endl;
-      
-      Photon_ChIso[_nPhotons] = chIso;
-      Photon_NhIso[_nPhotons] = nhIso;
-      Photon_PhIso[_nPhotons] = phIso;
-      
-      float abseta = fabs( pho->superCluster()->eta());
-      Photon_ChIsoWithEA[_nPhotons] = std::max( (float)0.0, chIso - rho_*effAreaChHadrons_.getEffectiveArea(abseta) );
-      Photon_NhIsoWithEA[_nPhotons] = std::max( (float)0.0, nhIso - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta) );
-      Photon_PhIsoWithEA[_nPhotons] = std::max( (float)0.0, phIso - rho_*effAreaPhotons_.getEffectiveArea(abseta) );
-      
-      bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
-      bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
-      bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V1-tight");
-      bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp80");
-      bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp90");
+  for(size_t i=0; i< PhotonHandle->size(); ++i){
+    const auto pho = PhotonHandle->ptrAt(i);
     
-      //cout << "5" << endl;
-
-      Photon_passMVAID_WP80[_nPhotons] = isPassMVA_WP80;
-      Photon_passMVAID_WP90[_nPhotons] = isPassMVA_WP90;
-      Photon_passLooseID[_nPhotons] = isPassLoose;
-      Photon_passMediumID[_nPhotons] = isPassMedium;
-      Photon_passTightID[_nPhotons] = isPassTight;
-      
-      _nPhotons++;
-    }
+    double sin_theta = sin(pho->theta());
+    photon_pt.push_back( pho -> userFloat("ecalEnergyPostCorr") * sin_theta );
+    //double pho_pt_noncor = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
+    //cout << "pho->pt() : " << pho->pt() << ", pho_pt_noncor : " << pho_pt_noncor << ", Pt(cor) : " << photon_pt.at(i) << endl;
+    //photon_pt.push_back( pho->pt() * ratio_E );
+    photon_eta.push_back( pho->eta() );
+    photon_phi.push_back( pho->phi() );
+    
+    photon_scEta.push_back( pho->superCluster()->eta() );
+    photon_scPhi.push_back( pho->superCluster()->phi() );
+    
+    photon_HoverE.push_back( pho->hadTowOverEm() );
+    photon_hasPixelSeed.push_back( (Int_t)pho->hasPixelSeed() );
+    //photon_Full5x5_SigmaIEtaIEta.push_back( (*full5x5SigmaIEtaIEtaMap)[ pho ] );
+    photon_Full5x5_SigmaIEtaIEta.push_back( pho -> full5x5_sigmaIetaIeta() );
+    
+    
+    float chIso = pho -> chargedHadronIso();
+    float nhIso = pho -> neutralHadronIso();
+    float phIso = pho -> photonIso();
+    
+    photon_ChIso.push_back( chIso );
+    photon_NhIso.push_back( nhIso );
+    photon_PhIso.push_back( phIso );
+    
+    float abseta = fabs( pho->superCluster()->eta());
+    photon_ChIsoWithEA.push_back( std::max( (float)0.0, chIso - rho_*effAreaChHadrons_.getEffectiveArea(abseta) ) );
+    photon_NhIsoWithEA.push_back( std::max( (float)0.0, nhIso - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta) ) );
+    photon_PhIsoWithEA.push_back( std::max( (float)0.0, phIso - rho_*effAreaPhotons_.getEffectiveArea(abseta) ) );
+    
+    bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
+    bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
+    bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V1-tight");
+    bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp80");
+    bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp90");
   
-  nPhotons = _nPhotons;
+    photon_passMVAID_WP80.push_back( isPassMVA_WP80 );
+    photon_passMVAID_WP90.push_back( isPassMVA_WP90 );
+    photon_passLooseID.push_back( isPassLoose );
+    photon_passMediumID.push_back( isPassMedium );
+    photon_passTightID.push_back( isPassTight );
+    
+  }
+  
+  for(size_t i=0; i< UnCorrPhotonHandle->size(); ++i){
+    const auto pho = UnCorrPhotonHandle->ptrAt(i);
+    double sin_theta = sin(pho->theta());
+    photon_ptUnCorr.push_back( pho -> userFloat("ecalEnergyPreCorr") * sin_theta );
+    photon_etaUnCorr.push_back( pho->eta() );
+    photon_phiUnCorr.push_back( pho->phi() );
+  }
 
-  int _nUnCorrPhotons = 0;
-  for(size_t i=0; i< UnCorrPhotonHandle->size(); ++i)
-    {
-      const auto pho = UnCorrPhotonHandle->ptrAt(i);
-      double sin_theta = sin(pho->theta());
-      Photon_pTUnCorr[_nUnCorrPhotons] = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
-      Photon_etaUnCorr[_nUnCorrPhotons] = pho->eta();
-      Photon_phiUnCorr[_nUnCorrPhotons] = pho->phi();
-      
-      _nUnCorrPhotons++;
-    }
-  nUnCorrPhoton = _nUnCorrPhotons;
 }
 
 
