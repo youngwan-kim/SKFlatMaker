@@ -57,6 +57,10 @@
 // -- For Jets -- //
 ////////////////////
 #include "DataFormats/PatCandidates/interface/Jet.h" // -- Analysis-level calorimeter jet class, Jet implements the analysis-level calorimeter jet class within the 'pat' namespace.
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
+#include "JetMETCorrections/Modules/interface/JetResolution.h"
 
 ////////////////////////////
 // -- For GenParticles -- //
@@ -178,6 +182,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSetup);
   virtual void fillElectrons(const edm::Event &iEvent, const edm::EventSetup& iSetup);
   virtual void fillJet(const edm::Event &iEvent);            // fill jet and b-tagging information
+  virtual void fillFatJet(const edm::Event &iEvent);            // fill jet and b-tagging information
   virtual void hltReport(const edm::Event &iEvent);          // fill list of triggers fired in an event
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
@@ -195,37 +200,37 @@ class SKFlatMaker : public edm::EDAnalyzer
   HLTConfigProvider hltConfig_;
   
   // -- Tokens (for 76X) -- //
-  edm::EDGetTokenT< std::vector<pat::Muon> >             MuonToken;
-  edm::EDGetTokenT< edm::View<pat::Electron> >                         ElectronToken;
-  edm::EDGetTokenT< edm::View<pat::Electron> >                                          UnCorrElectronToken;
-  edm::EDGetTokenT< edm::View<pat::Photon> >                   PhotonToken;
-  edm::EDGetTokenT< edm::View<pat::Photon> >                                            UnCorrPhotonToken;
+  edm::EDGetTokenT< std::vector<pat::Muon> >            MuonToken;
+  edm::EDGetTokenT< edm::View<pat::Electron> >          ElectronToken;
+  edm::EDGetTokenT< edm::View<pat::Electron> >          UnCorrElectronToken;
+  edm::EDGetTokenT< edm::View<pat::Photon> >            PhotonToken;
+  edm::EDGetTokenT< edm::View<pat::Photon> >            UnCorrPhotonToken;
   edm::EDGetTokenT< std::vector<pat::Jet> >             JetToken;
+  edm::EDGetTokenT< std::vector<pat::Jet> >             FatJetToken;
   edm::EDGetTokenT< std::vector<pat::MET> >             MetToken;
-  //edm::EDGetTokenT<pat::METCollection>                                           MetToken;
 
   edm::EDGetTokenT< LHEEventProduct >               LHEEventProductToken;
-  edm::EDGetTokenT< LHERunInfoProduct >              LHERunInfoProductToken;
-  edm::EDGetTokenT< reco::GenParticleCollection>                                        mcLabel_;
+  edm::EDGetTokenT< LHERunInfoProduct >             LHERunInfoProductToken;
+  edm::EDGetTokenT< reco::GenParticleCollection>    mcLabel_;
   
-  edm::EDGetTokenT< edm::TriggerResults >                                               METFilterResultsToken_PAT;
-  edm::EDGetTokenT< edm::TriggerResults >                                               METFilterResultsToken_RECO;
+  edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_PAT;
+  edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_RECO;
   
-  edm::EDGetTokenT< double >                      RhoToken;
-  edm::EDGetTokenT< edm::ValueMap<float> >                                              mvaIsoValuesMapToken;
-  edm::EDGetTokenT< edm::ValueMap<float> >                                              mvaNoIsoValuesMapToken;
-  edm::EDGetTokenT< std::vector<reco::Conversion> > 		           		ConversionsToken;
-  edm::EDGetTokenT< std::vector< reco::GsfTrack > > 			         	GsfTrackToken;
+  edm::EDGetTokenT< double >                          RhoToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >            mvaIsoValuesMapToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >            mvaNoIsoValuesMapToken;
+  edm::EDGetTokenT< std::vector<reco::Conversion> >   ConversionsToken;
+  edm::EDGetTokenT< std::vector< reco::GsfTrack > >   GsfTrackToken;
   
-  edm::EDGetTokenT< edm::TriggerResults > 						TriggerToken;
-  edm::EDGetTokenT< edm::TriggerResults > 						TriggerTokenPAT;
-  edm::EDGetTokenT< std::vector<pat::TriggerObjectStandAlone> > 	                TriggerObjectToken;
+  edm::EDGetTokenT< edm::TriggerResults >                          TriggerToken;
+  edm::EDGetTokenT< edm::TriggerResults >                          TriggerTokenPAT;
+  edm::EDGetTokenT< std::vector<pat::TriggerObjectStandAlone> >    TriggerObjectToken;
   
-  edm::EDGetTokenT< GenEventInfoProduct > 						GenEventInfoToken;
-  edm::EDGetTokenT< reco::BeamSpot > 						       	BeamSpotToken;
-  edm::EDGetTokenT< reco::VertexCollection > 						PrimaryVertexToken;
-  edm::EDGetTokenT< edm::View<reco::Track> > 						TrackToken;
-  edm::EDGetTokenT< std::vector< PileupSummaryInfo > > 	                   		PileUpInfoToken;
+  edm::EDGetTokenT< GenEventInfoProduct >                GenEventInfoToken;
+  edm::EDGetTokenT< reco::BeamSpot >                     BeamSpotToken;
+  edm::EDGetTokenT< reco::VertexCollection >             PrimaryVertexToken;
+  edm::EDGetTokenT< edm::View<reco::Track> >             TrackToken;
+  edm::EDGetTokenT< std::vector< PileupSummaryInfo > >   PileUpInfoToken;
   
   
   //edm::Handle<bool> ifilterbadChCand;
@@ -246,6 +251,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   // -- Store flags -- // 
   bool theStorePriVtxFlag;                // Yes or No to store primary vertex
   bool theStoreJetFlag;                // Yes or No to store Jet
+  bool theStoreFatJetFlag;                // Yes or No to store FatJet
   bool theStoreMETFlag;                // Yes or No to store MET 
   bool theStoreHLTReportFlag;             // Yes or No to store HLT reuslts (list of triggers fired)
   bool theStoreMuonFlag;
@@ -269,8 +275,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
 
-  std::vector<std::string > MuonHLT;
-  std::vector<int > MuonHLTPS;
+  std::vector<std::string > HLTName_WildCard;
   std::vector<std::string > ListHLT;
   std::vector<int > ListHLTPS;
   std::vector<std::string > trigModuleNames;
@@ -321,7 +326,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   int runNum;
   unsigned long long evtNum;
   int lumiBlock;
-  int nMuon;
   double PUweight;
   double sumEt;
   double photonEt;
@@ -340,7 +344,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   // double pfMET_phi;
   int Njets;
   int Nelectrons;
-  int Nmuons;
   int Nbtagged;
   int NbtaggedCloseMuon;
   
@@ -363,433 +366,431 @@ class SKFlatMaker : public edm::EDAnalyzer
   double PVz;
   double PVprob;
   
-  // trigger object
-  int _HLT_ntrig;
-  int _HLT_trigType[MPSIZE];
-  int _HLT_trigFired[MPSIZE];
-  std::vector<std::string> _HLT_trigName;
-  std::vector<int> _HLT_trigPS;
-  double _HLT_trigPt[MPSIZE];
-  double _HLT_trigEta[MPSIZE];
-  double _HLT_trigPhi[MPSIZE];
-  
-  // Jet
-  double JETbDiscriminant[MPSIZE];
-  double JETcharge[MPSIZE];
-  int JETflavour[MPSIZE];
-  int JETntracks[MPSIZE];
-  double JETpt[MPSIZE];
-  double JETeta[MPSIZE];
-  double JETphi[MPSIZE];
-  
-  int Nbtagged_alg1;
-  int NbtaggedCloseMuon_alg1;
-  int Nbtagged_alg2;
-  int NbtaggedCloseMuon_alg2;
-  int Nbtagged_alg3;
-  int NbtaggedCloseMuon_alg3;
-  double JETbDiscriminant_alg1[MPSIZE];
-  double JETbDiscriminant_alg2[MPSIZE];
-  double JETbDiscriminant_alg3[MPSIZE];
-  
-  double Jet_pT[MPSIZE]; 
-  double Jet_eta[MPSIZE]; 
-  double Jet_phi[MPSIZE]; 
-  double Jet_Charge[MPSIZE]; 
-  double Jet_area[MPSIZE];
-  double Jet_rho[MPSIZE];
-  int Jet_Flavor[MPSIZE]; 
-  int Jet_Hadron[MPSIZE];
-  double Jet_bTag[MPSIZE]; 
-  double Jet_CHfrac[MPSIZE]; 
-  double Jet_NHfrac[MPSIZE]; 
-  double Jet_NHEMfrac[MPSIZE]; 
-  double Jet_CHEMfrac[MPSIZE]; 
-  int Jet_CHmulti[MPSIZE]; 
-  int Jet_NHmulti[MPSIZE];
-  
-  
-  // PAT Electron
-  double Electron_MVAIso[MPSIZE];
-  double Electron_MVANoIso[MPSIZE];
-  double Electron_et[MPSIZE];
-  double Electron_caloEnergy[MPSIZE];
-  double Electron_Energy[MPSIZE];
-  double Electron_pT[MPSIZE];
-  double Electron_Px[MPSIZE];
-  double Electron_Py[MPSIZE];
-  double Electron_Pz[MPSIZE];
-  double Electron_eta[MPSIZE];
-  double Electron_phi[MPSIZE];
-  int Electron_charge[MPSIZE];
-  double Electron_gsfpT[MPSIZE];
-  double Electron_gsfPx[MPSIZE];
-  double Electron_gsfPy[MPSIZE];
-  double Electron_gsfPz[MPSIZE];
-  double Electron_gsfEta[MPSIZE];
-  double Electron_gsfPhi[MPSIZE];
-  int Electron_gsfCharge[MPSIZE];
-  double Electron_etaSC[MPSIZE];
-  double Electron_phiSC[MPSIZE];
-  double Electron_etaWidth[MPSIZE];
-  double Electron_phiWidth[MPSIZE];
-  double Electron_dEtaIn[MPSIZE];
-  double Electron_dEtaInSeed[MPSIZE];
-  double Electron_dPhiIn[MPSIZE];
-  double Electron_sigmaIEtaIEta[MPSIZE];
-  double Electron_Full5x5_SigmaIEtaIEta[MPSIZE];
-  double Electron_HoverE[MPSIZE];
-  double Electron_fbrem[MPSIZE];
-  double Electron_eOverP[MPSIZE];
-  double Electron_energyEC[MPSIZE];
-  double Electron_Pnorm[MPSIZE];
-  double Electron_InvEminusInvP[MPSIZE];
-  double Electron_dxyVTX[MPSIZE];
-  double Electron_dzVTX[MPSIZE];
-  double Electron_dxy[MPSIZE];
-  double Electron_sigdxy[MPSIZE];
-  double Electron_dz[MPSIZE];
-  double Electrron_ip3D[MPSIZE];
-  double Electrron_sigip3D[MPSIZE];
-  double Electron_dxyBS[MPSIZE];
-  double Electron_dzBS[MPSIZE];
-  double Electron_AEff03[MPSIZE];
-  double Electron_chIso03[MPSIZE];
-  double Electron_chIso04[MPSIZE];
-  double Electron_nhIso03[MPSIZE];
-  double Electron_nhIso04[MPSIZE];
-  double Electron_phIso03[MPSIZE];
-  double Electron_phIso04[MPSIZE];
-  double Electron_pcIso03[MPSIZE];
-  double Electron_pcIso04[MPSIZE];
-  double Electron_relIsoCom03[MPSIZE];
-  double Electron_relIsoCom04[MPSIZE];
-  double Electron_relIsoBeta03[MPSIZE];
-  double Electron_relIsoBeta04[MPSIZE];
-  double Electron_relIsoRho03[MPSIZE];
-  bool Electron_hasConversion[MPSIZE];
-  int Electron_mHits[MPSIZE];
-  
-  int Electron_crack[MPSIZE];
-  int Electron_ecalDriven[MPSIZE];
-  double Electron_isoEMHADDepth1[MPSIZE];
-  double Electron_25over55[MPSIZE];
-  double Electron_15over55[MPSIZE];
-  double Electron_isoHADDepth2[MPSIZE];
-  double Electron_isoPtTrks[MPSIZE];
-  double Electron_modIsoEMHADDepth1[MPSIZE];
-  double Electron_modIsoPtTrks[MPSIZE];
-  double Electron_modIsoEMHADDepth1Orig[MPSIZE];
-  double Electron_modIsoPtTrksOrig[MPSIZE];
-  double Electron_ambGsf0Pt[MPSIZE];
-  double Electron_ambGsf0Eta[MPSIZE];
-  double Electron_ambGsf0Phi[MPSIZE];
-  double Electron_ambGsf0Charge[MPSIZE];
-  double Electron_ambGsf1Pt[MPSIZE];
-  double Electron_ambGsf1Eta[MPSIZE];
-  double Electron_ambGsf1Phi[MPSIZE];
-  double Electron_ambGsf1Charge[MPSIZE];
-  double Electron_ambGsf2Pt[MPSIZE];
-  double Electron_ambGsf2Eta[MPSIZE];
-  double Electron_ambGsf2Phi[MPSIZE];
-  double Electron_ambGsf2Charge[MPSIZE];
-  double Electron_ambGsf3Pt[MPSIZE];
-  double Electron_ambGsf3Eta[MPSIZE];
-  double Electron_ambGsf3Phi[MPSIZE];
-  double Electron_ambGsf3Charge[MPSIZE];
-  
-  double Electron_r9[MPSIZE];
-  double Electron_EnergySC[MPSIZE];
-  double Electron_preEnergySC[MPSIZE];
-  double Electron_rawEnergySC[MPSIZE];
-  double Electron_etSC[MPSIZE];
-  double Electron_E15[MPSIZE];
-  double Electron_E25[MPSIZE];
-  double Electron_E55[MPSIZE];
-  double Electron_ChIso03FromPU[MPSIZE];
-  double Electron_RelPFIso_dBeta[MPSIZE];
-  double Electron_RelPFIso_Rho[MPSIZE];
-  bool Electron_passConvVeto[MPSIZE];
-  bool Electron_passVetoID[MPSIZE];
-  bool Electron_passLooseID[MPSIZE];
-  bool Electron_passMediumID[MPSIZE];
-  bool Electron_passTightID[MPSIZE];
-  bool Electron_passMVAID_noIso_WP80[MPSIZE];
-  bool Electron_passMVAID_noIso_WP90[MPSIZE];
-  bool Electron_passMVAID_iso_WP80[MPSIZE];
-  bool Electron_passMVAID_iso_WP90[MPSIZE];
-  bool Electron_passMVAID_WP80[MPSIZE];
-  bool Electron_passMVAID_WP90[MPSIZE];
-  bool Electron_passHEEPID[MPSIZE];
-  
-  std::vector<double> vtxTrkDiEChi2;
-  std::vector<double> vtxTrkDiEProb;
-  std::vector<double> vtxTrkDiENdof;
-  std::vector<double> vtxTrkDiE1Pt;
-  std::vector<double> vtxTrkDiE2Pt;
-  
-  // -- emu vertex -- //
-  std::vector<double> vtxTrkEMuChi2;
-  std::vector<double> vtxTrkEMuProb;
-  std::vector<double> vtxTrkEMuNdof;
-  std::vector<double> vtxTrkEMu1Pt;
-  std::vector<double> vtxTrkEMu2Pt;
-  std::vector<double> vtxTrkEMuChi2_TuneP;
-  std::vector<double> vtxTrkEMuProb_TuneP;
-  std::vector<double> vtxTrkEMuNdof_TuneP;
-  std::vector<double> vtxTrkEMu1Pt_TuneP;
-  std::vector<double> vtxTrkEMu2Pt_TuneP;
-  
-  // -- Un-corrected electrons -- //
-  int nUnCorrElectron;
-  double Electron_pTUnCorr[MPSIZE];
-  double Electron_etaUnCorr[MPSIZE];
-  double Electron_phiUnCorr[MPSIZE];
-  double Electron_PxUnCorr[MPSIZE];
-  double Electron_PyUnCorr[MPSIZE];
-  double Electron_PzUnCorr[MPSIZE];
-  double Electron_EnergyUnCorr[MPSIZE];
-  double Electron_EnergySCUnCorr[MPSIZE];
-  double Electron_etaSCUnCorr[MPSIZE];
-  double Electron_phiSCUnCorr[MPSIZE];
-  double Electron_etSCUnCorr[MPSIZE];
-  
-  // Pat Muon
-  //pf isolations
-  double Muon_PfChargedHadronIsoR05[MPSIZE];
-  double Muon_PfNeutralHadronIsoR05[MPSIZE];
-  double Muon_PfGammaIsoR05[MPSIZE];
-  double Muon_PfChargedHadronIsoR04[MPSIZE];
-  double Muon_PfNeutralHadronIsoR04[MPSIZE];
-  double Muon_PfGammaIsoR04[MPSIZE];
-  double Muon_PFSumPUIsoR04[MPSIZE];
-  double Muon_PfChargedHadronIsoR03[MPSIZE];
-  double Muon_PfNeutralHadronIsoR03[MPSIZE];
-  double Muon_PfGammaIsoR03[MPSIZE];
-  double Muon_PFSumPUIsoR03[MPSIZE];
-  
-  int isPFmuon[MPSIZE];
-  int isGLBmuon[MPSIZE];
-  int isTRKmuon[MPSIZE];
-  int isSTAmuon[MPSIZE];
-  
-  int Muon_nTrig[MPSIZE];
-  int Muon_triggerObjectType[MPSIZE];
-  int Muon_filterName[MPSIZE];
-  double Muon_dB[MPSIZE];
-  double Muon_phi[MPSIZE];
-  double Muon_eta[MPSIZE];
-  double Muon_pT[MPSIZE];
-  double Muon_cktpT[MPSIZE];
-  double Muon_cktPx[MPSIZE];
-  double Muon_cktPy[MPSIZE];
-  double Muon_cktPz[MPSIZE];
-  double Muon_cktpTError[MPSIZE];
-  double Muon_Px[MPSIZE];
-  double Muon_Py[MPSIZE];
-  double Muon_Pz[MPSIZE];
-  double Muon_sumtrkpt[MPSIZE];
-  double Muon_trkiso[MPSIZE];
-  double Muon_hcaliso[MPSIZE];
-  double Muon_ecaliso[MPSIZE];
-  double Muon_trkisoR05[MPSIZE];
-  double Muon_hcalisoR05[MPSIZE];
-  double Muon_ecalisoR05[MPSIZE];
-  int Muon_charge[MPSIZE];
-  int Muon_nChambers[MPSIZE];
-  int Muon_nMatches[MPSIZE];
-  int Muon_nMatchesRPCLayers[MPSIZE];
-  int Muon_stationMask[MPSIZE];
-  int Muon_nSegments[MPSIZE];
-  double Muon_chi2dof[MPSIZE];
-  int Muon_nhits[MPSIZE];
-  int Muon_trackerHits[MPSIZE];
-  int Muon_pixelHits[MPSIZE];
-  int Muon_muonHits[MPSIZE];
-  int Muon_trackerLayers[MPSIZE];
-  int Muon_trackerHitsGLB[MPSIZE];
-  int Muon_trackerLayersGLB[MPSIZE];
-  int Muon_pixelHitsGLB[MPSIZE];
-  double Muon_qoverp[MPSIZE];
-  double Muon_theta[MPSIZE];
-  double Muon_lambda[MPSIZE];
-  double Muon_dxy[MPSIZE];
-  double Muon_d0[MPSIZE];
-  double Muon_dsz[MPSIZE];
-  double Muon_dz[MPSIZE];
-  double Muon_dxyBS[MPSIZE];
-  double Muon_dzBS[MPSIZE];
-  double Muon_dszBS[MPSIZE];
-  double Muon_dxyVTX[MPSIZE];
-  double Muon_dzVTX[MPSIZE];
-  double Muon_dszVTX[MPSIZE];
-  double Muon_dxycktVTX[MPSIZE];
-  double Muon_dzcktVTX[MPSIZE];
-  double Muon_dszcktVTX[MPSIZE];
-  double Muon_vx[MPSIZE];
-  double Muon_vy[MPSIZE];
-  double Muon_vz[MPSIZE];
-  
-  //Various track informations
-  //MuonBestTrack
-  double Muon_Best_pT[MPSIZE];
-  double Muon_Best_pTError[MPSIZE];
-  double Muon_Best_Px[MPSIZE];
-  double Muon_Best_Py[MPSIZE];
-  double Muon_Best_Pz[MPSIZE];
-  double Muon_Best_eta[MPSIZE];
-  double Muon_Best_phi[MPSIZE];
-  //Inner Track
-  double Muon_Inner_pT[MPSIZE];
-  double Muon_Inner_pTError[MPSIZE];
-  double Muon_Inner_Px[MPSIZE];
-  double Muon_Inner_Py[MPSIZE];
-  double Muon_Inner_Pz[MPSIZE];
-  double Muon_Inner_eta[MPSIZE];
-  double Muon_Inner_phi[MPSIZE];
-  //Outer Track
-  double Muon_Outer_pT[MPSIZE];
-  double Muon_Outer_pTError[MPSIZE];
-  double Muon_Outer_Px[MPSIZE];
-  double Muon_Outer_Py[MPSIZE];
-  double Muon_Outer_Pz[MPSIZE];
-  double Muon_Outer_eta[MPSIZE];
-  double Muon_Outer_phi[MPSIZE];
-  //Global Track
-  double Muon_GLB_pT[MPSIZE];
-  double Muon_GLB_pTError[MPSIZE];
-  double Muon_GLB_Px[MPSIZE];
-  double Muon_GLB_Py[MPSIZE];
-  double Muon_GLB_Pz[MPSIZE];
-  double Muon_GLB_eta[MPSIZE];
-  double Muon_GLB_phi[MPSIZE];
-  
-  //tuneP MuonBestTrack
-  double Muon_TuneP_pT[MPSIZE];
-  double Muon_TuneP_pTError[MPSIZE];
-  double Muon_TuneP_Px[MPSIZE];
-  double Muon_TuneP_Py[MPSIZE];
-  double Muon_TuneP_Pz[MPSIZE];
-  double Muon_TuneP_eta[MPSIZE];
-  double Muon_TuneP_phi[MPSIZE];
-  
-  // LHE
-  int nLHEParticle;
-  double LHELepton_Px[MPSIZE];
-  double LHELepton_Py[MPSIZE];
-  double LHELepton_Pz[MPSIZE];
-  double LHELepton_E[MPSIZE];
-  int LHELepton_ID[MPSIZE];
-  int LHELepton_status[MPSIZE];
-  
-  // GEN
-  int GENnPair;
-  double GENLepton_phi[MPSIZE];
-  double GENLepton_eta[MPSIZE];
-  double GENLepton_pT[MPSIZE];
-  double GENLepton_Px[MPSIZE];
-  double GENLepton_Py[MPSIZE];
-  double GENLepton_Pz[MPSIZE];
-  double GENLepton_E[MPSIZE];
-  int GENLepton_mother[MPSIZE];
-  double GENLepton_mother_pT[MPSIZE];
-  int GENLepton_mother_index[MPSIZE];
-  int GENLepton_charge[MPSIZE];
-  int GENLepton_status[MPSIZE];
-  int GENLepton_ID[MPSIZE];
-  int GENLepton_isPrompt[MPSIZE];
-  int GENLepton_isPromptFinalState[MPSIZE];
-  int GENLepton_isTauDecayProduct[MPSIZE];
-  int GENLepton_isPromptTauDecayProduct[MPSIZE];
-  int GENLepton_isDirectPromptTauDecayProductFinalState[MPSIZE];
-  int GENLepton_isHardProcess[MPSIZE];
-  int GENLepton_isLastCopy[MPSIZE];
-  int GENLepton_isLastCopyBeforeFSR[MPSIZE];
-  int GENLepton_isPromptDecayed[MPSIZE];
-  int GENLepton_isDecayedLeptonHadron[MPSIZE];
-  int GENLepton_fromHardProcessBeforeFSR[MPSIZE];
-  int GENLepton_fromHardProcessDecayed[MPSIZE];
-  int GENLepton_fromHardProcessFinalState[MPSIZE];
-  int GENLepton_isMostlyLikePythia6Status3[MPSIZE];
-  double GENEvt_weight;
-  double GENEvt_QScale;
-  double GENEvt_x1;
-  double GENEvt_x2;
-  int GENEvt_id1;
-  int GENEvt_id2;
-  double GENEvt_alphaQCD;
-  double GENEvt_alphaQED;
-  
-  
-  // -- Photon information -- //
-  int nPhotons;
-  double Photon_pT[MPSIZE];
-  double Photon_eta[MPSIZE];
-  double Photon_phi[MPSIZE];
-  double Photon_etaSC[MPSIZE];
-  double Photon_phiSC[MPSIZE];
-  double Photon_HoverE[MPSIZE];
-  int Photon_hasPixelSeed[MPSIZE];
-  double Photon_Full5x5_SigmaIEtaIEta[MPSIZE];
-  double Photon_ChIso[MPSIZE];
-  double Photon_NhIso[MPSIZE];
-  double Photon_PhIso[MPSIZE];
-  double Photon_ChIsoWithEA[MPSIZE];
-  double Photon_NhIsoWithEA[MPSIZE];
-  double Photon_PhIsoWithEA[MPSIZE];
-  bool Photon_passMVAID_WP80[MPSIZE];
-  bool Photon_passMVAID_WP90[MPSIZE];
-  bool Photon_passLooseID[MPSIZE];
-  bool Photon_passMediumID[MPSIZE];
-  bool Photon_passTightID[MPSIZE];
+  //==== trigger object
 
-  int nUnCorrPhoton;
-  double Photon_pTUnCorr[MPSIZE];
-  double Photon_etaUnCorr[MPSIZE];
-  double Photon_phiUnCorr[MPSIZE];
+  vector<int> HLTObject_Type;
+  vector<int> HLTObject_Fired;
+  vector<string> HLTObject_Name;
+  vector<int> HLTObject_PS;
+  vector<double> HLTObject_pt;
+  vector<double> HLTObject_eta;
+  vector<double> HLTObject_phi;
+  vector<string> HLT_TriggerName;
+  vector<bool> HLT_TriggerFired;
+  vector<int> HLT_TriggerPrescale;
+
+  //==== Jet
+
+  vector<double> jet_pt;
+  vector<double> jet_eta;
+  vector<double> jet_phi;
+  vector<double> jet_charge;
+  vector<double> jet_area;
+  vector<double> jet_rho;
+  vector<int> jet_partonFlavour;
+  vector<int> jet_hadronFlavour;
+  vector<double> jet_bTag;
+  vector<double> jet_chargedHadronEnergyFraction;
+  vector<double> jet_neutralHadronEnergyFraction;
+  vector<double> jet_neutralEmEnergyFraction;
+  vector<double> jet_chargedEmEnergyFraction;
+  vector<int> jet_chargedMultiplicity;
+  vector<int> jet_neutralMultiplicity;
+  vector<bool> jet_looseJetID;
+  vector<bool> jet_tightJetID;
+  vector<bool> jet_tightLepVetoJetID;
+  vector<int> jet_partonPdgId;
+  vector<int> jet_vtxNtracks;
+  vector<double> jet_m;
+  vector<double> jet_energy;
+  vector<double> jet_PileupJetId;
+  vector<double> jet_shiftedEnUp;
+  vector<double> jet_shiftedEnDown;
+
+  //==== JEC
+  JetCorrectionUncertainty *jet_jecUnc;
+  std::string jet_payloadName_;
+  JetCorrectionUncertainty *fatjet_jecUnc;
+  std::string fatjet_payloadName_;
+
+
+  //==== FatJet
+
+  vector<double> fatjet_pt;
+  vector<double> fatjet_eta;
+  vector<double> fatjet_phi;
+  vector<double> fatjet_charge;
+  vector<double> fatjet_area;
+  vector<double> fatjet_rho;
+  vector<int> fatjet_partonFlavour;
+  vector<int> fatjet_hadronFlavour;
+  vector<double> fatjet_bTag;
+  vector<bool> fatjet_looseJetID;
+  vector<bool> fatjet_tightJetID;
+  vector<bool> fatjet_tightLepVetoJetID;
+  vector<int> fatjet_partonPdgId;
+  vector<int> fatjet_vtxNtracks;
+  vector<double> fatjet_m;
+  vector<double> fatjet_energy;
+  vector<double> fatjet_puppi_tau1;
+  vector<double> fatjet_puppi_tau2;
+  vector<double> fatjet_puppi_tau3;
+  vector<double> fatjet_puppi_tau4;
+  vector<double> fatjet_softdropmass;
+  vector<double> fatjet_chargedHadronEnergyFraction;
+  vector<double> fatjet_neutralHadronEnergyFraction;
+  vector<double> fatjet_neutralEmEnergyFraction;
+  vector<double> fatjet_chargedEmEnergyFraction;
+  vector<int> fatjet_chargedMultiplicity;
+  vector<int> fatjet_neutralMultiplicity;
+  vector<double> fatjet_shiftedEnUp;
+  vector<double> fatjet_shiftedEnDown;
+
+  //==== Electron
+
+  vector<double> electron_MVAIso;
+  vector<double> electron_MVANoIso;
+  vector<double> electron_et;
+  vector<double> electron_caloEnergy;
+  vector<double> electron_Energy;
+  vector<double> electron_pt;
+  vector<double> electron_Px;
+  vector<double> electron_Py;
+  vector<double> electron_Pz;
+  vector<double> electron_eta;
+  vector<double> electron_phi;
+  vector<int> electron_charge;
+  vector<double> electron_gsfpt;
+  vector<double> electron_gsfPx;
+  vector<double> electron_gsfPy;
+  vector<double> electron_gsfPz;
+  vector<double> electron_gsfEta;
+  vector<double> electron_gsfPhi;
+  vector<int> electron_gsfCharge;
+  vector<double> electron_scEta;
+  vector<double> electron_scPhi;
+  vector<double> electron_etaWidth;
+  vector<double> electron_phiWidth;
+  vector<double> electron_dEtaIn;
+  vector<double> electron_dEtaInSeed;
+  vector<double> electron_dPhiIn;
+  vector<double> electron_sigmaIEtaIEta;
+  vector<double> electron_Full5x5_SigmaIEtaIEta;
+  vector<double> electron_HoverE;
+  vector<double> electron_fbrem;
+  vector<double> electron_eOverP;
+  vector<double> electron_energyEC;
+  vector<double> electron_Pnorm;
+  vector<double> electron_InvEminusInvP;
+  vector<double> electron_dxyVTX;
+  vector<double> electron_dzVTX;
+  vector<double> electron_dxy;
+  vector<double> electron_sigdxy;
+  vector<double> electron_dz;
+  vector<double> electron_ip3D;
+  vector<double> electron_sigip3D;
+  vector<double> electron_dxyBS;
+  vector<double> electron_dzBS;
+  vector<double> electron_AEff03;
+  vector<double> electron_chIso03;
+  vector<double> electron_nhIso03;
+  vector<double> electron_phIso03;
+  vector<double> electron_pcIso03;
+  vector<double> electron_puChIso03;
+  vector<double> electron_chIso04;
+  vector<double> electron_nhIso04;
+  vector<double> electron_phIso04;
+  vector<double> electron_pcIso04;
+  vector<double> electron_puChIso04;
+  vector<double> electron_relIsoCom03;
+  vector<double> electron_relIsoCom04;
+  vector<double> electron_relIsoBeta03;
+  vector<double> electron_relIsoBeta04;
+  vector<double> electron_relIsoRho03;
+  vector<bool> electron_passConversionVeto;
+  vector<bool> electron_isGsfCtfScPixChargeConsistent;
+  vector<int> electron_mHits;
+  vector<int> electron_crack;
+  vector<int> electron_ecalDriven;
+  vector<double> electron_isoEMHADDepth1;
+  vector<double> electron_25over55;
+  vector<double> electron_15over55;
+  vector<double> electron_isoHADDepth2;
+  vector<double> electron_isoptTrks;
+  vector<double> electron_modIsoEMHADDepth1;
+  vector<double> electron_modIsoptTrks;
+  vector<double> electron_modIsoEMHADDepth1Orig;
+  vector<double> electron_modIsoptTrksOrig;
+  vector<double> electron_ambGsf0pt;
+  vector<double> electron_ambGsf0Eta;
+  vector<double> electron_ambGsf0Phi;
+  vector<double> electron_ambGsf0Charge;
+  vector<double> electron_ambGsf1pt;
+  vector<double> electron_ambGsf1Eta;
+  vector<double> electron_ambGsf1Phi;
+  vector<double> electron_ambGsf1Charge;
+  vector<double> electron_ambGsf2pt;
+  vector<double> electron_ambGsf2Eta;
+  vector<double> electron_ambGsf2Phi;
+  vector<double> electron_ambGsf2Charge;
+  vector<double> electron_ambGsf3pt;
+  vector<double> electron_ambGsf3Eta;
+  vector<double> electron_ambGsf3Phi;
+  vector<double> electron_ambGsf3Charge;
+  vector<double> electron_r9;
+  vector<double> electron_scEnergy;
+  vector<double> electron_scPreEnergy;
+  vector<double> electron_scRawEnergy;
+  vector<double> electron_scEt;
+  vector<double> electron_E15;
+  vector<double> electron_E25;
+  vector<double> electron_E55;
+  vector<double> electron_RelPFIso_dBeta;
+  vector<double> electron_RelPFIso_Rho;
+  vector<bool> electron_passVetoID;
+  vector<bool> electron_passLooseID;
+  vector<bool> electron_passMediumID;
+  vector<bool> electron_passTightID;
+  vector<bool> electron_passMVAID_noIso_WP80;
+  vector<bool> electron_passMVAID_noIso_WP90;
+  vector<bool> electron_passMVAID_iso_WP80;
+  vector<bool> electron_passMVAID_iso_WP90;
+  vector<bool> electron_passMVAID_WP80;
+  vector<bool> electron_passMVAID_WP90;
+  vector<bool> electron_passHEEPID;
+  vector<double> electron_ptUnCorr;
+  vector<double> electron_etaUnCorr;
+  vector<double> electron_phiUnCorr;
+  vector<double> electron_PxUnCorr;
+  vector<double> electron_PyUnCorr;
+  vector<double> electron_PzUnCorr;
+  vector<double> electron_EnergyUnCorr;
+  vector<double> electron_scEnergyUnCorr;
+  vector<double> electron_scEtaUnCorr;
+  vector<double> electron_scPhiUnCorr;
+  vector<double> electron_scEtUnCorr;
+  vector<double> electron_mva;
+  vector<double> electron_zzmva;
+  vector<int> electron_missinghits;
+  vector<string> electron_trigmatch;
+
+  //==== Muon
+
+  vector<double> muon_PfChargedHadronIsoR05;
+  vector<double> muon_PfNeutralHadronIsoR05;
+  vector<double> muon_PfGammaIsoR05;
+  vector<double> muon_PfChargedHadronIsoR04;
+  vector<double> muon_PfNeutralHadronIsoR04;
+  vector<double> muon_PfGammaIsoR04;
+  vector<double> muon_PFSumPUIsoR04;
+  vector<double> muon_PfChargedHadronIsoR03;
+  vector<double> muon_PfNeutralHadronIsoR03;
+  vector<double> muon_PfGammaIsoR03;
+  vector<double> muon_PFSumPUIsoR03;
+  vector<int> muon_isPF;
+  vector<int> muon_isGlobal;
+  vector<int> muon_isTracker;
+  vector<int> muon_isStandAlone;
+  vector<int> muon_filterName;
+  vector<string> muon_trigmatch;
+  vector<double> muon_dB;
+  vector<double> muon_phi;
+  vector<double> muon_eta;
+  vector<double> muon_pt;
+  vector<double> muon_cktpt;
+  vector<double> muon_cktPx;
+  vector<double> muon_cktPy;
+  vector<double> muon_cktPz;
+  vector<double> muon_cktptError;
+  vector<double> muon_Px;
+  vector<double> muon_Py;
+  vector<double> muon_Pz;
+  vector<double> muon_sumtrkpt;
+  vector<double> muon_trkiso;
+  vector<double> muon_hcaliso;
+  vector<double> muon_ecaliso;
+  vector<double> muon_trkisoR05;
+  vector<double> muon_hcalisoR05;
+  vector<double> muon_ecalisoR05;
+  vector<int> muon_charge;
+  vector<int> muon_nChambers;
+  vector<int> muon_matchedstations;
+  vector<int> muon_stationMask;
+  vector<int> muon_nSegments;
+  vector<double> muon_chi2dof;
+  vector<int> muon_validhits;
+  vector<int> muon_trackerHits;
+  vector<int> muon_pixelHits;
+  vector<int> muon_validmuonhits;
+  vector<int> muon_trackerLayers;
+  vector<int> muon_trackerHitsGLB;
+  vector<int> muon_trackerLayersGLB;
+  vector<int> muon_pixelHitsGLB;
+  vector<double> muon_qoverp;
+  vector<double> muon_theta;
+  vector<double> muon_lambda;
+  vector<double> muon_dxy;
+  vector<double> muon_d0;
+  vector<double> muon_dsz;
+  vector<double> muon_dz;
+  vector<double> muon_dxyBS;
+  vector<double> muon_dzBS;
+  vector<double> muon_dszBS;
+  vector<double> muon_dxyVTX;
+  vector<double> muon_dzVTX;
+  vector<double> muon_dszVTX;
+  vector<double> muon_dxycktVTX;
+  vector<double> muon_dzcktVTX;
+  vector<double> muon_dszcktVTX;
+  vector<double> muon_vx;
+  vector<double> muon_vy;
+  vector<double> muon_vz;
+  vector<double> muon_Best_pt;
+  vector<double> muon_Best_ptError;
+  vector<double> muon_Best_Px;
+  vector<double> muon_Best_Py;
+  vector<double> muon_Best_Pz;
+  vector<double> muon_Best_eta;
+  vector<double> muon_Best_phi;
+  vector<double> muon_Inner_pt;
+  vector<double> muon_Inner_ptError;
+  vector<double> muon_Inner_Px;
+  vector<double> muon_Inner_Py;
+  vector<double> muon_Inner_Pz;
+  vector<double> muon_Inner_eta;
+  vector<double> muon_Inner_phi;
+  vector<double> muon_Outer_pt;
+  vector<double> muon_Outer_ptError;
+  vector<double> muon_Outer_Px;
+  vector<double> muon_Outer_Py;
+  vector<double> muon_Outer_Pz;
+  vector<double> muon_Outer_eta;
+  vector<double> muon_Outer_phi;
+  vector<double> muon_GLB_pt;
+  vector<double> muon_GLB_ptError;
+  vector<double> muon_GLB_Px;
+  vector<double> muon_GLB_Py;
+  vector<double> muon_GLB_Pz;
+  vector<double> muon_GLB_eta;
+  vector<double> muon_GLB_phi;
+  vector<double> muon_TuneP_pt;
+  vector<double> muon_TuneP_ptError;
+  vector<double> muon_TuneP_Px;
+  vector<double> muon_TuneP_Py;
+  vector<double> muon_TuneP_Pz;
+  vector<double> muon_TuneP_eta;
+  vector<double> muon_TuneP_phi;
+
+  //==== LHE
+  vector<double> LHELepton_Px;
+  vector<double> LHELepton_Py;
+  vector<double> LHELepton_Pz;
+  vector<double> LHELepton_E;
+  vector<int> LHELepton_ID;
+  vector<int> LHELepton_status;
+ 
+  //==== GEN
+  vector<double> gen_phi;
+  vector<double> gen_eta;
+  vector<double> gen_pt;
+  vector<double> gen_Px;
+  vector<double> gen_Py;
+  vector<double> gen_Pz;
+  vector<double> gen_E;
+  vector<int> gen_mother_PID;
+  vector<double> gen_mother_pt;
+  vector<int> gen_mother_index;
+  vector<int> gen_charge;
+  vector<int> gen_status;
+  vector<int> gen_PID;
+  vector<int> gen_isPrompt;
+  vector<int> gen_isPromptFinalState;
+  vector<int> gen_isTauDecayProduct;
+  vector<int> gen_isPromptTauDecayProduct;
+  vector<int> gen_isDirectPromptTauDecayProductFinalState;
+  vector<int> gen_isHardProcess;
+  vector<int> gen_isLastCopy;
+  vector<int> gen_isLastCopyBeforeFSR;
+  vector<int> gen_isPromptDecayed;
+  vector<int> gen_isDecayedLeptonHadron;
+  vector<int> gen_fromHardProcessBeforeFSR;
+  vector<int> gen_fromHardProcessDecayed;
+  vector<int> gen_fromHardProcessFinalState;
+  vector<int> gen_isMostlyLikePythia6Status3;
+  double gen_weight;
+  double genWeight_Q;
+  double genWeight_X1;
+  double genWeight_X2;
+  int genWeight_id1;
+  int genWeight_id2;
+  double genWeight_alphaQCD;
+  double genWeight_alphaQED;
   
+  //==== Photon information
+  vector<double> photon_pt;
+  vector<double> photon_eta;
+  vector<double> photon_phi;
+  vector<double> photon_scEta;
+  vector<double> photon_scPhi;
+  vector<double> photon_HoverE;
+  vector<int> photon_hasPixelSeed;
+  vector<double> photon_Full5x5_SigmaIEtaIEta;
+  vector<double> photon_ChIso;
+  vector<double> photon_NhIso;
+  vector<double> photon_PhIso;
+  vector<double> photon_ChIsoWithEA;
+  vector<double> photon_NhIsoWithEA;
+  vector<double> photon_PhIsoWithEA;
+  vector<bool> photon_passMVAID_WP80;
+  vector<bool> photon_passMVAID_WP90;
+  vector<bool> photon_passLooseID;
+  vector<bool> photon_passMediumID;
+  vector<bool> photon_passTightID;
+  vector<double> photon_ptUnCorr;
+  vector<double> photon_etaUnCorr;
+  vector<double> photon_phiUnCorr;
+
   // Effective area constants for all isolation types
   // EffectiveAreas effAreaChHadrons_;
   // EffectiveAreas effAreaNeuHadrons_;
   // EffectiveAreas effAreaPhotons_;
-  
-  int NTT;
-  double TTrack_dxy[MPSIZE];
-  double TTrack_dxyErr[MPSIZE];
-  double TTrack_d0[MPSIZE];
-  double TTrack_d0Err[MPSIZE];
-  double TTrack_dsz[MPSIZE];
-  double TTrack_dszErr[MPSIZE];
-  double TTrack_dz[MPSIZE];
-  double TTrack_dzErr[MPSIZE];
-  double TTrack_dxyBS[MPSIZE];
-  double TTrack_dszBS[MPSIZE];
-  double TTrack_dzBS[MPSIZE];
-  double TTrack_pT[MPSIZE];
-  double TTrack_Px[MPSIZE];
-  double TTrack_Py[MPSIZE];
-  double TTrack_Pz[MPSIZE];
-  double TTrack_eta[MPSIZE];
-  double TTrack_phi[MPSIZE];
-  double TTrack_charge[MPSIZE];
-  
-  // -- MET -- //
-  double pfMET_pT;
-  double pfMET_phi; 
-  double pfMET_Px; 
-  double pfMET_Py; 
+
+  //==== Tracker Track
+  vector<double> TrackerTrack_dxy;
+  vector<double> TrackerTrack_dxyErr;
+  vector<double> TrackerTrack_d0;
+  vector<double> TrackerTrack_d0Err;
+  vector<double> TrackerTrack_dsz;
+  vector<double> TrackerTrack_dszErr;
+  vector<double> TrackerTrack_dz;
+  vector<double> TrackerTrack_dzErr;
+  vector<double> TrackerTrack_dxyBS;
+  vector<double> TrackerTrack_dszBS;
+  vector<double> TrackerTrack_dzBS;
+  vector<double> TrackerTrack_pt;
+  vector<double> TrackerTrack_Px;
+  vector<double> TrackerTrack_Py;
+  vector<double> TrackerTrack_Pz;
+  vector<double> TrackerTrack_eta;
+  vector<double> TrackerTrack_phi;
+  vector<double> TrackerTrack_charge; 
+ 
+  //==== MET
+  double pfMET_pt;
+  double pfMET_phi;
+  double pfMET_Px;
+  double pfMET_Py;
   double pfMET_SumEt;
-  
-  double pfMET_Type1_pT;
-  double pfMET_Type1_phi; 
-  double pfMET_Type1_Px; 
-  double pfMET_Type1_Py; 
+  double pfMET_Type1_pt;
+  double pfMET_Type1_phi;
+  double pfMET_Type1_Px;
+  double pfMET_Type1_Py;
   double pfMET_Type1_SumEt;
-  
-  double pfMET_Type1_PhiCor_pT;
-  double pfMET_Type1_PhiCor_phi; 
-  double pfMET_Type1_PhiCor_Px; 
-  double pfMET_Type1_PhiCor_Py; 
+  double pfMET_Type1_PhiCor_pt;
+  double pfMET_Type1_PhiCor_phi;
+  double pfMET_Type1_PhiCor_Px;
+  double pfMET_Type1_PhiCor_Py;
   double pfMET_Type1_PhiCor_SumEt;
+
 };
 #endif

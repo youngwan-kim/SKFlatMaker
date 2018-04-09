@@ -19,22 +19,24 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   LHERunInfoProduct = cms.untracked.InputTag("externalLHEProducer"),
   GenParticle = cms.untracked.InputTag("genParticles"),
 
-	# -- electron information -- #
-	rho = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
-        mvaIsoValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV1Values"),
-        mvaNoIsoValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17NoIsoV1Values"),
-	conversionsInputTag = cms.untracked.InputTag("allConversions"),
-	GsfTrack = cms.untracked.InputTag("electronGsfTracks"),
+  # -- electron information -- #
+  rho = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
+  mvaIsoValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV1Values"),
+  mvaNoIsoValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17NoIsoV1Values"),
+  conversionsInputTag = cms.untracked.InputTag("allConversions"),
+  GsfTrack = cms.untracked.InputTag("electronGsfTracks"),
 
-	# -- photon information -- #
-	effAreaChHadFile = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfChargedHadrons_90percentBased_TrueVtx.txt"),
-	effAreaNeuHadFile= cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased_TrueVtx.txt"),
-	effAreaPhoFile   = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfPhotons_90percentBased_TrueVtx.txt"),
+  # -- photon information -- #
+  effAreaChHadFile = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfChargedHadrons_90percentBased_TrueVtx.txt"),
+  effAreaNeuHadFile= cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased_TrueVtx.txt"),
+  effAreaPhoFile   = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfPhotons_90percentBased_TrueVtx.txt"),
 
   # -- Jet information -- #
   BDiscriminant_tcheff = cms.untracked.double(0.7),
   BDiscriminant_tchpur = cms.untracked.double(0.7),
   BDiscriminant_ssv = cms.untracked.double(2.05),
+  AK4Jet_payloadName = cms.string('AK4PFchs'),
+  AK8Jet_payloadName = cms.string('AK8PFPuppi'),
 
   # -- MET information -- #
   METFilterResults_PAT = cms.InputTag("TriggerResults", "", "PAT"),
@@ -60,6 +62,7 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   StoreCalibElectronFlag = cms.untracked.bool(True),
   StorePhotonFlag = cms.untracked.bool(True),
   StoreJetFlag = cms.untracked.bool(True),
+  StoreFatJetFlag = cms.untracked.bool(True),
   StoreMETFlag = cms.untracked.bool(True),
   StoreLHEFlag = cms.untracked.bool(True),
   StoreGENFlag = cms.untracked.bool(True),

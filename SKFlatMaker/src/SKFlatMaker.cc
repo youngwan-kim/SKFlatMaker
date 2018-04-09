@@ -38,6 +38,7 @@ UnCorrElectronToken                 ( consumes< edm::View<pat::Electron> >      
 PhotonToken                         ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("SmearedPhoton")) ),
 UnCorrPhotonToken                   ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
 JetToken                            ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
+FatJetToken                         ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("FatJet")) ),
 MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
 //MetToken                            ( consumes< pat::METCollection>                               (iConfig.getParameter<edm::InputTag>("MET")) ),
 
@@ -76,11 +77,14 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   effAreaChHadronsFile              = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaChHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfChargedHadrons_90percentBased.txt") );
   effAreaNeuHadronsFile             = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaNeuHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased.txt") );
   effAreaPhotonsFile                = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaPhoFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased.txt") );
-  
+
+  jet_payloadName_                  = iConfig.getParameter<std::string>("AK4Jet_payloadName"),
+  fatjet_payloadName_               = iConfig.getParameter<std::string>("AK8Jet_payloadName"),
   
   // -- Store Flags -- //
   theStorePriVtxFlag                = iConfig.getUntrackedParameter<bool>("StorePriVtxFlag", true);
   theStoreJetFlag                   = iConfig.getUntrackedParameter<bool>("StoreJetFlag", true);
+  theStoreFatJetFlag                = iConfig.getUntrackedParameter<bool>("StoreFatJetFlag", true);
   theStoreMETFlag                   = iConfig.getUntrackedParameter<bool>("StoreMETFlag", true);
   theStoreHLTReportFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTReportFlag", true);
   
@@ -119,17 +123,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   ///////////////////////////////////////////
   // -- initialize for ntuple variables -- //
   ///////////////////////////////////////////
-  nMuon = -1; 
-  // MET_sumEt = -999;
-  // MET_pt = -999;
-  // MET_px = -999;
-  // MET_py = -999;
-  // MET_phi = -999;
-  // pfMET_sumEt = -999;
-  // pfMET_pt = -999;
-  // pfMET_px = -999;
-  // pfMET_py = -999;
-  // pfMET_phi = -999;
   
   Flag_goodVertices = false;
   Flag_globalTightHalo2016Filter = false;
@@ -147,9 +140,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Flag_noBadMuons = false;
   
   nVertices = -1;
-  Nmuons = Njets = Nbtagged = NbtaggedCloseMuon = -1;
-  Nelectrons = -1;
-  nUnCorrElectron = -1;
   PVtrackSize = -1;
   PVchi2 = -1;
   PVndof = -1;
@@ -159,20 +149,106 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   PVz = -1000;
   PVprob = -1;
   
-  nLHEParticle = -1;
-  GENnPair = -1;
-  
   // -- PF iso deposits -- // 
   sumEt = 0;
   photonEt = 0;
   chargedHadronEt = 0;
   neutralHadronEt = 0;
-  
-  // -- trigger object -- //
-  _HLT_ntrig = -1;
-  _HLT_trigName.clear();
-  _HLT_trigPS.clear();
-  
+
+  //==== MET
+  pfMET_pt=-999;
+  pfMET_phi=-999;
+  pfMET_Px=-999;
+  pfMET_Py=-999;
+  pfMET_SumEt=-999;
+  pfMET_Type1_pt=-999;
+  pfMET_Type1_phi=-999;
+  pfMET_Type1_Px=-999;
+  pfMET_Type1_Py=-999;
+  pfMET_Type1_SumEt=-999;
+  pfMET_Type1_PhiCor_pt=-999;
+  pfMET_Type1_PhiCor_phi=-999;
+  pfMET_Type1_PhiCor_Px=-999;
+  pfMET_Type1_PhiCor_Py=-999;
+  pfMET_Type1_PhiCor_SumEt=-999;
+
+  //==== Tracker Track
+  TrackerTrack_dxy.clear();
+  TrackerTrack_dxyErr.clear();
+  TrackerTrack_d0.clear();
+  TrackerTrack_d0Err.clear();
+  TrackerTrack_dsz.clear();
+  TrackerTrack_dszErr.clear();
+  TrackerTrack_dz.clear();
+  TrackerTrack_dzErr.clear();
+  TrackerTrack_dxyBS.clear();
+  TrackerTrack_dszBS.clear();
+  TrackerTrack_dzBS.clear();
+  TrackerTrack_pt.clear();
+  TrackerTrack_Px.clear();
+  TrackerTrack_Py.clear();
+  TrackerTrack_Pz.clear();
+  TrackerTrack_eta.clear();
+  TrackerTrack_phi.clear();
+  TrackerTrack_charge.clear();
+
+  //==== Trigger (object)
+  HLTObject_Type.clear();
+  HLTObject_Fired.clear();
+  HLTObject_Name.clear();
+  HLTObject_PS.clear();
+  HLTObject_pt.clear();
+  HLTObject_eta.clear();
+  HLTObject_phi.clear();
+  HLT_TriggerName.clear();
+  HLT_TriggerFired.clear();
+  HLT_TriggerPrescale.clear();
+
+  //==== LHE
+  LHELepton_Px.clear();
+  LHELepton_Py.clear();
+  LHELepton_Pz.clear();
+  LHELepton_E.clear();
+  LHELepton_ID.clear();
+  LHELepton_status.clear();
+
+  //==== GEN
+  gen_phi.clear();
+  gen_eta.clear();
+  gen_pt.clear();
+  gen_Px.clear();
+  gen_Py.clear();
+  gen_Pz.clear();
+  gen_E.clear();
+  gen_mother_PID.clear();
+  gen_mother_pt.clear();
+  gen_mother_index.clear();
+  gen_charge.clear();
+  gen_status.clear();
+  gen_PID.clear();
+  gen_isPrompt.clear();
+  gen_isPromptFinalState.clear();
+  gen_isTauDecayProduct.clear();
+  gen_isPromptTauDecayProduct.clear();
+  gen_isDirectPromptTauDecayProductFinalState.clear();
+  gen_isHardProcess.clear();
+  gen_isLastCopy.clear();
+  gen_isLastCopyBeforeFSR.clear();
+  gen_isPromptDecayed.clear();
+  gen_isDecayedLeptonHadron.clear();
+  gen_fromHardProcessBeforeFSR.clear();
+  gen_fromHardProcessDecayed.clear();
+  gen_fromHardProcessFinalState.clear();
+  gen_isMostlyLikePythia6Status3.clear();
+  gen_weight=-999;
+  genWeight_Q=-999;
+  genWeight_X1=-999;
+  genWeight_X2=-999;
+  genWeight_id1=-999;
+  genWeight_id2=-999;
+  genWeight_alphaQCD=-999;
+  genWeight_alphaQED=-999;
+
   // -- PU reweight -- //
   PUweight = -1;
   pileUpReweightIn = pileUpReweight = 1.0;
@@ -180,331 +256,323 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pileUpReweightInMuonPhys = pileUpReweightMuonPhys = 1.0;
   pileUpReweightPlusMuonPhys = pileUpReweightMinusMuonPhys = 0.0;
   
-  vtxTrkDiE1Pt.clear();
-  vtxTrkDiE2Pt.clear();
-  vtxTrkDiEProb.clear();
-  vtxTrkDiENdof.clear();
-  vtxTrkDiEChi2.clear();
-  
-  vtxTrkEMu1Pt.clear();
-  vtxTrkEMu2Pt.clear();
-  vtxTrkEMuProb.clear();
-  vtxTrkEMuNdof.clear();
-  vtxTrkEMuChi2.clear();
-  vtxTrkEMu1Pt_TuneP.clear();
-  vtxTrkEMu2Pt_TuneP.clear();
-  vtxTrkEMuProb_TuneP.clear();
-  vtxTrkEMuNdof_TuneP.clear();
-  vtxTrkEMuChi2_TuneP.clear();
-  
   PDFWeights.clear();
-  
-  for( int i = 0; i < MPSIZE; i++ ){
 
-    // -- Trigger -- //
-    _HLT_trigType[i] = -1;
-    _HLT_trigFired[i] = -1;
-    _HLT_trigPt[i] = _HLT_trigEta[i] = _HLT_trigPhi[i] = -100;
-    
-    // -- Jet -- //
-    JETbDiscriminant[i] = JETcharge[i] = JETpt[i] = JETeta[i] = JETphi[i] = -100;
-    JETflavour[i] = JETntracks[i] = -100;
-    
-    Jet_pT[i] = -100; 
-    Jet_eta[i] = -100; 
-    Jet_phi[i] = -100; 
-    Jet_Charge[i] = -100; 
-    Jet_area[i] = -100;
-    Jet_rho[i] = -100;
-    Jet_Flavor[i] = -100;
-    Jet_Flavor[i] = -100; 
-    Jet_Hadron[i] = -100;
-    Jet_bTag[i] = -100; 
-    Jet_CHfrac[i] = -100; 
-    Jet_NHfrac[i] = -100; 
-    Jet_NHEMfrac[i] = -100; 
-    Jet_CHEMfrac[i] = -100; 
-    Jet_CHmulti[i] = -100; 
-    Jet_NHmulti[i] = -100;
-    
-    // electron
-    Electron_Energy[i] = Electron_et[i] = Electron_pT[i] = Electron_eta[i] = Electron_phi[i] = -100;
-    Electron_MVAIso[i] = 0.;
-    Electron_MVANoIso[i] = 0.;
-    Electron_caloEnergy[i] = -100;
-    Electron_Px[i] = Electron_Py[i] = Electron_Pz[i] = -9999;
-    Electron_charge[i] = -100;
-    Electron_gsfpT[i] = Electron_gsfEta[i] = Electron_gsfPhi[i] = -100;
-    Electron_gsfPx[i] = Electron_gsfPy[i] = Electron_gsfPz[i] = -9999;
-    Electron_gsfCharge[i] = -100;
-    Electron_etaSC[i] = -9999;
-    Electron_phiSC[i] = -9999;
-    Electron_etaWidth[i] = -9999;
-    Electron_phiWidth[i] = -9999;
-    Electron_dEtaIn[i] = -9999;
-    Electron_dEtaInSeed[i] = -9999;
-    Electron_dPhiIn[i] = -9999;
-    Electron_sigmaIEtaIEta[i] = -9999;
-    Electron_Full5x5_SigmaIEtaIEta[i] = -9999;
-    Electron_HoverE[i] = -9999;
-    Electron_fbrem[i] = -9999;
-    Electron_eOverP[i] = -9999;
-    Electron_energyEC[i] = -9999;
-    Electron_Pnorm[i] = -9999;
-    Electron_InvEminusInvP[i] = -9999;
-    Electron_dxyVTX[i] = -9999;
-    Electron_dzVTX[i] = -9999;
-    Electron_dxy[i] = -9999;
-    Electron_sigdxy[i] = -9999.;
-    Electron_dz[i] = -9999;
-    Electrron_ip3D[i] = -9999;
-    Electrron_sigip3D[i] = -9999.;
-    Electron_dxyBS[i] = -9999;
-    Electron_dzBS[i] = -9999;
-    Electron_AEff03[i] = -9999;
-    Electron_chIso03[i] = -9999;
-    Electron_chIso04[i] = -9999;
-    Electron_nhIso03[i] = -9999;
-    Electron_nhIso04[i] = -9999;
-    Electron_phIso03[i] = -9999;
-    Electron_phIso04[i] = -9999;
-    Electron_pcIso03[i] = -9999;
-    Electron_pcIso04[i] = -9999;
-    Electron_relIsoCom03[i] = -9999;
-    Electron_relIsoCom04[i] = -9999;
-    Electron_relIsoBeta03[i] = -9999;
-    Electron_relIsoBeta04[i] = -9999;
-    Electron_relIsoRho03[i] = -9999;
-    Electron_hasConversion[i] = false;
-    Electron_mHits[i] = -9999;
-    
-    Electron_crack[i] = -1;
-    Electron_ecalDriven[i] = -1;
-    Electron_isoEMHADDepth1[i] = -999;
-    Electron_25over55[i] = -999;
-    Electron_15over55[i] = -999;
-    Electron_isoHADDepth2[i] = -999;
-    Electron_isoPtTrks[i] = -999;
-    Electron_modIsoEMHADDepth1[i] = -999;
-    Electron_modIsoPtTrks[i] = -999;
-    Electron_modIsoEMHADDepth1Orig[i] = -999;
-    Electron_modIsoPtTrksOrig[i] = -999;
-    
-    Electron_ambGsf0Pt[i] = Electron_ambGsf0Eta[i] = Electron_ambGsf0Phi[i] = Electron_ambGsf0Charge[i] = -999;
-    Electron_ambGsf1Pt[i] = Electron_ambGsf1Eta[i] = Electron_ambGsf1Phi[i] = Electron_ambGsf1Charge[i] = -999;
-    Electron_ambGsf2Pt[i] = Electron_ambGsf2Eta[i] = Electron_ambGsf2Phi[i] = Electron_ambGsf2Charge[i] = -999;
-    Electron_ambGsf3Pt[i] = Electron_ambGsf3Eta[i] = Electron_ambGsf3Phi[i] = Electron_ambGsf3Charge[i] = -999;
-    
-    Electron_r9[i] = -999;
-    Electron_EnergySC[i] = -999;
-    Electron_preEnergySC[i] = -999;
-    Electron_rawEnergySC[i] = -999;
-    Electron_etSC[i] = -999;
-    Electron_E15[i] = -999;
-    Electron_E25[i] = -999;
-    Electron_E55[i] = -999;
-    Electron_ChIso03FromPU[i] = -999;
-    Electron_RelPFIso_dBeta[i] = -999;
-    Electron_RelPFIso_Rho[i] = -999;
-    Electron_passConvVeto[i] = 0;
-    Electron_passVetoID[i] = 0;
-    Electron_passLooseID[i] = 0;
-    Electron_passMediumID[i] = 0;
-    Electron_passTightID[i] = 0;
-    Electron_passMVAID_noIso_WP80[i] = 0;
-    Electron_passMVAID_noIso_WP90[i] = 0;
-    Electron_passMVAID_iso_WP80[i] = 0;
-    Electron_passMVAID_iso_WP90[i] = 0;
-    Electron_passMVAID_WP80[i] = 0;
-    Electron_passMVAID_WP90[i] = 0;
-    Electron_passHEEPID[i] = 0;
-    
-    Electron_pTUnCorr[i] = 0;
-    Electron_etaUnCorr[i] = 0;
-    Electron_phiUnCorr[i] = 0;
-    Electron_PxUnCorr[i] = 0;
-    Electron_PyUnCorr[i] = 0;
-    Electron_PzUnCorr[i] = 0;
-    Electron_EnergyUnCorr[i] = 0;
-    Electron_EnergySCUnCorr[i] = 0;
-    Electron_etaSCUnCorr[i] = 0;
-    Electron_phiSCUnCorr[i] = 0;
-    Electron_etSCUnCorr[i] = 0;
-    
-    // -- PF Isolation -- //
-    Muon_PfChargedHadronIsoR05[i] = -1;
-    Muon_PfNeutralHadronIsoR05[i] = -1;
-    Muon_PfGammaIsoR05[i] = -1;
-    Muon_PfChargedHadronIsoR04[i] = -1;
-    Muon_PfNeutralHadronIsoR04[i] = -1;
-    Muon_PfGammaIsoR04[i] = -1;
-    Muon_PFSumPUIsoR04[i] = -1;
-    Muon_PfChargedHadronIsoR03[i] = -1;
-    Muon_PfNeutralHadronIsoR03[i] = -1;
-    Muon_PfGammaIsoR03[i] = -1;
-    Muon_PFSumPUIsoR03[i] = -1;
-    
-    // muon type
-    isPFmuon[i] = 0;
-    isGLBmuon[i] = 0;
-    isTRKmuon[i] = 0;
-    isSTAmuon[i] = 0;
-    
-    // trigger
-    Muon_nTrig[i] = Muon_triggerObjectType[i] = Muon_filterName[i] = -1;
-    
-    // Muon kinematics
-    Muon_phi[i] = Muon_eta[i] = Muon_cktpT[i] = Muon_pT[i] = -100;
-    Muon_dB[i] = -999;
-    Muon_cktPx[i] = Muon_cktPy[i] = Muon_cktPz[i] = -999;
-    Muon_cktpTError[i] = -999;
-    Muon_Px[i] = Muon_Py[i] = Muon_Pz[i] = -100;
-    Muon_trkiso[i] = Muon_hcaliso[i] = Muon_ecaliso[i] = Muon_chi2dof[i] = -100;
-    Muon_trkisoR05[i] = Muon_hcalisoR05[i] = Muon_ecalisoR05[i] = -100;
-    Muon_nChambers[i] = Muon_nMatches[i] = Muon_nMatchesRPCLayers[i] = Muon_stationMask[i] = Muon_nSegments[i] =  -1;
-    Muon_charge[i] = Muon_nhits[i] = -100;
-    Muon_trackerHits[i] = Muon_pixelHits[i] = Muon_muonHits[i] = -1;
-    Muon_trackerLayers[i] = -1;
-    Muon_trackerHitsGLB[i] = -1;
-    Muon_pixelHitsGLB[i] = -1;
-    Muon_trackerLayersGLB[i] = -1;
-    
-    Muon_qoverp[i] = Muon_theta[i] = Muon_lambda[i] = -100;
-    Muon_dxy[i] = Muon_d0[i] = Muon_dsz[i] = Muon_dz[i] = -100;
-    Muon_vx[i] = Muon_vy[i] = Muon_vz[i] = -100;
-    Muon_dxyBS[i] = Muon_dszBS[i] = Muon_dzBS[i] = -100;
-    Muon_dxyVTX[i] = Muon_dszVTX[i] = Muon_dzVTX[i] = -100;
-    Muon_dxycktVTX[i] = Muon_dszcktVTX[i] = Muon_dzcktVTX[i] = -100;
-    
-    //Various track informations
-    //MuonBestTrack
-    Muon_Best_pT[i] = -9999;
-    Muon_Best_pTError[i] = -9999;
-    Muon_Best_Px[i] = -9999;
-    Muon_Best_Py[i] = -9999;
-    Muon_Best_Pz[i] = -9999;
-    Muon_Best_eta[i] = -9999;
-    Muon_Best_phi[i] = -9999;
-    //Inner Track
-    Muon_Inner_pT[i] = -9999;
-    Muon_Inner_pTError[i] = -9999;
-    Muon_Inner_Px[i] = -9999;
-    Muon_Inner_Py[i] = -9999;
-    Muon_Inner_Pz[i] = -9999;
-    Muon_Inner_eta[i] = -9999;
-    Muon_Inner_phi[i] = -9999;
-    //Outer Track
-    Muon_Outer_pT[i] = -9999;
-    Muon_Outer_pTError[i] = -9999;
-    Muon_Outer_Px[i] = -9999;
-    Muon_Outer_Py[i] = -9999;
-    Muon_Outer_Pz[i] = -9999;
-    Muon_Outer_eta[i] = -9999;
-    Muon_Outer_phi[i] = -9999;
-    //Global Track
-    Muon_GLB_pT[i] = -9999;
-    Muon_GLB_pTError[i] = -9999;
-    Muon_GLB_Px[i] = -9999;
-    Muon_GLB_Py[i] = -9999;
-    Muon_GLB_Pz[i] = -9999;
-    Muon_GLB_eta[i] = -9999;
-    Muon_GLB_phi[i] = -9999;
-    
-    //tuneP MuonBestTrack
-    Muon_TuneP_pT[i] = -9999;
-    Muon_TuneP_pTError[i] = -9999;
-    Muon_TuneP_Px[i] = -9999;
-    Muon_TuneP_Py[i] = -9999;
-    Muon_TuneP_Pz[i] = -9999;
-    Muon_TuneP_eta[i] = -9999;
-    Muon_TuneP_phi[i] = -9999;
-    
-    // -- LHE -- //
-    LHELepton_Px[i] = 0;
-    LHELepton_Py[i] = 0;
-    LHELepton_Pz[i] = 0;
-    LHELepton_E[i] = 0;
-    LHELepton_ID[i] = 0;
-    LHELepton_status[i] = 0;
-    
-    // GEN
-    GENLepton_phi[i] = GENLepton_eta[i] = GENLepton_pT[i] = GENLepton_mother_pT[i] = -100;
-    GENLepton_mother_index[i] = -1;
-    GENLepton_mother[i] = 0;
-    GENLepton_Px[i] = GENLepton_Py[i] = GENLepton_Pz[i] = GENLepton_E[i] = -100;
-    GENLepton_charge[i] = GENLepton_status[i] = GENLepton_ID[i] = -100;
-    GENLepton_isPrompt[i] = 0;
-    GENLepton_isPromptFinalState[i] = 0;
-    GENLepton_isTauDecayProduct[i] = 0;
-    GENLepton_isPromptTauDecayProduct[i] = 0;
-    GENLepton_isDirectPromptTauDecayProductFinalState[i] = 0;
-    GENLepton_isHardProcess[i] = 0;
-    GENLepton_isLastCopy[i] = 0;
-    GENLepton_isLastCopyBeforeFSR[i] = 0;
-    GENLepton_isPromptDecayed[i] = 0;
-    GENLepton_isDecayedLeptonHadron[i] = 0;
-    GENLepton_fromHardProcessBeforeFSR[i] = 0;
-    GENLepton_fromHardProcessDecayed[i] = 0;
-    GENLepton_fromHardProcessFinalState[i] = 0;
-    GENLepton_isMostlyLikePythia6Status3[i] = 0;
-    GENEvt_weight = 0; //Weights for NLO generated events
-    GENEvt_QScale = 0;
-    GENEvt_x1 = 0;
-    GENEvt_x2 = 0;
-    GENEvt_id1 = 0;
-    GENEvt_id2 = 0;
-    GENEvt_alphaQCD = 0;
-    GENEvt_alphaQED = 0;
-    
-          
-    // -- Photon Information -- //
-    nPhotons = 0;
-    Photon_pT[i] = 0;
-    Photon_eta[i] = 0;
-    Photon_phi[i] = 0;
-    Photon_etaSC[i] = 0;
-    Photon_phiSC[i] = 0;
-    Photon_HoverE[i] = 0;
-    Photon_hasPixelSeed[i] = 0;
-    Photon_Full5x5_SigmaIEtaIEta[i] = 0;
-    Photon_ChIso[i] = 0;
-    Photon_NhIso[i] = 0;
-    Photon_PhIso[i] = 0;
-    Photon_ChIsoWithEA[i] = 0;
-    Photon_NhIsoWithEA[i] = 0;
-    Photon_PhIsoWithEA[i] = 0;
-    Photon_passMVAID_WP80[i] = 0;
-    Photon_passMVAID_WP90[i] = 0;
-    Photon_passLooseID[i] = 0;
-    Photon_passMediumID[i] = 0;
-    Photon_passTightID[i] = 0;
-    
-    nUnCorrPhoton = 0;
-    Photon_pTUnCorr[i] = 0;
-    Photon_etaUnCorr[i] = 0;
-    Photon_phiUnCorr[i] = 0;
+  //==== Electron
+  electron_MVAIso.clear();
+  electron_MVANoIso.clear();
+  electron_et.clear();
+  electron_caloEnergy.clear();
+  electron_Energy.clear();
+  electron_pt.clear();
+  electron_Px.clear();
+  electron_Py.clear();
+  electron_Pz.clear();
+  electron_eta.clear();
+  electron_phi.clear();
+  electron_charge.clear();
+  electron_gsfpt.clear();
+  electron_gsfPx.clear();
+  electron_gsfPy.clear();
+  electron_gsfPz.clear();
+  electron_gsfEta.clear();
+  electron_gsfPhi.clear();
+  electron_gsfCharge.clear();
+  electron_scEta.clear();
+  electron_scPhi.clear();
+  electron_etaWidth.clear();
+  electron_phiWidth.clear();
+  electron_dEtaIn.clear();
+  electron_dEtaInSeed.clear();
+  electron_dPhiIn.clear();
+  electron_sigmaIEtaIEta.clear();
+  electron_Full5x5_SigmaIEtaIEta.clear();
+  electron_HoverE.clear();
+  electron_fbrem.clear();
+  electron_eOverP.clear();
+  electron_energyEC.clear();
+  electron_Pnorm.clear();
+  electron_InvEminusInvP.clear();
+  electron_dxyVTX.clear();
+  electron_dzVTX.clear();
+  electron_dxy.clear();
+  electron_sigdxy.clear();
+  electron_dz.clear();
+  electron_ip3D.clear();
+  electron_sigip3D.clear();
+  electron_dxyBS.clear();
+  electron_dzBS.clear();
+  electron_AEff03.clear();
+  electron_chIso03.clear();
+  electron_nhIso03.clear();
+  electron_phIso03.clear();
+  electron_pcIso03.clear();
+  electron_puChIso03.clear();
+  electron_chIso04.clear();
+  electron_nhIso04.clear();
+  electron_phIso04.clear();
+  electron_pcIso04.clear();
+  electron_puChIso04.clear();
+  electron_relIsoCom03.clear();
+  electron_relIsoCom04.clear();
+  electron_relIsoBeta03.clear();
+  electron_relIsoBeta04.clear();
+  electron_relIsoRho03.clear();
+  electron_passConversionVeto.clear();
+  electron_isGsfCtfScPixChargeConsistent.clear();
+  electron_mHits.clear();
+  electron_crack.clear();
+  electron_ecalDriven.clear();
+  electron_isoEMHADDepth1.clear();
+  electron_25over55.clear();
+  electron_15over55.clear();
+  electron_isoHADDepth2.clear();
+  electron_isoptTrks.clear();
+  electron_modIsoEMHADDepth1.clear();
+  electron_modIsoptTrks.clear();
+  electron_modIsoEMHADDepth1Orig.clear();
+  electron_modIsoptTrksOrig.clear();
+  electron_ambGsf0pt.clear();
+  electron_ambGsf0Eta.clear();
+  electron_ambGsf0Phi.clear();
+  electron_ambGsf0Charge.clear();
+  electron_ambGsf1pt.clear();
+  electron_ambGsf1Eta.clear();
+  electron_ambGsf1Phi.clear();
+  electron_ambGsf1Charge.clear();
+  electron_ambGsf2pt.clear();
+  electron_ambGsf2Eta.clear();
+  electron_ambGsf2Phi.clear();
+  electron_ambGsf2Charge.clear();
+  electron_ambGsf3pt.clear();
+  electron_ambGsf3Eta.clear();
+  electron_ambGsf3Phi.clear();
+  electron_ambGsf3Charge.clear();
+  electron_r9.clear();
+  electron_scEnergy.clear();
+  electron_scPreEnergy.clear();
+  electron_scRawEnergy.clear();
+  electron_scEt.clear();
+  electron_E15.clear();
+  electron_E25.clear();
+  electron_E55.clear();
+  electron_RelPFIso_dBeta.clear();
+  electron_RelPFIso_Rho.clear();
+  electron_passVetoID.clear();
+  electron_passLooseID.clear();
+  electron_passMediumID.clear();
+  electron_passTightID.clear();
+  electron_passMVAID_noIso_WP80.clear();
+  electron_passMVAID_noIso_WP90.clear();
+  electron_passMVAID_iso_WP80.clear();
+  electron_passMVAID_iso_WP90.clear();
+  electron_passMVAID_WP80.clear();
+  electron_passMVAID_WP90.clear();
+  electron_passHEEPID.clear();
+  electron_ptUnCorr.clear();
+  electron_etaUnCorr.clear();
+  electron_phiUnCorr.clear();
+  electron_PxUnCorr.clear();
+  electron_PyUnCorr.clear();
+  electron_PzUnCorr.clear();
+  electron_EnergyUnCorr.clear();
+  electron_scEnergyUnCorr.clear();
+  electron_scEtaUnCorr.clear();
+  electron_scPhiUnCorr.clear();
+  electron_scEtUnCorr.clear();
+  electron_mva.clear();
+  electron_zzmva.clear();
+  electron_missinghits.clear();
+  electron_trigmatch.clear();
 
-    // -- MET -- //
-    pfMET_pT = -100;
-    pfMET_phi = -100; 
-    pfMET_Px = -100; 
-    pfMET_Py = -100; 
-    pfMET_SumEt = -100;
-    
-    pfMET_Type1_pT = -100;
-    pfMET_Type1_phi = -100; 
-    pfMET_Type1_Px = -100; 
-    pfMET_Type1_Py = -100; 
-    pfMET_Type1_SumEt = -100;
-    
-    pfMET_Type1_PhiCor_pT = -100;
-    pfMET_Type1_PhiCor_phi = -100; 
-    pfMET_Type1_PhiCor_Px = -100; 
-    pfMET_Type1_PhiCor_Py = -100; 
-    pfMET_Type1_PhiCor_SumEt = -100;
-    
-  } // -- End of "i" iteration -- //
-  
+  //==== Muon
+  muon_PfChargedHadronIsoR05.clear();
+  muon_PfNeutralHadronIsoR05.clear();
+  muon_PfGammaIsoR05.clear();
+  muon_PfChargedHadronIsoR04.clear();
+  muon_PfNeutralHadronIsoR04.clear();
+  muon_PfGammaIsoR04.clear();
+  muon_PFSumPUIsoR04.clear();
+  muon_PfChargedHadronIsoR03.clear();
+  muon_PfNeutralHadronIsoR03.clear();
+  muon_PfGammaIsoR03.clear();
+  muon_PFSumPUIsoR03.clear();
+  muon_isPF.clear();
+  muon_isGlobal.clear();
+  muon_isTracker.clear();
+  muon_isStandAlone.clear();
+  muon_filterName.clear();
+  muon_trigmatch.clear();
+  muon_dB.clear();
+  muon_phi.clear();
+  muon_eta.clear();
+  muon_pt.clear();
+  muon_cktpt.clear();
+  muon_cktPx.clear();
+  muon_cktPy.clear();
+  muon_cktPz.clear();
+  muon_cktptError.clear();
+  muon_Px.clear();
+  muon_Py.clear();
+  muon_Pz.clear();
+  muon_sumtrkpt.clear();
+  muon_trkiso.clear();
+  muon_hcaliso.clear();
+  muon_ecaliso.clear();
+  muon_trkisoR05.clear();
+  muon_hcalisoR05.clear();
+  muon_ecalisoR05.clear();
+  muon_charge.clear();
+  muon_nChambers.clear();
+  muon_matchedstations.clear();
+  muon_stationMask.clear();
+  muon_nSegments.clear();
+  muon_chi2dof.clear();
+  muon_validhits.clear();
+  muon_trackerHits.clear();
+  muon_pixelHits.clear();
+  muon_validmuonhits.clear();
+  muon_trackerLayers.clear();
+  muon_trackerHitsGLB.clear();
+  muon_trackerLayersGLB.clear();
+  muon_pixelHitsGLB.clear();
+  muon_qoverp.clear();
+  muon_theta.clear();
+  muon_lambda.clear();
+  muon_dxy.clear();
+  muon_d0.clear();
+  muon_dsz.clear();
+  muon_dz.clear();
+  muon_dxyBS.clear();
+  muon_dzBS.clear();
+  muon_dszBS.clear();
+  muon_dxyVTX.clear();
+  muon_dzVTX.clear();
+  muon_dszVTX.clear();
+  muon_dxycktVTX.clear();
+  muon_dzcktVTX.clear();
+  muon_dszcktVTX.clear();
+  muon_vx.clear();
+  muon_vy.clear();
+  muon_vz.clear();
+  muon_Best_pt.clear();
+  muon_Best_ptError.clear();
+  muon_Best_Px.clear();
+  muon_Best_Py.clear();
+  muon_Best_Pz.clear();
+  muon_Best_eta.clear();
+  muon_Best_phi.clear();
+  muon_Inner_pt.clear();
+  muon_Inner_ptError.clear();
+  muon_Inner_Px.clear();
+  muon_Inner_Py.clear();
+  muon_Inner_Pz.clear();
+  muon_Inner_eta.clear();
+  muon_Inner_phi.clear();
+  muon_Outer_pt.clear();
+  muon_Outer_ptError.clear();
+  muon_Outer_Px.clear();
+  muon_Outer_Py.clear();
+  muon_Outer_Pz.clear();
+  muon_Outer_eta.clear();
+  muon_Outer_phi.clear();
+  muon_GLB_pt.clear();
+  muon_GLB_ptError.clear();
+  muon_GLB_Px.clear();
+  muon_GLB_Py.clear();
+  muon_GLB_Pz.clear();
+  muon_GLB_eta.clear();
+  muon_GLB_phi.clear();
+  muon_TuneP_pt.clear();
+  muon_TuneP_ptError.clear();
+  muon_TuneP_Px.clear();
+  muon_TuneP_Py.clear();
+  muon_TuneP_Pz.clear();
+  muon_TuneP_eta.clear();
+  muon_TuneP_phi.clear();
+
+  //==== Jet
+  jet_pt.clear();
+  jet_eta.clear();
+  jet_phi.clear();
+  jet_charge.clear();
+  jet_area.clear();
+  jet_rho.clear();
+  jet_partonFlavour.clear();
+  jet_hadronFlavour.clear();
+  jet_bTag.clear();
+  jet_chargedHadronEnergyFraction.clear();
+  jet_neutralHadronEnergyFraction.clear();
+  jet_neutralEmEnergyFraction.clear();
+  jet_chargedEmEnergyFraction.clear();
+  jet_chargedMultiplicity.clear();
+  jet_neutralMultiplicity.clear();
+  jet_looseJetID.clear();
+  jet_tightJetID.clear();
+  jet_tightLepVetoJetID.clear();
+  jet_partonPdgId.clear();
+  jet_vtxNtracks.clear();
+  jet_m.clear();
+  jet_energy.clear();
+  jet_PileupJetId.clear();
+  jet_shiftedEnUp.clear();
+  jet_shiftedEnDown.clear();
+
+  //==== FatJet
+  fatjet_pt.clear();
+  fatjet_eta.clear();
+  fatjet_phi.clear();
+  fatjet_charge.clear();
+  fatjet_area.clear();
+  fatjet_rho.clear();
+  fatjet_partonFlavour.clear();
+  fatjet_hadronFlavour.clear();
+  fatjet_bTag.clear();
+  fatjet_looseJetID.clear();
+  fatjet_tightJetID.clear();
+  fatjet_tightLepVetoJetID.clear();
+  fatjet_partonPdgId.clear();
+  fatjet_vtxNtracks.clear();
+  fatjet_m.clear();
+  fatjet_energy.clear();
+  fatjet_puppi_tau1.clear();
+  fatjet_puppi_tau2.clear();
+  fatjet_puppi_tau3.clear();
+  fatjet_puppi_tau4.clear();
+  fatjet_softdropmass.clear();
+  fatjet_chargedHadronEnergyFraction.clear();
+  fatjet_neutralHadronEnergyFraction.clear();
+  fatjet_neutralEmEnergyFraction.clear();
+  fatjet_chargedEmEnergyFraction.clear();
+  fatjet_chargedMultiplicity.clear();
+  fatjet_neutralMultiplicity.clear();
+  fatjet_shiftedEnUp.clear();
+  fatjet_shiftedEnDown.clear();
+
+  //==== Photon
+  photon_pt.clear();
+  photon_eta.clear();
+  photon_phi.clear();
+  photon_scEta.clear();
+  photon_scPhi.clear();
+  photon_HoverE.clear();
+  photon_hasPixelSeed.clear();
+  photon_Full5x5_SigmaIEtaIEta.clear();
+  photon_ChIso.clear();
+  photon_NhIso.clear();
+  photon_PhIso.clear();
+  photon_ChIsoWithEA.clear();
+  photon_NhIsoWithEA.clear();
+  photon_PhIsoWithEA.clear();
+  photon_passMVAID_WP80.clear();
+  photon_passMVAID_WP90.clear();
+  photon_passLooseID.clear();
+  photon_passMediumID.clear();
+  photon_passTightID.clear();
+  photon_ptUnCorr.clear();
+  photon_etaUnCorr.clear();
+  photon_phiUnCorr.clear();
+
   // cout << "[SKFlatMaker::analyze] Varialbe intilization done" << endl;
   
   nEvt++;
@@ -549,42 +617,56 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     nPileUp = npv;
       
   }
-  
+
+  //==== Prepare JEC
+  edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
+  iSetup.get<JetCorrectionsRecord>().get(jet_payloadName_,JetCorParColl);
+  JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
+  if(jet_jecUnc) delete jet_jecUnc;
+  jet_jecUnc = new JetCorrectionUncertainty(JetCorPar);
+
+  edm::ESHandle<JetCorrectorParametersCollection> FatJetCorParColl;
+  iSetup.get<JetCorrectionsRecord>().get(fatjet_payloadName_,FatJetCorParColl);
+  JetCorrectorParameters const & FatJetCorPar = (*FatJetCorParColl)["Uncertainty"];
+  if(fatjet_jecUnc) delete fatjet_jecUnc;
+  fatjet_jecUnc = new JetCorrectionUncertainty(FatJetCorPar);
   
   // fills
   
   if( theStoreHLTReportFlag ) hltReport(iEvent);
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePriVtxFlag" << endl;
-  
   if( theStorePriVtxFlag ) fillPrimaryVertex(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreJetFlag" << endl;
-  
   if( theStoreJetFlag ) fillJet(iEvent);
+
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreFatJetFlag" << endl;
+  if( theStoreFatJetFlag ) fillFatJet(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreMETFlag" << endl;
-  
   if( theStoreMETFlag ) fillMET(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreLHEFlag" << endl;
-  
   //if( !isRD && theStoreLHEFlag ) fillLHEInfo(iEvent);
   if(theStoreLHEFlag ) fillLHEInfo(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreGENFlag" << endl;
-  
   //if( !isRD && theStoreGENFlag ) fillGENInfo(iEvent);
   if(theStoreGENFlag ) fillGENInfo(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePhotonFlag" << endl;
-  
   if( theStorePhotonFlag ) fillPhotons(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreMuonFlag" << endl;
-
   if( theStoreMuonFlag ) fillMuons(iEvent, iSetup);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreElectronFlag" << endl;
-
   if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
-  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTTFlag" << endl;
 
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTTFlag" << endl;
   if( theStoreTTFlag ) fillTT(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill" << endl;
-  
   DYTree->Fill();
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill finished" << endl;
 
@@ -663,402 +745,393 @@ void SKFlatMaker::beginJob()
   }
 
   if(theStoreHLTReportFlag){
-    DYTree->Branch("HLT_ntrig", &_HLT_ntrig,"HLT_ntrig/I");
-    DYTree->Branch("HLT_trigType", &_HLT_trigType,"HLT_trigType[HLT_ntrig]/I");
-    DYTree->Branch("HLT_trigFired", &_HLT_trigFired,"HLT_trigFired[HLT_ntrig]/I");
-    DYTree->Branch("HLT_trigName", &_HLT_trigName);
-    DYTree->Branch("HLT_trigPS", &_HLT_trigPS);
-    DYTree->Branch("HLT_trigPt", &_HLT_trigPt,"HLT_trigPt[HLT_ntrig]/D");
-    DYTree->Branch("HLT_trigEta", &_HLT_trigEta,"HLT_trigEta[HLT_ntrig]/D");
-    DYTree->Branch("HLT_trigPhi", &_HLT_trigPhi,"HLT_trigPhi[HLT_ntrig]/D");
+
+    DYTree->Branch("HLTObject_Type", "vector<int>", &HLTObject_Type);
+    DYTree->Branch("HLTObject_Fired", "vector<int>", &HLTObject_Fired);
+    DYTree->Branch("HLTObject_Name", "vector<string>", &HLTObject_Name);
+    DYTree->Branch("HLTObject_PS", "vector<int>", &HLTObject_PS);
+    DYTree->Branch("HLTObject_pt", "vector<double>", &HLTObject_pt);
+    DYTree->Branch("HLTObject_eta", "vector<double>", &HLTObject_eta);
+    DYTree->Branch("HLTObject_phi", "vector<double>", &HLTObject_phi);
+    DYTree->Branch("HLT_TriggerName", "vector<string>", &HLT_TriggerName);
+    DYTree->Branch("HLT_TriggerFired", "vector<bool>", &HLT_TriggerFired);
+    DYTree->Branch("HLT_TriggerPrescale", "vector<int>", &HLT_TriggerPrescale);
+
   }
 
   if(theStoreJetFlag){
-    // Jet
-    DYTree->Branch("Njets", &Njets,"Njets/I");
 
-    DYTree->Branch("Jet_pT", &Jet_pT,"Jet_pT[Njets]/D");
-    DYTree->Branch("Jet_eta", &Jet_eta,"Jet_eta[Njets]/D");
-    DYTree->Branch("Jet_phi", &Jet_phi,"Jet_phi[Njets]/D");
-    DYTree->Branch("Jet_Charge", &Jet_Charge,"Jet_Charge[Njets]/D");
-    DYTree->Branch("Jet_Area", &Jet_area,"Jet_area[Njets]/D");
-    DYTree->Branch("Jet_Rho", &Jet_rho,"Jet_rho[Njets]/D");
-    DYTree->Branch("Jet_PartonFlavor", &Jet_Flavor,"Jet_Flavor[Njets]/I");
-    DYTree->Branch("Jet_HadronFlavor", &Jet_Hadron,"Jet_Hadron[Njets]/I");
+    DYTree->Branch("jet_pt", "vector<double>", &jet_pt);
+    DYTree->Branch("jet_eta", "vector<double>", &jet_eta);
+    DYTree->Branch("jet_phi", "vector<double>", &jet_phi);
+    DYTree->Branch("jet_charge", "vector<double>", &jet_charge);
+    DYTree->Branch("jet_area", "vector<double>", &jet_area);
+    DYTree->Branch("jet_rho", "vector<double>", &jet_rho);
+    DYTree->Branch("jet_partonFlavour", "vector<int>", &jet_partonFlavour);
+    DYTree->Branch("jet_hadronFlavour", "vector<int>", &jet_hadronFlavour);
+    DYTree->Branch("jet_bTag", "vector<double>", &jet_bTag);
+    DYTree->Branch("jet_chargedHadronEnergyFraction", "vector<double>", &jet_chargedHadronEnergyFraction);
+    DYTree->Branch("jet_neutralHadronEnergyFraction", "vector<double>", &jet_neutralHadronEnergyFraction);
+    DYTree->Branch("jet_neutralEmEnergyFraction", "vector<double>", &jet_neutralEmEnergyFraction);
+    DYTree->Branch("jet_chargedEmEnergyFraction", "vector<double>", &jet_chargedEmEnergyFraction);
+    DYTree->Branch("jet_chargedMultiplicity", "vector<int>", &jet_chargedMultiplicity);
+    DYTree->Branch("jet_neutralMultiplicity", "vector<int>", &jet_neutralMultiplicity);
+    DYTree->Branch("jet_looseJetID", "vector<bool>", &jet_looseJetID);
+    DYTree->Branch("jet_tightJetID", "vector<bool>", &jet_tightJetID);
+    DYTree->Branch("jet_tightLepVetoJetID", "vector<bool>", &jet_tightLepVetoJetID);
+    DYTree->Branch("jet_partonPdgId", "vector<int>", &jet_partonPdgId);
+    DYTree->Branch("jet_vtxNtracks", "vector<int>", &jet_vtxNtracks);
+    DYTree->Branch("jet_m", "vector<double>", &jet_m);
+    DYTree->Branch("jet_energy", "vector<double>", &jet_energy);
+    DYTree->Branch("jet_PileupJetId", "vector<double>", &jet_PileupJetId);
+    DYTree->Branch("jet_shiftedEnUp", "vector<double>", &jet_shiftedEnUp);
+    DYTree->Branch("jet_shiftedEnDown", "vector<double>", &jet_shiftedEnDown);
 
-    DYTree->Branch("Jet_bTag", &Jet_bTag,"Jet_bTag[Njets]/D");
-    DYTree->Branch("Jet_CHfrac", &Jet_CHfrac,"Jet_CHfrac[Njets]/D");
-    DYTree->Branch("Jet_NHfrac", &Jet_NHfrac,"Jet_NHfrac[Njets]/D");
-    DYTree->Branch("Jet_NHEMfrac", &Jet_NHEMfrac,"Jet_NHEMfrac[Njets]/D");
-    DYTree->Branch("Jet_CHEMfrac", &Jet_CHEMfrac,"Jet_CHEMfrac[Njets]/D");
-    DYTree->Branch("Jet_CHmulti", &Jet_CHmulti,"Jet_CHmulti[Njets]/I");
-    DYTree->Branch("Jet_NHmulti", &Jet_NHmulti,"Jet_NHmulti[Njets]/I");
-
-
-    // DYTree->Branch("JETbDiscriminant", &JETbDiscriminant, "JETbDiscriminant[Njets]/D");
-    // DYTree->Branch("JETbDiscriminant_alg1", &JETbDiscriminant_alg1, "JETbDiscriminant_alg1[Njets]/D");
-    // DYTree->Branch("JETbDiscriminant_alg2", &JETbDiscriminant_alg2, "JETbDiscriminant_alg2[Njets]/D");
-    // DYTree->Branch("JETbDiscriminant_alg3", &JETbDiscriminant_alg3, "JETbDiscriminant_alg3[Njets]/D");
-    // DYTree->Branch("JETflavour", &JETflavour, "JETflavour[Njets]/I");
-    // DYTree->Branch("JETcharge", &JETcharge, "JETcharge[Njets]/D");
-    // DYTree->Branch("JETntracks", &JETntracks, "JETntracks[Njets]/I");
-    // DYTree->Branch("JETpt", &JETpt, "JETpt[Njets]/D");
-    // DYTree->Branch("JETeta", &JETeta, "JETeta[Njets]/D");
-    // DYTree->Branch("JETphi", &JETphi, "JETphi[Njets]/D");
-    // // b-tagging
-    // DYTree->Branch("Nbtagged", &Nbtagged,"Nbtagged/I");
-    // DYTree->Branch("NbtaggedCloseMuon", &NbtaggedCloseMuon,"NbtaggedCloseMuon/I");
-    // DYTree->Branch("Nbtagged_alg1", &Nbtagged_alg1,"Nbtagged_alg1/I");
-    // DYTree->Branch("NbtaggedCloseMuon_alg1", &NbtaggedCloseMuon_alg1,"NbtaggedCloseMuon_alg1/I");
-    // DYTree->Branch("Nbtagged_alg2", &Nbtagged_alg2,"Nbtagged_alg2/I");
-    // DYTree->Branch("NbtaggedCloseMuon_alg2", &NbtaggedCloseMuon_alg2,"NbtaggedCloslg3", &NbtaggedCloseMuon_alg3,"NbtaggedCloseMuon_alg3/I");
   }
   
+  if(theStoreFatJetFlag){
+    DYTree->Branch("fatjet_pt", "vector<double>", &fatjet_pt);
+    DYTree->Branch("fatjet_eta", "vector<double>", &fatjet_eta);
+    DYTree->Branch("fatjet_phi", "vector<double>", &fatjet_phi);
+    DYTree->Branch("fatjet_charge", "vector<double>", &fatjet_charge);
+    DYTree->Branch("fatjet_area", "vector<double>", &fatjet_area);
+    DYTree->Branch("fatjet_rho", "vector<double>", &fatjet_rho);
+    DYTree->Branch("fatjet_partonFlavour", "vector<int>", &fatjet_partonFlavour);
+    DYTree->Branch("fatjet_hadronFlavour", "vector<int>", &fatjet_hadronFlavour);
+    DYTree->Branch("fatjet_bTag", "vector<double>", &fatjet_bTag);
+    DYTree->Branch("fatjet_looseJetID", "vector<bool>", &fatjet_looseJetID);
+    DYTree->Branch("fatjet_tightJetID", "vector<bool>", &fatjet_tightJetID);
+    DYTree->Branch("fatjet_tightLepVetoJetID", "vector<bool>", &fatjet_tightLepVetoJetID);
+    DYTree->Branch("fatjet_partonPdgId", "vector<int>", &fatjet_partonPdgId);
+    DYTree->Branch("fatjet_vtxNtracks", "vector<int>", &fatjet_vtxNtracks);
+    DYTree->Branch("fatjet_m", "vector<double>", &fatjet_m);
+    DYTree->Branch("fatjet_energy", "vector<double>", &fatjet_energy);
+    DYTree->Branch("fatjet_puppi_tau1", "vector<double>", &fatjet_puppi_tau1);
+    DYTree->Branch("fatjet_puppi_tau2", "vector<double>", &fatjet_puppi_tau2);
+    DYTree->Branch("fatjet_puppi_tau3", "vector<double>", &fatjet_puppi_tau3);
+    DYTree->Branch("fatjet_puppi_tau4", "vector<double>", &fatjet_puppi_tau4);
+    DYTree->Branch("fatjet_softdropmass", "vector<double>", &fatjet_softdropmass);
+    DYTree->Branch("fatjet_chargedHadronEnergyFraction", "vector<double>", &fatjet_chargedHadronEnergyFraction);
+    DYTree->Branch("fatjet_neutralHadronEnergyFraction", "vector<double>", &fatjet_neutralHadronEnergyFraction);
+    DYTree->Branch("fatjet_neutralEmEnergyFraction", "vector<double>", &fatjet_neutralEmEnergyFraction);
+    DYTree->Branch("fatjet_chargedEmEnergyFraction", "vector<double>", &fatjet_chargedEmEnergyFraction);
+    DYTree->Branch("fatjet_chargedMultiplicity", "vector<int>", &fatjet_chargedMultiplicity);
+    DYTree->Branch("fatjet_neutralMultiplicity", "vector<int>", &fatjet_neutralMultiplicity);
+    DYTree->Branch("fatjet_shiftedEnUp", "vector<double>", &fatjet_shiftedEnUp);
+    DYTree->Branch("fatjet_shiftedEnDown", "vector<double>", &fatjet_shiftedEnDown);
+  }
+
   // Electron
   if( theStoreElectronFlag ){
-    DYTree->Branch("Nelectrons", &Nelectrons,"Nelectrons/I");
-    DYTree->Branch("Electron_MVAIso", &Electron_MVAIso, "Electron_MVAIso[Nelectrons]/D");
-    DYTree->Branch("Electron_MVANoIso", &Electron_MVANoIso, "Electron_MVANoIso[Nelectrons]/D");
-    DYTree->Branch("Electron_Energy", &Electron_Energy, "Electron_Energy[Nelectrons]/D");
-    // DYTree->Branch("Electron_et", &Electron_et, "Electron_et[Nelectrons]/D");
-    // DYTree->Branch("Electron_caloEnergy", &Electron_caloEnergy, "Electron_caloEnergy[Nelectrons]/D");
-    DYTree->Branch("Electron_pT", &Electron_pT, "Electron_pT[Nelectrons]/D");
-    DYTree->Branch("Electron_Px", &Electron_Px, "Electron_Px[Nelectrons]/D");
-    DYTree->Branch("Electron_Py", &Electron_Py, "Electron_Py[Nelectrons]/D");
-    DYTree->Branch("Electron_Pz", &Electron_Pz, "Electron_Pz[Nelectrons]/D");
-    DYTree->Branch("Electron_eta", &Electron_eta, "Electron_eta[Nelectrons]/D");
-    DYTree->Branch("Electron_phi", &Electron_phi, "Electron_phi[Nelectrons]/D");
-    DYTree->Branch("Electron_charge", &Electron_charge, "Electron_charge[Nelectrons]/I");
-    DYTree->Branch("Electron_gsfpT", &Electron_gsfpT, "Electron_gsfpT[Nelectrons]/D");
-    DYTree->Branch("Electron_gsfPx", &Electron_gsfPx, "Electron_gsfPx[Nelectrons]/D");
-    DYTree->Branch("Electron_gsfPy", &Electron_gsfPy, "Electron_gsfPy[Nelectrons]/D");
-    DYTree->Branch("Electron_gsfPz", &Electron_gsfPz, "Electron_gsfPz[Nelectrons]/D");
-    DYTree->Branch("Electron_gsfEta", &Electron_gsfEta, "Electron_gsfEta[Nelectrons]/D");
-    DYTree->Branch("Electron_gsfPhi", &Electron_gsfPhi, "Electron_gsfPhi[Nelectrons]/D");
-    DYTree->Branch("Electron_gsfCharge", &Electron_gsfCharge, "Electron_gsfCharge[Nelectrons]/I");
-    DYTree->Branch("Electron_etaSC", &Electron_etaSC, "Electron_etaSC[Nelectrons]/D");
-    DYTree->Branch("Electron_phiSC", &Electron_phiSC, "Electron_phiSC[Nelectrons]/D");
-    DYTree->Branch("Electron_etaWidth", &Electron_etaWidth, "Electron_etaWidth[Nelectrons]/D");
-    DYTree->Branch("Electron_phiWidth", &Electron_phiWidth, "Electron_phiWidth[Nelectrons]/D");
-    DYTree->Branch("Electron_dEtaIn", &Electron_dEtaIn, "Electron_dEtaIn[Nelectrons]/D");
-    DYTree->Branch("Electron_dEtaInSeed", &Electron_dEtaInSeed, "Electron_dEtaInSeed[Nelectrons]/D");
-    DYTree->Branch("Electron_dPhiIn", &Electron_dPhiIn, "Electron_dPhiIn[Nelectrons]/D");
-    DYTree->Branch("Electron_sigmaIEtaIEta", &Electron_sigmaIEtaIEta, "Electron_sigmaIEtaIEta[Nelectrons]/D");
-    DYTree->Branch("Electron_Full5x5_SigmaIEtaIEta", &Electron_Full5x5_SigmaIEtaIEta, "Electron_Full5x5_SigmaIEtaIEta[Nelectrons]/D");
-    DYTree->Branch("Electron_HoverE", &Electron_HoverE, "Electron_HoverE[Nelectrons]/D");
-    DYTree->Branch("Electron_fbrem", &Electron_fbrem, "Electron_fbrem[Nelectrons]/D");
-    DYTree->Branch("Electron_eOverP", &Electron_eOverP, "Electron_eOverP[Nelectrons]/D");
-    // DYTree->Branch("Electron_energyEC", &Electron_energyEC, "Electron_energyEC[Nelectrons]/D");
-    // DYTree->Branch("Electron_Pnorm", &Electron_Pnorm, "Electron_Pnorm[Nelectrons]/D");
-    DYTree->Branch("Electron_InvEminusInvP", &Electron_InvEminusInvP, "Electron_InvEminusInvP[Nelectrons]/D");
-    DYTree->Branch("Electron_dxyVTX", &Electron_dxyVTX, "Electron_dxyVTX[Nelectrons]/D");
-    DYTree->Branch("Electron_dzVTX", &Electron_dzVTX, "Electron_dzVTX[Nelectrons]/D");
-    DYTree->Branch("Electron_dxy", &Electron_dxy, "Electron_dxy[Nelectrons]/D");
-    DYTree->Branch("Electron_sigdxy", &Electron_sigdxy, "Electron_sigdxy[Nelectrons]/D");
-    DYTree->Branch("Electron_dz", &Electron_dz, "Electron_dz[Nelectrons]/D");
-    DYTree->Branch("Electrron_IP3D", &Electrron_ip3D, "Electrron_ip3D[Nelectrons]/D");
-    DYTree->Branch("Electrron_sigIP3D", &Electrron_sigip3D, "Electrron_sigip3D[Nelectrons]/D");
-    DYTree->Branch("Electron_dxyBS", &Electron_dxyBS, "Electron_dxyBS[Nelectrons]/D");
-    DYTree->Branch("Electron_dzBS", &Electron_dzBS, "Electron_dzBS[Nelectrons]/D");
-    // DYTree->Branch("Electron_AEff03", &Electron_AEff03, "Electron_AEff03[Nelectrons]/D");
-    DYTree->Branch("Electron_chIso03", &Electron_chIso03, "Electron_chIso03[Nelectrons]/D");
-    // DYTree->Branch("Electron_chIso04", &Electron_chIso04, "Electron_chIso04[Nelectrons]/D");
-    DYTree->Branch("Electron_nhIso03", &Electron_nhIso03, "Electron_nhIso03[Nelectrons]/D");
-    // DYTree->Branch("Electron_nhIso04", &Electron_nhIso04, "Electron_nhIso04[Nelectrons]/D");
-    DYTree->Branch("Electron_phIso03", &Electron_phIso03, "Electron_phIso03[Nelectrons]/D");
-    // DYTree->Branch("Electron_phIso04", &Electron_phIso04, "Electron_phIso04[Nelectrons]/D");
-    // DYTree->Branch("Electron_pcIso03", &Electron_pcIso03, "Electron_pcIso03[Nelectrons]/D");
-    // DYTree->Branch("Electron_pcIso04", &Electron_pcIso04, "Electron_pcIso04[Nelectrons]/D");
-    // DYTree->Branch("Electron_relIsoCom03", &Electron_relIsoCom03, "Electron_relIsoCom03[Nelectrons]/D");
-    // DYTree->Branch("Electron_relIsoCom04", &Electron_relIsoCom04, "Electron_relIsoCom04[Nelectrons]/D");
-    // DYTree->Branch("Electron_relIsoBeta03", &Electron_relIsoBeta03, "Electron_relIsoBeta03[Nelectrons]/D");
-    // DYTree->Branch("Electron_relIsoBeta04", &Electron_relIsoBeta04, "Electron_relIsoBeta04[Nelectrons]/D");
-    // DYTree->Branch("Electron_relIsoRho03", &Electron_relIsoRho03, "Electron_relIsoRho03[Nelectrons]/D");
-    DYTree->Branch("Electron_hasConversion", &Electron_hasConversion, "Electron_hasConversion[Nelectrons]/O");
-    DYTree->Branch("Electron_mHits", &Electron_mHits, "Electron_mHits[Nelectrons]/I");
-
-    DYTree->Branch("Electron_EnergySC", &Electron_EnergySC, "Electron_EnergySC[Nelectrons]/D");
-    DYTree->Branch("Electron_preEnergySC", &Electron_preEnergySC, "Electron_preEnergySC[Nelectrons]/D");
-    DYTree->Branch("Electron_rawEnergySC", &Electron_rawEnergySC, "Electron_rawEnergySC[Nelectrons]/D");
-    DYTree->Branch("Electron_etSC", &Electron_etSC, "Electron_etSC[Nelectrons]/D");
-    DYTree->Branch("Electron_E15", &Electron_E15, "Electron_E15[Nelectrons]/D");
-    DYTree->Branch("Electron_E25", &Electron_E25, "Electron_E25[Nelectrons]/D");
-    DYTree->Branch("Electron_E55", &Electron_E55, "Electron_E55[Nelectrons]/D");
-    DYTree->Branch("Electron_ChIso03FromPU", &Electron_ChIso03FromPU, "Electron_ChIso03FromPU[Nelectrons]/D");
-    DYTree->Branch("Electron_RelPFIso_dBeta", &Electron_RelPFIso_dBeta, "Electron_RelPFIso_dBeta[Nelectrons]/D");
-    DYTree->Branch("Electron_RelPFIso_Rho", &Electron_RelPFIso_Rho, "Electron_RelPFIso_Rho[Nelectrons]/D");
-    DYTree->Branch("Electron_passConvVeto", &Electron_passConvVeto, "Electron_passConvVeto[Nelectrons]/O"); // O (letter; not zero): Boolean 
-    DYTree->Branch("Electron_passVetoID", &Electron_passVetoID, "Electron_passVetoID[Nelectrons]/O");
-    DYTree->Branch("Electron_passLooseID", &Electron_passLooseID, "Electron_passLooseID[Nelectrons]/O");
-    DYTree->Branch("Electron_passMediumID", &Electron_passMediumID, "Electron_passMediumID[Nelectrons]/O");
-    DYTree->Branch("Electron_passTightID", &Electron_passTightID, "Electron_passTightID[Nelectrons]/O");
-    DYTree->Branch("Electron_passMVAID_noIso_WP80", &Electron_passMVAID_noIso_WP80, "Electron_passMVAID_noIso_WP80[Nelectrons]/O");
-    DYTree->Branch("Electron_passMVAID_noIso_WP90", &Electron_passMVAID_noIso_WP90, "Electron_passMVAID_noIso_WP90[Nelectrons]/O");
-    DYTree->Branch("Electron_passMVAID_iso_WP80", &Electron_passMVAID_iso_WP80, "Electron_passMVAID_iso_WP80[Nelectrons]/O");
-    DYTree->Branch("Electron_passMVAID_iso_WP90", &Electron_passMVAID_iso_WP90, "Electron_passMVAID_iso_WP90[Nelectrons]/O");
-    DYTree->Branch("Electron_passMVAID_WP80", &Electron_passMVAID_WP80, "Electron_passMVAID_WP80[Nelectrons]/O");
-    DYTree->Branch("Electron_passMVAID_WP90", &Electron_passMVAID_WP90, "Electron_passMVAID_WP90[Nelectrons]/O");
-    DYTree->Branch("Electron_passHEEPID", &Electron_passHEEPID, "Electron_passHEEPID[Nelectrons]/O");
-    DYTree->Branch("Electron_r9", &Electron_r9, "Electron_r9[Nelectrons]/D");
-
-    // DYTree->Branch("Electron_crack", &Electron_crack, "Electron_crack[Nelectrons]/I");
-    DYTree->Branch("Electron_ecalDriven", &Electron_ecalDriven, "Electron_ecalDriven[Nelectrons]/I");
-    // DYTree->Branch("Electron_isoEMHADDepth1", &Electron_isoEMHADDepth1, "Electron_isoEMHADDepth1[Nelectrons]/D");
-    // DYTree->Branch("Electron_25over55", &Electron_25over55, "Electron_25over55[Nelectrons]/D");
-    // DYTree->Branch("Electron_15over55", &Electron_15over55, "Electron_15over55[Nelectrons]/D");
-    // DYTree->Branch("Electron_isoHADDepth2", &Electron_isoHADDepth2, "Electron_isoHADDepth2[Nelectrons]/D");
-    // DYTree->Branch("Electron_isoPtTrks", &Electron_isoPtTrks, "Electron_isoPtTrks[Nelectrons]/D");
-    // DYTree->Branch("Electron_modIsoEMHADDepth1", &Electron_modIsoEMHADDepth1, "Electron_modIsoEMHADDepth1[Nelectrons]/D");
-    // DYTree->Branch("Electron_modIsoPtTrks", &Electron_modIsoPtTrks, "Electron_modIsoPtTrks[Nelectrons]/D");
-    // DYTree->Branch("Electron_modIsoEMHADDepth1Orig", &Electron_modIsoEMHADDepth1Orig, "Electron_modIsoEMHADDepth1Orig[Nelectrons]/D");
-    // DYTree->Branch("Electron_modIsoPtTrksOrig", &Electron_modIsoPtTrksOrig, "Electron_modIsoPtTrksOrig[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf0Pt", &Electron_ambGsf0Pt, "Electron_ambGsf0Pt[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf0Eta", &Electron_ambGsf0Eta, "Electron_ambGsf0Eta[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf0Phi", &Electron_ambGsf0Phi, "Electron_ambGsf0Phi[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf0Charge", &Electron_ambGsf0Charge, "Electron_ambGsf0Charge[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf1Pt", &Electron_ambGsf1Pt, "Electron_ambGsf1Pt[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf1Eta", &Electron_ambGsf1Eta, "Electron_ambGsf1Eta[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf1Phi", &Electron_ambGsf1Phi, "Electron_ambGsf1Phi[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf1Charge", &Electron_ambGsf1Charge, "Electron_ambGsf1Charge[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf2Pt", &Electron_ambGsf2Pt, "Electron_ambGsf2Pt[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf2Eta", &Electron_ambGsf2Eta, "Electron_ambGsf2Eta[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf2Phi", &Electron_ambGsf2Phi, "Electron_ambGsf2Phi[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf2Charge", &Electron_ambGsf2Charge, "Electron_ambGsf2Charge[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf3Pt", &Electron_ambGsf3Pt, "Electron_ambGsf3Pt[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf3Eta", &Electron_ambGsf3Eta, "Electron_ambGsf3Eta[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf3Phi", &Electron_ambGsf3Phi, "Electron_ambGsf3Phi[Nelectrons]/D");
-    DYTree->Branch("Electron_ambGsf3Charge", &Electron_ambGsf3Charge, "Electron_ambGsf3Charge[Nelectrons]/D");
-    DYTree->Branch("vtxTrkDiE1Pt", &vtxTrkDiE1Pt);
-    DYTree->Branch("vtxTrkDiE2Pt", &vtxTrkDiE2Pt);
-    DYTree->Branch("vtxTrkDiEChi2", &vtxTrkDiEChi2);
-    DYTree->Branch("vtxTrkDiEProb", &vtxTrkDiEProb);
-    DYTree->Branch("vtxTrkDiENdof", &vtxTrkDiENdof);
-    
-    // -- un-corrected electron variables -- //
-    DYTree->Branch("nUnCorrElectron", &nUnCorrElectron, "nUnCorrElectron/I");
-    DYTree->Branch("Electron_pTUnCorr", &Electron_pTUnCorr, "Electron_pTUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_etaUnCorr", &Electron_etaUnCorr, "Electron_etaUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_phiUnCorr", &Electron_phiUnCorr, "Electron_phiUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_PxUnCorr", &Electron_PxUnCorr, "Electron_PxUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_PyUnCorr", &Electron_PyUnCorr, "Electron_PyUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_PzUnCorr", &Electron_PzUnCorr, "Electron_PzUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_EnergyUnCorr", &Electron_EnergyUnCorr, "Electron_EnergyUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_EnergySCUnCorr", &Electron_EnergySCUnCorr, "Electron_EnergySCUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_etaSCUnCorr", &Electron_etaSCUnCorr, "Electron_etaSCUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_phiSCUnCorr", &Electron_phiSCUnCorr, "Electron_phiSCUnCorr[nUnCorrElectron]/D");
-    DYTree->Branch("Electron_etSCUnCorr", &Electron_etSCUnCorr, "Electron_etSCUnCorr[nUnCorrElectron]/D");
-
-    // -- emu vertex -- //
-    DYTree->Branch("vtxTrkEMu1Pt", &vtxTrkEMu1Pt);
-    DYTree->Branch("vtxTrkEMu2Pt", &vtxTrkEMu2Pt);
-    DYTree->Branch("vtxTrkEMuChi2", &vtxTrkEMuChi2);
-    DYTree->Branch("vtxTrkEMuProb", &vtxTrkEMuProb);
-    DYTree->Branch("vtxTrkEMuNdof", &vtxTrkEMuNdof);
-    DYTree->Branch("vtxTrkEMu1Pt_TuneP", &vtxTrkEMu1Pt_TuneP);
-    DYTree->Branch("vtxTrkEMu2Pt_TuneP", &vtxTrkEMu2Pt_TuneP);
-    DYTree->Branch("vtxTrkEMuChi2_TuneP", &vtxTrkEMuChi2_TuneP);
-    DYTree->Branch("vtxTrkEMuProb_TuneP", &vtxTrkEMuProb_TuneP);
-    DYTree->Branch("vtxTrkEMuNdof_TuneP", &vtxTrkEMuNdof_TuneP);
+    DYTree->Branch("electron_MVAIso", "vector<double>", &electron_MVAIso);
+    DYTree->Branch("electron_MVANoIso", "vector<double>", &electron_MVANoIso);
+    DYTree->Branch("electron_et", "vector<double>", &electron_et);
+    DYTree->Branch("electron_caloEnergy", "vector<double>", &electron_caloEnergy);
+    DYTree->Branch("electron_Energy", "vector<double>", &electron_Energy);
+    DYTree->Branch("electron_pt", "vector<double>", &electron_pt);
+    DYTree->Branch("electron_Px", "vector<double>", &electron_Px);
+    DYTree->Branch("electron_Py", "vector<double>", &electron_Py);
+    DYTree->Branch("electron_Pz", "vector<double>", &electron_Pz);
+    DYTree->Branch("electron_eta", "vector<double>", &electron_eta);
+    DYTree->Branch("electron_phi", "vector<double>", &electron_phi);
+    DYTree->Branch("electron_charge", "vector<int>", &electron_charge);
+    DYTree->Branch("electron_gsfpt", "vector<double>", &electron_gsfpt);
+    DYTree->Branch("electron_gsfPx", "vector<double>", &electron_gsfPx);
+    DYTree->Branch("electron_gsfPy", "vector<double>", &electron_gsfPy);
+    DYTree->Branch("electron_gsfPz", "vector<double>", &electron_gsfPz);
+    DYTree->Branch("electron_gsfEta", "vector<double>", &electron_gsfEta);
+    DYTree->Branch("electron_gsfPhi", "vector<double>", &electron_gsfPhi);
+    DYTree->Branch("electron_gsfCharge", "vector<int>", &electron_gsfCharge);
+    DYTree->Branch("electron_scEta", "vector<double>", &electron_scEta);
+    DYTree->Branch("electron_scPhi", "vector<double>", &electron_scPhi);
+    DYTree->Branch("electron_etaWidth", "vector<double>", &electron_etaWidth);
+    DYTree->Branch("electron_phiWidth", "vector<double>", &electron_phiWidth);
+    DYTree->Branch("electron_dEtaIn", "vector<double>", &electron_dEtaIn);
+    DYTree->Branch("electron_dEtaInSeed", "vector<double>", &electron_dEtaInSeed);
+    DYTree->Branch("electron_dPhiIn", "vector<double>", &electron_dPhiIn);
+    DYTree->Branch("electron_sigmaIEtaIEta", "vector<double>", &electron_sigmaIEtaIEta);
+    DYTree->Branch("electron_Full5x5_SigmaIEtaIEta", "vector<double>", &electron_Full5x5_SigmaIEtaIEta);
+    DYTree->Branch("electron_HoverE", "vector<double>", &electron_HoverE);
+    DYTree->Branch("electron_fbrem", "vector<double>", &electron_fbrem);
+    DYTree->Branch("electron_eOverP", "vector<double>", &electron_eOverP);
+    DYTree->Branch("electron_energyEC", "vector<double>", &electron_energyEC);
+    DYTree->Branch("electron_Pnorm", "vector<double>", &electron_Pnorm);
+    DYTree->Branch("electron_InvEminusInvP", "vector<double>", &electron_InvEminusInvP);
+    DYTree->Branch("electron_dxyVTX", "vector<double>", &electron_dxyVTX);
+    DYTree->Branch("electron_dzVTX", "vector<double>", &electron_dzVTX);
+    DYTree->Branch("electron_dxy", "vector<double>", &electron_dxy);
+    DYTree->Branch("electron_sigdxy", "vector<double>", &electron_sigdxy);
+    DYTree->Branch("electron_dz", "vector<double>", &electron_dz);
+    DYTree->Branch("electron_ip3D", "vector<double>", &electron_ip3D);
+    DYTree->Branch("electron_sigip3D", "vector<double>", &electron_sigip3D);
+    DYTree->Branch("electron_dxyBS", "vector<double>", &electron_dxyBS);
+    DYTree->Branch("electron_dzBS", "vector<double>", &electron_dzBS);
+    DYTree->Branch("electron_AEff03", "vector<double>", &electron_AEff03);
+    DYTree->Branch("electron_chIso03", "vector<double>", &electron_chIso03);
+    DYTree->Branch("electron_nhIso03", "vector<double>", &electron_nhIso03);
+    DYTree->Branch("electron_phIso03", "vector<double>", &electron_phIso03);
+    DYTree->Branch("electron_pcIso03", "vector<double>", &electron_pcIso03);
+    DYTree->Branch("electron_puChIso03", "vector<double>", &electron_puChIso03);
+    DYTree->Branch("electron_chIso04", "vector<double>", &electron_chIso04);
+    DYTree->Branch("electron_nhIso04", "vector<double>", &electron_nhIso04);
+    DYTree->Branch("electron_phIso04", "vector<double>", &electron_phIso04);
+    DYTree->Branch("electron_pcIso04", "vector<double>", &electron_pcIso04);
+    DYTree->Branch("electron_puChIso04", "vector<double>", &electron_puChIso04);
+    DYTree->Branch("electron_relIsoCom03", "vector<double>", &electron_relIsoCom03);
+    DYTree->Branch("electron_relIsoCom04", "vector<double>", &electron_relIsoCom04);
+    DYTree->Branch("electron_relIsoBeta03", "vector<double>", &electron_relIsoBeta03);
+    DYTree->Branch("electron_relIsoBeta04", "vector<double>", &electron_relIsoBeta04);
+    DYTree->Branch("electron_relIsoRho03", "vector<double>", &electron_relIsoRho03);
+    DYTree->Branch("electron_passConversionVeto", "vector<bool>", &electron_passConversionVeto);
+    DYTree->Branch("electron_isGsfCtfScPixChargeConsistent", "vector<bool>", &electron_isGsfCtfScPixChargeConsistent);
+    DYTree->Branch("electron_mHits", "vector<int>", &electron_mHits);
+    DYTree->Branch("electron_crack", "vector<int>", &electron_crack);
+    DYTree->Branch("electron_ecalDriven", "vector<int>", &electron_ecalDriven);
+    DYTree->Branch("electron_isoEMHADDepth1", "vector<double>", &electron_isoEMHADDepth1);
+    DYTree->Branch("electron_25over55", "vector<double>", &electron_25over55);
+    DYTree->Branch("electron_15over55", "vector<double>", &electron_15over55);
+    DYTree->Branch("electron_isoHADDepth2", "vector<double>", &electron_isoHADDepth2);
+    DYTree->Branch("electron_isoptTrks", "vector<double>", &electron_isoptTrks);
+    DYTree->Branch("electron_modIsoEMHADDepth1", "vector<double>", &electron_modIsoEMHADDepth1);
+    DYTree->Branch("electron_modIsoptTrks", "vector<double>", &electron_modIsoptTrks);
+    DYTree->Branch("electron_modIsoEMHADDepth1Orig", "vector<double>", &electron_modIsoEMHADDepth1Orig);
+    DYTree->Branch("electron_modIsoptTrksOrig", "vector<double>", &electron_modIsoptTrksOrig);
+    DYTree->Branch("electron_ambGsf0pt", "vector<double>", &electron_ambGsf0pt);
+    DYTree->Branch("electron_ambGsf0Eta", "vector<double>", &electron_ambGsf0Eta);
+    DYTree->Branch("electron_ambGsf0Phi", "vector<double>", &electron_ambGsf0Phi);
+    DYTree->Branch("electron_ambGsf0Charge", "vector<double>", &electron_ambGsf0Charge);
+    DYTree->Branch("electron_ambGsf1pt", "vector<double>", &electron_ambGsf1pt);
+    DYTree->Branch("electron_ambGsf1Eta", "vector<double>", &electron_ambGsf1Eta);
+    DYTree->Branch("electron_ambGsf1Phi", "vector<double>", &electron_ambGsf1Phi);
+    DYTree->Branch("electron_ambGsf1Charge", "vector<double>", &electron_ambGsf1Charge);
+    DYTree->Branch("electron_ambGsf2pt", "vector<double>", &electron_ambGsf2pt);
+    DYTree->Branch("electron_ambGsf2Eta", "vector<double>", &electron_ambGsf2Eta);
+    DYTree->Branch("electron_ambGsf2Phi", "vector<double>", &electron_ambGsf2Phi);
+    DYTree->Branch("electron_ambGsf2Charge", "vector<double>", &electron_ambGsf2Charge);
+    DYTree->Branch("electron_ambGsf3pt", "vector<double>", &electron_ambGsf3pt);
+    DYTree->Branch("electron_ambGsf3Eta", "vector<double>", &electron_ambGsf3Eta);
+    DYTree->Branch("electron_ambGsf3Phi", "vector<double>", &electron_ambGsf3Phi);
+    DYTree->Branch("electron_ambGsf3Charge", "vector<double>", &electron_ambGsf3Charge);
+    DYTree->Branch("electron_r9", "vector<double>", &electron_r9);
+    DYTree->Branch("electron_scEnergy", "vector<double>", &electron_scEnergy);
+    DYTree->Branch("electron_scPreEnergy", "vector<double>", &electron_scPreEnergy);
+    DYTree->Branch("electron_scRawEnergy", "vector<double>", &electron_scRawEnergy);
+    DYTree->Branch("electron_scEt", "vector<double>", &electron_scEt);
+    DYTree->Branch("electron_E15", "vector<double>", &electron_E15);
+    DYTree->Branch("electron_E25", "vector<double>", &electron_E25);
+    DYTree->Branch("electron_E55", "vector<double>", &electron_E55);
+    DYTree->Branch("electron_RelPFIso_dBeta", "vector<double>", &electron_RelPFIso_dBeta);
+    DYTree->Branch("electron_RelPFIso_Rho", "vector<double>", &electron_RelPFIso_Rho);
+    DYTree->Branch("electron_passVetoID", "vector<bool>", &electron_passVetoID);
+    DYTree->Branch("electron_passLooseID", "vector<bool>", &electron_passLooseID);
+    DYTree->Branch("electron_passMediumID", "vector<bool>", &electron_passMediumID);
+    DYTree->Branch("electron_passTightID", "vector<bool>", &electron_passTightID);
+    DYTree->Branch("electron_passMVAID_noIso_WP80", "vector<bool>", &electron_passMVAID_noIso_WP80);
+    DYTree->Branch("electron_passMVAID_noIso_WP90", "vector<bool>", &electron_passMVAID_noIso_WP90);
+    DYTree->Branch("electron_passMVAID_iso_WP80", "vector<bool>", &electron_passMVAID_iso_WP80);
+    DYTree->Branch("electron_passMVAID_iso_WP90", "vector<bool>", &electron_passMVAID_iso_WP90);
+    DYTree->Branch("electron_passMVAID_WP80", "vector<bool>", &electron_passMVAID_WP80);
+    DYTree->Branch("electron_passMVAID_WP90", "vector<bool>", &electron_passMVAID_WP90);
+    DYTree->Branch("electron_passHEEPID", "vector<bool>", &electron_passHEEPID);
+    DYTree->Branch("electron_ptUnCorr", "vector<double>", &electron_ptUnCorr);
+    DYTree->Branch("electron_etaUnCorr", "vector<double>", &electron_etaUnCorr);
+    DYTree->Branch("electron_phiUnCorr", "vector<double>", &electron_phiUnCorr);
+    DYTree->Branch("electron_PxUnCorr", "vector<double>", &electron_PxUnCorr);
+    DYTree->Branch("electron_PyUnCorr", "vector<double>", &electron_PyUnCorr);
+    DYTree->Branch("electron_PzUnCorr", "vector<double>", &electron_PzUnCorr);
+    DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
+    DYTree->Branch("electron_scEnergyUnCorr", "vector<double>", &electron_scEnergyUnCorr);
+    DYTree->Branch("electron_scEtaUnCorr", "vector<double>", &electron_scEtaUnCorr);
+    DYTree->Branch("electron_scPhiUnCorr", "vector<double>", &electron_scPhiUnCorr);
+    DYTree->Branch("electron_scEtUnCorr", "vector<double>", &electron_scEtUnCorr);
+    DYTree->Branch("electron_mva", "vector<double>", &electron_mva);
+    DYTree->Branch("electron_zzmva", "vector<double>", &electron_zzmva);
+    DYTree->Branch("electron_missinghits", "vector<int>", &electron_missinghits);
+    DYTree->Branch("electron_trigmatch", "vector<string>", &electron_trigmatch);
   }
   
   // -- muon variables -- //
   if( theStoreMuonFlag ){
-    DYTree->Branch("nMuon",&nMuon,"nMuon/I");
-    DYTree->Branch("Nmuons",&Nmuons,"Nmuons/I");
-    DYTree->Branch("isPFmuon", &isPFmuon, "isPFmuon[nMuon]/I");
-    DYTree->Branch("isGLBmuon", &isGLBmuon, "isGLBmuon[nMuon]/I");
-    DYTree->Branch("isTRKmuon", &isTRKmuon, "isTRKmuon[nMuon]/I");
-    DYTree->Branch("isSTAmuon", &isSTAmuon, "isSTAmuon[nMuon]/I");
-    DYTree->Branch("Muon_nTrig", &Muon_nTrig,"Muon_nTrig[nMuon]/I");
-    DYTree->Branch("Muon_triggerObjectType", &Muon_triggerObjectType,"Muon_triggerObjectType[nMuon]/I");
-    DYTree->Branch("Muon_filterName", &Muon_filterName,"Muon_filterName[nMuon]/I");
-    DYTree->Branch("Muon_phi", &Muon_phi,"Muon_phi[nMuon]/D");
-    DYTree->Branch("Muon_dB", &Muon_dB, "Muon_dB[nMuon]/D");
-    DYTree->Branch("Muon_eta", &Muon_eta,"Muon_eta[nMuon]/D");
-    DYTree->Branch("Muon_pT", &Muon_pT,"Muon_pT[nMuon]/D");
-    DYTree->Branch("Muon_cktpT", &Muon_cktpT,"Muon_cktpT[nMuon]/D");
-    DYTree->Branch("Muon_cktPx", &Muon_cktPx,"Muon_cktPx[nMuon]/D");
-    DYTree->Branch("Muon_cktPy", &Muon_cktPy,"Muon_cktPy[nMuon]/D");
-    DYTree->Branch("Muon_cktPz", &Muon_cktPz,"Muon_cktPz[nMuon]/D");
-    DYTree->Branch("Muon_cktpTError", &Muon_cktpTError,"Muon_cktpTError[nMuon]/D");
-    DYTree->Branch("Muon_Px", &Muon_Px,"Muon_Px[nMuon]/D");
-    DYTree->Branch("Muon_Py", &Muon_Py,"Muon_Py[nMuon]/D");
-    DYTree->Branch("Muon_Pz", &Muon_Pz,"Muon_Pz[nMuon]/D");
-    DYTree->Branch("Muon_trkiso", &Muon_trkiso,"Muon_trkiso[nMuon]/D");
-    DYTree->Branch("Muon_hcaliso", &Muon_hcaliso,"Muon_hcaliso[nMuon]/D");
-    DYTree->Branch("Muon_ecaliso", &Muon_ecaliso,"Muon_ecaliso[nMuon]/D");
-    DYTree->Branch("Muon_trkisoR05", &Muon_trkisoR05,"Muon_trkisoR05[nMuon]/D");
-    DYTree->Branch("Muon_hcalisoR05", &Muon_hcalisoR05,"Muon_hcalisoR05[nMuon]/D");
-    DYTree->Branch("Muon_ecalisoR05", &Muon_ecalisoR05,"Muon_ecalisoR05[nMuon]/D");
-    
-    //Various track informations
-    DYTree->Branch("Muon_Best_pT", &Muon_Best_pT, "Muon_Best_pT[nMuon]/D");
-    DYTree->Branch("Muon_Best_pTError", &Muon_Best_pTError, "Muon_Best_pTError[nMuon]/D");
-    DYTree->Branch("Muon_Best_Px", &Muon_Best_Px, "Muon_Best_Px[nMuon]/D");
-    DYTree->Branch("Muon_Best_Py", &Muon_Best_Py, "Muon_Best_Py[nMuon]/D");
-    DYTree->Branch("Muon_Best_Pz", &Muon_Best_Pz, "Muon_Best_Pz[nMuon]/D");
-    DYTree->Branch("Muon_Best_eta", &Muon_Best_eta, "Muon_Best_eta[nMuon]/D");
-    DYTree->Branch("Muon_Best_phi", &Muon_Best_phi, "Muon_Best_phi[nMuon]/D");
 
-    DYTree->Branch("Muon_Inner_pT", &Muon_Inner_pT, "Muon_Inner_pT[nMuon]/D");
-    DYTree->Branch("Muon_Inner_pTError", &Muon_Inner_pTError, "Muon_Inner_pTError[nMuon]/D");
-    DYTree->Branch("Muon_Inner_Px", &Muon_Inner_Px, "Muon_Inner_Px[nMuon]/D");
-    DYTree->Branch("Muon_Inner_Py", &Muon_Inner_Py, "Muon_Inner_Py[nMuon]/D");
-    DYTree->Branch("Muon_Inner_Pz", &Muon_Inner_Pz, "Muon_Inner_Pz[nMuon]/D");
-    DYTree->Branch("Muon_Inner_eta", &Muon_Inner_eta, "Muon_Inner_eta[nMuon]/D");
-    DYTree->Branch("Muon_Inner_phi", &Muon_Inner_phi, "Muon_Inner_phi[nMuon]/D");
-
-    DYTree->Branch("Muon_Outer_pT", &Muon_Outer_pT, "Muon_Outer_pT[nMuon]/D");
-    DYTree->Branch("Muon_Outer_pTError", &Muon_Outer_pTError, "Muon_Outer_pTError[nMuon]/D");
-    DYTree->Branch("Muon_Outer_Px", &Muon_Outer_Px, "Muon_Outer_Px[nMuon]/D");
-    DYTree->Branch("Muon_Outer_Py", &Muon_Outer_Py, "Muon_Outer_Py[nMuon]/D");
-    DYTree->Branch("Muon_Outer_Pz", &Muon_Outer_Pz, "Muon_Outer_Pz[nMuon]/D");
-    DYTree->Branch("Muon_Outer_eta", &Muon_Outer_eta, "Muon_Outer_eta[nMuon]/D");
-    DYTree->Branch("Muon_Outer_phi", &Muon_Outer_phi, "Muon_Outer_phi[nMuon]/D");
-
-    DYTree->Branch("Muon_GLB_pT", &Muon_GLB_pT, "Muon_GLB_pT[nMuon]/D");
-    DYTree->Branch("Muon_GLB_pTError", &Muon_GLB_pTError, "Muon_GLB_pTError[nMuon]/D");
-    DYTree->Branch("Muon_GLB_Px", &Muon_GLB_Px, "Muon_GLB_Px[nMuon]/D");
-    DYTree->Branch("Muon_GLB_Py", &Muon_GLB_Py, "Muon_GLB_Py[nMuon]/D");
-    DYTree->Branch("Muon_GLB_Pz", &Muon_GLB_Pz, "Muon_GLB_Pz[nMuon]/D");
-    DYTree->Branch("Muon_GLB_eta", &Muon_GLB_eta, "Muon_GLB_eta[nMuon]/D");
-    DYTree->Branch("Muon_GLB_phi", &Muon_GLB_phi, "Muon_GLB_phi[nMuon]/D");
-
-    DYTree->Branch("Muon_TuneP_pT", &Muon_TuneP_pT, "Muon_TuneP_pT[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_pTError", &Muon_TuneP_pTError, "Muon_TuneP_pTError[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_Px", &Muon_TuneP_Px, "Muon_TuneP_Px[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_Py", &Muon_TuneP_Py, "Muon_TuneP_Py[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_Pz", &Muon_TuneP_Pz, "Muon_TuneP_Pz[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_eta", &Muon_TuneP_eta, "Muon_TuneP_eta[nMuon]/D");
-    DYTree->Branch("Muon_TuneP_phi", &Muon_TuneP_phi, "Muon_TuneP_phi[nMuon]/D");
-    
-    //pf iso
-    DYTree->Branch("Muon_PfChargedHadronIsoR05", &Muon_PfChargedHadronIsoR05,"Muon_PfChargedHadronIsoR05[nMuon]/D");
-    DYTree->Branch("Muon_PfNeutralHadronIsoR05", &Muon_PfNeutralHadronIsoR05,"Muon_PfNeutralHadronIsoR05[nMuon]/D");
-    DYTree->Branch("Muon_PfGammaIsoR05", &Muon_PfGammaIsoR05,"Muon_PfGammaIsoR05[nMuon]/D");
-    DYTree->Branch("Muon_PfChargedHadronIsoR04", &Muon_PfChargedHadronIsoR04,"Muon_PfChargedHadronIsoR04[nMuon]/D");
-    DYTree->Branch("Muon_PfNeutralHadronIsoR04", &Muon_PfNeutralHadronIsoR04,"Muon_PfNeutralHadronIsoR04[nMuon]/D");
-    DYTree->Branch("Muon_PfGammaIsoR04", &Muon_PfGammaIsoR04,"Muon_PfGammaIsoR04[nMuon]/D");
-    DYTree->Branch("Muon_PFSumPUIsoR04", &Muon_PFSumPUIsoR04, "Muon_PFSumPUIsoR04[nMuon]/D");
-    DYTree->Branch("Muon_PfChargedHadronIsoR03", &Muon_PfChargedHadronIsoR03,"Muon_PfChargedHadronIsoR03[nMuon]/D");
-    DYTree->Branch("Muon_PfNeutralHadronIsoR03", &Muon_PfNeutralHadronIsoR03,"Muon_PfNeutralHadronIsoR03[nMuon]/D");
-    DYTree->Branch("Muon_PfGammaIsoR03", &Muon_PfGammaIsoR03,"Muon_PfGammaIsoR03[nMuon]/D");
-    DYTree->Branch("Muon_PFSumPUIsoR03", &Muon_PFSumPUIsoR03, "Muon_PFSumPUIsoR03[nMuon]/D");
-    DYTree->Branch("Muon_charge", &Muon_charge,"Muon_charge[nMuon]/I");
-    DYTree->Branch("Muon_nChambers", &Muon_nChambers,"Muon_nChambers[nMuon]/I");
-    DYTree->Branch("Muon_nMatches", &Muon_nMatches,"Muon_nMatches[nMuon]/I");
-    DYTree->Branch("Muon_nMatchesRPCLayers", &Muon_nMatchesRPCLayers,"Muon_nMatchesRPCLayers[nMuon]/I");
-    DYTree->Branch("Muon_stationMask", &Muon_stationMask,"Muon_stationMask[nMuon]/I");
-    DYTree->Branch("Muon_nSegments", &Muon_nSegments,"Muon_nSegments[nMuon]/I");
-    DYTree->Branch("Muon_chi2dof", &Muon_chi2dof,"Muon_chi2dof[nMuon]/D");
-    DYTree->Branch("Muon_nhits", &Muon_nhits,"Muon_nhits[nMuon]/I");
-    DYTree->Branch("Muon_trackerHits", &Muon_trackerHits,"Muon_trackerHits[nMuon]/I");
-    DYTree->Branch("Muon_trackerLayers", &Muon_trackerLayers,"Muon_trackerLayers[nMuon]/I");
-    DYTree->Branch("Muon_pixelHits", &Muon_pixelHits,"Muon_pixelHits[nMuon]/I");
-    DYTree->Branch("Muon_trackerHitsGLB", &Muon_trackerHitsGLB,"Muon_trackerHitsGLB[nMuon]/I");
-    DYTree->Branch("Muon_trackerLayersGLB", &Muon_trackerLayersGLB,"Muon_trackerLayersGLB[nMuon]/I");
-    DYTree->Branch("Muon_pixelHitsGLB", &Muon_pixelHitsGLB,"Muon_pixelHitsGLB[nMuon]/I");
-    DYTree->Branch("Muon_muonHits", &Muon_muonHits,"Muon_muonHits[nMuon]/I");
-    DYTree->Branch("Muon_qoverp", &Muon_qoverp,"Muon_qoverp[nMuon]/D");
-    DYTree->Branch("Muon_theta", &Muon_theta,"Muon_theta[nMuon]/D");
-    DYTree->Branch("Muon_lambda", &Muon_lambda,"Muon_lambda[nMuon]/D");
-    DYTree->Branch("Muon_dxy", &Muon_dxy,"Muon_dxy[nMuon]/D");
-    DYTree->Branch("Muon_d0", &Muon_d0,"Muon_d0[nMuon]/D");
-    DYTree->Branch("Muon_dsz", &Muon_dsz,"Muon_dsz[nMuon]/D");
-    DYTree->Branch("Muon_dz", &Muon_dz,"Muon_dz[nMuon]/D");
-    DYTree->Branch("Muon_dxyBS", &Muon_dxyBS,"Muon_dxyBS[nMuon]/D");
-    DYTree->Branch("Muon_dszBS", &Muon_dszBS,"Muon_dszBS[nMuon]/D");
-    DYTree->Branch("Muon_dzBS", &Muon_dzBS,"Muon_dzBS[nMuon]/D");
-    DYTree->Branch("Muon_dxyVTX", &Muon_dxyVTX,"Muon_dxyVTX[nMuon]/D");
-    DYTree->Branch("Muon_dszVTX", &Muon_dszVTX,"Muon_dszVTX[nMuon]/D");
-    DYTree->Branch("Muon_dzVTX", &Muon_dzVTX,"Muon_dzVTX[nMuon]/D");
-    DYTree->Branch("Muon_dxycktVTX", &Muon_dxycktVTX,"Muon_dxycktVTX[nMuon]/D");
-    DYTree->Branch("Muon_dszcktVTX", &Muon_dszcktVTX,"Muon_dszcktVTX[nMuon]/D");
-    DYTree->Branch("Muon_dzcktVTX", &Muon_dzcktVTX,"Muon_dzcktVTX[nMuon]/D");
-    DYTree->Branch("Muon_vx", &Muon_vx,"Muon_vx[nMuon]/D");
-    DYTree->Branch("Muon_vy", &Muon_vy,"Muon_vy[nMuon]/D");
-    DYTree->Branch("Muon_vz", &Muon_vz,"Muon_vz[nMuon]/D");
+    DYTree->Branch("muon_PfChargedHadronIsoR05", "vector<double>", &muon_PfChargedHadronIsoR05);
+    DYTree->Branch("muon_PfNeutralHadronIsoR05", "vector<double>", &muon_PfNeutralHadronIsoR05);
+    DYTree->Branch("muon_PfGammaIsoR05", "vector<double>", &muon_PfGammaIsoR05);
+    DYTree->Branch("muon_PfChargedHadronIsoR04", "vector<double>", &muon_PfChargedHadronIsoR04);
+    DYTree->Branch("muon_PfNeutralHadronIsoR04", "vector<double>", &muon_PfNeutralHadronIsoR04);
+    DYTree->Branch("muon_PfGammaIsoR04", "vector<double>", &muon_PfGammaIsoR04);
+    DYTree->Branch("muon_PFSumPUIsoR04", "vector<double>", &muon_PFSumPUIsoR04);
+    DYTree->Branch("muon_PfChargedHadronIsoR03", "vector<double>", &muon_PfChargedHadronIsoR03);
+    DYTree->Branch("muon_PfNeutralHadronIsoR03", "vector<double>", &muon_PfNeutralHadronIsoR03);
+    DYTree->Branch("muon_PfGammaIsoR03", "vector<double>", &muon_PfGammaIsoR03);
+    DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
+    DYTree->Branch("muon_isPF", "vector<int>", &muon_isPF);
+    DYTree->Branch("muon_isGlobal", "vector<int>", &muon_isGlobal);
+    DYTree->Branch("muon_isTracker", "vector<int>", &muon_isTracker);
+    DYTree->Branch("muon_isStandAlone", "vector<int>", &muon_isStandAlone);
+    DYTree->Branch("muon_filterName", "vector<int>", &muon_filterName);
+    DYTree->Branch("muon_trigmatch", "vector<string>", &muon_trigmatch);
+    DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
+    DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
+    DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
+    DYTree->Branch("muon_pt", "vector<double>", &muon_pt);
+    DYTree->Branch("muon_cktpt", "vector<double>", &muon_cktpt);
+    DYTree->Branch("muon_cktPx", "vector<double>", &muon_cktPx);
+    DYTree->Branch("muon_cktPy", "vector<double>", &muon_cktPy);
+    DYTree->Branch("muon_cktPz", "vector<double>", &muon_cktPz);
+    DYTree->Branch("muon_cktptError", "vector<double>", &muon_cktptError);
+    DYTree->Branch("muon_Px", "vector<double>", &muon_Px);
+    DYTree->Branch("muon_Py", "vector<double>", &muon_Py);
+    DYTree->Branch("muon_Pz", "vector<double>", &muon_Pz);
+    DYTree->Branch("muon_sumtrkpt", "vector<double>", &muon_sumtrkpt);
+    DYTree->Branch("muon_trkiso", "vector<double>", &muon_trkiso);
+    DYTree->Branch("muon_hcaliso", "vector<double>", &muon_hcaliso);
+    DYTree->Branch("muon_ecaliso", "vector<double>", &muon_ecaliso);
+    DYTree->Branch("muon_trkisoR05", "vector<double>", &muon_trkisoR05);
+    DYTree->Branch("muon_hcalisoR05", "vector<double>", &muon_hcalisoR05);
+    DYTree->Branch("muon_ecalisoR05", "vector<double>", &muon_ecalisoR05);
+    DYTree->Branch("muon_charge", "vector<int>", &muon_charge);
+    DYTree->Branch("muon_nChambers", "vector<int>", &muon_nChambers);
+    DYTree->Branch("muon_matchedstations", "vector<int>", &muon_matchedstations);
+    DYTree->Branch("muon_stationMask", "vector<int>", &muon_stationMask);
+    DYTree->Branch("muon_nSegments", "vector<int>", &muon_nSegments);
+    DYTree->Branch("muon_chi2dof", "vector<double>", &muon_chi2dof);
+    DYTree->Branch("muon_validhits", "vector<int>", &muon_validhits);
+    DYTree->Branch("muon_trackerHits", "vector<int>", &muon_trackerHits);
+    DYTree->Branch("muon_pixelHits", "vector<int>", &muon_pixelHits);
+    DYTree->Branch("muon_validmuonhits", "vector<int>", &muon_validmuonhits);
+    DYTree->Branch("muon_trackerLayers", "vector<int>", &muon_trackerLayers);
+    DYTree->Branch("muon_trackerHitsGLB", "vector<int>", &muon_trackerHitsGLB);
+    DYTree->Branch("muon_trackerLayersGLB", "vector<int>", &muon_trackerLayersGLB);
+    DYTree->Branch("muon_pixelHitsGLB", "vector<int>", &muon_pixelHitsGLB);
+    DYTree->Branch("muon_qoverp", "vector<double>", &muon_qoverp);
+    DYTree->Branch("muon_theta", "vector<double>", &muon_theta);
+    DYTree->Branch("muon_lambda", "vector<double>", &muon_lambda);
+    DYTree->Branch("muon_dxy", "vector<double>", &muon_dxy);
+    DYTree->Branch("muon_d0", "vector<double>", &muon_d0);
+    DYTree->Branch("muon_dsz", "vector<double>", &muon_dsz);
+    DYTree->Branch("muon_dz", "vector<double>", &muon_dz);
+    DYTree->Branch("muon_dxyBS", "vector<double>", &muon_dxyBS);
+    DYTree->Branch("muon_dzBS", "vector<double>", &muon_dzBS);
+    DYTree->Branch("muon_dszBS", "vector<double>", &muon_dszBS);
+    DYTree->Branch("muon_dxyVTX", "vector<double>", &muon_dxyVTX);
+    DYTree->Branch("muon_dzVTX", "vector<double>", &muon_dzVTX);
+    DYTree->Branch("muon_dszVTX", "vector<double>", &muon_dszVTX);
+    DYTree->Branch("muon_dxycktVTX", "vector<double>", &muon_dxycktVTX);
+    DYTree->Branch("muon_dzcktVTX", "vector<double>", &muon_dzcktVTX);
+    DYTree->Branch("muon_dszcktVTX", "vector<double>", &muon_dszcktVTX);
+    DYTree->Branch("muon_vx", "vector<double>", &muon_vx);
+    DYTree->Branch("muon_vy", "vector<double>", &muon_vy);
+    DYTree->Branch("muon_vz", "vector<double>", &muon_vz);
+    DYTree->Branch("muon_Best_pt", "vector<double>", &muon_Best_pt);
+    DYTree->Branch("muon_Best_ptError", "vector<double>", &muon_Best_ptError);
+    DYTree->Branch("muon_Best_Px", "vector<double>", &muon_Best_Px);
+    DYTree->Branch("muon_Best_Py", "vector<double>", &muon_Best_Py);
+    DYTree->Branch("muon_Best_Pz", "vector<double>", &muon_Best_Pz);
+    DYTree->Branch("muon_Best_eta", "vector<double>", &muon_Best_eta);
+    DYTree->Branch("muon_Best_phi", "vector<double>", &muon_Best_phi);
+    DYTree->Branch("muon_Inner_pt", "vector<double>", &muon_Inner_pt);
+    DYTree->Branch("muon_Inner_ptError", "vector<double>", &muon_Inner_ptError);
+    DYTree->Branch("muon_Inner_Px", "vector<double>", &muon_Inner_Px);
+    DYTree->Branch("muon_Inner_Py", "vector<double>", &muon_Inner_Py);
+    DYTree->Branch("muon_Inner_Pz", "vector<double>", &muon_Inner_Pz);
+    DYTree->Branch("muon_Inner_eta", "vector<double>", &muon_Inner_eta);
+    DYTree->Branch("muon_Inner_phi", "vector<double>", &muon_Inner_phi);
+    DYTree->Branch("muon_Outer_pt", "vector<double>", &muon_Outer_pt);
+    DYTree->Branch("muon_Outer_ptError", "vector<double>", &muon_Outer_ptError);
+    DYTree->Branch("muon_Outer_Px", "vector<double>", &muon_Outer_Px);
+    DYTree->Branch("muon_Outer_Py", "vector<double>", &muon_Outer_Py);
+    DYTree->Branch("muon_Outer_Pz", "vector<double>", &muon_Outer_Pz);
+    DYTree->Branch("muon_Outer_eta", "vector<double>", &muon_Outer_eta);
+    DYTree->Branch("muon_Outer_phi", "vector<double>", &muon_Outer_phi);
+    DYTree->Branch("muon_GLB_pt", "vector<double>", &muon_GLB_pt);
+    DYTree->Branch("muon_GLB_ptError", "vector<double>", &muon_GLB_ptError);
+    DYTree->Branch("muon_GLB_Px", "vector<double>", &muon_GLB_Px);
+    DYTree->Branch("muon_GLB_Py", "vector<double>", &muon_GLB_Py);
+    DYTree->Branch("muon_GLB_Pz", "vector<double>", &muon_GLB_Pz);
+    DYTree->Branch("muon_GLB_eta", "vector<double>", &muon_GLB_eta);
+    DYTree->Branch("muon_GLB_phi", "vector<double>", &muon_GLB_phi);
+    DYTree->Branch("muon_TuneP_pt", "vector<double>", &muon_TuneP_pt);
+    DYTree->Branch("muon_TuneP_ptError", "vector<double>", &muon_TuneP_ptError);
+    DYTree->Branch("muon_TuneP_Px", "vector<double>", &muon_TuneP_Px);
+    DYTree->Branch("muon_TuneP_Py", "vector<double>", &muon_TuneP_Py);
+    DYTree->Branch("muon_TuneP_Pz", "vector<double>", &muon_TuneP_Pz);
+    DYTree->Branch("muon_TuneP_eta", "vector<double>", &muon_TuneP_eta);
+    DYTree->Branch("muon_TuneP_phi", "vector<double>", &muon_TuneP_phi);
 
   }
   
   // -- LHE info -- //
   if( theStoreLHEFlag ){
-    DYTree->Branch("nLHEParticle",&nLHEParticle,"nLHEParticle/I");
-    DYTree->Branch("LHELepton_Px", &LHELepton_Px,"LHELepton_Px[nLHEParticle]/D");
-    DYTree->Branch("LHELepton_Py", &LHELepton_Py,"LHELepton_Py[nLHEParticle]/D");
-    DYTree->Branch("LHELepton_Pz", &LHELepton_Pz,"LHELepton_Pz[nLHEParticle]/D");
-    DYTree->Branch("LHELepton_E", &LHELepton_E,"LHELepton_E[nLHEParticle]/D");
-    DYTree->Branch("LHELepton_ID", &LHELepton_ID,"LHELepton_ID[nLHEParticle]/I");
-    DYTree->Branch("LHELepton_status", &LHELepton_status,"LHELepton_status[nLHEParticle]/I");
+    DYTree->Branch("LHELepton_Px", "vector<double>", &LHELepton_Px);
+    DYTree->Branch("LHELepton_Py", "vector<double>", &LHELepton_Py);
+    DYTree->Branch("LHELepton_Pz", "vector<double>", &LHELepton_Pz);
+    DYTree->Branch("LHELepton_E", "vector<double>", &LHELepton_E);
+    DYTree->Branch("LHELepton_ID", "vector<int>", &LHELepton_ID);
+    DYTree->Branch("LHELepton_status", "vector<int>", &LHELepton_status);
   }
   
   // GEN info
   if( theStoreGENFlag ){
-    DYTree->Branch("gen_N",&GENnPair,"GENnPair/I");
-    DYTree->Branch("gen_phi", &GENLepton_phi,"GENLepton_phi[GENnPair]/D");
-    DYTree->Branch("gen_eta", &GENLepton_eta,"GENLepton_eta[GENnPair]/D");
-    DYTree->Branch("gen_pT", &GENLepton_pT,"GENLepton_pT[GENnPair]/D");
-    DYTree->Branch("gen_Px", &GENLepton_Px,"GENLepton_Px[GENnPair]/D");
-    DYTree->Branch("gen_Py", &GENLepton_Py,"GENLepton_Py[GENnPair]/D");
-    DYTree->Branch("gen_Pz", &GENLepton_Pz,"GENLepton_Pz[GENnPair]/D");
-    DYTree->Branch("gen_E", &GENLepton_E,"GENLepton_E[GENnPair]/D");
-    DYTree->Branch("gen_mother", &GENLepton_mother,"GENLepton_mother[GENnPair]/I");
-    DYTree->Branch("gen_mother_pT", &GENLepton_mother_pT,"GENLepton_mother_pT[GENnPair]/D");
-    DYTree->Branch("gen_mother_index", &GENLepton_mother_index,"GENLepton_mother_index[GENnPair]/I");
-    DYTree->Branch("gen_charge", &GENLepton_charge,"GENLepton_charge[GENnPair]/I");
-    DYTree->Branch("gen_status", &GENLepton_status,"GENLepton_status[GENnPair]/I");
-    DYTree->Branch("gen_ID", &GENLepton_ID,"GENLepton_ID[GENnPair]/I");
-    DYTree->Branch("gen_isPrompt", &GENLepton_isPrompt,"GENLepton_isPrompt[GENnPair]/I");
-    DYTree->Branch("gen_isPromptFinalState", &GENLepton_isPromptFinalState,"GENLepton_isPromptFinalState[GENnPair]/I");
-    DYTree->Branch("gen_isTauDecayProduct", &GENLepton_isTauDecayProduct,"GENLepton_isTauDecayProduct[GENnPair]/I");
-    DYTree->Branch("gen_isPromptTauDecayProduct", &GENLepton_isPromptTauDecayProduct,"GENLepton_isPromptTauDecayProduct[GENnPair]/I");
-    DYTree->Branch("gen_isDirectPromptTauDecayProductFinalState", &GENLepton_isDirectPromptTauDecayProductFinalState,"GENLepton_isDirectPromptTauDecayProductFinalState[GENnPair]/I");
-    DYTree->Branch("gen_isHardProcess",&GENLepton_isHardProcess,"GENLepton_isHardProcess[GENnPair]/I");
-    DYTree->Branch("gen_isLastCopy",&GENLepton_isLastCopy,"GENLepton_isLastCopy[GENnPair]/I");
-    DYTree->Branch("gen_isLastCopyBeforeFSR",&GENLepton_isLastCopyBeforeFSR,"GENLepton_isLastCopyBeforeFSR[GENnPair]/I");
-    DYTree->Branch("gen_isPromptDecayed",&GENLepton_isPromptDecayed,"GENLepton_isPromptDecayed[GENnPair]/I");
-    DYTree->Branch("gen_isDecayedLeptonHadron",&GENLepton_isDecayedLeptonHadron,"GENLepton_isDecayedLeptonHadron[GENnPair]/I");
-    DYTree->Branch("gen_fromHardProcessBeforeFSR",&GENLepton_fromHardProcessBeforeFSR,"GENLepton_fromHardProcessBeforeFSR[GENnPair]/I");
-    DYTree->Branch("gen_fromHardProcessDecayed",&GENLepton_fromHardProcessDecayed,"GENLepton_fromHardProcessDecayed[GENnPair]/I");
-    DYTree->Branch("gen_fromHardProcessFinalState",&GENLepton_fromHardProcessFinalState,"GENLepton_fromHardProcessFinalState[GENnPair]/I");
-    DYTree->Branch("gen_isMostlyLikePythia6Status3", &GENLepton_isMostlyLikePythia6Status3, "GENLepton_isMostlyLikePythia6Status3[GENnPair]/I");
-    DYTree->Branch("gen_weight",&GENEvt_weight,"GENEvt_weight/D");
-    DYTree->Branch("ScaleWeights",&GENEvt_QScale,"GENEvt_QScale/D");
-    DYTree->Branch("genWeightX1",&GENEvt_x1,"GENEvt_x1/D");
-    DYTree->Branch("genWeightX2",&GENEvt_x2,"GENEvt_x2/D");
-    DYTree->Branch("genWeight_id1",&GENEvt_id1,"GENEvt_id1/I");
-    DYTree->Branch("genWeight_id2",&GENEvt_id2,"GENEvt_id2/I");
-    DYTree->Branch("genWeight_alphaQCD",&GENEvt_alphaQCD,"GENEvt_alphaQCD/D");
-    DYTree->Branch("genWeight_alphaQED",&GENEvt_alphaQED,"GENEvt_alphaQED/D");
+    DYTree->Branch("gen_phi", "vector<double>", &gen_phi);
+    DYTree->Branch("gen_eta", "vector<double>", &gen_eta);
+    DYTree->Branch("gen_pt", "vector<double>", &gen_pt);
+    DYTree->Branch("gen_Px", "vector<double>", &gen_Px);
+    DYTree->Branch("gen_Py", "vector<double>", &gen_Py);
+    DYTree->Branch("gen_Pz", "vector<double>", &gen_Pz);
+    DYTree->Branch("gen_E", "vector<double>", &gen_E);
+    DYTree->Branch("gen_mother_PID", "vector<int>", &gen_mother_PID);
+    DYTree->Branch("gen_mother_pt", "vector<double>", &gen_mother_pt);
+    DYTree->Branch("gen_mother_index", "vector<int>", &gen_mother_index);
+    DYTree->Branch("gen_charge", "vector<int>", &gen_charge);
+    DYTree->Branch("gen_status", "vector<int>", &gen_status);
+    DYTree->Branch("gen_PID", "vector<int>", &gen_PID);
+    DYTree->Branch("gen_isPrompt", "vector<int>", &gen_isPrompt);
+    DYTree->Branch("gen_isPromptFinalState", "vector<int>", &gen_isPromptFinalState);
+    DYTree->Branch("gen_isTauDecayProduct", "vector<int>", &gen_isTauDecayProduct);
+    DYTree->Branch("gen_isPromptTauDecayProduct", "vector<int>", &gen_isPromptTauDecayProduct);
+    DYTree->Branch("gen_isDirectPromptTauDecayProductFinalState", "vector<int>", &gen_isDirectPromptTauDecayProductFinalState);
+    DYTree->Branch("gen_isHardProcess", "vector<int>", &gen_isHardProcess);
+    DYTree->Branch("gen_isLastCopy", "vector<int>", &gen_isLastCopy);
+    DYTree->Branch("gen_isLastCopyBeforeFSR", "vector<int>", &gen_isLastCopyBeforeFSR);
+    DYTree->Branch("gen_isPromptDecayed", "vector<int>", &gen_isPromptDecayed);
+    DYTree->Branch("gen_isDecayedLeptonHadron", "vector<int>", &gen_isDecayedLeptonHadron);
+    DYTree->Branch("gen_fromHardProcessBeforeFSR", "vector<int>", &gen_fromHardProcessBeforeFSR);
+    DYTree->Branch("gen_fromHardProcessDecayed", "vector<int>", &gen_fromHardProcessDecayed);
+    DYTree->Branch("gen_fromHardProcessFinalState", "vector<int>", &gen_fromHardProcessFinalState);
+    DYTree->Branch("gen_isMostlyLikePythia6Status3", "vector<int>", &gen_isMostlyLikePythia6Status3);
+    DYTree->Branch("gen_weight", &gen_weight, "gen_weight/D");
+    DYTree->Branch("genWeight_Q", &genWeight_Q, "genWeight_Q/D");
+    DYTree->Branch("genWeight_X1", &genWeight_X1, "genWeight_X1/D");
+    DYTree->Branch("genWeight_X2", &genWeight_X2, "genWeight_X2/D");
+    DYTree->Branch("genWeight_id1", &genWeight_id1, "genWeight_id1/I");
+    DYTree->Branch("genWeight_id2", &genWeight_id2, "genWeight_id2/I");
+    DYTree->Branch("genWeight_alphaQCD", &genWeight_alphaQCD, "genWeight_alphaQCD/D");
+    DYTree->Branch("genWeight_alphaQED", &genWeight_alphaQED, "genWeight_alphaQED/D");
   }
   
   if( theStorePhotonFlag ){
-    // -- Photon Information -- //
-    DYTree->Branch("nPhotons",&nPhotons,"nPhotons/I");
-    DYTree->Branch("Photon_hasPixelSeed",&Photon_hasPixelSeed,"Photon_hasPixelSeed[nPhotons]/I");
-    DYTree->Branch("Photon_pT",&Photon_pT,"Photon_pT[nPhotons]/D");
-    DYTree->Branch("Photon_eta",&Photon_eta,"Photon_eta[nPhotons]/D");
-    DYTree->Branch("Photon_phi",&Photon_phi,"Photon_phi[nPhotons]/D");
-    DYTree->Branch("Photon_etaSC",&Photon_etaSC,"Photon_etaSC[nPhotons]/D");
-    DYTree->Branch("Photon_phiSC",&Photon_phiSC,"Photon_phiSC[nPhotons]/D");
-    DYTree->Branch("Photon_HoverE",&Photon_HoverE,"Photon_HoverE[nPhotons]/D");
-    DYTree->Branch("Photon_Full5x5_SigmaIEtaIEta",&Photon_Full5x5_SigmaIEtaIEta,"Photon_Full5x5_SigmaIEtaIEta[nPhotons]/D");
-    DYTree->Branch("Photon_ChIso",&Photon_ChIso,"Photon_ChIso[nPhotons]/D");
-    DYTree->Branch("Photon_NhIso",&Photon_NhIso,"Photon_NhIso[nPhotons]/D");
-    DYTree->Branch("Photon_PhIso",&Photon_PhIso,"Photon_PhIso[nPhotons]/D");
-    DYTree->Branch("Photon_ChIsoWithEA",&Photon_ChIsoWithEA,"Photon_ChIsoWithEA[nPhotons]/D");
-    DYTree->Branch("Photon_NhIsoWithEA",&Photon_NhIsoWithEA,"Photon_NhIsoWithEA[nPhotons]/D");
-    DYTree->Branch("Photon_PhIsoWithEA",&Photon_PhIsoWithEA,"Photon_PhIsoWithEA[nPhotons]/D");
-    DYTree->Branch("Photon_passLooseID", &Photon_passLooseID, "Photon_passLooseID[nPhotons]/O");
-    DYTree->Branch("Photon_passMediumID", &Photon_passMediumID, "Photon_passMediumID[nPhotons]/O");
-    DYTree->Branch("Photon_passTightID", &Photon_passTightID, "Photon_passTightID[nPhotons]/O");
-    DYTree->Branch("Photon_passMVAID_WP80", &Photon_passMVAID_WP80, "Photon_passMVAID_WP80[nPhotons]/O");
-    DYTree->Branch("Photon_passMVAID_WP90", &Photon_passMVAID_WP90, "Photon_passMVAID_WP90[nPhotons]/O");
-  
-    DYTree->Branch("nUnCorrPhoton",&nUnCorrPhoton,"nUnCorrPhoton/I");
-    DYTree->Branch("Photon_pTUnCorr",&Photon_pTUnCorr,"Photon_pTUnCorr[nPhotons]/D");
-    DYTree->Branch("Photon_etaUnCorr",&Photon_etaUnCorr,"Photon_etaUnCorr[nPhotons]/D");
-    DYTree->Branch("Photon_phiUnCorr",&Photon_phiUnCorr,"Photon_phiUnCorr[nPhotons]/D");
+    DYTree->Branch("photon_pt", "vector<double>", &photon_pt);
+    DYTree->Branch("photon_eta", "vector<double>", &photon_eta);
+    DYTree->Branch("photon_phi", "vector<double>", &photon_phi);
+    DYTree->Branch("photon_scEta", "vector<double>", &photon_scEta);
+    DYTree->Branch("photon_scPhi", "vector<double>", &photon_scPhi);
+    DYTree->Branch("photon_HoverE", "vector<double>", &photon_HoverE);
+    DYTree->Branch("photon_hasPixelSeed", "vector<int>", &photon_hasPixelSeed);
+    DYTree->Branch("photon_Full5x5_SigmaIEtaIEta", "vector<double>", &photon_Full5x5_SigmaIEtaIEta);
+    DYTree->Branch("photon_ChIso", "vector<double>", &photon_ChIso);
+    DYTree->Branch("photon_NhIso", "vector<double>", &photon_NhIso);
+    DYTree->Branch("photon_PhIso", "vector<double>", &photon_PhIso);
+    DYTree->Branch("photon_ChIsoWithEA", "vector<double>", &photon_ChIsoWithEA);
+    DYTree->Branch("photon_NhIsoWithEA", "vector<double>", &photon_NhIsoWithEA);
+    DYTree->Branch("photon_PhIsoWithEA", "vector<double>", &photon_PhIsoWithEA);
+    DYTree->Branch("photon_passMVAID_WP80", "vector<bool>", &photon_passMVAID_WP80);
+    DYTree->Branch("photon_passMVAID_WP90", "vector<bool>", &photon_passMVAID_WP90);
+    DYTree->Branch("photon_passLooseID", "vector<bool>", &photon_passLooseID);
+    DYTree->Branch("photon_passMediumID", "vector<bool>", &photon_passMediumID);
+    DYTree->Branch("photon_passTightID", "vector<bool>", &photon_passTightID);
+    DYTree->Branch("photon_ptUnCorr", "vector<double>", &photon_ptUnCorr);
+    DYTree->Branch("photon_etaUnCorr", "vector<double>", &photon_etaUnCorr);
+    DYTree->Branch("photon_phiUnCorr", "vector<double>", &photon_phiUnCorr);
   }
   
   
@@ -1075,46 +1148,42 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("pileUpReweightMinusMuonPhys",&pileUpReweightMinusMuonPhys,"pileUpReweightMinusMuonPhys/D");
   
   if( theStoreTTFlag ){
-    DYTree->Branch("NTT", &NTT,"NTT/I");
-    DYTree->Branch("TTrack_dxy", &TTrack_dxy,"TTrack_dxy[NTT]/D");
-    DYTree->Branch("TTrack_dxyErr", &TTrack_dxyErr,"TTrack_dxyErr[NTT]/D");
-    DYTree->Branch("TTrack_d0", &TTrack_d0,"TTrack_d0[NTT]/D");
-    DYTree->Branch("TTrack_d0Err", &TTrack_d0Err,"TTrack_d0Err[NTT]/D");
-    DYTree->Branch("TTrack_dsz", &TTrack_dsz,"TTrack_dsz[NTT]/D");
-    DYTree->Branch("TTrack_dszErr", &TTrack_dszErr,"TTrack_dszErr[NTT]/D");
-    DYTree->Branch("TTrack_dz", &TTrack_dz,"TTrack_dz[NTT]/D");
-    DYTree->Branch("TTrack_dzErr", &TTrack_dzErr,"TTrack_dzErr[NTT]/D");
-    DYTree->Branch("TTrack_dxyBS", &TTrack_dxyBS,"TTrack_dxyBS[NTT]/D");
-    DYTree->Branch("TTrack_dszBS", &TTrack_dszBS,"TTrack_dszBS[NTT]/D");
-    DYTree->Branch("TTrack_dzBS", &TTrack_dzBS,"TTrack_dzBS[NTT]/D");
-    DYTree->Branch("TTrack_pT", &TTrack_pT,"TTrack_pT[NTT]/D");
-    DYTree->Branch("TTrack_Px", &TTrack_Px,"TTrack_Px[NTT]/D");
-    DYTree->Branch("TTrack_Py", &TTrack_Py,"TTrack_Py[NTT]/D");
-    DYTree->Branch("TTrack_Pz", &TTrack_Pz,"TTrack_Pz[NTT]/D");
-    DYTree->Branch("TTrack_eta", &TTrack_eta,"TTrack_eta[NTT]/D");
-    DYTree->Branch("TTrack_phi", &TTrack_phi,"TTrack_phi[NTT]/D");
-    DYTree->Branch("TTrack_charge", &TTrack_charge,"TTrack_charge[NTT]/D");
+    DYTree->Branch("TrackerTrack_dxy", "vector<double>", &TrackerTrack_dxy);
+    DYTree->Branch("TrackerTrack_dxyErr", "vector<double>", &TrackerTrack_dxyErr);
+    DYTree->Branch("TrackerTrack_d0", "vector<double>", &TrackerTrack_d0);
+    DYTree->Branch("TrackerTrack_d0Err", "vector<double>", &TrackerTrack_d0Err);
+    DYTree->Branch("TrackerTrack_dsz", "vector<double>", &TrackerTrack_dsz);
+    DYTree->Branch("TrackerTrack_dszErr", "vector<double>", &TrackerTrack_dszErr);
+    DYTree->Branch("TrackerTrack_dz", "vector<double>", &TrackerTrack_dz);
+    DYTree->Branch("TrackerTrack_dzErr", "vector<double>", &TrackerTrack_dzErr);
+    DYTree->Branch("TrackerTrack_dxyBS", "vector<double>", &TrackerTrack_dxyBS);
+    DYTree->Branch("TrackerTrack_dszBS", "vector<double>", &TrackerTrack_dszBS);
+    DYTree->Branch("TrackerTrack_dzBS", "vector<double>", &TrackerTrack_dzBS);
+    DYTree->Branch("TrackerTrack_pt", "vector<double>", &TrackerTrack_pt);
+    DYTree->Branch("TrackerTrack_Px", "vector<double>", &TrackerTrack_Px);
+    DYTree->Branch("TrackerTrack_Py", "vector<double>", &TrackerTrack_Py);
+    DYTree->Branch("TrackerTrack_Pz", "vector<double>", &TrackerTrack_Pz);
+    DYTree->Branch("TrackerTrack_eta", "vector<double>", &TrackerTrack_eta);
+    DYTree->Branch("TrackerTrack_phi", "vector<double>", &TrackerTrack_phi);
+    DYTree->Branch("TrackerTrack_charge", "vector<double>", &TrackerTrack_charge);
   }
   
   if( theStoreMETFlag ){
-    // -- MET -- //
-    DYTree->Branch("pfMET_pT", &pfMET_pT,"pfMET_pT/D");
-    DYTree->Branch("pfMET_phi", &pfMET_phi,"pfMET_phi/D");
-    DYTree->Branch("pfMET_Px", &pfMET_Px,"pfMET_Px/D");
-    DYTree->Branch("pfMET_Py", &pfMET_Py,"pfMET_Py/D");
-    DYTree->Branch("pfMET_SumEt", &pfMET_SumEt,"pfMET_SumEt/D");
-    
-    DYTree->Branch("pfMET_Type1_pT", &pfMET_Type1_pT,"pfMET_Type1_pT/D");
-    DYTree->Branch("pfMET_Type1_phi", &pfMET_Type1_phi,"pfMET_Type1_phi/D");
-    DYTree->Branch("pfMET_Type1_Px", &pfMET_Type1_Px,"pfMET_Type1_Px/D");
-    DYTree->Branch("pfMET_Type1_Py", &pfMET_Type1_Py,"pfMET_Type1_Py/D");
-    DYTree->Branch("pfMET_Type1_SumEt", &pfMET_Type1_SumEt,"pfMET_Type1_SumEt/D");
-    
-    DYTree->Branch("pfMET_Type1_PhiCor_pT", &pfMET_Type1_PhiCor_pT,"pfMET_Type1_PhiCor_pT/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_phi", &pfMET_Type1_PhiCor_phi,"pfMET_Type1_PhiCor_phi/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_Px", &pfMET_Type1_PhiCor_Px,"pfMET_Type1_PhiCor_Px/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_Py", &pfMET_Type1_PhiCor_Py,"pfMET_Type1_PhiCor_Py/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_SumEt", &pfMET_Type1_PhiCor_SumEt,"pfMET_Type1_PhiCor_SumEt/D");
+    DYTree->Branch("pfMET_pt", &pfMET_pt, "pfMET_pt/D");
+    DYTree->Branch("pfMET_phi", &pfMET_phi, "pfMET_phi/D");
+    DYTree->Branch("pfMET_Px", &pfMET_Px, "pfMET_Px/D");
+    DYTree->Branch("pfMET_Py", &pfMET_Py, "pfMET_Py/D");
+    DYTree->Branch("pfMET_SumEt", &pfMET_SumEt, "pfMET_SumEt/D");
+    DYTree->Branch("pfMET_Type1_pt", &pfMET_Type1_pt, "pfMET_Type1_pt/D");
+    DYTree->Branch("pfMET_Type1_phi", &pfMET_Type1_phi, "pfMET_Type1_phi/D");
+    DYTree->Branch("pfMET_Type1_Px", &pfMET_Type1_Px, "pfMET_Type1_Px/D");
+    DYTree->Branch("pfMET_Type1_Py", &pfMET_Type1_Py, "pfMET_Type1_Py/D");
+    DYTree->Branch("pfMET_Type1_SumEt", &pfMET_Type1_SumEt, "pfMET_Type1_SumEt/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_pt", &pfMET_Type1_PhiCor_pt, "pfMET_Type1_PhiCor_pt/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_phi", &pfMET_Type1_PhiCor_phi, "pfMET_Type1_PhiCor_phi/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_Px", &pfMET_Type1_PhiCor_Px, "pfMET_Type1_PhiCor_Px/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_Py", &pfMET_Type1_PhiCor_Py, "pfMET_Type1_PhiCor_Py/D");
+    DYTree->Branch("pfMET_Type1_PhiCor_SumEt", &pfMET_Type1_PhiCor_SumEt, "pfMET_Type1_PhiCor_SumEt/D");
   }
 }
 
@@ -1122,41 +1191,37 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginRun] called" << endl;
-  const int nTrigName = 7;
-  string trigs[nTrigName] = {
+
+  vector<string> temp_trigs = {
       "HLT_Mu*", "HLT_Ele*", "HLT_DoubleEle*", "HLT_DoublePhoton*", "HLT_IsoMu*", "HLT_Photon*", 
-      /*
-      // -- single muon triggers -- //
+
+/*
+      //==== single muon triggers
       "HLT_IsoMu27_v*",
       "HLT_Mu50_v*",
             
-      // -- double muon triggers -- //
+      //==== double muon triggers
       "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*",
       
-      // -- for Electrons -- //
-      // -- Single Electron -- //
+      //==== Single Electron
       "HLT_Ele35_WPTight_Gsf_v*",
       
-      // -- Double Electron -- //
-      "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*", // -- low pt, loose ID & iso, unprescaled 
-      "HLT_DoubleEle33_CaloIdL_MW_v*", // -- loose ID, no isolation
+      //==== Double Electron
+      "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*", // low pt, loose ID & iso, unprescaled 
+      "HLT_DoubleEle33_CaloIdL_MW_v*", // loose ID, no isolation
       
-      // -- Double Photon -- //
+      //==== Double Photon
       "HLT_DoublePhoton33_CaloIdL_v*"
-      */
+*/
+
   };
-  
-  MuonHLT.clear();
-  MuonHLTPS.clear();
+  //==== copy this to member variable, HLTName_WildCard
+  HLTName_WildCard.clear();
+  for(unsigned int i=0; i<temp_trigs.size(); i++ ) HLTName_WildCard.push_back(temp_trigs.at(i));
+
   ListHLT.clear();
   ListHLTPS.clear();
   
-
-  
-  for( int i = 0; i < nTrigName; i++ ) MuonHLT.push_back(trigs[i]);
-  
-  int listRemoval[nTrigName] = {-1};
-  int ntrigName = MuonHLT.size();
   bool changedConfig;
   if(!hltConfig_.init(iRun, iSetup, processName, changedConfig)){
     LogError("HLTMuonVal") << "Initialization of HLTConfigProvider failed!!";
@@ -1165,55 +1230,37 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   else{
     std::vector<std::string> triggerNames = hltConfig_.triggerNames();
       
-    // -- print all trigger pathes -- // 
+    //==== print all trigger pathes inthe inputfile
     for( size_t i = 0; i < triggerNames.size(); i++)
       cout << "[SKFlatMaker::beginRun] Trigger Path: " << triggerNames[i] << endl;
       
-    /////////////////////////////////////////////
-    // -- iteration for each input triggers -- //
-    /////////////////////////////////////////////
-    for( int itrigName = 0; itrigName < ntrigName; itrigName++ ){
-      cout << "[SKFlatMaker::beginRun] \t[" << itrigName << "th Input Trigger = " << MuonHLT[itrigName] << "]" << endl;
+    //==== iteration for each Trigger Name WildCards
+    for(unsigned int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ){
+      cout << "[SKFlatMaker::beginRun] [" << it_HLTWC << "th Input Trigger Name WildCard = " << HLTName_WildCard[it_HLTWC] << "]" << endl;
     
-      listRemoval[itrigName] = 0;
-      
-      // check list of triggers
-      //cout << "trigger = " << itrigName << " " << MuonHLT[itrigName] << endl;
-      // bool isMatched = false;
-      
-      // -- find triggers in HLT configuration matched with a input trigger using wild card -- //
-      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(triggerNames, MuonHLT[itrigName]);
-      
-      //cout << "\t[# matched trigger in HLT configuration for this trigger: " << matches.size() << endl;
+      //==== find triggers in HLT configuration matched with a input trigger using wild card -- //
+      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(triggerNames, HLTName_WildCard[it_HLTWC]);
       
       if( !matches.empty() ){
-        //////////////////////////////////////////////
-        // -- iteration for each matched trigger -- //
-        //////////////////////////////////////////////
+
+        //==== iteration for each wildcard-matched trigger
+
         BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
-          cout << "[SKFlatMaker::beginRun] \t\t[matched trigger = " << *match << "]" << endl;
+          cout << "[SKFlatMaker::beginRun]   [matched trigger = " << *match << "]" << endl;
           ListHLT.push_back(*match);//save HLT list as a vector
         
-          // -- find modules corresponding to a trigger in HLT configuration -- //
+          //==== find modules corresponding to a trigger in HLT configuration
           std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
-          
-          // -- find prescale value -- //
-          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
-          MuonHLTPS.push_back(_preScaleValue);
-          ListHLTPS.push_back(_preScaleValue);
-          // cout << "Filter name: " << trigModuleNames[moduleNames.size()-2] << endl;
-          // for( size_t j = 0; j < moduleNames.size(); j++)
-          // {
-          //   TString name = moduleNames[j];
-          //   cout << "\t  Fliter Name: "<<moduleNames[j] << endl;
-          // }
-          
+          if(theDebugLevel>=2){
+            for(unsigned int it_md=0; it_md<moduleNames.size(); it_md++){
+            cout << "[SKFlatMaker::beginRun]      " << moduleNames.at(it_md) << endl;
+            }
+          }
+
           int nsize = moduleNames.size();
-          
+          //==== Last module = moduleNames[nsize-1] is always "hltBoolEnd"
           if( nsize-2 >= 0 ){
-            //cout << "module names = " << moduleNames[nsize-2] << " " << moduleNames[nsize-3] << endl;
             trigModuleNames.push_back(moduleNames[nsize-2]);
-            //cout << "Filter name: " << trigModuleNames[trigModuleNames.size()-1] << endl;
           
             if( nsize-3 >= 0 ){
               trigModuleNames_preFil.push_back(moduleNames[nsize-3]);
@@ -1222,47 +1269,27 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
               trigModuleNames_preFil.push_back("");
             }
           }
+
+          //==== find prescale value
+          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
+          ListHLTPS.push_back(_preScaleValue);
       
-          //break; // -- just take into account the case # mathced trigger = 1 -- //
-      
-        } // -- end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
+        } //==== end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
         
-      } // -- end of if( !matches.empty() ) -- //
-      else{
-        listRemoval[itrigName] = 1;
-      }
+      } //==== end of if( !matches.empty() ) -- //
     
       cout << endl;      
     
-    } // -- end of for( int itrigName = 0; itrigName < ntrigName; itrigName++ ): trigger iteration -- //
+    } // -- end of for( int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ): trigger iteration -- //
       
   } // -- end of else of if (!hltConfig_.init(iRun, iSetup, processName, changedConfig)) -- //
   
-  // -- Remove unavailable triggers -- //
-  cout << "[SKFlatMaker::beginRun] Check whether there are unavailable triggers ..." << endl;
-  int itmp = 0;
-  for( vector<string>::iterator iter = MuonHLT.begin(); iter != MuonHLT.end(); ){
-    if( listRemoval[itmp] > 0 ){
-      cout << "[SKFlatMaker::beginRun] \t" << *iter << " is not available in this HLT configuration .. remove it" << endl;
-      iter = MuonHLT.erase(iter);
-    }
-    else{
-      ++iter;
-    }
-      
-    itmp++;
-  }
-  //ntrigName = MuonHLT.size();
-  ntrigName = ListHLT.size();
-  
-  cout << "[SKFlatMaker::beginRun] # triggers after removing un-available triggers: " << nTrigName << " -> " << ntrigName << endl;
-  
-  cout << "[SKFlatMaker::beginRun] \n[Prescales]" << endl;
-  for( int i = 0; i < ntrigName; i++ )
+  cout << "[SKFlatMaker::beginRun] #### Prescales ####" << endl;
+  for(unsigned int i = 0; i < ListHLT.size(); i++ )
     cout << "[SKFlatMaker::beginRun] [" << ListHLT[i] << "]\t\t" << ListHLTPS[i] << endl;
   
   // trigger filters
-  for( int itrig = 0; itrig < ntrigName; itrig++ )
+  for(unsigned int itrig = 0; itrig < ListHLT.size(); itrig++ )
     cout << "[SKFlatMaker::beginRun] Filter name: " << itrig << " " << ListHLT[itrig] << " " << trigModuleNames[itrig] << " " << trigModuleNames_preFil[itrig] << endl;
   
   cout << "[SKFlatMaker::beginRun] ##### End of Begin Run #####" << endl;
@@ -1287,31 +1314,38 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   
   int ntrigName = ListHLT.size();
   
-  // -- read the whole HLT trigger lists fired in an event -- //
-  bool *trigFired = new bool[ntrigName];
-  for( int i = 0; i < ntrigName; i++ ) 
-    trigFired[i] = false;
-  
   Handle<TriggerResults> trigResult;
   iEvent.getByToken(TriggerToken, trigResult);
   
   if( !trigResult.failedToGet() ){
     int ntrigs = trigResult->size();
+    //==== all trigger pathes inthe inputfile
     const edm::TriggerNames trigName = iEvent.triggerNames(*trigResult);
-    
-    // cout << "trigger names in trigger result (HLT)" << endl;
-    // for(int itrig=0; itrig<(int)trigName.size(); itrig++)
-    //   cout << "trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
-    
+
+    if(theDebugLevel>=2){
+      cout << "[SKFlatMaker::hltReport] trigger names in trigger result (HLT)" << endl;
+      for(int itrig=0; itrig<(int)trigName.size(); itrig++)
+        cout << "[SKFlatMaker::hltReport] trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
+    }
+
+    //==== Loop over triggers we are interested in (i.e., ListHLT)
     for( int itrigName = 0; itrigName < ntrigName; itrigName++ ){
-    std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), ListHLT[itrigName]);
-    if( !matches.empty() ){
+      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), ListHLT[itrigName]);
+
+      HLT_TriggerName.push_back(ListHLT[itrigName]);
+      HLT_TriggerPrescale.push_back(ListHLTPS[itrigName]);
+
+      if( !matches.empty() ){
         BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
-          //cout << "trigger match = " << *match << endl;
           if( trigName.triggerIndex(*match) >= (unsigned int)ntrigs ) continue;
+
+          //==== Check if this trigger is fired
           if( trigResult->accept(trigName.triggerIndex(*match)) ){
-            trigFired[itrigName] = true;
-          }//if trigger fired
+            HLT_TriggerFired.push_back(true);
+          }
+          else{
+            HLT_TriggerFired.push_back(false);
+          }
         }
         
       }
@@ -1344,14 +1378,10 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   }
   
   
+  //==============
+  //==== MiniAOD
+  //==============
   
-  ///////////////////
-  // -- MiniAOD -- //
-  ///////////////////
-  // cout << "// -- HLT Report for MINIAOD is used -- //" << endl;
-  
-  //cout << "------------------" << endl;
-  //cout << "suohspot 1 : Run Num : " << iEvent.id().run() << ", Evt Num : " << iEvent.id().event() << endl;
   edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
   iEvent.getByToken(TriggerObjectToken, triggerObject);
   
@@ -1381,22 +1411,23 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0) Flag_eeBadScFilter = METFilterResults-> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0) Flag_ecalBadCalibFilter = METFilterResults -> accept(i);
   }
-  
-  int ntrigTot = 0;
-  
+
+  //==== Loop for Trigger Object
+  //==== We can check mu_mathced_trigger etc..
   if( !trigResult.failedToGet() ){
     const edm::TriggerNames names = iEvent.triggerNames(*trigResult);
-    
-    // cout << "[# of trigger object in this event: " << (*triggerObject).size() << endl;
+
+    //cout << "[# of trigger object in this event: " << (*triggerObject).size() << endl;
     for (pat::TriggerObjectStandAlone obj : *triggerObject){
       obj.unpackPathNames(names);
       obj.unpackFilterLabels(iEvent, *trigResult);  //added Suoh
       
-      // cout << "# Filters: " << obj.filterLabels().size() << endl;
+      //cout << "# Filters: " << obj.filterLabels().size() << endl;
       for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter ){
-        // -- Get the full name of i-th filter -- //
+
+        //==== Get the full name of i-th filter -- //
         std::string fullname = obj.filterLabels()[i_filter];
-        
+        //cout << "[JSKIM] fullname = " << fullname << endl;
         std::string filterName;
         
         // -- Find ":" in the full name -- //
@@ -1407,29 +1438,25 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
           filterName = fullname.substr(0, m);
         else
           filterName = fullname;
+
+        //cout << "[JSKIM] filterName = " << filterName << endl;
         
-        //cout << "\t[" << i_filter << "th Filter] FullName = " << fullname << ", FilterName = " << filterName << endl;
-        
-        // -- Loop for the triggers that a user inserted in this code -- //
+        //==== Loop for the triggers that a user inserted in this code
         for( int itf = 0; itf < ntrigName; itf++ ){
-          // cout << "\t\t[" << itf << "th trigger] Name = " << MuonHLT[itf] << ", trigModuleName = " << trigModuleNames[itf] << endl;
           string name = "";
       
-          // -- Store HLT object information only if trigModuleName is equal to this filter name -- //
+          //==== Store HLT object information only if trigModuleName is equal to this filter name
           if( filterName == trigModuleNames[itf] ){
-            // cout << "\t\t\t[Matched]: filterName = " << filterName << ", Trigger Name = " << MuonHLT[itf] << endl;
-            //name = MuonHLT[itf];
             name = ListHLT[itf];
-            //int _ps = MuonHLTPS[itf];
             int _ps = ListHLTPS[itf];
-            _HLT_trigType[ntrigTot] = itf;
-            _HLT_trigFired[ntrigTot] = trigFired[itf];
-            _HLT_trigPt[ntrigTot] = obj.pt();
-            _HLT_trigEta[ntrigTot] = obj.eta();
-            _HLT_trigPhi[ntrigTot] = obj.phi();
-            _HLT_trigName.push_back(name);
-            _HLT_trigPS.push_back(_ps);
-            ntrigTot++;
+
+            HLTObject_Type.push_back( itf );
+            HLTObject_Fired.push_back( HLT_TriggerFired[itf] );
+            HLTObject_pt.push_back( obj.pt() );
+            HLTObject_eta.push_back( obj.eta() );
+            HLTObject_phi.push_back( obj.phi() );
+            HLTObject_Name.push_back(name);
+            HLTObject_PS.push_back(_ps);
           }
       
           // cout << endl;
@@ -1443,8 +1470,6 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     } // -- end of trigger object iteration -- //
       
   } // -- end of !trigResult.failedToGet() -- //
-  
-  _HLT_ntrig = ntrigTot;
   
 }
 
@@ -1506,16 +1531,14 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   using reco::MuonCollection;
   MuonCollection::const_iterator imuon;
   
-  int _nMuon = 0;
-  Nmuons = muonHandle->size();
   for( unsigned i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
     const pat::Muon imuon = muonHandle->at(i);
     
-    if( imuon.isStandAloneMuon() )   isSTAmuon[_nMuon] = 1;
-    if( imuon.isGlobalMuon() )     isGLBmuon[_nMuon] = 1;     
-    if( imuon.isTrackerMuon() )   isTRKmuon[_nMuon] = 1;  
-    if( imuon.isPFMuon() )       isPFmuon[_nMuon] = 1;
+    if( imuon.isStandAloneMuon() )   muon_isStandAlone.push_back( 1 );
+    if( imuon.isGlobalMuon() )     muon_isGlobal.push_back( 1 );     
+    if( imuon.isTrackerMuon() )   muon_isTracker.push_back( 1 );  
+    if( imuon.isPFMuon() )       muon_isPF.push_back( 1 );
     
     // -- bits 0-1-2-3 = DT stations 1-2-3-4 -- //
     // -- bits 4-5-6-7 = CSC stations 1-2-3-4 -- //
@@ -1528,7 +1551,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
         _segments += imuon.numberOfSegments(istation, idet);
       }
     }
-    Muon_nSegments[_nMuon] = _segments;
+    muon_nSegments.push_back( _segments );
       
     // cout << "##### Analyze:Muon Type #####" << endl;
       
@@ -1544,185 +1567,181 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     
     // -- Global track information -- //
     if( glbTrack.isNonnull() ){
-			Muon_chi2dof[_nMuon] = glbTrack->normalizedChi2();
-			Muon_nhits[_nMuon] = glbTrack->numberOfValidHits();
-			
-			Muon_qoverp[_nMuon] = glbTrack->qoverp();
-			Muon_theta[_nMuon] = glbTrack->theta();
-			Muon_lambda[_nMuon] = glbTrack->lambda();
-			Muon_dxy[_nMuon] = glbTrack->dxy();
-			Muon_d0[_nMuon] = glbTrack->d0();
-			Muon_dsz[_nMuon] = glbTrack->dsz();
-			Muon_dz[_nMuon] = glbTrack->dz();
-			Muon_dxyBS[_nMuon] = glbTrack->dxy(beamSpot.position());
-			Muon_dszBS[_nMuon] = glbTrack->dsz(beamSpot.position());
-			Muon_dzBS[_nMuon] = glbTrack->dz(beamSpot.position());
-			
-			Muon_vx[_nMuon] = glbTrack->vx();
-			Muon_vy[_nMuon] = glbTrack->vy();
-			Muon_vz[_nMuon] = glbTrack->vz();
-			
-			const reco::HitPattern & glbhit = glbTrack->hitPattern();
-			Muon_muonHits[_nMuon] = glbhit.numberOfValidMuonHits();
-			
-			Muon_trackerHitsGLB[_nMuon] = glbhit.numberOfValidTrackerHits();
-			Muon_pixelHitsGLB[_nMuon] = glbhit.numberOfValidPixelHits();
-			Muon_trackerLayersGLB[_nMuon] = glbhit.trackerLayersWithMeasurement();
-			
-		} // -- end of if( glbTrack.isNonnull() ) -- //
+      muon_chi2dof.push_back( glbTrack->normalizedChi2() );
+      muon_validhits.push_back( glbTrack->numberOfValidHits() );
+      
+      muon_qoverp.push_back( glbTrack->qoverp() );
+      muon_theta.push_back( glbTrack->theta() );
+      muon_lambda.push_back( glbTrack->lambda() );
+      muon_dxy.push_back( glbTrack->dxy() );
+      muon_d0.push_back( glbTrack->d0() );
+      muon_dsz.push_back( glbTrack->dsz() );
+      muon_dz.push_back( glbTrack->dz() );
+      muon_dxyBS.push_back( glbTrack->dxy(beamSpot.position()) );
+      muon_dszBS.push_back( glbTrack->dsz(beamSpot.position()) );
+      muon_dzBS.push_back( glbTrack->dz(beamSpot.position()) );
+      
+      muon_vx.push_back( glbTrack->vx() );
+      muon_vy.push_back( glbTrack->vy() );
+      muon_vz.push_back( glbTrack->vz() );
+      
+      const reco::HitPattern & glbhit = glbTrack->hitPattern();
+      muon_validmuonhits.push_back( glbhit.numberOfValidMuonHits() );
+      
+      muon_trackerHitsGLB.push_back( glbhit.numberOfValidTrackerHits() );
+      muon_pixelHitsGLB.push_back( glbhit.numberOfValidPixelHits() );
+      muon_trackerLayersGLB.push_back( glbhit.trackerLayersWithMeasurement() );
+      
+    } // -- end of if( glbTrack.isNonnull() ) -- //
     else{
       if( trackerTrack.isNonnull() ){
-        Muon_chi2dof[_nMuon] = trackerTrack->normalizedChi2();
-        Muon_nhits[_nMuon] = trackerTrack->numberOfValidHits();
+        muon_chi2dof.push_back( trackerTrack->normalizedChi2() );
+        muon_validhits.push_back( trackerTrack->numberOfValidHits() );
         
-        Muon_qoverp[_nMuon] = trackerTrack->qoverp();
-        Muon_theta[_nMuon] = trackerTrack->theta();
-        Muon_lambda[_nMuon] = trackerTrack->lambda();
-        Muon_dxy[_nMuon] = trackerTrack->dxy();
-        Muon_d0[_nMuon] = trackerTrack->d0();
-        Muon_dsz[_nMuon] = trackerTrack->dsz();
-        Muon_dz[_nMuon] = trackerTrack->dz();
-        Muon_dxyBS[_nMuon] = trackerTrack->dxy(beamSpot.position());
-        Muon_dszBS[_nMuon] = trackerTrack->dsz(beamSpot.position());
-        Muon_dzBS[_nMuon] = trackerTrack->dz(beamSpot.position());
+        muon_qoverp.push_back( trackerTrack->qoverp() );
+        muon_theta.push_back( trackerTrack->theta() );
+        muon_lambda.push_back( trackerTrack->lambda() );
+        muon_dxy.push_back( trackerTrack->dxy() );
+        muon_d0.push_back( trackerTrack->d0() );
+        muon_dsz.push_back( trackerTrack->dsz() );
+        muon_dz.push_back( trackerTrack->dz() );
+        muon_dxyBS.push_back( trackerTrack->dxy(beamSpot.position()) );
+        muon_dszBS.push_back( trackerTrack->dsz(beamSpot.position()) );
+        muon_dzBS.push_back( trackerTrack->dz(beamSpot.position()) );
         
-        Muon_vx[_nMuon] = trackerTrack->vx();
-        Muon_vy[_nMuon] = trackerTrack->vy();
-        Muon_vz[_nMuon] = trackerTrack->vz();
+        muon_vx.push_back( trackerTrack->vx() );
+        muon_vy.push_back( trackerTrack->vy() );
+        muon_vz.push_back( trackerTrack->vz() );
         
         if( muonTrack.isNonnull() ){
-					const reco::HitPattern & muonhit = muonTrack->hitPattern();
-					Muon_muonHits[_nMuon] = muonhit.numberOfValidMuonHits();
+          const reco::HitPattern & muonhit = muonTrack->hitPattern();
+          muon_validmuonhits.push_back( muonhit.numberOfValidMuonHits() );
         }
         else
-          Muon_muonHits[_nMuon] = 0;
+          muon_validmuonhits.push_back( 0 );
 
       }
     } // -- end of else of if( glbTrack.isNonnull() ) -- //
       
     if( trackerTrack.isNonnull() ){
-			const reco::HitPattern & inhit = trackerTrack->hitPattern();
-			
-			Muon_trackerHits[_nMuon] = inhit.numberOfValidTrackerHits();
-			Muon_pixelHits[_nMuon] = inhit.numberOfValidPixelHits();
-			Muon_trackerLayers[_nMuon] = inhit.trackerLayersWithMeasurement();
-		}
+      const reco::HitPattern & inhit = trackerTrack->hitPattern();
       
-		if( !pvHandle->empty() && !pvHandle->front().isFake() ){
-			Muon_dxyVTX[_nMuon] = imuon.muonBestTrack()->dxy(vtx.position());
-			Muon_dszVTX[_nMuon] = imuon.muonBestTrack()->dsz(vtx.position());
-			Muon_dzVTX[_nMuon] = imuon.muonBestTrack()->dz(vtx.position());
-	
-			// Muon_dxycktVTX[_nMuon] = cktTrack->dxy(vtx.position());
-			// Muon_dszcktVTX[_nMuon] = cktTrack->dsz(vtx.position());
-			// Muon_dzcktVTX[_nMuon] = cktTrack->dz(vtx.position());
-		}
+      muon_trackerHits.push_back( inhit.numberOfValidTrackerHits() );
+      muon_pixelHits.push_back( inhit.numberOfValidPixelHits() );
+      muon_trackerLayers.push_back( inhit.trackerLayersWithMeasurement() );
+    }
       
-		// muon1 kinematics
-		// Muon_cktpT[_nMuon] = cktTrack->pt();
-		// Muon_cktPx[_nMuon] = cktTrack->px();
-		// Muon_cktPy[_nMuon] = cktTrack->py();
-		// Muon_cktPz[_nMuon] = cktTrack->pz();
-		// Muon_cktpTError[_nMuon] = cktTrack->ptError();
-		
-		Muon_pT[_nMuon] = imuon.pt();
-		Muon_Px[_nMuon] = imuon.px();
-		Muon_Py[_nMuon] = imuon.py();
-		Muon_Pz[_nMuon] = imuon.pz();
-		Muon_eta[_nMuon] = imuon.eta();
-		Muon_phi[_nMuon] = imuon.phi();
-		
-		Muon_dB[_nMuon] = imuon.dB();
+    if( !pvHandle->empty() && !pvHandle->front().isFake() ){
+      muon_dxyVTX.push_back( imuon.muonBestTrack()->dxy(vtx.position()) );
+      muon_dszVTX.push_back( imuon.muonBestTrack()->dsz(vtx.position()) );
+      muon_dzVTX.push_back( imuon.muonBestTrack()->dz(vtx.position()) );
+  
+      // muon_dxycktVTX.push_back( cktTrack->dxy(vtx.position()) );
+      // muon_dszcktVTX.push_back( cktTrack->dsz(vtx.position()) );
+      // muon_dzcktVTX.push_back( cktTrack->dz(vtx.position()) );
+    }
       
-		// -- Various track informations -- //
-		// -- MuonBestTrack -- //
-		if( imuon.muonBestTrack().isNonnull() ){
-			Muon_Best_pT[_nMuon] = imuon.muonBestTrack()->pt();
-			Muon_Best_pTError[_nMuon] = imuon.muonBestTrack()->ptError();
-			Muon_Best_Px[_nMuon] = imuon.muonBestTrack()->px();
-			Muon_Best_Py[_nMuon] = imuon.muonBestTrack()->py();
-			Muon_Best_Pz[_nMuon] = imuon.muonBestTrack()->pz();
-			Muon_Best_eta[_nMuon] = imuon.muonBestTrack()->eta();
-			Muon_Best_phi[_nMuon] = imuon.muonBestTrack()->phi();
+    // muon1 kinematics
+    // muon_cktpT.push_back( cktTrack->pt() );
+    // muon_cktPx.push_back( cktTrack->px() );
+    // muon_cktPy.push_back( cktTrack->py() );
+    // muon_cktPz.push_back( cktTrack->pz() );
+    // muon_cktpTError.push_back( cktTrack->ptError() );
+    
+    muon_pt.push_back( imuon.pt() );
+    muon_Px.push_back( imuon.px() );
+    muon_Py.push_back( imuon.py() );
+    muon_Pz.push_back( imuon.pz() );
+    muon_eta.push_back( imuon.eta() );
+    muon_phi.push_back( imuon.phi() );
+    
+    muon_dB.push_back( imuon.dB() );
+      
+    // -- Various track informations -- //
+    // -- MuonBestTrack -- //
+    if( imuon.muonBestTrack().isNonnull() ){
+      muon_Best_pt.push_back( imuon.muonBestTrack()->pt() );
+      muon_Best_ptError.push_back( imuon.muonBestTrack()->ptError() );
+      muon_Best_Px.push_back( imuon.muonBestTrack()->px() );
+      muon_Best_Py.push_back( imuon.muonBestTrack()->py() );
+      muon_Best_Pz.push_back( imuon.muonBestTrack()->pz() );
+      muon_Best_eta.push_back( imuon.muonBestTrack()->eta() );
+      muon_Best_phi.push_back( imuon.muonBestTrack()->phi() );
     }
       
       
     // -- Inner Track -- //
     if( imuon.innerTrack().isNonnull() ){
-			Muon_Inner_pT[_nMuon] = imuon.innerTrack()->pt();
-			Muon_Inner_pTError[_nMuon] = imuon.innerTrack()->ptError();
-			Muon_Inner_Px[_nMuon] = imuon.innerTrack()->px();
-			Muon_Inner_Py[_nMuon] = imuon.innerTrack()->py();
-			Muon_Inner_Pz[_nMuon] = imuon.innerTrack()->pz();
-			Muon_Inner_eta[_nMuon] = imuon.innerTrack()->eta();
-			Muon_Inner_phi[_nMuon] = imuon.innerTrack()->phi();
-		}
+      muon_Inner_pt.push_back( imuon.innerTrack()->pt() );
+      muon_Inner_ptError.push_back( imuon.innerTrack()->ptError() );
+      muon_Inner_Px.push_back( imuon.innerTrack()->px() );
+      muon_Inner_Py.push_back( imuon.innerTrack()->py() );
+      muon_Inner_Pz.push_back( imuon.innerTrack()->pz() );
+      muon_Inner_eta.push_back( imuon.innerTrack()->eta() );
+      muon_Inner_phi.push_back( imuon.innerTrack()->phi() );
+    }
       
-		// -- Outer Track -- //
-		if( imuon.outerTrack().isNonnull() ){
-			Muon_Outer_pT[_nMuon] = imuon.outerTrack()->pt();
-			Muon_Outer_pTError[_nMuon] = imuon.outerTrack()->ptError();
-			Muon_Outer_Px[_nMuon] = imuon.outerTrack()->px();
-			Muon_Outer_Py[_nMuon] = imuon.outerTrack()->py();
-			Muon_Outer_Pz[_nMuon] = imuon.outerTrack()->pz();
-			Muon_Outer_eta[_nMuon] = imuon.outerTrack()->eta();
-			Muon_Outer_phi[_nMuon] = imuon.outerTrack()->phi();
+    // -- Outer Track -- //
+    if( imuon.outerTrack().isNonnull() ){
+      muon_Outer_pt.push_back( imuon.outerTrack()->pt() );
+      muon_Outer_ptError.push_back( imuon.outerTrack()->ptError() );
+      muon_Outer_Px.push_back( imuon.outerTrack()->px() );
+      muon_Outer_Py.push_back( imuon.outerTrack()->py() );
+      muon_Outer_Pz.push_back( imuon.outerTrack()->pz() );
+      muon_Outer_eta.push_back( imuon.outerTrack()->eta() );
+      muon_Outer_phi.push_back( imuon.outerTrack()->phi() );
     }
       
     // -- Global Track -- //
     if( imuon.globalTrack().isNonnull() ){
-			Muon_GLB_pT[_nMuon] = imuon.globalTrack()->pt();
-			Muon_GLB_pTError[_nMuon] = imuon.globalTrack()->ptError();
-			Muon_GLB_Px[_nMuon] = imuon.globalTrack()->px();
-			Muon_GLB_Py[_nMuon] = imuon.globalTrack()->py();
-			Muon_GLB_Pz[_nMuon] = imuon.globalTrack()->pz();
-			Muon_GLB_eta[_nMuon] = imuon.globalTrack()->eta();
-			Muon_GLB_phi[_nMuon] = imuon.globalTrack()->phi();
+      muon_GLB_pt.push_back( imuon.globalTrack()->pt() );
+      muon_GLB_ptError.push_back( imuon.globalTrack()->ptError() );
+      muon_GLB_Px.push_back( imuon.globalTrack()->px() );
+      muon_GLB_Py.push_back( imuon.globalTrack()->py() );
+      muon_GLB_Pz.push_back( imuon.globalTrack()->pz() );
+      muon_GLB_eta.push_back( imuon.globalTrack()->eta() );
+      muon_GLB_phi.push_back( imuon.globalTrack()->phi() );
     }
       
     // -- tuneP MuonBestTrack -- //
     if( imuon.tunePMuonBestTrack().isNonnull() ){
-			Muon_TuneP_pT[_nMuon] = imuon.tunePMuonBestTrack()->pt();
-			Muon_TuneP_pTError[_nMuon] = imuon.tunePMuonBestTrack()->ptError();
-			Muon_TuneP_Px[_nMuon] = imuon.tunePMuonBestTrack()->px();
-			Muon_TuneP_Py[_nMuon] = imuon.tunePMuonBestTrack()->py();
-			Muon_TuneP_Pz[_nMuon] = imuon.tunePMuonBestTrack()->pz();
-			Muon_TuneP_eta[_nMuon] = imuon.tunePMuonBestTrack()->eta();
-			Muon_TuneP_phi[_nMuon] = imuon.tunePMuonBestTrack()->phi();
+      muon_TuneP_pt.push_back( imuon.tunePMuonBestTrack()->pt() );
+      muon_TuneP_ptError.push_back( imuon.tunePMuonBestTrack()->ptError() );
+      muon_TuneP_Px.push_back( imuon.tunePMuonBestTrack()->px() );
+      muon_TuneP_Py.push_back( imuon.tunePMuonBestTrack()->py() );
+      muon_TuneP_Pz.push_back( imuon.tunePMuonBestTrack()->pz() );
+      muon_TuneP_eta.push_back( imuon.tunePMuonBestTrack()->eta() );
+      muon_TuneP_phi.push_back( imuon.tunePMuonBestTrack()->phi() );
     }
       
-		//-- ISOLATIONS GO HERE -- //
-		// -- detector based -- //
-		Muon_trkiso[_nMuon] = imuon.isolationR03().sumPt;
-		Muon_hcaliso[_nMuon] = imuon.isolationR03().hadEt;
-		Muon_ecaliso[_nMuon] = imuon.isolationR03().emEt;
-		Muon_trkisoR05[_nMuon] = imuon.isolationR05().sumPt;
-		Muon_hcalisoR05[_nMuon] = imuon.isolationR05().hadEt;
-		Muon_ecalisoR05[_nMuon] = imuon.isolationR05().emEt; 
-		
-		// -- pf isolation -- // 
-		Muon_PfChargedHadronIsoR04[_nMuon] = imuon.pfIsolationR04().sumChargedHadronPt;
-		Muon_PfNeutralHadronIsoR04[_nMuon] = imuon.pfIsolationR04().sumNeutralHadronEt;
-		Muon_PfGammaIsoR04[_nMuon] = imuon.pfIsolationR04().sumPhotonEt;
-		Muon_PFSumPUIsoR04[_nMuon] = imuon.pfIsolationR04().sumPUPt;
-		
-		Muon_PfChargedHadronIsoR03[_nMuon] = imuon.pfIsolationR03().sumChargedHadronPt;
-		Muon_PfNeutralHadronIsoR03[_nMuon] = imuon.pfIsolationR03().sumNeutralHadronEt;
-		Muon_PfGammaIsoR03[_nMuon] = imuon.pfIsolationR03().sumPhotonEt;
-		Muon_PFSumPUIsoR03[_nMuon] = imuon.pfIsolationR03().sumPUPt;
-		
-		// -- Else -- //
-		Muon_charge[_nMuon] = imuon.charge();
-		Muon_nChambers[_nMuon] = imuon.numberOfChambers(); // -- # of chambers -- //
-		Muon_nMatches[_nMuon] = imuon.numberOfMatchedStations(); // -- # of chambers with matched segments -- //
-		Muon_nMatchesRPCLayers[_nMuon] = imuon.numberOfMatchedRPCLayers();
-		Muon_stationMask[_nMuon] = imuon.stationMask(); // -- bit map of stations with matched segments -- //
-		
-    _nMuon++;
-      
+    //-- ISOLATIONS GO HERE -- //
+    // -- detector based -- //
+    muon_trkiso.push_back( imuon.isolationR03().sumPt );
+    muon_hcaliso.push_back( imuon.isolationR03().hadEt );
+    muon_ecaliso.push_back( imuon.isolationR03().emEt );
+    muon_trkisoR05.push_back( imuon.isolationR05().sumPt );
+    muon_hcalisoR05.push_back( imuon.isolationR05().hadEt );
+    muon_ecalisoR05.push_back( imuon.isolationR05().emEt ); 
+    
+    // -- pf isolation -- // 
+    muon_PfChargedHadronIsoR04.push_back( imuon.pfIsolationR04().sumChargedHadronPt );
+    muon_PfNeutralHadronIsoR04.push_back( imuon.pfIsolationR04().sumNeutralHadronEt );
+    muon_PfGammaIsoR04.push_back( imuon.pfIsolationR04().sumPhotonEt );
+    muon_PFSumPUIsoR04.push_back( imuon.pfIsolationR04().sumPUPt );
+    
+    muon_PfChargedHadronIsoR03.push_back( imuon.pfIsolationR03().sumChargedHadronPt );
+    muon_PfNeutralHadronIsoR03.push_back( imuon.pfIsolationR03().sumNeutralHadronEt );
+    muon_PfGammaIsoR03.push_back( imuon.pfIsolationR03().sumPhotonEt );
+    muon_PFSumPUIsoR03.push_back( imuon.pfIsolationR03().sumPUPt );
+    
+    // -- Else -- //
+    muon_charge.push_back( imuon.charge() );
+    muon_nChambers.push_back( imuon.numberOfChambers() ); // -- # of chambers -- //
+    muon_matchedstations.push_back( imuon.numberOfMatchedStations() ); // -- # of chambers with matched segments -- //
+    muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
+    
   } // -- End of imuon iteration -- //
   
-  nMuon = _nMuon;
 }
 
 //////////////////////////////
@@ -1768,351 +1787,188 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::Handle< std::vector<pat::Muon> > muonHandle;
   iEvent.getByToken(MuonToken, muonHandle);
   
-  int _nElectron = 0;
   std::vector< double > _ambGsfTrkPt;
   if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] for ElecHandle starts, ElecHandle->size() : " << ElecHandle->size() << endl;
   
-  for(int i=0; i< (int)ElecHandle->size(); i++)
-    {
-      const auto el = ElecHandle->ptrAt(i);
-      
-      //Electron_MVAIso[_nElectron] = (*mvaIsoValues)[el];
-      //Electron_MVANoIso[_nElectron] = (*mvaNoIsoValues)[el];
-      Electron_MVAIso[_nElectron] = el -> userFloat("ElectronMVAEstimatorRun2Fall17IsoV1Values");
-      Electron_MVANoIso[_nElectron] = el -> userFloat("ElectronMVAEstimatorRun2Fall17NoIsoV1Values");
-      //double ratio_E = el->userFloat("ecalTrkEnergyPostCorr") / el->energy();
-      double elec_theta = el -> theta();
-      double sin_theta = sin(elec_theta);
-      //cout << "elec_theta : " << elec_theta << ", sin_theta : " << sin_theta << endl;
-      //Electron_pT[_nElectron] = el->pt() * ratio_E;
-      Electron_pT[_nElectron] = el->userFloat("ecalTrkEnergyPostCorr") * sin_theta;
-      //double energy_t = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta;
-      //cout << "el->pt() : " << el->pt() << ", E(non-cor) * sin(theta) : " << energy_t <<", pt(corrected) : " << Electron_pT[_nElectron] << endl;
-      Electron_eta[_nElectron] = el->eta();
-      Electron_phi[_nElectron] = el->phi();
-      Electron_Px[_nElectron] = el->px();
-      Electron_Py[_nElectron] = el->py();
-      Electron_Pz[_nElectron] = el->pz();
-      //Electron_Energy[_nElectron] = el->energy();
-      Electron_Energy[_nElectron] = el->userFloat("ecalTrkEnergyPostCorr");
-      
-      //cout << "el->pt() :" << el->pt() << ", el->pt()*ratio :" << el->pt() * ratio_E << ", el->energy() : " << el->energy() << ", el->userFloat(ecalTrkEnergyPostCorr) : " << el->userFloat("ecalTrkEnergyPostCorr") << endl; 
-      
-      Electron_charge[_nElectron] = el->charge();
-      Electron_fbrem[_nElectron] = el->fbrem();
-      Electron_eOverP[_nElectron] = el->eSuperClusterOverP();
-      Electron_ecalDriven[_nElectron] = el->ecalDrivenSeed();
-      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] basic info. input" << endl;
-      
-      
-      // -- Information from SuperCluster -- //
-      Electron_EnergySC[_nElectron] = el->superCluster()->energy();
-      Electron_preEnergySC[_nElectron] = el->superCluster()->preshowerEnergy();
-      Electron_rawEnergySC[_nElectron] = el->superCluster()->rawEnergy();
-      Electron_etaSC[_nElectron] = el->superCluster()->eta();
-      Electron_phiSC[_nElectron] = el->superCluster()->phi();
-      double R = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y() +el->superCluster()->z()*el->superCluster()->z());
-      double Rt = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y());
-      Electron_etSC[_nElectron] = el->superCluster()->energy()*(Rt/R);
-      
-      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] supercluster" << endl;
-
-      
-      // -- Information from ECAL  -- //
-      Electron_sigmaIEtaIEta[_nElectron] = el->full5x5_sigmaIetaIeta();
-      Electron_Full5x5_SigmaIEtaIEta[_nElectron] = el->full5x5_sigmaIetaIeta();
-      Electron_E15[_nElectron] = el->e1x5();
-      Electron_E25[_nElectron] = el->e2x5Max();
-      Electron_E55[_nElectron] = el->e5x5();
-      // Electron_HoverE[_nElectron] = el->hcalOverEcal();
-      Electron_HoverE[_nElectron] = el->hadronicOverEm(); // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleHadronicOverEMCut.cc#L40 -- //
-      Electron_etaWidth[_nElectron] = el->superCluster()->etaWidth();
-      Electron_phiWidth[_nElectron] = el->superCluster()->phiWidth();
-      Electron_r9[_nElectron] = el->r9();
-      
-      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] ECAL" << endl;
-      
-      
-      // -- Information from ECAL & Track -- //
-      Electron_dEtaIn[_nElectron] = el->deltaEtaSuperClusterTrackAtVtx();
-      Electron_dPhiIn[_nElectron] = el->deltaPhiSuperClusterTrackAtVtx();
-      
-      // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleDEtaInSeedCut.cc#L30-L33 -- //
-      Electron_dEtaInSeed[_nElectron] = el->superCluster().isNonnull() && el->superCluster()->seed().isNonnull() ?
-  el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superCluster()->seed()->eta() : std::numeric_limits<float>::max();
-      
-      // -- |1/E-1/p| = |1/E - EoverPinner/E| is computed below. The if protects against ecalEnergy == inf or zero -- //
-      if( el->ecalEnergy() == 0 ) 
-  Electron_InvEminusInvP[_nElectron] = 1e30;
-      else if(  !std::isfinite( el->ecalEnergy() )  ) 
-  Electron_InvEminusInvP[_nElectron] = 1e30;
-      else 
-  Electron_InvEminusInvP[_nElectron] = fabs( 1.0/el->ecalEnergy() - el->eSuperClusterOverP()/el->ecalEnergy() );
-      
-      
-      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] ECAL & track" << endl;
-      
-      // -- Isolation -- //
-      double pfCharged = el->pfIsolationVariables().sumChargedHadronPt;
-      double pfNeutral = el->pfIsolationVariables().sumNeutralHadronEt;
-      double pfPhoton = el->pfIsolationVariables().sumPhotonEt;
-      double pfChargedFromPU = el->pfIsolationVariables().sumPUPt;
-      Electron_chIso03[_nElectron] = pfCharged;
-      Electron_nhIso03[_nElectron] = pfNeutral;
-      Electron_phIso03[_nElectron] = pfPhoton;
-      Electron_ChIso03FromPU[_nElectron] = pfChargedFromPU;
-      Electron_RelPFIso_dBeta[_nElectron] = (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - 0.5 * pfChargedFromPU))/(el->pt());
-      
-      // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt -- //
-      edm::FileInPath eaConstantsFile("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt");
-      EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
-      float abseta = fabs(el->superCluster()->eta());
-      float eA = effectiveAreas.getEffectiveArea(abseta);
-      Electron_RelPFIso_Rho[_nElectron] = (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - *rhoHandle * eA))/(el->pt());
-      
-      // cout << "##### fillElectrons: Before elecTrk #####" << endl;
-      
-      if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] Isolation" << endl;
-      
-      
-      // -- Track - Impact Parameter, Conversion rejection, Converted -- //
-      reco::GsfTrackRef elecTrk = el->gsfTrack();
-      
-      // Electron_mHits[_nElectron] = elecTrk->numberOfLostHits();
-      // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleMissingHitsCut.cc#L34-L41 -- //
-      constexpr reco::HitPattern::HitCategory missingHitType = reco::HitPattern::MISSING_INNER_HITS;
-      Electron_mHits[_nElectron] = elecTrk->hitPattern().numberOfAllHits(missingHitType);
-      
-      //calculate IP3D
-      const reco::TransientTrack &tt = theTTBuilder->build(elecTrk);
-      //reco::TransientTrack &tt = theTTBuilder->build(elecTrk);
-
-      /*
-      Vertex dummy;
-      const Vertex *pv = &dummy;
-      if (pvHandle->size() != 0) { 
-  pv = &*pvHandle->begin();
-      } else { // create a dummy PV
-  Vertex::Error e;
-  e(0, 0) = 0.0015 * 0.0015;
-  e(1, 1) = 0.0015 * 0.0015;
-  e(2, 2) = 15. * 15.;
-  Vertex::Point p(0, 0, 0);
-  dummy = Vertex(p, e, 0, 0, 0);
-      }
-      */
-      
-      const reco::Vertex &vtx = pvHandle->front();
-      //reco::Vertex &vtx = pvHandle->front();
-      
-      const std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt, vtx);
-      //std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt,vtx);
-
-      const double gsfsign = ( (-elecTrk->dxy(vtx.position())) >=0 ) ? 1. : -1.;
-      if (ip3dpv.first) {
-  double ip3d = gsfsign*ip3dpv.second.value();
-  double ip3derr = ip3dpv.second.error();  
-  Electrron_ip3D[_nElectron] = ip3d; 
-  Electrron_sigip3D[_nElectron] = ip3d/ip3derr;
-      }
-      
-      Electron_sigdxy[_nElectron] = elecTrk->dxy() / elecTrk->dxyError();
-      Electron_dxy[_nElectron] = elecTrk->dxy();
-      Electron_dz[_nElectron] = elecTrk->dz();
-      Electron_dxyBS[_nElectron] = elecTrk->dxy(beamSpot.position());
-      Electron_dzBS[_nElectron] = elecTrk->dz(beamSpot.position());
-      
-      if( elecTrk.isNonnull() )
-  {
-    Electron_gsfpT[_nElectron] = elecTrk->pt();
-    Electron_gsfPx[_nElectron] = elecTrk->px();
-    Electron_gsfPy[_nElectron] = elecTrk->py();
-    Electron_gsfPz[_nElectron] = elecTrk->pz();
-    Electron_gsfEta[_nElectron] = elecTrk->eta();
-    Electron_gsfPhi[_nElectron] = elecTrk->phi();
-    Electron_gsfCharge[_nElectron] = elecTrk->charge();
-  }
-      
-      if( !pvHandle->empty() && !pvHandle->front().isFake() )
-  {
-    //const reco::Vertex &vtx = pvHandle->front();
-    Electron_dxyVTX[_nElectron] = elecTrk->dxy(vtx.position());
-    Electron_dzVTX[_nElectron] = elecTrk->dz(vtx.position());
-  }
-      
-      bool passConvVeto = !ConversionTools::hasMatchedConversion(*el, conversions, beamSpot.position());
-      Electron_passConvVeto[_nElectron] = passConvVeto;
-      
-      // -- for ID variables -- //
-      bool isPassVeto  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-veto");
-      bool isPassLoose  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-loose");
-      bool isPassMedium = el -> electronID("cutBasedElectronID-Fall17-94X-V1-medium");
-      bool isPassTight  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-tight");
-      bool isPassMVA_noIso_WP80 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp80");
-      bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
-      bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
-      bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
-      
-      // cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
-      Electron_passVetoID[_nElectron] = isPassVeto;
-      Electron_passLooseID[_nElectron] = isPassLoose;
-      Electron_passMediumID[_nElectron] = isPassMedium;
-      Electron_passTightID[_nElectron] = isPassTight;
-      Electron_passMVAID_noIso_WP80[_nElectron] = isPassMVA_noIso_WP80;
-      Electron_passMVAID_noIso_WP90[_nElectron] = isPassMVA_noIso_WP90;
-      Electron_passMVAID_iso_WP80[_nElectron] = isPassMVA_iso_WP80;
-      Electron_passMVAID_iso_WP90[_nElectron] = isPassMVA_iso_WP90;
-      
-      // Electron_passHEEPID[_nElectron] = isPassHEEP;
-      
-      // cout << "##### fillElectrons: Start Dielectron Loop #####" << endl;
-      // -- Dielectron variables -- //
-      for(int j=0; j<(int)ElecHandle->size(); j++)
-  {
-    if( i <= j ) continue; // -- prevent double-counting -- //
+  for(int i=0; i< (int)ElecHandle->size(); i++){
+    const auto el = ElecHandle->ptrAt(i);
     
-    const auto el2 = ElecHandle->ptrAt(j);
+    //electron_MVAIso.push_back( (*mvaIsoValues)[el] );
+    //electron_MVANoIso.push_back( (*mvaNoIsoValues)[el] );
+    electron_MVAIso.push_back( el -> userFloat("ElectronMVAEstimatorRun2Fall17IsoV1Values") );
+    electron_MVANoIso.push_back( el -> userFloat("ElectronMVAEstimatorRun2Fall17NoIsoV1Values") );
+    //double ratio_E = el->userFloat("ecalTrkEnergyPostCorr") / el->energy();
+    double elec_theta = el -> theta();
+    double sin_theta = sin(elec_theta);
+    //electron_pt.push_back( el->pt() * ratio_E );
+    electron_pt.push_back( el->userFloat("ecalTrkEnergyPostCorr") * sin_theta );
+    //double energy_t = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta;
+    electron_eta.push_back( el->eta() );
+    electron_phi.push_back( el->phi() );
+    electron_Px.push_back( el->px() );
+    electron_Py.push_back( el->py() );
+    electron_Pz.push_back( el->pz() );
+    //electron_Energy.push_back( el->energy() );
+    electron_Energy.push_back( el->userFloat("ecalTrkEnergyPostCorr") );
     
+    electron_charge.push_back( el->charge() );
+    electron_fbrem.push_back( el->fbrem() );
+    electron_eOverP.push_back( el->eSuperClusterOverP() );
+    electron_ecalDriven.push_back( el->ecalDrivenSeed() );
+    if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] basic info. input" << endl;
+    
+    
+    // -- Information from SuperCluster -- //
+    electron_scEnergy.push_back( el->superCluster()->energy() );
+    electron_scPreEnergy.push_back( el->superCluster()->preshowerEnergy() );
+    electron_scRawEnergy.push_back( el->superCluster()->rawEnergy() );
+    electron_scEta.push_back( el->superCluster()->eta() );
+    electron_scPhi.push_back( el->superCluster()->phi() );
+    double R = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y() +el->superCluster()->z()*el->superCluster()->z());
+    double Rt = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y());
+    electron_scEt.push_back( el->superCluster()->energy()*(Rt/R) );
+    
+    if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] supercluster" << endl;
+
+    
+    // -- Information from ECAL  -- //
+    electron_sigmaIEtaIEta.push_back( el->full5x5_sigmaIetaIeta() );
+    electron_Full5x5_SigmaIEtaIEta.push_back( el->full5x5_sigmaIetaIeta() );
+    electron_E15.push_back( el->e1x5() );
+    electron_E25.push_back( el->e2x5Max() );
+    electron_E55.push_back( el->e5x5() );
+    // electron_HoverE.push_back( el->hcalOverEcal() );
+    electron_HoverE.push_back( el->hadronicOverEm() ); // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleHadronicOverEMCut.cc#L40 -- //
+    electron_etaWidth.push_back( el->superCluster()->etaWidth() );
+    electron_phiWidth.push_back( el->superCluster()->phiWidth() );
+    electron_r9.push_back( el->r9() );
+    
+    if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] ECAL" << endl;
+    
+    
+    // -- Information from ECAL & Track -- //
+    electron_dEtaIn.push_back( el->deltaEtaSuperClusterTrackAtVtx() );
+    electron_dPhiIn.push_back( el->deltaPhiSuperClusterTrackAtVtx() );
+    
+    // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleDEtaInSeedCut.cc#L30-L33 -- //
+    electron_dEtaInSeed.push_back( el->superCluster().isNonnull() && el->superCluster()->seed().isNonnull() ?
+el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superCluster()->seed()->eta() : std::numeric_limits<float>::max() );
+    
+    // -- |1/E-1/p| = |1/E - EoverPinner/E| is computed below. The if protects against ecalEnergy == inf or zero -- //
+    if( el->ecalEnergy() == 0 ) electron_InvEminusInvP.push_back( 1e30 );
+    else if(  !std::isfinite( el->ecalEnergy() )  ) electron_InvEminusInvP.push_back( 1e30 );
+    else electron_InvEminusInvP.push_back( fabs( 1.0/el->ecalEnergy() - el->eSuperClusterOverP()/el->ecalEnergy() ) );
+    
+    if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] ECAL & track" << endl;
+    
+    // -- Isolation -- //
+    double pfCharged = el->pfIsolationVariables().sumChargedHadronPt;
+    double pfNeutral = el->pfIsolationVariables().sumNeutralHadronEt;
+    double pfPhoton = el->pfIsolationVariables().sumPhotonEt;
+    double pfChargedFromPU = el->pfIsolationVariables().sumPUPt;
+    electron_chIso03.push_back( pfCharged );
+    electron_nhIso03.push_back( pfNeutral );
+    electron_phIso03.push_back( pfPhoton );
+    electron_puChIso03.push_back( pfChargedFromPU );
+    electron_RelPFIso_dBeta.push_back( (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - 0.5 * pfChargedFromPU))/(el->pt()) );
+    
+    // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt -- //
+    edm::FileInPath eaConstantsFile("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt");
+    EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
+    float abseta = fabs(el->superCluster()->eta());
+    float eA = effectiveAreas.getEffectiveArea(abseta);
+    electron_RelPFIso_Rho.push_back( (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - *rhoHandle * eA))/(el->pt()) );
+    
+    // cout << "##### fillElectrons: Before elecTrk #####" << endl;
+    
+    if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] Isolation" << endl;
+    
+    // -- Track - Impact Parameter, Conversion rejection, Converted -- //
     reco::GsfTrackRef elecTrk = el->gsfTrack();
-    reco::GsfTrackRef elecTrk2 = el2->gsfTrack();
     
-    if( elecTrk.isNonnull() && elecTrk2.isNonnull() )
-      {
-        vector<reco::TransientTrack> dielecTracksTrk;
-        dielecTracksTrk.push_back(theTTBuilder->build(elecTrk));
-        dielecTracksTrk.push_back(theTTBuilder->build(elecTrk2));
-        KalmanVertexFitter KalmanFitterTrk(true);
-        CachingVertex<5> vertexTrk;
-        TransientVertex vtxtmpTrk;
-        bool isVertexTrk = true;
-        try
-    {
-      vertexTrk = KalmanFitterTrk.vertex(dielecTracksTrk);
-      vtxtmpTrk = KalmanFitterTrk.vertex(dielecTracksTrk);
-    }
-        catch( exception & err ) 
-    {
-      isVertexTrk = false;
-    }
-        
-        if( isVertexTrk && vertexTrk.isValid() )
-    {
-      // inv. mass refit using the dielec vtx
-      InvariantMassFromVertex imfvTrk;
-      static const double elec_mass = 0.000511;
-      const CachingVertex<5>& vtxTrk = vertexTrk;
-      Measurement1D new_massTrk = imfvTrk.invariantMass(vtxTrk, elec_mass);
-      
-      vtxTrkDiE1Pt.push_back(elecTrk->pt());
-      vtxTrkDiE2Pt.push_back(elecTrk2->pt());
-      vtxTrkDiEChi2.push_back(vtxTrk.totalChiSquared());
-      vtxTrkDiENdof.push_back(vtxTrk.degreesOfFreedom());
-      vtxTrkDiEProb.push_back(TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()));
-    }
-      } // -- end of if( elecTrk.isNonnull() && elecTrk2.isNonnull() ) -- // 
+    // electron_mHits.push_back( elecTrk->numberOfLostHits() );
+    // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleMissingHitsCut.cc#L34-L41 -- //
+    constexpr reco::HitPattern::HitCategory missingHitType = reco::HitPattern::MISSING_INNER_HITS;
+    electron_mHits.push_back( elecTrk->hitPattern().numberOfAllHits(missingHitType) );
     
-  } // -- end of for(int j=0; j<(int)ElecHandle->size(); j++): 2nd electron iteration -- //
-      
-      
-      // cout << "##### fillElectrons: Start gsf track associated electron collector #####" << endl;
-      
-      // -- emu variables -- //
-      for( unsigned j = 0; j != muonHandle->size(); j++ )
-  {
-    const pat::Muon imuon2 = muonHandle->at(j);
+    //calculate IP3D
+    const reco::TransientTrack &tt = theTTBuilder->build(elecTrk);
+    //reco::TransientTrack &tt = theTTBuilder->build(elecTrk);
+
+    /*
+    Vertex dummy;
+    const Vertex *pv = &dummy;
+    if (pvHandle->size() != 0) { 
+pv = &*pvHandle->begin();
+    } else { // create a dummy PV
+Vertex::Error e;
+e(0, 0) = 0.0015 * 0.0015;
+e(1, 1) = 0.0015 * 0.0015;
+e(2, 2) = 15. * 15.;
+Vertex::Point p(0, 0, 0);
+dummy = Vertex(p, e, 0, 0, 0);
+    }
+    */
     
-    // -- vertex variables are calculated using InnerTrack information -- //
-    reco::GsfTrackRef elecTrk = el->gsfTrack();
-    reco::TrackRef InnerTrk2 = imuon2.innerTrack();
+    const reco::Vertex &vtx = pvHandle->front();
+    //reco::Vertex &vtx = pvHandle->front();
     
-    if( elecTrk.isNonnull() && InnerTrk2.isNonnull() )
-      {
-        reco::TransientTrack muTransient2(InnerTrk2, B.product());
-        
-        vector<reco::TransientTrack> emuTracksTrk;
-        emuTracksTrk.push_back(theTTBuilder->build(elecTrk));
-        emuTracksTrk.push_back(muTransient2);
-        KalmanVertexFitter KalmanFitterTrk(true);
-        CachingVertex<5> vertexTrk;
-        TransientVertex vtxtmpTrk;
-        bool isVertexTrk = true;
-        
-        try
-    {
-      vertexTrk = KalmanFitterTrk.vertex(emuTracksTrk);
-      vtxtmpTrk = KalmanFitterTrk.vertex(emuTracksTrk);
+    const std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt, vtx);
+    //std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt,vtx);
+
+    const double gsfsign = ( (-elecTrk->dxy(vtx.position())) >=0 ) ? 1. : -1.;
+    if (ip3dpv.first) {
+      double ip3d = gsfsign*ip3dpv.second.value();
+      double ip3derr = ip3dpv.second.error();  
+      electron_ip3D.push_back( ip3d );
+      electron_sigip3D.push_back( ip3d/ip3derr );
     }
-        catch( exception & err )
-    {
-      isVertexTrk = false;
-    }
-        
-        if( isVertexTrk && vertexTrk.isValid() )
-    {
-      const CachingVertex<5>& vtxTrk = vertexTrk;
-      
-      vtxTrkEMu1Pt.push_back(elecTrk->pt());
-      vtxTrkEMu2Pt.push_back(InnerTrk2->pt());
-      vtxTrkEMuChi2.push_back(vtxTrk.totalChiSquared());
-      vtxTrkEMuNdof.push_back(vtxTrk.degreesOfFreedom());
-      vtxTrkEMuProb.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
-    }
-        
-        // cosmic variable
-        //double cosine = acos( -elecTrk->momentum().Dot( InnerTrk2->momentum() / elecTrk->p()/InnerTrk2->p()) );
-        //CosAngle.push_back(cosine);
-        
-      } // -- end of if( elecTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
     
-    // --vertex variables are calculated using TuneP information -- //
-    reco::TrackRef TunePTrk2 = imuon2.tunePMuonBestTrack();
+    electron_sigdxy.push_back( elecTrk->dxy() / elecTrk->dxyError() );
+    electron_dxy.push_back( elecTrk->dxy() );
+    electron_dz.push_back( elecTrk->dz() );
+    electron_dxyBS.push_back( elecTrk->dxy(beamSpot.position()) );
+    electron_dzBS.push_back( elecTrk->dz(beamSpot.position()) );
     
-    if( elecTrk.isNonnull() && TunePTrk2.isNonnull() )
-      {
-        reco::TransientTrack muTransient2(TunePTrk2, B.product());
-        
-        vector<reco::TransientTrack> emuTracksTrk;
-        emuTracksTrk.push_back(theTTBuilder->build(elecTrk));
-        emuTracksTrk.push_back(muTransient2);
-        KalmanVertexFitter KalmanFitterTrk(true);
-        CachingVertex<5> vertexTrk;
-        TransientVertex vtxtmpTrk;
-        bool isVertexTrk = true;
-        
-        try
-    {
-      vertexTrk = KalmanFitterTrk.vertex(emuTracksTrk);
-      vtxtmpTrk = KalmanFitterTrk.vertex(emuTracksTrk);
+    if( elecTrk.isNonnull() ){
+      electron_gsfpt.push_back( elecTrk->pt() );
+      electron_gsfPx.push_back( elecTrk->px() );
+      electron_gsfPy.push_back( elecTrk->py() );
+      electron_gsfPz.push_back( elecTrk->pz() );
+      electron_gsfEta.push_back( elecTrk->eta() );
+      electron_gsfPhi.push_back( elecTrk->phi() );
+      electron_gsfCharge.push_back( elecTrk->charge() );
     }
-        catch( exception & err )
-    {
-      isVertexTrk = false;
-    }
-        
-        if( isVertexTrk && vertexTrk.isValid() )
-    {
-      const CachingVertex<5>& vtxTrk = vertexTrk;
       
-      vtxTrkEMu1Pt_TuneP.push_back(elecTrk->pt());
-      vtxTrkEMu2Pt_TuneP.push_back(TunePTrk2->pt());
-      vtxTrkEMuChi2_TuneP.push_back(vtxTrk.totalChiSquared());
-      vtxTrkEMuNdof_TuneP.push_back(vtxTrk.degreesOfFreedom());
-      vtxTrkEMuProb_TuneP.push_back( TMath::Prob(vtxTrk.totalChiSquared(),(int)vtxTrk.degreesOfFreedom()) );
+    if( !pvHandle->empty() && !pvHandle->front().isFake() ){
+      //const reco::Vertex &vtx = pvHandle->front();
+      electron_dxyVTX.push_back( elecTrk->dxy(vtx.position()) );
+      electron_dzVTX.push_back( elecTrk->dz(vtx.position()) );
     }
-        
-        // cosmic variable
-        //double cosine = acos( -elecTrk->momentum().Dot( TunePTrk2->momentum() / elecTrk->p()/TunePTrk2->p()) );
-        //CosAngle_TuneP.push_back(cosine);
-        
-      } // -- end of if( TunePTrk.isNonnull() && InnerTrk2.isNonnull() ) -- //
+      
+    // -- for ID variables -- //
+    bool isPassVeto  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-veto");
+    bool isPassLoose  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-loose");
+    bool isPassMedium = el -> electronID("cutBasedElectronID-Fall17-94X-V1-medium");
+    bool isPassTight  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-tight");
+    bool isPassMVA_noIso_WP80 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp80");
+    bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
+    bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
+    bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
     
-  } // -- end of for( unsigned j = 0; j != muonHandle->size(); j++ ): iteration for 2nd muon -- //
-      
-      _nElectron++;
-      
-    } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
-  
-  Nelectrons = _nElectron;
+    // cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
+    electron_passVetoID.push_back( isPassVeto );
+    electron_passLooseID.push_back( isPassLoose );
+    electron_passMediumID.push_back( isPassMedium );
+    electron_passTightID.push_back( isPassTight );
+    electron_passMVAID_noIso_WP80.push_back( isPassMVA_noIso_WP80 );
+    electron_passMVAID_noIso_WP90.push_back( isPassMVA_noIso_WP90 );
+    electron_passMVAID_iso_WP80.push_back( isPassMVA_iso_WP80 );
+    electron_passMVAID_iso_WP90.push_back( isPassMVA_iso_WP90 );
+    
+    // electron_passHEEPID.push_back( isPassHEEP );
+    
+  } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   
   /////////////////////////////////
   // -- un-corrected electron -- //
@@ -2124,42 +1980,37 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::Handle< edm::View<pat::Electron> > UnCorrElecHandle;
   iEvent.getByToken(UnCorrElectronToken, UnCorrElecHandle);
   
-  int _nUnCorrElectron = 0;
-  for(int i=0; i< (int)UnCorrElecHandle->size(); i++)
-    {
-      const auto el = UnCorrElecHandle->ptrAt(i);
-      double elec_theta = el -> theta();
-      double sin_theta = sin(elec_theta);
-      double cos_theta = cos(elec_theta);
-      
-      Electron_pTUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta;
-      Electron_etaUnCorr[_nUnCorrElectron] = el->eta();
-      Electron_phiUnCorr[_nUnCorrElectron] = el->phi();
-      double el_phi = el->phi();
-      //Electron_PxUnCorr[_nUnCorrElectron] = el->px();
-      //Electron_PyUnCorr[_nUnCorrElectron] = el->py();
-      //Electron_PzUnCorr[_nUnCorrElectron] = el->pz();
-      Electron_PxUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta * cos(el_phi);
-      Electron_PyUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta * sin(el_phi);
-      Electron_PzUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr") * cos_theta;
-      //cout << "el->px() : " << el->px() << ", Electron_PxUnCorr[_nUnCorrElectron] : " << Electron_PxUnCorr[_nUnCorrElectron] << endl;
-      //cout << "el->py() : " << el->py() << ", Electron_PyUnCorr[_nUnCorrElectron] : " << Electron_PyUnCorr[_nUnCorrElectron] <<endl;
-      //cout << "el->pz() : " << el->pz() << ", Electron_PzUnCorr[_nUnCorrElectron] : " << Electron_PzUnCorr[_nUnCorrElectron] <<endl;
+  for(int i=0; i< (int)UnCorrElecHandle->size(); i++){
+    const auto el = UnCorrElecHandle->ptrAt(i);
+    double elec_theta = el -> theta();
+    double sin_theta = sin(elec_theta);
+    double cos_theta = cos(elec_theta);
+    
+    electron_ptUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") * sin_theta );
+    electron_etaUnCorr.push_back( el->eta() );
+    electron_phiUnCorr.push_back( el->phi() );
+    double el_phi = el->phi();
+    //electron_PxUnCorr.push_back( el->px() );
+    //electron_PyUnCorr.push_back( el->py() );
+    //electron_PzUnCorr.push_back( el->pz() );
+    electron_PxUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") * sin_theta * cos(el_phi) );
+    electron_PyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") * sin_theta * sin(el_phi) );
+    electron_PzUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") * cos_theta );
+    //cout << "el->px() : " << el->px() << ", electron_PxUnCorr[i] : " << electron_PxUnCorr[i] << endl;
+    //cout << "el->py() : " << el->py() << ", electron_PyUnCorr[i] : " << electron_PyUnCorr[i] <<endl;
+    //cout << "el->pz() : " << el->pz() << ", electron_PzUnCorr[i] : " << electron_PzUnCorr[i] <<endl;
 
-      Electron_EnergyUnCorr[_nUnCorrElectron] = el->userFloat("ecalTrkEnergyPreCorr");
-      
-      // -- Information from SuperCluster -- //
-      Electron_EnergySCUnCorr[_nUnCorrElectron] = el->superCluster()->energy();
-      Electron_etaSCUnCorr[_nUnCorrElectron] = el->superCluster()->eta();
-      Electron_phiSCUnCorr[_nUnCorrElectron] = el->superCluster()->phi();
-      double R = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y() +el->superCluster()->z()*el->superCluster()->z());
-      double Rt = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y());
-      Electron_etSCUnCorr[_nUnCorrElectron] = el->superCluster()->energy()*(Rt/R);
-      
-      _nUnCorrElectron++;
-    }
-  
-  nUnCorrElectron = _nUnCorrElectron;
+    electron_EnergyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") );
+    
+    // -- Information from SuperCluster -- //
+    electron_scEnergyUnCorr.push_back( el->superCluster()->energy() );
+    electron_scEtaUnCorr.push_back( el->superCluster()->eta() );
+    electron_scPhiUnCorr.push_back( el->superCluster()->phi() );
+    double R = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y() +el->superCluster()->z()*el->superCluster()->z());
+    double Rt = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y());
+    electron_scEtUnCorr.push_back( el->superCluster()->energy()*(Rt/R) );
+    
+  }
   
   // cout << "##### End of fillElectrons #####" << endl;
 }
@@ -2175,31 +2026,26 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   const lhef::HEPEUP& lheEvent = LHEInfo->hepeup();
   std::vector<lhef::HEPEUP::FiveVector> lheParticles = lheEvent.PUP;
   
-  Int_t _nLHEParticle = 0;
-  for( size_t idxParticle = 0; idxParticle < lheParticles.size(); ++idxParticle )
-    {
-      Int_t id = lheEvent.IDUP[idxParticle];
+  for( size_t idxParticle = 0; idxParticle < lheParticles.size(); ++idxParticle ){
+    Int_t id = lheEvent.IDUP[idxParticle];
+    
+    if( fabs(id) == 13 || fabs(id) == 11 || fabs(id) == 15 ){
+      Double_t Px = lheParticles[idxParticle][0];
+      Double_t Py = lheParticles[idxParticle][1];
+      Double_t Pz = lheParticles[idxParticle][2];
+      Double_t E = lheParticles[idxParticle][3];
+      // Double_t M = lheParticles[idxParticle][4];    
+      Int_t status = lheEvent.ISTUP[idxParticle];
       
-      if( fabs(id) == 13 || fabs(id) == 11 || fabs(id) == 15 )
-  {
-    Double_t Px = lheParticles[idxParticle][0];
-    Double_t Py = lheParticles[idxParticle][1];
-    Double_t Pz = lheParticles[idxParticle][2];
-    Double_t E = lheParticles[idxParticle][3];
-    // Double_t M = lheParticles[idxParticle][4];    
-    Int_t status = lheEvent.ISTUP[idxParticle];
-    
-    LHELepton_ID[_nLHEParticle] = id;
-    LHELepton_status[_nLHEParticle] = status;
-    LHELepton_Px[_nLHEParticle] = Px;
-    LHELepton_Py[_nLHEParticle] = Py;
-    LHELepton_Pz[_nLHEParticle] = Pz;
-    LHELepton_E[_nLHEParticle] = E;
-    
-    _nLHEParticle++;
-  }
+      LHELepton_ID.push_back( id );
+      LHELepton_status.push_back( status );
+      LHELepton_Px.push_back( Px );
+      LHELepton_Py.push_back( Py );
+      LHELepton_Pz.push_back( Pz );
+      LHELepton_E.push_back( E );
+      
     }
-  nLHEParticle = _nLHEParticle;
+  }
   
   // -- PDf weights for theoretical uncertainties: scale, PDF replica and alphaS variation -- //
   // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW -- //
@@ -2208,14 +2054,13 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   int nWeight = (int)LHEInfo->weights().size();
   // std::cout << "nWeight: " << nWeight << endl;
   
-  for(int i=0; i<nWeight; i++)
-    {
-      double weight = LHEInfo->weights()[i].wgt;
-      double ratio = weight / OriginalWeight;
-      PDFWeights.push_back( ratio );
+  for(int i=0; i<nWeight; i++){
+    double weight = LHEInfo->weights()[i].wgt;
+    double ratio = weight / OriginalWeight;
+    PDFWeights.push_back( ratio );
       
-      // std::cout << i << "th weight = " << weight << "(ID=" << LHEInfo->weights()[i].id <<"), ratio w.r.t. original: " << ratio << endl;
-    }
+    // std::cout << i << "th weight = " << weight << "(ID=" << LHEInfo->weights()[i].id <<"), ratio w.r.t. original: " << ratio << endl;
+  }
 }
 
 ////////////////////////
@@ -2230,70 +2075,70 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
   
   
   int counter=0;
-  int _GennPair = 0;
   for( reco::GenParticleCollection::const_iterator it = genParticles->begin(); it != genParticles->end(); ++it , ++counter) {      
 
     if(!theKeepAllGen && counter > 30) continue;
     
-    GENLepton_ID[_GennPair] = it->pdgId();
-    GENLepton_pT[_GennPair] = it->pt();
-    GENLepton_Px[_GennPair] = it->px();
-    GENLepton_Py[_GennPair] = it->py();
-    GENLepton_Pz[_GennPair] = it->pz();
-    GENLepton_E[_GennPair] = it->energy();
-    GENLepton_eta[_GennPair] = it->eta();
-    GENLepton_phi[_GennPair] = it->phi();
-    GENLepton_charge[_GennPair] = it->charge();
-    GENLepton_status[_GennPair] = it->status();
+    gen_PID.push_back( it->pdgId() );
+    gen_pt.push_back( it->pt() );
+    gen_Px.push_back( it->px() );
+    gen_Py.push_back( it->py() );
+    gen_Pz.push_back( it->pz() );
+    gen_E.push_back( it->energy() );
+    gen_eta.push_back( it->eta() );
+    gen_phi.push_back( it->phi() );
+    gen_charge.push_back( it->charge() );
+    gen_status.push_back( it->status() );
     
     //Flags (Ref: https://indico.cern.ch/event/402279/contribution/5/attachments/805964/1104514/mcaod-Jun17-2015.pdf)
-    GENLepton_isPrompt[_GennPair] = it->statusFlags().isPrompt(); //not from hadron, muon or tau decay 
-    GENLepton_isPromptFinalState[_GennPair] = it->isPromptFinalState(); //isPrompt && final state (status==1)
-    GENLepton_isTauDecayProduct[_GennPair] = it->statusFlags().isTauDecayProduct(); //is directly or indirectly from a tau decay
-    GENLepton_isPromptTauDecayProduct[_GennPair] = it->statusFlags().isPromptTauDecayProduct(); //is directly or indirectly from a tau decay, where the tau did not come from a hadron decay
-    GENLepton_isDirectPromptTauDecayProductFinalState[_GennPair] = it->isDirectPromptTauDecayProductFinalState(); // is the direct decay product from a tau decay (ie no intermediate hadron), where the tau did not come from a hadron decay && final state
-    GENLepton_isHardProcess[_GennPair] = it->isHardProcess();
-    GENLepton_isLastCopy[_GennPair] = it->isLastCopy();
-    GENLepton_isLastCopyBeforeFSR[_GennPair] = it->isLastCopyBeforeFSR();
-    GENLepton_isPromptDecayed[_GennPair] = it->isPromptDecayed();
-    GENLepton_isDecayedLeptonHadron[_GennPair] = it->statusFlags().isDecayedLeptonHadron();
-    GENLepton_fromHardProcessBeforeFSR[_GennPair] = it->fromHardProcessBeforeFSR();
-    GENLepton_fromHardProcessDecayed[_GennPair] = it->fromHardProcessDecayed();
-    GENLepton_fromHardProcessFinalState[_GennPair] = it->fromHardProcessFinalState();
-    GENLepton_isMostlyLikePythia6Status3[_GennPair] = it->fromHardProcessBeforeFSR();
+    gen_isPrompt.push_back( it->statusFlags().isPrompt() ); //not from hadron, muon or tau decay 
+    gen_isPromptFinalState.push_back( it->isPromptFinalState() ); //isPrompt && final state (status==1)
+    gen_isTauDecayProduct.push_back( it->statusFlags().isTauDecayProduct() ); //is directly or indirectly from a tau decay
+    gen_isPromptTauDecayProduct.push_back( it->statusFlags().isPromptTauDecayProduct() ); //is directly or indirectly from a tau decay, where the tau did not come from a hadron decay
+    gen_isDirectPromptTauDecayProductFinalState.push_back( it->isDirectPromptTauDecayProductFinalState() ); // is the direct decay product from a tau decay (ie no intermediate hadron), where the tau did not come from a hadron decay && final state
+    gen_isHardProcess.push_back( it->isHardProcess() );
+    gen_isLastCopy.push_back( it->isLastCopy() );
+    gen_isLastCopyBeforeFSR.push_back( it->isLastCopyBeforeFSR() );
+    gen_isPromptDecayed.push_back( it->isPromptDecayed() );
+    gen_isDecayedLeptonHadron.push_back( it->statusFlags().isDecayedLeptonHadron() );
+    gen_fromHardProcessBeforeFSR.push_back( it->fromHardProcessBeforeFSR() );
+    gen_fromHardProcessDecayed.push_back( it->fromHardProcessDecayed() );
+    gen_fromHardProcessFinalState.push_back( it->fromHardProcessFinalState() );
+    gen_isMostlyLikePythia6Status3.push_back( it->fromHardProcessBeforeFSR() );
     
     if(it->numberOfMothers() > 0){
-      GENLepton_mother[_GennPair] = it->mother(0)->pdgId();
-      GENLepton_mother_pT[_GennPair] = it->mother(0)->pt();
+      gen_mother_PID.push_back( it->mother(0)->pdgId() );
+      gen_mother_pt.push_back( it->mother(0)->pt() );
     }
     
     int idx = -1;
-    for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ) {
-      if( it->mother()==&(*mit) ) {
-  idx = std::distance(genParticles->begin(),mit);
-  break;
+    for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ){
+      if( it->mother()==&(*mit) ){
+        idx = std::distance(genParticles->begin(),mit);
+        break;
       }
     }
     
-    GENLepton_mother_index[_GennPair] = idx;
-    //cout << "GENLepton_mother_index : " << GENLepton_mother_index[_GennPair] << endl;
-    
-    _GennPair++;
+    gen_mother_index.push_back( idx );
     
   }
    
-  GENnPair = _GennPair;
-  
   edm::Handle<GenEventInfoProduct> genEvtInfo;
   iEvent.getByToken(GenEventInfoToken, genEvtInfo);
-  GENEvt_weight = genEvtInfo->weight();
-  GENEvt_QScale = genEvtInfo->qScale();
-  GENEvt_x1 = genEvtInfo->pdf()->x.first;
-  GENEvt_x2 = genEvtInfo->pdf()->x.second;
-  GENEvt_id1 = genEvtInfo->pdf()->id.first;
-  GENEvt_id2 = genEvtInfo->pdf()->id.second;
-  GENEvt_alphaQCD = genEvtInfo->alphaQCD();
-  GENEvt_alphaQED = genEvtInfo->alphaQED();
+  gen_weight = genEvtInfo->weight();
+
+  genWeight_Q = genEvtInfo->pdf()->scalePDF;
+
+  //==== I think they are same..
+  //cout << "[JSKIM] genEvtInfo->pdf()->scalePDF = " << genEvtInfo->pdf()->scalePDF << endl;
+  //cout << "[JSKIM] genEvtInfo->qScale() = " << genEvtInfo->qScale() << endl << endl;
+
+  genWeight_X1 = genEvtInfo->pdf()->x.first;
+  genWeight_X2 = genEvtInfo->pdf()->x.second;
+  genWeight_id1 = genEvtInfo->pdf()->id.first;
+  genWeight_id2 = genEvtInfo->pdf()->id.second;
+  genWeight_alphaQCD = genEvtInfo->alphaQCD();
+  genWeight_alphaQED = genEvtInfo->alphaQED();
   
 }
 
@@ -2319,82 +2164,61 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   EffectiveAreas effAreaNeuHadrons_( effAreaNeuHadronsFile.fullPath() );
   EffectiveAreas effAreaPhotons_( effAreaPhotonsFile.fullPath() );
   
-  //cout << "2.1" << endl;
-  int _nPhotons = 0;
-  for(size_t i=0; i< PhotonHandle->size(); ++i)
-    {
-      const auto pho = PhotonHandle->ptrAt(i);
-      
-      //cout << "2.2" << endl;
-      double sin_theta = sin(pho->theta());
-      Photon_pT[_nPhotons] = pho -> userFloat("ecalEnergyPostCorr") * sin_theta;
-      //double pho_pt_noncor = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
-      //cout << "pho->pt() : " << pho->pt() << ", pho_pt_noncor : " << pho_pt_noncor << ", Pt(cor) : " << Photon_pT[_nPhotons] << endl;
-      //Photon_pT[_nPhotons] = pho->pt() * ratio_E;
-      Photon_eta[_nPhotons] = pho->eta();
-      Photon_phi[_nPhotons] = pho->phi();
-      
-      Photon_etaSC[_nPhotons] = pho->superCluster()->eta();
-      Photon_phiSC[_nPhotons] = pho->superCluster()->phi();
-      
-      //cout << "2.3" << endl;
-
-      Photon_HoverE[_nPhotons] = pho->hadTowOverEm();
-      //cout << "2.3.1" << endl;
-      Photon_hasPixelSeed[_nPhotons] = (Int_t)pho->hasPixelSeed();
-      //cout << "2.3.2" << endl;
-      //Photon_Full5x5_SigmaIEtaIEta[_nPhotons] = (*full5x5SigmaIEtaIEtaMap)[ pho ];
-      Photon_Full5x5_SigmaIEtaIEta[_nPhotons] = pho -> full5x5_sigmaIetaIeta();
-      
-      
-      //cout << "2.4" << endl;
-      
-      float chIso = pho -> chargedHadronIso();
-      float nhIso = pho -> neutralHadronIso();
-      float phIso = pho -> photonIso();
-      
-      //cout << "2.5" << endl;
-      
-      Photon_ChIso[_nPhotons] = chIso;
-      Photon_NhIso[_nPhotons] = nhIso;
-      Photon_PhIso[_nPhotons] = phIso;
-      
-      float abseta = fabs( pho->superCluster()->eta());
-      Photon_ChIsoWithEA[_nPhotons] = std::max( (float)0.0, chIso - rho_*effAreaChHadrons_.getEffectiveArea(abseta) );
-      Photon_NhIsoWithEA[_nPhotons] = std::max( (float)0.0, nhIso - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta) );
-      Photon_PhIsoWithEA[_nPhotons] = std::max( (float)0.0, phIso - rho_*effAreaPhotons_.getEffectiveArea(abseta) );
-      
-      bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
-      bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
-      bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V1-tight");
-      bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp80");
-      bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp90");
+  for(size_t i=0; i< PhotonHandle->size(); ++i){
+    const auto pho = PhotonHandle->ptrAt(i);
     
-      //cout << "5" << endl;
-
-      Photon_passMVAID_WP80[_nPhotons] = isPassMVA_WP80;
-      Photon_passMVAID_WP90[_nPhotons] = isPassMVA_WP90;
-      Photon_passLooseID[_nPhotons] = isPassLoose;
-      Photon_passMediumID[_nPhotons] = isPassMedium;
-      Photon_passTightID[_nPhotons] = isPassTight;
-      
-      _nPhotons++;
-    }
+    double sin_theta = sin(pho->theta());
+    photon_pt.push_back( pho -> userFloat("ecalEnergyPostCorr") * sin_theta );
+    //double pho_pt_noncor = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
+    //cout << "pho->pt() : " << pho->pt() << ", pho_pt_noncor : " << pho_pt_noncor << ", Pt(cor) : " << photon_pt.at(i) << endl;
+    //photon_pt.push_back( pho->pt() * ratio_E );
+    photon_eta.push_back( pho->eta() );
+    photon_phi.push_back( pho->phi() );
+    
+    photon_scEta.push_back( pho->superCluster()->eta() );
+    photon_scPhi.push_back( pho->superCluster()->phi() );
+    
+    photon_HoverE.push_back( pho->hadTowOverEm() );
+    photon_hasPixelSeed.push_back( (Int_t)pho->hasPixelSeed() );
+    //photon_Full5x5_SigmaIEtaIEta.push_back( (*full5x5SigmaIEtaIEtaMap)[ pho ] );
+    photon_Full5x5_SigmaIEtaIEta.push_back( pho -> full5x5_sigmaIetaIeta() );
+    
+    
+    float chIso = pho -> chargedHadronIso();
+    float nhIso = pho -> neutralHadronIso();
+    float phIso = pho -> photonIso();
+    
+    photon_ChIso.push_back( chIso );
+    photon_NhIso.push_back( nhIso );
+    photon_PhIso.push_back( phIso );
+    
+    float abseta = fabs( pho->superCluster()->eta());
+    photon_ChIsoWithEA.push_back( std::max( (float)0.0, chIso - rho_*effAreaChHadrons_.getEffectiveArea(abseta) ) );
+    photon_NhIsoWithEA.push_back( std::max( (float)0.0, nhIso - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta) ) );
+    photon_PhIsoWithEA.push_back( std::max( (float)0.0, phIso - rho_*effAreaPhotons_.getEffectiveArea(abseta) ) );
+    
+    bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
+    bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
+    bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V1-tight");
+    bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp80");
+    bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp90");
   
-  nPhotons = _nPhotons;
+    photon_passMVAID_WP80.push_back( isPassMVA_WP80 );
+    photon_passMVAID_WP90.push_back( isPassMVA_WP90 );
+    photon_passLooseID.push_back( isPassLoose );
+    photon_passMediumID.push_back( isPassMedium );
+    photon_passTightID.push_back( isPassTight );
+    
+  }
+  
+  for(size_t i=0; i< UnCorrPhotonHandle->size(); ++i){
+    const auto pho = UnCorrPhotonHandle->ptrAt(i);
+    double sin_theta = sin(pho->theta());
+    photon_ptUnCorr.push_back( pho -> userFloat("ecalEnergyPreCorr") * sin_theta );
+    photon_etaUnCorr.push_back( pho->eta() );
+    photon_phiUnCorr.push_back( pho->phi() );
+  }
 
-  int _nUnCorrPhotons = 0;
-  for(size_t i=0; i< UnCorrPhotonHandle->size(); ++i)
-    {
-      const auto pho = UnCorrPhotonHandle->ptrAt(i);
-      double sin_theta = sin(pho->theta());
-      Photon_pTUnCorr[_nUnCorrPhotons] = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
-      Photon_etaUnCorr[_nUnCorrPhotons] = pho->eta();
-      Photon_phiUnCorr[_nUnCorrPhotons] = pho->phi();
-      
-      _nUnCorrPhotons++;
-    }
-  nUnCorrPhoton = _nUnCorrPhotons;
 }
 
 
@@ -2408,7 +2232,7 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   
   if( (metHandle->size() > 1) && (theDebugLevel > 0)) cout << "[SKFlatMaker::fillMET] # of METs = " << metHandle->size() << endl;
   
-  pfMET_pT = metHandle->front().uncorPt();
+  pfMET_pt = metHandle->front().uncorPt();
   pfMET_phi = metHandle->front().uncorPhi();
   pfMET_Px = metHandle->front().uncorPx();
   pfMET_Py = metHandle->front().uncorPy();
@@ -2416,13 +2240,13 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   
   // printf("[pfMET] (pT, phi, Px, Py, sumEt) = (%.3lf, %.3lf, %.3lf, %.3lf, %.3lf)\n", pfMET_pT, pfMET_phi, pfMET_Px, pfMET_Py, pfMET_SumEt);
   
-  pfMET_Type1_pT = metHandle->front().pt();
+  pfMET_Type1_pt = metHandle->front().pt();
   pfMET_Type1_phi = metHandle->front().phi();
   pfMET_Type1_Px = metHandle->front().px();
   pfMET_Type1_Py = metHandle->front().py();
   pfMET_Type1_SumEt = metHandle->front().sumEt();
   
-  pfMET_Type1_PhiCor_pT = metHandle->front().corPt(pat::MET::Type1XY);
+  pfMET_Type1_PhiCor_pt = metHandle->front().corPt(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_phi = metHandle->front().corPhi(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_Px = metHandle->front().corPx(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_Py = metHandle->front().corPy(pat::MET::Type1XY);
@@ -2456,57 +2280,128 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
 /////////////////////////
 void SKFlatMaker::fillJet(const edm::Event &iEvent)
 {
-  int _njets = 0;
-  // int _nbjets_alg1 = 0;
-  // int _nbjets_alg2 = 0;
-  // int _nbjets_alg3 = 0;
-  // int _nbjets_alg1_closemu = 0;
-  // int _nbjets_alg2_closemu = 0;
-  // int _nbjets_alg3_closemu = 0;
-  
+
   // edm::Handle<edm::View<pat::Jet> > jetHandle;
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(JetToken,jetHandle);
   
-  edm::Handle<std::vector<pat::Muon> > muonHandle;
-  iEvent.getByToken(MuonToken,muonHandle);
-  
   if( jetHandle->size() > 0 && theDebugLevel > 0) 
     cout << "[SKFlatMaker::fillJet] # of Jets = " << jetHandle->size() << endl;
   
-  Njets = jetHandle->size();
-  if(Njets == 0) return;
+  if(jetHandle->size() == 0) return;
   
   edm::Handle< double > rhojet;
   iEvent.getByToken(RhoToken,rhojet);
   double rho_jet = *rhojet;
 
+  for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter){
 
-  for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter)
-    {
-      Jet_pT[_njets] = jets_iter->pt();
-      Jet_eta[_njets] = jets_iter->eta();
-      Jet_phi[_njets] = jets_iter->phi();
-      Jet_Charge[_njets] = jets_iter->jetCharge();
-      Jet_area[_njets] = jets_iter->jetArea();
-      Jet_rho[_njets] = rho_jet;
-      Jet_Flavor[_njets] = jets_iter->partonFlavour();
-      Jet_Hadron[_njets] = jets_iter->hadronFlavour();
+    jet_pt.push_back( jets_iter->pt() );
+    jet_eta.push_back( jets_iter->eta() );
+    jet_phi.push_back( jets_iter->phi() );
+    jet_charge.push_back( jets_iter->jetCharge() );
+    jet_area.push_back( jets_iter->jetArea() );
+    jet_rho.push_back( rho_jet );
+    jet_partonFlavour.push_back( jets_iter->partonFlavour() );
+    jet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
-      Jet_bTag[_njets] = jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-      Jet_CHfrac[_njets] = jets_iter->chargedHadronEnergyFraction();
-      Jet_NHfrac[_njets] = jets_iter->neutralHadronEnergyFraction();
-      Jet_NHEMfrac[_njets] = jets_iter->neutralEmEnergyFraction();
-      Jet_CHEMfrac[_njets] = jets_iter->chargedEmEnergyFraction();
-      Jet_CHmulti[_njets] = jets_iter->chargedMultiplicity();
-      Jet_NHmulti[_njets] = jets_iter->neutralMultiplicity();
-      
-      _njets++;
-    } 
+    jet_bTag.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
+    jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
+    jet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
+    jet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
+    jet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
+    jet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
+
+    int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
+    jet_partonPdgId.push_back( partonPdgId );
+
+    if( jets_iter->hasUserFloat("vtxNtracks") ) jet_vtxNtracks.push_back( jets_iter->userFloat("vtxNtracks") );
+    jet_m.push_back( jets_iter->mass() );
+    jet_energy.push_back( jets_iter->energy() );
+    if( jets_iter->hasUserFloat("pileupJetId:fullDiscriminant") ) jet_PileupJetId.push_back( jets_iter->userFloat("pileupJetId:fullDiscriminant") );
+
+    //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+    jet_jecUnc->setJetEta( jets_iter->eta() );
+    jet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
+    double unc = jet_jecUnc->getUncertainty(true);
+    jet_shiftedEnUp.push_back( 1.+unc );
+    jet_shiftedEnDown.push_back( 1.-unc ); // I found jet_jecUnc->getUncertainty(true) = jet_jecUnc->getUncertainty(false)
+
+    if(isMC){
+
+    }
+
+  } 
   
-  // cout << "# Jets in this event = " << _njets << endl;
-  
-  Njets = _njets;
+}
+
+/////////////////////////////
+// -- Get FatJets info -- // 
+////////////////////////////
+void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
+{
+
+  // edm::Handle<edm::View<pat::Jet> > jetHandle;
+  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  iEvent.getByToken(FatJetToken,jetHandle);
+
+  if( jetHandle->size() > 0 && theDebugLevel > 0)
+    cout << "[SKFlatMaker::fillFatJet] # of FatJets = " << jetHandle->size() << endl;
+
+  if(jetHandle->size() == 0) return;
+
+  edm::Handle< double > rhojet;
+  iEvent.getByToken(RhoToken,rhojet);
+  double rho_jet = *rhojet;
+
+  for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter){
+
+    //==== https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/1785/1/1.html
+    //==== FatJet with pt 30~170 GeV are only for SM jet analysis
+    //==== We can apply pt cut here
+
+    if(jets_iter->pt()<170.) continue;
+
+    fatjet_pt.push_back( jets_iter->pt() );
+    fatjet_eta.push_back( jets_iter->eta() );
+    fatjet_phi.push_back( jets_iter->phi() );
+    fatjet_charge.push_back( jets_iter->jetCharge() );
+    fatjet_area.push_back( jets_iter->jetArea() );
+    fatjet_rho.push_back( rho_jet );
+    fatjet_partonFlavour.push_back( jets_iter->partonFlavour() );
+    fatjet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
+
+    fatjet_bTag.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
+    fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
+    fatjet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
+    fatjet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
+    fatjet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
+    fatjet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
+
+    int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
+    fatjet_partonPdgId.push_back( partonPdgId );
+
+    if( jets_iter->hasUserFloat("vtxNtracks") ) fatjet_vtxNtracks.push_back( jets_iter->userFloat("vtxNtracks") );
+    fatjet_m.push_back( jets_iter->mass() );
+    fatjet_energy.push_back( jets_iter->energy() );
+
+    fatjet_puppi_tau1.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau1") );
+    fatjet_puppi_tau2.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau2") );
+    fatjet_puppi_tau3.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau3") );
+    fatjet_puppi_tau4.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau4") );
+    fatjet_softdropmass.push_back( jets_iter->userFloat("ak8PFJetsPuppiSoftDropMass") );
+
+    //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+    fatjet_jecUnc->setJetEta( jets_iter->eta() );
+    fatjet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
+    double unc = fatjet_jecUnc->getUncertainty(true);
+    fatjet_shiftedEnUp.push_back( 1.+unc );
+    fatjet_shiftedEnDown.push_back( 1.-unc ); // I found fatjet_jecUnc->getUncertainty(true) = fatjet_jecUnc->getUncertainty(false)
+
+  }
+
 }
 
 //////////////////////////////////////////////////////
@@ -2529,45 +2424,39 @@ void SKFlatMaker::fillTT(const edm::Event &iEvent)
   edm::Handle< std::vector< reco::GsfTrack > > gsfTracks; 
   iEvent.getByToken(GsfTrackToken, gsfTracks);
   
-  int _nTT = 0;
-  for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ )
-    {
-      GsfTrackRef iTT(gsfTracks, igsf);
-      //if( iTT->pt() < 1.0 || iTT->pt() > 100000 ) continue;
-      bool _isMatch = false;
-      for( int i = 0; i < Nelectrons; i++ )
-  {
-    double dpT = fabs(iTT->pt() - Electron_gsfpT[i]);
-    double dR = deltaR(iTT->eta(), iTT->phi(), Electron_gsfEta[i], Electron_gsfPhi[i]);
-    //cout << "elec = " << i << " " << Electron_gsfpT[i] << " " << Electron_gsfEta[i] << " " << Electron_gsfPhi[i] << " " << dR << endl;
-    if( dR < 0.001 && dpT < 1.0 ) 
-      _isMatch = true;
-  }
-      if( _isMatch ) continue;
-      
-      TTrack_dxy[_nTT] = iTT->dxy(vtx.position());
-      TTrack_dxyErr[_nTT] = iTT->dxyError();
-      TTrack_d0[_nTT] = iTT->d0();
-      TTrack_d0Err[_nTT] = iTT->d0Error(); 
-      TTrack_dsz[_nTT] = iTT->dsz(vtx.position());
-      TTrack_dszErr[_nTT] = iTT->dszError();
-      TTrack_dz[_nTT] = iTT->dz(vtx.position());
-      TTrack_dzErr[_nTT] = iTT->dzError();
-      TTrack_dxyBS[_nTT] = iTT->dxy(beamSpot.position());
-      TTrack_dszBS[_nTT] = iTT->dsz(beamSpot.position());
-      TTrack_dzBS[_nTT] = iTT->dz(beamSpot.position());
-      TTrack_pT[_nTT] = iTT->pt();
-      TTrack_Px[_nTT] = iTT->px();
-      TTrack_Py[_nTT] = iTT->py();
-      TTrack_Pz[_nTT] = iTT->pz();
-      TTrack_eta[_nTT] = iTT->eta();
-      TTrack_phi[_nTT] = iTT->phi();
-      TTrack_charge[_nTT] = iTT->charge();
-      _nTT++;
-      
-    } // -- end of for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ): GSFTrack iteration -- //
+  for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ){
+    GsfTrackRef iTT(gsfTracks, igsf);
+
+    //if( iTT->pt() < 1.0 || iTT->pt() > 100000 ) continue;
+    bool _isMatch = false;
+    for( int i = 0; i < Nelectrons; i++ ){
+      double dpT = fabs(iTT->pt() - electron_gsfpt[i]);
+      double dR = deltaR(iTT->eta(), iTT->phi(), electron_gsfEta[i], electron_gsfPhi[i]);
+      //cout << "elec = " << i << " " << electron_gsfpt[i] << " " << electron_gsfEta[i] << " " << electron_gsfPhi[i] << " " << dR << endl;
+      if( dR < 0.001 && dpT < 1.0 ) _isMatch = true;
+    }
+    if( _isMatch ) continue;
+    
+    TrackerTrack_dxy.push_back( iTT->dxy(vtx.position()) );
+    TrackerTrack_dxyErr.push_back( iTT->dxyError() );
+    TrackerTrack_d0.push_back( iTT->d0() );
+    TrackerTrack_d0Err.push_back( iTT->d0Error() );
+    TrackerTrack_dsz.push_back( iTT->dsz(vtx.position()) );
+    TrackerTrack_dszErr.push_back( iTT->dszError() );
+    TrackerTrack_dz.push_back( iTT->dz(vtx.position()) );
+    TrackerTrack_dzErr.push_back( iTT->dzError() );
+    TrackerTrack_dxyBS.push_back( iTT->dxy(beamSpot.position()) );
+    TrackerTrack_dszBS.push_back( iTT->dsz(beamSpot.position()) );
+    TrackerTrack_dzBS.push_back( iTT->dz(beamSpot.position()) );
+    TrackerTrack_pt.push_back( iTT->pt() );
+    TrackerTrack_Px.push_back( iTT->px() );
+    TrackerTrack_Py.push_back( iTT->py() );
+    TrackerTrack_Pz.push_back( iTT->pz() );
+    TrackerTrack_eta.push_back( iTT->eta() );
+    TrackerTrack_phi.push_back( iTT->phi() );
+    TrackerTrack_charge.push_back( iTT->charge() );
+  } // -- end of for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ): GSFTrack iteration -- //
   
-  NTT = _nTT;
 }
 
 void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
