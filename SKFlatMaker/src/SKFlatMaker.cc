@@ -387,7 +387,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_mva.clear();
   electron_zzmva.clear();
   electron_missinghits.clear();
-  electron_trigmatch.clear();
 
   //==== Muon
   muon_PfChargedHadronIsoR05.clear();
@@ -405,8 +404,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_isGlobal.clear();
   muon_isTracker.clear();
   muon_isStandAlone.clear();
-  muon_filterName.clear();
-  muon_trigmatch.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -753,11 +750,11 @@ void SKFlatMaker::beginJob()
   if(theStoreHLTReportFlag){
 
     DYTree->Branch("HLT_TriggerName", "vector<string>", &HLT_TriggerName);
-    DYTree->Branch("HLT_TriggerFilterName", "vector<string>", &HLT_TriggerFilterName);
     DYTree->Branch("HLT_TriggerFired", "vector<bool>", &HLT_TriggerFired);
     DYTree->Branch("HLT_TriggerPrescale", "vector<int>", &HLT_TriggerPrescale);
 
     if(theStoreHLTObjectFlag){
+      DYTree->Branch("HLT_TriggerFilterName", "vector<string>", &HLT_TriggerFilterName);
       DYTree->Branch("HLTObject_pt", "vector<double>", &HLTObject_pt);
       DYTree->Branch("HLTObject_eta", "vector<double>", &HLTObject_eta);
       DYTree->Branch("HLTObject_phi", "vector<double>", &HLTObject_phi);
@@ -955,7 +952,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_mva", "vector<double>", &electron_mva);
     DYTree->Branch("electron_zzmva", "vector<double>", &electron_zzmva);
     DYTree->Branch("electron_missinghits", "vector<int>", &electron_missinghits);
-    DYTree->Branch("electron_trigmatch", "vector<string>", &electron_trigmatch);
   }
   
   // -- muon variables -- //
@@ -976,8 +972,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_isGlobal", "vector<int>", &muon_isGlobal);
     DYTree->Branch("muon_isTracker", "vector<int>", &muon_isTracker);
     DYTree->Branch("muon_isStandAlone", "vector<int>", &muon_isStandAlone);
-    DYTree->Branch("muon_filterName", "vector<int>", &muon_filterName);
-    DYTree->Branch("muon_trigmatch", "vector<string>", &muon_trigmatch);
     DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
@@ -1283,22 +1277,6 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
           if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
           HLT_TriggerName.push_back(*match); //save HLT list as a vector
 
-          //==== find modules corresponding to a trigger in HLT configuration
-          std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
-          if(theDebugLevel){
-            cout << "[SKFlatMaker::hltReport]   moduleNames.size() = " << moduleNames.size() << endl;
-            for(unsigned int it_md=0; it_md<moduleNames.size(); it_md++){
-              if(theDebugLevel) cout << "[SKFlatMaker::hltReport]     " << moduleNames.at(it_md) << endl;
-            }
-          }
-          string this_modulename = "";
-          //==== Last module = moduleNames[nmodules-1] is always "hltBoolEnd"
-          int nmodules = moduleNames.size();
-          if( nmodules-2 >= 0 ){
-            this_modulename = moduleNames[nmodules-2];
-          }
-          HLT_TriggerFilterName.push_back( this_modulename );
-
           //==== find prescale value
           int _preScaleValue = hltConfig_.prescaleValue(0, *match);
           HLT_TriggerPrescale.push_back(_preScaleValue);
@@ -1310,6 +1288,26 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
           else{
             HLT_TriggerFired.push_back(false);
           }
+
+          //==== Save Filter if theStoreHLTObjectFlag
+          if(theStoreHLTObjectFlag){
+            //==== find modules corresponding to a trigger in HLT configuration
+            std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
+            if(theDebugLevel){
+              cout << "[SKFlatMaker::hltReport]   moduleNames.size() = " << moduleNames.size() << endl;
+              for(unsigned int it_md=0; it_md<moduleNames.size(); it_md++){
+                if(theDebugLevel) cout << "[SKFlatMaker::hltReport]     " << moduleNames.at(it_md) << endl;
+              }
+            }
+            string this_modulename = "";
+            //==== Last module = moduleNames[nmodules-1] is always "hltBoolEnd"
+            int nmodules = moduleNames.size();
+            if( nmodules-2 >= 0 ){
+              this_modulename = moduleNames[nmodules-2];
+            }
+            HLT_TriggerFilterName.push_back( this_modulename );
+          }
+
 
         } // END Loop over matches
 

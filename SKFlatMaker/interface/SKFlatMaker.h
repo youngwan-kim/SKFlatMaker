@@ -568,7 +568,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_mva;
   vector<double> electron_zzmva;
   vector<int> electron_missinghits;
-  vector<string> electron_trigmatch;
 
   //==== Muon
 
@@ -587,8 +586,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<int> muon_isGlobal;
   vector<int> muon_isTracker;
   vector<int> muon_isStandAlone;
-  vector<int> muon_filterName;
-  vector<string> muon_trigmatch;
   vector<double> muon_dB;
   vector<double> muon_phi;
   vector<double> muon_eta;

@@ -1,4 +1,5 @@
 string	HLT_TriggerName	1
+string	HLT_TriggerFilterName	1
 bool	HLT_TriggerFired	1
 int	HLT_TriggerPrescale	1
 double  HLTObject_pt  1

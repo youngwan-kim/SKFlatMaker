@@ -14,7 +14,6 @@ int	muon_isGlobal	1
 int	muon_isTracker	1
 int	muon_isStandAlone	1
 int	muon_filterName	1
-string	muon_trigmatch	1
 double	muon_dB	1
 double	muon_phi	1
 double	muon_eta	1

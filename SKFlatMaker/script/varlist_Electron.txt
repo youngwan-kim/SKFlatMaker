@@ -122,4 +122,3 @@ double	electron_scEtUnCorr	1
 double	electron_mva	1
 double	electron_zzmva	1
 int	electron_missinghits	1
-string	electron_trigmatch	1
