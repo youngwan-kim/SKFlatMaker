@@ -20,3 +20,4 @@ int	jet_partonPdgId	1
 int	jet_vtxNtracks	1
 double	jet_m	1
 double	jet_energy	1
+double	jet_PileupJetId	1

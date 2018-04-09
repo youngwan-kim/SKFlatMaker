@@ -38,6 +38,7 @@ UnCorrElectronToken                 ( consumes< edm::View<pat::Electron> >      
 PhotonToken                         ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("SmearedPhoton")) ),
 UnCorrPhotonToken                   ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
 JetToken                            ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
+FatJetToken                         ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("FatJet")) ),
 MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
 //MetToken                            ( consumes< pat::METCollection>                               (iConfig.getParameter<edm::InputTag>("MET")) ),
 
@@ -81,6 +82,7 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   // -- Store Flags -- //
   theStorePriVtxFlag                = iConfig.getUntrackedParameter<bool>("StorePriVtxFlag", true);
   theStoreJetFlag                   = iConfig.getUntrackedParameter<bool>("StoreJetFlag", true);
+  theStoreFatJetFlag                = iConfig.getUntrackedParameter<bool>("StoreFatJetFlag", true);
   theStoreMETFlag                   = iConfig.getUntrackedParameter<bool>("StoreMETFlag", true);
   theStoreHLTReportFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTReportFlag", true);
   
@@ -488,7 +490,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_TuneP_phi.clear();
 
   //==== Jet
-
   jet_pt.clear();
   jet_eta.clear();
   jet_phi.clear();
@@ -512,6 +513,35 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_m.clear();
   jet_energy.clear();
   jet_PileupJetId.clear();
+
+  //==== FatJet
+  fatjet_pt.clear();
+  fatjet_eta.clear();
+  fatjet_phi.clear();
+  fatjet_charge.clear();
+  fatjet_area.clear();
+  fatjet_rho.clear();
+  fatjet_partonFlavour.clear();
+  fatjet_hadronFlavour.clear();
+  fatjet_bTag.clear();
+  fatjet_looseJetID.clear();
+  fatjet_tightJetID.clear();
+  fatjet_tightLepVetoJetID.clear();
+  fatjet_partonPdgId.clear();
+  fatjet_vtxNtracks.clear();
+  fatjet_m.clear();
+  fatjet_energy.clear();
+  fatjet_puppi_tau1.clear();
+  fatjet_puppi_tau2.clear();
+  fatjet_puppi_tau3.clear();
+  fatjet_puppi_tau4.clear();
+  fatjet_softdropmass.clear();
+  fatjet_chargedHadronEnergyFraction.clear();
+  fatjet_neutralHadronEnergyFraction.clear();
+  fatjet_neutralEmEnergyFraction.clear();
+  fatjet_chargedEmEnergyFraction.clear();
+  fatjet_chargedMultiplicity.clear();
+  fatjet_neutralMultiplicity.clear();
 
   //==== Photon
   photon_pt.clear();
@@ -587,36 +617,38 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   
   if( theStoreHLTReportFlag ) hltReport(iEvent);
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePriVtxFlag" << endl;
-  
   if( theStorePriVtxFlag ) fillPrimaryVertex(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreJetFlag" << endl;
-  
   if( theStoreJetFlag ) fillJet(iEvent);
+
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreFatJetFlag" << endl;
+  if( theStoreFatJetFlag ) fillFatJet(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreMETFlag" << endl;
-  
   if( theStoreMETFlag ) fillMET(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreLHEFlag" << endl;
-  
   //if( !isRD && theStoreLHEFlag ) fillLHEInfo(iEvent);
   if(theStoreLHEFlag ) fillLHEInfo(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreGENFlag" << endl;
-  
   //if( !isRD && theStoreGENFlag ) fillGENInfo(iEvent);
   if(theStoreGENFlag ) fillGENInfo(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePhotonFlag" << endl;
-  
   if( theStorePhotonFlag ) fillPhotons(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreMuonFlag" << endl;
-
   if( theStoreMuonFlag ) fillMuons(iEvent, iSetup);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreElectronFlag" << endl;
-
   if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
-  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTTFlag" << endl;
 
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTTFlag" << endl;
   if( theStoreTTFlag ) fillTT(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill" << endl;
-  
   DYTree->Fill();
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill finished" << endl;
 
@@ -736,6 +768,36 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_PileupJetId", "vector<double>", &jet_PileupJetId);
   }
   
+  if(theStoreFatJetFlag){
+    DYTree->Branch("fatjet_pt", "vector<double>", &fatjet_pt);
+    DYTree->Branch("fatjet_eta", "vector<double>", &fatjet_eta);
+    DYTree->Branch("fatjet_phi", "vector<double>", &fatjet_phi);
+    DYTree->Branch("fatjet_charge", "vector<double>", &fatjet_charge);
+    DYTree->Branch("fatjet_area", "vector<double>", &fatjet_area);
+    DYTree->Branch("fatjet_rho", "vector<double>", &fatjet_rho);
+    DYTree->Branch("fatjet_partonFlavour", "vector<int>", &fatjet_partonFlavour);
+    DYTree->Branch("fatjet_hadronFlavour", "vector<int>", &fatjet_hadronFlavour);
+    DYTree->Branch("fatjet_bTag", "vector<double>", &fatjet_bTag);
+    DYTree->Branch("fatjet_looseJetID", "vector<bool>", &fatjet_looseJetID);
+    DYTree->Branch("fatjet_tightJetID", "vector<bool>", &fatjet_tightJetID);
+    DYTree->Branch("fatjet_tightLepVetoJetID", "vector<bool>", &fatjet_tightLepVetoJetID);
+    DYTree->Branch("fatjet_partonPdgId", "vector<int>", &fatjet_partonPdgId);
+    DYTree->Branch("fatjet_vtxNtracks", "vector<int>", &fatjet_vtxNtracks);
+    DYTree->Branch("fatjet_m", "vector<double>", &fatjet_m);
+    DYTree->Branch("fatjet_energy", "vector<double>", &fatjet_energy);
+    DYTree->Branch("fatjet_puppi_tau1", "vector<double>", &fatjet_puppi_tau1);
+    DYTree->Branch("fatjet_puppi_tau2", "vector<double>", &fatjet_puppi_tau2);
+    DYTree->Branch("fatjet_puppi_tau3", "vector<double>", &fatjet_puppi_tau3);
+    DYTree->Branch("fatjet_puppi_tau4", "vector<double>", &fatjet_puppi_tau4);
+    DYTree->Branch("fatjet_softdropmass", "vector<double>", &fatjet_softdropmass);
+    DYTree->Branch("fatjet_chargedHadronEnergyFraction", "vector<double>", &fatjet_chargedHadronEnergyFraction);
+    DYTree->Branch("fatjet_neutralHadronEnergyFraction", "vector<double>", &fatjet_neutralHadronEnergyFraction);
+    DYTree->Branch("fatjet_neutralEmEnergyFraction", "vector<double>", &fatjet_neutralEmEnergyFraction);
+    DYTree->Branch("fatjet_chargedEmEnergyFraction", "vector<double>", &fatjet_chargedEmEnergyFraction);
+    DYTree->Branch("fatjet_chargedMultiplicity", "vector<int>", &fatjet_chargedMultiplicity);
+    DYTree->Branch("fatjet_neutralMultiplicity", "vector<int>", &fatjet_neutralMultiplicity);
+  }
+
   // Electron
   if( theStoreElectronFlag ){
     DYTree->Branch("electron_MVAIso", "vector<double>", &electron_MVAIso);
@@ -1237,7 +1299,7 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     //==== all trigger pathes inthe inputfile
     const edm::TriggerNames trigName = iEvent.triggerNames(*trigResult);
 
-    if(theDebugLevel){
+    if(theDebugLevel>=2){
       cout << "[SKFlatMaker::hltReport] trigger names in trigger result (HLT)" << endl;
       for(int itrig=0; itrig<(int)trigName.size(); itrig++)
         cout << "[SKFlatMaker::hltReport] trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
@@ -2200,9 +2262,6 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(JetToken,jetHandle);
   
-  edm::Handle<std::vector<pat::Muon> > muonHandle;
-  iEvent.getByToken(MuonToken,muonHandle);
-  
   if( jetHandle->size() > 0 && theDebugLevel > 0) 
     cout << "[SKFlatMaker::fillJet] # of Jets = " << jetHandle->size() << endl;
   
@@ -2241,6 +2300,67 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 
   } 
   
+}
+
+/////////////////////////////
+// -- Get FatJets info -- // 
+////////////////////////////
+void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
+{
+
+  // edm::Handle<edm::View<pat::Jet> > jetHandle;
+  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  iEvent.getByToken(FatJetToken,jetHandle);
+
+  if( jetHandle->size() > 0 && theDebugLevel > 0)
+    cout << "[SKFlatMaker::fillFatJet] # of FatJets = " << jetHandle->size() << endl;
+
+  if(jetHandle->size() == 0) return;
+
+  edm::Handle< double > rhojet;
+  iEvent.getByToken(RhoToken,rhojet);
+  double rho_jet = *rhojet;
+
+  for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter){
+
+    //==== https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/1785/1/1.html
+    //==== FatJet with pt 30~170 GeV are only for SM jet analysis
+    //==== We can apply pt cut here
+
+    if(jets_iter->pt()<170.) continue;
+
+    fatjet_pt.push_back( jets_iter->pt() );
+    fatjet_eta.push_back( jets_iter->eta() );
+    fatjet_phi.push_back( jets_iter->phi() );
+    fatjet_charge.push_back( jets_iter->jetCharge() );
+    fatjet_area.push_back( jets_iter->jetArea() );
+    fatjet_rho.push_back( rho_jet );
+    fatjet_partonFlavour.push_back( jets_iter->partonFlavour() );
+    fatjet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
+
+    fatjet_bTag.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
+    fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
+    fatjet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
+    fatjet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
+    fatjet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
+    fatjet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
+
+    int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
+    fatjet_partonPdgId.push_back( partonPdgId );
+
+    if( jets_iter->hasUserFloat("vtxNtracks") ) fatjet_vtxNtracks.push_back( jets_iter->userFloat("vtxNtracks") );
+    fatjet_m.push_back( jets_iter->mass() );
+    fatjet_energy.push_back( jets_iter->energy() );
+
+    fatjet_puppi_tau1.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau1") );
+    fatjet_puppi_tau2.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau2") );
+    fatjet_puppi_tau3.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau3") );
+    fatjet_puppi_tau4.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau4") );
+    fatjet_softdropmass.push_back( jets_iter->userFloat("ak8PFJetsPuppiSoftDropMass") );
+
+  }
+
 }
 
 //////////////////////////////////////////////////////

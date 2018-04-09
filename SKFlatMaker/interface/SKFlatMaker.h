@@ -178,6 +178,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSetup);
   virtual void fillElectrons(const edm::Event &iEvent, const edm::EventSetup& iSetup);
   virtual void fillJet(const edm::Event &iEvent);            // fill jet and b-tagging information
+  virtual void fillFatJet(const edm::Event &iEvent);            // fill jet and b-tagging information
   virtual void hltReport(const edm::Event &iEvent);          // fill list of triggers fired in an event
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
@@ -195,37 +196,37 @@ class SKFlatMaker : public edm::EDAnalyzer
   HLTConfigProvider hltConfig_;
   
   // -- Tokens (for 76X) -- //
-  edm::EDGetTokenT< std::vector<pat::Muon> >             MuonToken;
-  edm::EDGetTokenT< edm::View<pat::Electron> >                         ElectronToken;
-  edm::EDGetTokenT< edm::View<pat::Electron> >                                          UnCorrElectronToken;
-  edm::EDGetTokenT< edm::View<pat::Photon> >                   PhotonToken;
-  edm::EDGetTokenT< edm::View<pat::Photon> >                                            UnCorrPhotonToken;
+  edm::EDGetTokenT< std::vector<pat::Muon> >            MuonToken;
+  edm::EDGetTokenT< edm::View<pat::Electron> >          ElectronToken;
+  edm::EDGetTokenT< edm::View<pat::Electron> >          UnCorrElectronToken;
+  edm::EDGetTokenT< edm::View<pat::Photon> >            PhotonToken;
+  edm::EDGetTokenT< edm::View<pat::Photon> >            UnCorrPhotonToken;
   edm::EDGetTokenT< std::vector<pat::Jet> >             JetToken;
+  edm::EDGetTokenT< std::vector<pat::Jet> >             FatJetToken;
   edm::EDGetTokenT< std::vector<pat::MET> >             MetToken;
-  //edm::EDGetTokenT<pat::METCollection>                                           MetToken;
 
   edm::EDGetTokenT< LHEEventProduct >               LHEEventProductToken;
-  edm::EDGetTokenT< LHERunInfoProduct >              LHERunInfoProductToken;
-  edm::EDGetTokenT< reco::GenParticleCollection>                                        mcLabel_;
+  edm::EDGetTokenT< LHERunInfoProduct >             LHERunInfoProductToken;
+  edm::EDGetTokenT< reco::GenParticleCollection>    mcLabel_;
   
-  edm::EDGetTokenT< edm::TriggerResults >                                               METFilterResultsToken_PAT;
-  edm::EDGetTokenT< edm::TriggerResults >                                               METFilterResultsToken_RECO;
+  edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_PAT;
+  edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_RECO;
   
-  edm::EDGetTokenT< double >                      RhoToken;
-  edm::EDGetTokenT< edm::ValueMap<float> >                                              mvaIsoValuesMapToken;
-  edm::EDGetTokenT< edm::ValueMap<float> >                                              mvaNoIsoValuesMapToken;
-  edm::EDGetTokenT< std::vector<reco::Conversion> > 		           		ConversionsToken;
-  edm::EDGetTokenT< std::vector< reco::GsfTrack > > 			         	GsfTrackToken;
+  edm::EDGetTokenT< double >                          RhoToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >            mvaIsoValuesMapToken;
+  edm::EDGetTokenT< edm::ValueMap<float> >            mvaNoIsoValuesMapToken;
+  edm::EDGetTokenT< std::vector<reco::Conversion> >   ConversionsToken;
+  edm::EDGetTokenT< std::vector< reco::GsfTrack > >   GsfTrackToken;
   
-  edm::EDGetTokenT< edm::TriggerResults > 						TriggerToken;
-  edm::EDGetTokenT< edm::TriggerResults > 						TriggerTokenPAT;
-  edm::EDGetTokenT< std::vector<pat::TriggerObjectStandAlone> > 	                TriggerObjectToken;
+  edm::EDGetTokenT< edm::TriggerResults >                          TriggerToken;
+  edm::EDGetTokenT< edm::TriggerResults >                          TriggerTokenPAT;
+  edm::EDGetTokenT< std::vector<pat::TriggerObjectStandAlone> >    TriggerObjectToken;
   
-  edm::EDGetTokenT< GenEventInfoProduct > 						GenEventInfoToken;
-  edm::EDGetTokenT< reco::BeamSpot > 						       	BeamSpotToken;
-  edm::EDGetTokenT< reco::VertexCollection > 						PrimaryVertexToken;
-  edm::EDGetTokenT< edm::View<reco::Track> > 						TrackToken;
-  edm::EDGetTokenT< std::vector< PileupSummaryInfo > > 	                   		PileUpInfoToken;
+  edm::EDGetTokenT< GenEventInfoProduct >                GenEventInfoToken;
+  edm::EDGetTokenT< reco::BeamSpot >                     BeamSpotToken;
+  edm::EDGetTokenT< reco::VertexCollection >             PrimaryVertexToken;
+  edm::EDGetTokenT< edm::View<reco::Track> >             TrackToken;
+  edm::EDGetTokenT< std::vector< PileupSummaryInfo > >   PileUpInfoToken;
   
   
   //edm::Handle<bool> ifilterbadChCand;
@@ -246,6 +247,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   // -- Store flags -- // 
   bool theStorePriVtxFlag;                // Yes or No to store primary vertex
   bool theStoreJetFlag;                // Yes or No to store Jet
+  bool theStoreFatJetFlag;                // Yes or No to store FatJet
   bool theStoreMETFlag;                // Yes or No to store MET 
   bool theStoreHLTReportFlag;             // Yes or No to store HLT reuslts (list of triggers fired)
   bool theStoreMuonFlag;
@@ -398,6 +400,36 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_m;
   vector<double> jet_energy;
   vector<double> jet_PileupJetId;
+
+  //==== FatJet
+
+  vector<double> fatjet_pt;
+  vector<double> fatjet_eta;
+  vector<double> fatjet_phi;
+  vector<double> fatjet_charge;
+  vector<double> fatjet_area;
+  vector<double> fatjet_rho;
+  vector<int> fatjet_partonFlavour;
+  vector<int> fatjet_hadronFlavour;
+  vector<double> fatjet_bTag;
+  vector<bool> fatjet_looseJetID;
+  vector<bool> fatjet_tightJetID;
+  vector<bool> fatjet_tightLepVetoJetID;
+  vector<int> fatjet_partonPdgId;
+  vector<int> fatjet_vtxNtracks;
+  vector<double> fatjet_m;
+  vector<double> fatjet_energy;
+  vector<double> fatjet_puppi_tau1;
+  vector<double> fatjet_puppi_tau2;
+  vector<double> fatjet_puppi_tau3;
+  vector<double> fatjet_puppi_tau4;
+  vector<double> fatjet_softdropmass;
+  vector<double> fatjet_chargedHadronEnergyFraction;
+  vector<double> fatjet_neutralHadronEnergyFraction;
+  vector<double> fatjet_neutralEmEnergyFraction;
+  vector<double> fatjet_chargedEmEnergyFraction;
+  vector<int> fatjet_chargedMultiplicity;
+  vector<int> fatjet_neutralMultiplicity;
 
   //==== Electron
 
