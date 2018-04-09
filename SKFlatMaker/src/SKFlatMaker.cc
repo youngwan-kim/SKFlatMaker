@@ -642,6 +642,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   
   // fills
   
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreHLTReportFlag" << endl;
+  if( theStoreHLTReportFlag ) hltReport(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePriVtxFlag" << endl;
   if( theStorePriVtxFlag ) fillPrimaryVertex(iEvent);
 
@@ -670,9 +673,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreElectronFlag" << endl;
   if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
-
-  //==== Trigger filling should be after lepton filled (for lepton-HLT matching)
-  if( theStoreHLTReportFlag ) hltReport(iEvent);
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTTFlag" << endl;
   if( theStoreTTFlag ) fillTT(iEvent);
