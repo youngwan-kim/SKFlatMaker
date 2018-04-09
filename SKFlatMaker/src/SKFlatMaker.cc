@@ -264,7 +264,15 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_et.clear();
   electron_caloEnergy.clear();
   electron_Energy.clear();
+  electron_Energy_Scale_Up.clear();
+  electron_Energy_Scale_Down.clear();
+  electron_Energy_Smear_Up.clear();
+  electron_Energy_Smear_Down.clear();
   electron_pt.clear();
+  electron_pt_Scale_Up.clear();
+  electron_pt_Scale_Down.clear();
+  electron_pt_Smear_Up.clear();
+  electron_pt_Smear_Down.clear();
   electron_Px.clear();
   electron_Py.clear();
   electron_Pz.clear();
@@ -828,7 +836,15 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_et", "vector<double>", &electron_et);
     DYTree->Branch("electron_caloEnergy", "vector<double>", &electron_caloEnergy);
     DYTree->Branch("electron_Energy", "vector<double>", &electron_Energy);
+    DYTree->Branch("electron_Energy_Scale_Up", "vector<double>", &electron_Energy_Scale_Up);
+    DYTree->Branch("electron_Energy_Scale_Down", "vector<double>", &electron_Energy_Scale_Down);
+    DYTree->Branch("electron_Energy_Smear_Up", "vector<double>", &electron_Energy_Smear_Up);
+    DYTree->Branch("electron_Energy_Smear_Down", "vector<double>", &electron_Energy_Smear_Down);
     DYTree->Branch("electron_pt", "vector<double>", &electron_pt);
+    DYTree->Branch("electron_pt_Scale_Up", "vector<double>", &electron_pt_Scale_Up);
+    DYTree->Branch("electron_pt_Scale_Down", "vector<double>", &electron_pt_Scale_Down);
+    DYTree->Branch("electron_pt_Smear_Up", "vector<double>", &electron_pt_Smear_Up);
+    DYTree->Branch("electron_pt_Smear_Down", "vector<double>", &electron_pt_Smear_Down);
     DYTree->Branch("electron_Px", "vector<double>", &electron_Px);
     DYTree->Branch("electron_Py", "vector<double>", &electron_Py);
     DYTree->Branch("electron_Pz", "vector<double>", &electron_Pz);
@@ -1189,9 +1205,9 @@ void SKFlatMaker::beginJob()
 
 void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 {
-
+  
   if(theDebugLevel) cout << "[SKFlatMaker::beginRun] called" << endl;
-
+  
   vector<string> temp_trigs = {
       "HLT_Mu*", "HLT_Ele*", "HLT_DoubleEle*", "HLT_DoublePhoton*", "HLT_IsoMu*", "HLT_Photon*", 
 
@@ -1802,6 +1818,10 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     double sin_theta = sin(elec_theta);
     //electron_pt.push_back( el->pt() * ratio_E );
     electron_pt.push_back( el->userFloat("ecalTrkEnergyPostCorr") * sin_theta );
+    electron_pt_Scale_Up.push_back( el->userFloat("energyScaleUp") * sin_theta );
+    electron_pt_Scale_Down.push_back( el->userFloat("energyScaleDown") * sin_theta );
+    electron_pt_Smear_Up.push_back( el->userFloat("energySigmaUp") * sin_theta );
+    electron_pt_Smear_Down.push_back( el->userFloat("energySigmaDown") * sin_theta );
     //double energy_t = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta;
     electron_eta.push_back( el->eta() );
     electron_phi.push_back( el->phi() );
@@ -1810,6 +1830,10 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     electron_Pz.push_back( el->pz() );
     //electron_Energy.push_back( el->energy() );
     electron_Energy.push_back( el->userFloat("ecalTrkEnergyPostCorr") );
+    electron_Energy_Scale_Up.push_back( el->userFloat("energyScaleUp") );
+    electron_Energy_Scale_Down.push_back( el->userFloat("energyScaleDown") );
+    electron_Energy_Smear_Up.push_back( el->userFloat("energySigmaUp") );
+    electron_Energy_Smear_Down.push_back( el->userFloat("energySigmaDown") );
     
     electron_charge.push_back( el->charge() );
     electron_fbrem.push_back( el->fbrem() );

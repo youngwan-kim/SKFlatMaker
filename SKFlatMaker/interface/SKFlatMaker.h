@@ -453,7 +453,15 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_et;
   vector<double> electron_caloEnergy;
   vector<double> electron_Energy;
+  vector<double> electron_Energy_Scale_Up;
+  vector<double> electron_Energy_Scale_Down;
+  vector<double> electron_Energy_Smear_Up;
+  vector<double> electron_Energy_Smear_Down;
   vector<double> electron_pt;
+  vector<double> electron_pt_Scale_Up;
+  vector<double> electron_pt_Scale_Down;
+  vector<double> electron_pt_Smear_Up;
+  vector<double> electron_pt_Smear_Down;
   vector<double> electron_Px;
   vector<double> electron_Py;
   vector<double> electron_Pz;
