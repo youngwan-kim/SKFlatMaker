@@ -57,6 +57,10 @@
 // -- For Jets -- //
 ////////////////////
 #include "DataFormats/PatCandidates/interface/Jet.h" // -- Analysis-level calorimeter jet class, Jet implements the analysis-level calorimeter jet class within the 'pat' namespace.
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
+#include "JetMETCorrections/Modules/interface/JetResolution.h"
 
 ////////////////////////////
 // -- For GenParticles -- //
@@ -400,6 +404,15 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_m;
   vector<double> jet_energy;
   vector<double> jet_PileupJetId;
+  vector<double> jet_shiftedEnUp;
+  vector<double> jet_shiftedEnDown;
+
+  //==== JEC
+  JetCorrectionUncertainty *jet_jecUnc;
+  std::string jet_payloadName_;
+  JetCorrectionUncertainty *fatjet_jecUnc;
+  std::string fatjet_payloadName_;
+
 
   //==== FatJet
 
@@ -430,6 +443,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> fatjet_chargedEmEnergyFraction;
   vector<int> fatjet_chargedMultiplicity;
   vector<int> fatjet_neutralMultiplicity;
+  vector<double> fatjet_shiftedEnUp;
+  vector<double> fatjet_shiftedEnDown;
 
   //==== Electron
 

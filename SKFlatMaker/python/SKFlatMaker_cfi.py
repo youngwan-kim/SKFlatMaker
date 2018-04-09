@@ -35,6 +35,8 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   BDiscriminant_tcheff = cms.untracked.double(0.7),
   BDiscriminant_tchpur = cms.untracked.double(0.7),
   BDiscriminant_ssv = cms.untracked.double(2.05),
+  AK4Jet_payloadName = cms.string('AK4PFchs'),
+  AK8Jet_payloadName = cms.string('AK8PFPuppi'),
 
   # -- MET information -- #
   METFilterResults_PAT = cms.InputTag("TriggerResults", "", "PAT"),

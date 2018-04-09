@@ -77,7 +77,9 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   effAreaChHadronsFile              = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaChHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfChargedHadrons_90percentBased.txt") );
   effAreaNeuHadronsFile             = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaNeuHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased.txt") );
   effAreaPhotonsFile                = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaPhoFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased.txt") );
-  
+
+  jet_payloadName_                  = iConfig.getParameter<std::string>("AK4Jet_payloadName"),
+  fatjet_payloadName_               = iConfig.getParameter<std::string>("AK8Jet_payloadName"),
   
   // -- Store Flags -- //
   theStorePriVtxFlag                = iConfig.getUntrackedParameter<bool>("StorePriVtxFlag", true);
@@ -513,6 +515,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_m.clear();
   jet_energy.clear();
   jet_PileupJetId.clear();
+  jet_shiftedEnUp.clear();
+  jet_shiftedEnDown.clear();
 
   //==== FatJet
   fatjet_pt.clear();
@@ -542,6 +546,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_chargedEmEnergyFraction.clear();
   fatjet_chargedMultiplicity.clear();
   fatjet_neutralMultiplicity.clear();
+  fatjet_shiftedEnUp.clear();
+  fatjet_shiftedEnDown.clear();
 
   //==== Photon
   photon_pt.clear();
@@ -611,7 +617,19 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     nPileUp = npv;
       
   }
-  
+
+  //==== Prepare JEC
+  edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
+  iSetup.get<JetCorrectionsRecord>().get(jet_payloadName_,JetCorParColl);
+  JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
+  if(jet_jecUnc) delete jet_jecUnc;
+  jet_jecUnc = new JetCorrectionUncertainty(JetCorPar);
+
+  edm::ESHandle<JetCorrectorParametersCollection> FatJetCorParColl;
+  iSetup.get<JetCorrectionsRecord>().get(fatjet_payloadName_,FatJetCorParColl);
+  JetCorrectorParameters const & FatJetCorPar = (*FatJetCorParColl)["Uncertainty"];
+  if(fatjet_jecUnc) delete fatjet_jecUnc;
+  fatjet_jecUnc = new JetCorrectionUncertainty(FatJetCorPar);
   
   // fills
   
@@ -766,6 +784,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_m", "vector<double>", &jet_m);
     DYTree->Branch("jet_energy", "vector<double>", &jet_energy);
     DYTree->Branch("jet_PileupJetId", "vector<double>", &jet_PileupJetId);
+    DYTree->Branch("jet_shiftedEnUp", "vector<double>", &jet_shiftedEnUp);
+    DYTree->Branch("jet_shiftedEnDown", "vector<double>", &jet_shiftedEnDown);
+
   }
   
   if(theStoreFatJetFlag){
@@ -796,6 +817,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_chargedEmEnergyFraction", "vector<double>", &fatjet_chargedEmEnergyFraction);
     DYTree->Branch("fatjet_chargedMultiplicity", "vector<int>", &fatjet_chargedMultiplicity);
     DYTree->Branch("fatjet_neutralMultiplicity", "vector<int>", &fatjet_neutralMultiplicity);
+    DYTree->Branch("fatjet_shiftedEnUp", "vector<double>", &fatjet_shiftedEnUp);
+    DYTree->Branch("fatjet_shiftedEnDown", "vector<double>", &fatjet_shiftedEnDown);
   }
 
   // Electron
@@ -2298,6 +2321,17 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_energy.push_back( jets_iter->energy() );
     if( jets_iter->hasUserFloat("pileupJetId:fullDiscriminant") ) jet_PileupJetId.push_back( jets_iter->userFloat("pileupJetId:fullDiscriminant") );
 
+    //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+    jet_jecUnc->setJetEta( jets_iter->eta() );
+    jet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
+    double unc = jet_jecUnc->getUncertainty(true);
+    jet_shiftedEnUp.push_back( 1.+unc );
+    jet_shiftedEnDown.push_back( 1.-unc ); // I found jet_jecUnc->getUncertainty(true) = jet_jecUnc->getUncertainty(false)
+
+    if(isMC){
+
+    }
+
   } 
   
 }
@@ -2358,6 +2392,13 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_puppi_tau3.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau3") );
     fatjet_puppi_tau4.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau4") );
     fatjet_softdropmass.push_back( jets_iter->userFloat("ak8PFJetsPuppiSoftDropMass") );
+
+    //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+    fatjet_jecUnc->setJetEta( jets_iter->eta() );
+    fatjet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
+    double unc = fatjet_jecUnc->getUncertainty(true);
+    fatjet_shiftedEnUp.push_back( 1.+unc );
+    fatjet_shiftedEnDown.push_back( 1.-unc ); // I found fatjet_jecUnc->getUncertainty(true) = fatjet_jecUnc->getUncertainty(false)
 
   }
 

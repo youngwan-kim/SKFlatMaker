@@ -21,3 +21,5 @@ int	jet_vtxNtracks	1
 double	jet_m	1
 double	jet_energy	1
 double	jet_PileupJetId	1
+double	jet_shiftedEnUp	1
+double  jet_shiftedEnDown  1
