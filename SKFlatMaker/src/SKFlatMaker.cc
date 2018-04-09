@@ -12,7 +12,7 @@
 //
 //   Revised By
 //   S.B. Oh           Seoul National University
-//   
+//   J.S. Kim          Seoul National University
 //
 //--------------------------------------------------
 
