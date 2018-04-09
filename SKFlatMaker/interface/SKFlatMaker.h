@@ -254,6 +254,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStoreFatJetFlag;                // Yes or No to store FatJet
   bool theStoreMETFlag;                // Yes or No to store MET 
   bool theStoreHLTReportFlag;             // Yes or No to store HLT reuslts (list of triggers fired)
+  bool theStoreHLTObjectFlag;
   bool theStoreMuonFlag;
   bool theStoreElectronFlag;
   bool theStoreLHEFlag;
@@ -368,16 +369,14 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   //==== trigger object
 
-  vector<int> HLTObject_Type;
-  vector<int> HLTObject_Fired;
-  vector<string> HLTObject_Name;
-  vector<int> HLTObject_PS;
-  vector<double> HLTObject_pt;
-  vector<double> HLTObject_eta;
-  vector<double> HLTObject_phi;
   vector<string> HLT_TriggerName;
   vector<bool> HLT_TriggerFired;
   vector<int> HLT_TriggerPrescale;
+  vector<double> HLTObject_pt;
+  vector<double> HLTObject_eta;
+  vector<double> HLTObject_phi;
+  vector<string> HLTObject_FiredFilters;
+  vector<string> HLTObject_FiredPaths;
 
   //==== Jet
 
@@ -617,7 +616,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<int> muon_matchedstations;
   vector<int> muon_stationMask;
   vector<int> muon_nSegments;
-  vector<double> muon_chi2dof;
+  vector<double> muon_normchi;
   vector<int> muon_validhits;
   vector<int> muon_trackerHits;
   vector<int> muon_pixelHits;

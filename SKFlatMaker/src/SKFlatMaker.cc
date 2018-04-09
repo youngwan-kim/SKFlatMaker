@@ -87,7 +87,7 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStoreFatJetFlag                = iConfig.getUntrackedParameter<bool>("StoreFatJetFlag", true);
   theStoreMETFlag                   = iConfig.getUntrackedParameter<bool>("StoreMETFlag", true);
   theStoreHLTReportFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTReportFlag", true);
-  
+  theStoreHLTObjectFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTObjectFlag", true);
   theStoreMuonFlag                  = iConfig.getUntrackedParameter<bool>("StoreMuonFlag", true);
   theStoreElectronFlag              = iConfig.getUntrackedParameter<bool>("StoreElectronFlag", true);
   theStoreLHEFlag                   = iConfig.getUntrackedParameter<bool>("StoreLHEFlag", false);
@@ -156,6 +156,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   neutralHadronEt = 0;
 
   //==== MET
+
   pfMET_pt=-999;
   pfMET_phi=-999;
   pfMET_Px=-999;
@@ -173,6 +174,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pfMET_Type1_PhiCor_SumEt=-999;
 
   //==== Tracker Track
+
   TrackerTrack_dxy.clear();
   TrackerTrack_dxyErr.clear();
   TrackerTrack_d0.clear();
@@ -193,18 +195,18 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   TrackerTrack_charge.clear();
 
   //==== Trigger (object)
-  HLTObject_Type.clear();
-  HLTObject_Fired.clear();
-  HLTObject_Name.clear();
-  HLTObject_PS.clear();
-  HLTObject_pt.clear();
-  HLTObject_eta.clear();
-  HLTObject_phi.clear();
+
   HLT_TriggerName.clear();
   HLT_TriggerFired.clear();
   HLT_TriggerPrescale.clear();
+  HLTObject_pt.clear();
+  HLTObject_eta.clear();
+  HLTObject_phi.clear();
+  HLTObject_FiredFilters.clear();
+  HLTObject_FiredPaths.clear();
 
   //==== LHE
+
   LHELepton_Px.clear();
   LHELepton_Py.clear();
   LHELepton_Pz.clear();
@@ -213,6 +215,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   LHELepton_status.clear();
 
   //==== GEN
+
   gen_phi.clear();
   gen_eta.clear();
   gen_pt.clear();
@@ -427,7 +430,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_matchedstations.clear();
   muon_stationMask.clear();
   muon_nSegments.clear();
-  muon_chi2dof.clear();
+  muon_normchi.clear();
   muon_validhits.clear();
   muon_trackerHits.clear();
   muon_pixelHits.clear();
@@ -633,7 +636,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   
   // fills
   
-  if( theStoreHLTReportFlag ) hltReport(iEvent);
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePriVtxFlag" << endl;
   if( theStorePriVtxFlag ) fillPrimaryVertex(iEvent);
 
@@ -662,6 +664,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreElectronFlag" << endl;
   if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
+
+  //==== Trigger filling should be after lepton filled (for lepton-HLT matching)
+  if( theStoreHLTReportFlag ) hltReport(iEvent);
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTTFlag" << endl;
   if( theStoreTTFlag ) fillTT(iEvent);
@@ -746,16 +751,17 @@ void SKFlatMaker::beginJob()
 
   if(theStoreHLTReportFlag){
 
-    DYTree->Branch("HLTObject_Type", "vector<int>", &HLTObject_Type);
-    DYTree->Branch("HLTObject_Fired", "vector<int>", &HLTObject_Fired);
-    DYTree->Branch("HLTObject_Name", "vector<string>", &HLTObject_Name);
-    DYTree->Branch("HLTObject_PS", "vector<int>", &HLTObject_PS);
-    DYTree->Branch("HLTObject_pt", "vector<double>", &HLTObject_pt);
-    DYTree->Branch("HLTObject_eta", "vector<double>", &HLTObject_eta);
-    DYTree->Branch("HLTObject_phi", "vector<double>", &HLTObject_phi);
     DYTree->Branch("HLT_TriggerName", "vector<string>", &HLT_TriggerName);
     DYTree->Branch("HLT_TriggerFired", "vector<bool>", &HLT_TriggerFired);
     DYTree->Branch("HLT_TriggerPrescale", "vector<int>", &HLT_TriggerPrescale);
+
+    if(theStoreHLTObjectFlag){
+      DYTree->Branch("HLTObject_pt", "vector<double>", &HLTObject_pt);
+      DYTree->Branch("HLTObject_eta", "vector<double>", &HLTObject_eta);
+      DYTree->Branch("HLTObject_phi", "vector<double>", &HLTObject_phi);
+      DYTree->Branch("HLTObject_FiredFilters", "vector<string>", &HLTObject_FiredFilters);
+      DYTree->Branch("HLTObject_FiredPaths", "vector<string>", &HLTObject_FiredPaths);
+    }
 
   }
 
@@ -994,7 +1000,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_matchedstations", "vector<int>", &muon_matchedstations);
     DYTree->Branch("muon_stationMask", "vector<int>", &muon_stationMask);
     DYTree->Branch("muon_nSegments", "vector<int>", &muon_nSegments);
-    DYTree->Branch("muon_chi2dof", "vector<double>", &muon_chi2dof);
+    DYTree->Branch("muon_normchi", "vector<double>", &muon_normchi);
     DYTree->Branch("muon_validhits", "vector<int>", &muon_validhits);
     DYTree->Branch("muon_trackerHits", "vector<int>", &muon_trackerHits);
     DYTree->Branch("muon_pixelHits", "vector<int>", &muon_pixelHits);
@@ -1057,7 +1063,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_TuneP_Pz", "vector<double>", &muon_TuneP_Pz);
     DYTree->Branch("muon_TuneP_eta", "vector<double>", &muon_TuneP_eta);
     DYTree->Branch("muon_TuneP_phi", "vector<double>", &muon_TuneP_phi);
-
   }
   
   // -- LHE info -- //
@@ -1269,6 +1274,9 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
               trigModuleNames_preFil.push_back("");
             }
           }
+          else{
+            trigModuleNames.push_back("");
+          }
 
           //==== find prescale value
           int _preScaleValue = hltConfig_.prescaleValue(0, *match);
@@ -1277,11 +1285,21 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
         } //==== end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
         
       } //==== end of if( !matches.empty() ) -- //
-    
+
       cout << endl;      
-    
+
     } // -- end of for( int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ): trigger iteration -- //
-      
+
+    //==== Check size 
+    if(theDebugLevel>0){
+      cout << "[SKFlatMaker::beginRun] ListHLT.size() = " << ListHLT.size() << endl;
+      cout << "[SKFlatMaker::beginRun] trigModuleNames.size() = " << trigModuleNames.size() << endl;
+      cout << "[SKFlatMaker::beginRun] trigModuleNames_preFil.size() = " << trigModuleNames_preFil.size() << endl;
+    }
+    if( ListHLT.size()!=trigModuleNames.size() || ListHLT.size()!=trigModuleNames_preFil.size() ){
+      LogError("SKFlatMaker::beginRun") << "Check Trigger Moduel and Filter Names..";
+    }
+
   } // -- end of else of if (!hltConfig_.init(iRun, iSetup, processName, changedConfig)) -- //
   
   cout << "[SKFlatMaker::beginRun] #### Prescales ####" << endl;
@@ -1316,10 +1334,10 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   
   Handle<TriggerResults> trigResult;
   iEvent.getByToken(TriggerToken, trigResult);
-  
+
   if( !trigResult.failedToGet() ){
-    int ntrigs = trigResult->size();
-    //==== all trigger pathes inthe inputfile
+
+    //==== All trigger paths in the inputfile
     const edm::TriggerNames trigName = iEvent.triggerNames(*trigResult);
 
     if(theDebugLevel>=2){
@@ -1330,28 +1348,72 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
 
     //==== Loop over triggers we are interested in (i.e., ListHLT)
     for( int itrigName = 0; itrigName < ntrigName; itrigName++ ){
-      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), ListHLT[itrigName]);
 
       HLT_TriggerName.push_back(ListHLT[itrigName]);
       HLT_TriggerPrescale.push_back(ListHLTPS[itrigName]);
 
-      if( !matches.empty() ){
-        BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
-          if( trigName.triggerIndex(*match) >= (unsigned int)ntrigs ) continue;
-
-          //==== Check if this trigger is fired
-          if( trigResult->accept(trigName.triggerIndex(*match)) ){
-            HLT_TriggerFired.push_back(true);
-          }
-          else{
-            HLT_TriggerFired.push_back(false);
-          }
-        }
-        
+      //==== Check if this trigger is fired
+      if( trigResult->accept(trigName.triggerIndex(ListHLT[itrigName])) ){
+        HLT_TriggerFired.push_back(true);
       }
-    
+      else{
+        HLT_TriggerFired.push_back(false);
+      }
+        
     } // -- end of for( int itrigName = 0; itrigName < ntrigName; itrigName++ ) -- //
-      
+
+    if(theStoreHLTObjectFlag){
+
+      //==== HLT Object for lepton matching
+      edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
+      iEvent.getByToken(TriggerObjectToken, triggerObject);
+
+      for(pat::TriggerObjectStandAlone obj : *triggerObject){
+
+        obj.unpackPathNames(trigName);
+        obj.unpackFilterLabels(iEvent, *trigResult);  //added Suoh
+
+        HLTObject_pt.push_back( obj.pt() );
+        HLTObject_eta.push_back( obj.eta() );
+        HLTObject_phi.push_back( obj.phi() );
+
+        string FiredFilters = "", FiredPaths = "";
+
+        //==== Path we are interested in are saved in : std::vector<std::string > ListHLT;
+        //==== Filter we are interested in are svaed in : std::vector<std::string > trigModuleNames;
+
+        //==== Loop over filters
+        //cout << "This HLT Object : " << endl;
+        for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter ){
+          string this_filter = obj.filterLabels().at(i_filter);
+          //cout << "  this_filter = " << this_filter << endl;
+          if(std::find( trigModuleNames.begin(), trigModuleNames.end(), this_filter) != trigModuleNames.end() ){
+            FiredFilters += this_filter+":";
+          }
+        } //==== END Filter Loop
+
+        //==== Loop over path
+        std::vector<std::string> pathNamesAll  = obj.pathNames(true); // Get path whose last filter is fired
+        for( size_t i_filter = 0; i_filter < pathNamesAll.size(); ++i_filter ){
+          string this_path = pathNamesAll.at(i_filter);
+          //cout << "  this_path = " << this_path << endl;
+          if(std::find( ListHLT.begin(), ListHLT.end(), this_path ) != ListHLT.end()){
+            FiredPaths += pathNamesAll.at(i_filter)+":";
+          }
+        } //==== END Filter Loop
+
+        if(theDebugLevel>=2){
+          cout << "  ==> FiredFilters = " << FiredFilters << endl;
+          cout << "  ==> FiredPaths = " << FiredPaths << endl;
+        }
+
+        HLTObject_FiredFilters.push_back( FiredFilters );
+        HLTObject_FiredPaths.push_back( FiredPaths );
+
+      } //==== END HLT Object loop
+
+    }
+
   } // -- end of if( !trigResult.failedToGet() ) -- //
   
   const bool isRD = iEvent.isRealData();
@@ -1382,9 +1444,6 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   //==== MiniAOD
   //==============
   
-  edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
-  iEvent.getByToken(TriggerObjectToken, triggerObject);
-  
   //save event filter infomation
   if (!iEvent.getByToken(METFilterResultsToken_PAT, METFilterResults)){
     iEvent.getByToken(METFilterResultsToken_RECO, METFilterResults);
@@ -1412,65 +1471,6 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0) Flag_ecalBadCalibFilter = METFilterResults -> accept(i);
   }
 
-  //==== Loop for Trigger Object
-  //==== We can check mu_mathced_trigger etc..
-  if( !trigResult.failedToGet() ){
-    const edm::TriggerNames names = iEvent.triggerNames(*trigResult);
-
-    //cout << "[# of trigger object in this event: " << (*triggerObject).size() << endl;
-    for (pat::TriggerObjectStandAlone obj : *triggerObject){
-      obj.unpackPathNames(names);
-      obj.unpackFilterLabels(iEvent, *trigResult);  //added Suoh
-      
-      //cout << "# Filters: " << obj.filterLabels().size() << endl;
-      for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter ){
-
-        //==== Get the full name of i-th filter -- //
-        std::string fullname = obj.filterLabels()[i_filter];
-        //cout << "[JSKIM] fullname = " << fullname << endl;
-        std::string filterName;
-        
-        // -- Find ":" in the full name -- //
-        size_t m = fullname.find_first_of(':');
-        
-        // -- if ":" exists in the full name, takes the name before ":" as the filter name -- //
-        if( m != std::string::npos )
-          filterName = fullname.substr(0, m);
-        else
-          filterName = fullname;
-
-        //cout << "[JSKIM] filterName = " << filterName << endl;
-        
-        //==== Loop for the triggers that a user inserted in this code
-        for( int itf = 0; itf < ntrigName; itf++ ){
-          string name = "";
-      
-          //==== Store HLT object information only if trigModuleName is equal to this filter name
-          if( filterName == trigModuleNames[itf] ){
-            name = ListHLT[itf];
-            int _ps = ListHLTPS[itf];
-
-            HLTObject_Type.push_back( itf );
-            HLTObject_Fired.push_back( HLT_TriggerFired[itf] );
-            HLTObject_pt.push_back( obj.pt() );
-            HLTObject_eta.push_back( obj.eta() );
-            HLTObject_phi.push_back( obj.phi() );
-            HLTObject_Name.push_back(name);
-            HLTObject_PS.push_back(_ps);
-          }
-      
-          // cout << endl;
-      
-        } // -- end of for( int itf = 0; itf < ntrigName; itf++ ) -- //
-        
-        // cout << endl;
-        
-      } // -- end of filter iteration -- //
-    
-    } // -- end of trigger object iteration -- //
-      
-  } // -- end of !trigResult.failedToGet() -- //
-  
 }
 
 ///////////////////////////////////
@@ -1567,7 +1567,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     
     // -- Global track information -- //
     if( glbTrack.isNonnull() ){
-      muon_chi2dof.push_back( glbTrack->normalizedChi2() );
+      muon_normchi.push_back( glbTrack->normalizedChi2() );
       muon_validhits.push_back( glbTrack->numberOfValidHits() );
       
       muon_qoverp.push_back( glbTrack->qoverp() );
@@ -1595,7 +1595,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     } // -- end of if( glbTrack.isNonnull() ) -- //
     else{
       if( trackerTrack.isNonnull() ){
-        muon_chi2dof.push_back( trackerTrack->normalizedChi2() );
+        muon_normchi.push_back( trackerTrack->normalizedChi2() );
         muon_validhits.push_back( trackerTrack->numberOfValidHits() );
         
         muon_qoverp.push_back( trackerTrack->qoverp() );

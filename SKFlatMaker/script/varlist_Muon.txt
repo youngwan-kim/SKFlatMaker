@@ -39,7 +39,7 @@ int	muon_nChambers	1
 int	muon_matchedstations	1
 int	muon_stationMask	1
 int	muon_nSegments	1
-double	muon_chi2dof	1
+double	muon_normchi	1
 int	muon_validhits	1
 int	muon_trackerHits	1
 int	muon_pixelHits	1
