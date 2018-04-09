@@ -378,8 +378,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_passMVAID_noIso_WP90.clear();
   electron_passMVAID_iso_WP80.clear();
   electron_passMVAID_iso_WP90.clear();
-  electron_passMVAID_WP80.clear();
-  electron_passMVAID_WP90.clear();
   electron_passHEEPID.clear();
   electron_ptUnCorr.clear();
   electron_etaUnCorr.clear();
@@ -951,8 +949,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_passMVAID_noIso_WP90", "vector<bool>", &electron_passMVAID_noIso_WP90);
     DYTree->Branch("electron_passMVAID_iso_WP80", "vector<bool>", &electron_passMVAID_iso_WP80);
     DYTree->Branch("electron_passMVAID_iso_WP90", "vector<bool>", &electron_passMVAID_iso_WP90);
-    DYTree->Branch("electron_passMVAID_WP80", "vector<bool>", &electron_passMVAID_WP80);
-    DYTree->Branch("electron_passMVAID_WP90", "vector<bool>", &electron_passMVAID_WP90);
     DYTree->Branch("electron_passHEEPID", "vector<bool>", &electron_passHEEPID);
     DYTree->Branch("electron_ptUnCorr", "vector<double>", &electron_ptUnCorr);
     DYTree->Branch("electron_etaUnCorr", "vector<double>", &electron_etaUnCorr);
@@ -1935,7 +1931,8 @@ dummy = Vertex(p, e, 0, 0, 0);
     bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
     bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
     bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
-    
+    bool isPassHEEP = el -> electronID("heepElectronID-HEEPV70");
+
     // cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
     electron_passVetoID.push_back( isPassVeto );
     electron_passLooseID.push_back( isPassLoose );
@@ -1945,8 +1942,7 @@ dummy = Vertex(p, e, 0, 0, 0);
     electron_passMVAID_noIso_WP90.push_back( isPassMVA_noIso_WP90 );
     electron_passMVAID_iso_WP80.push_back( isPassMVA_iso_WP80 );
     electron_passMVAID_iso_WP90.push_back( isPassMVA_iso_WP90 );
-    
-    // electron_passHEEPID.push_back( isPassHEEP );
+    electron_passHEEPID.push_back( isPassHEEP );
     
   } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   

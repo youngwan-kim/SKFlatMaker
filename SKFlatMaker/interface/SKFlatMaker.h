@@ -559,8 +559,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<bool> electron_passMVAID_noIso_WP90;
   vector<bool> electron_passMVAID_iso_WP80;
   vector<bool> electron_passMVAID_iso_WP90;
-  vector<bool> electron_passMVAID_WP80;
-  vector<bool> electron_passMVAID_WP90;
   vector<bool> electron_passHEEPID;
   vector<double> electron_ptUnCorr;
   vector<double> electron_etaUnCorr;

@@ -113,8 +113,6 @@ bool	electron_passMVAID_noIso_WP80	1
 bool	electron_passMVAID_noIso_WP90	1
 bool	electron_passMVAID_iso_WP80	1
 bool	electron_passMVAID_iso_WP90	1
-bool	electron_passMVAID_WP80	1
-bool	electron_passMVAID_WP90	1
 bool	electron_passHEEPID	1
 double	electron_ptUnCorr	1
 double	electron_etaUnCorr	1
