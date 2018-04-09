@@ -1288,6 +1288,7 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
       if( !matches.empty() ){
 
         //==== iteration for each wildcard-matched triggers
+        //==== e.g., {"HLT_Mu8", "HLT_Mu17"}
         BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
 
           if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
