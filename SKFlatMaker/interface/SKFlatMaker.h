@@ -277,10 +277,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
 
   std::vector<std::string > HLTName_WildCard;
-  std::vector<std::string > ListHLT;
-  std::vector<int > ListHLTPS;
-  std::vector<std::string > trigModuleNames;
-  std::vector<std::string > trigModuleNames_preFil;
   
   bool Flag_goodVertices;
   bool Flag_globalTightHalo2016Filter;
@@ -370,6 +366,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   //==== trigger object
 
   vector<string> HLT_TriggerName;
+  vector<string> HLT_TriggerFilterName;
   vector<bool> HLT_TriggerFired;
   vector<int> HLT_TriggerPrescale;
   vector<double> HLTObject_pt;

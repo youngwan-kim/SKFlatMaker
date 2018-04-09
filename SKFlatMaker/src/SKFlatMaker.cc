@@ -197,6 +197,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   //==== Trigger (object)
 
   HLT_TriggerName.clear();
+  HLT_TriggerFilterName.clear();
   HLT_TriggerFired.clear();
   HLT_TriggerPrescale.clear();
   HLTObject_pt.clear();
@@ -752,6 +753,7 @@ void SKFlatMaker::beginJob()
   if(theStoreHLTReportFlag){
 
     DYTree->Branch("HLT_TriggerName", "vector<string>", &HLT_TriggerName);
+    DYTree->Branch("HLT_TriggerFilterName", "vector<string>", &HLT_TriggerFilterName);
     DYTree->Branch("HLT_TriggerFired", "vector<bool>", &HLT_TriggerFired);
     DYTree->Branch("HLT_TriggerPrescale", "vector<int>", &HLT_TriggerPrescale);
 
@@ -1224,93 +1226,12 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   HLTName_WildCard.clear();
   for(unsigned int i=0; i<temp_trigs.size(); i++ ) HLTName_WildCard.push_back(temp_trigs.at(i));
 
-  ListHLT.clear();
-  ListHLTPS.clear();
-  
   bool changedConfig;
   if(!hltConfig_.init(iRun, iSetup, processName, changedConfig)){
     LogError("HLTMuonVal") << "Initialization of HLTConfigProvider failed!!";
     return;
   }
-  else{
-    std::vector<std::string> triggerNames = hltConfig_.triggerNames();
-      
-    //==== print all trigger pathes inthe inputfile
-    for( size_t i = 0; i < triggerNames.size(); i++)
-      cout << "[SKFlatMaker::beginRun] Trigger Path: " << triggerNames[i] << endl;
-      
-    //==== iteration for each Trigger Name WildCards
-    for(unsigned int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ){
-      cout << "[SKFlatMaker::beginRun] [" << it_HLTWC << "th Input Trigger Name WildCard = " << HLTName_WildCard[it_HLTWC] << "]" << endl;
-    
-      //==== find triggers in HLT configuration matched with a input trigger using wild card -- //
-      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(triggerNames, HLTName_WildCard[it_HLTWC]);
-      
-      if( !matches.empty() ){
 
-        //==== iteration for each wildcard-matched trigger
-
-        BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
-          cout << "[SKFlatMaker::beginRun]   [matched trigger = " << *match << "]" << endl;
-          ListHLT.push_back(*match);//save HLT list as a vector
-        
-          //==== find modules corresponding to a trigger in HLT configuration
-          std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
-          if(theDebugLevel>=2){
-            for(unsigned int it_md=0; it_md<moduleNames.size(); it_md++){
-            cout << "[SKFlatMaker::beginRun]      " << moduleNames.at(it_md) << endl;
-            }
-          }
-
-          int nsize = moduleNames.size();
-          //==== Last module = moduleNames[nsize-1] is always "hltBoolEnd"
-          if( nsize-2 >= 0 ){
-            trigModuleNames.push_back(moduleNames[nsize-2]);
-          
-            if( nsize-3 >= 0 ){
-              trigModuleNames_preFil.push_back(moduleNames[nsize-3]);
-            }
-            else{
-              trigModuleNames_preFil.push_back("");
-            }
-          }
-          else{
-            trigModuleNames.push_back("");
-          }
-
-          //==== find prescale value
-          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
-          ListHLTPS.push_back(_preScaleValue);
-      
-        } //==== end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
-        
-      } //==== end of if( !matches.empty() ) -- //
-
-      cout << endl;      
-
-    } // -- end of for( int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ): trigger iteration -- //
-
-    //==== Check size 
-    if(theDebugLevel>0){
-      cout << "[SKFlatMaker::beginRun] ListHLT.size() = " << ListHLT.size() << endl;
-      cout << "[SKFlatMaker::beginRun] trigModuleNames.size() = " << trigModuleNames.size() << endl;
-      cout << "[SKFlatMaker::beginRun] trigModuleNames_preFil.size() = " << trigModuleNames_preFil.size() << endl;
-    }
-    if( ListHLT.size()!=trigModuleNames.size() || ListHLT.size()!=trigModuleNames_preFil.size() ){
-      LogError("SKFlatMaker::beginRun") << "Check Trigger Moduel and Filter Names..";
-    }
-
-  } // -- end of else of if (!hltConfig_.init(iRun, iSetup, processName, changedConfig)) -- //
-  
-  cout << "[SKFlatMaker::beginRun] #### Prescales ####" << endl;
-  for(unsigned int i = 0; i < ListHLT.size(); i++ )
-    cout << "[SKFlatMaker::beginRun] [" << ListHLT[i] << "]\t\t" << ListHLTPS[i] << endl;
-  
-  // trigger filters
-  for(unsigned int itrig = 0; itrig < ListHLT.size(); itrig++ )
-    cout << "[SKFlatMaker::beginRun] Filter name: " << itrig << " " << ListHLT[itrig] << " " << trigModuleNames[itrig] << " " << trigModuleNames_preFil[itrig] << endl;
-  
-  cout << "[SKFlatMaker::beginRun] ##### End of Begin Run #####" << endl;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------ //
@@ -1329,38 +1250,74 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
 {
 
   if(theDebugLevel) cout << "[SKFlatMaker::hltReport] called" << endl;
-  
-  int ntrigName = ListHLT.size();
-  
+
   Handle<TriggerResults> trigResult;
   iEvent.getByToken(TriggerToken, trigResult);
 
   if( !trigResult.failedToGet() ){
 
-    //==== All trigger paths in the inputfile
+    //==== All trigger paths in this event setup
     const edm::TriggerNames trigName = iEvent.triggerNames(*trigResult);
 
     if(theDebugLevel>=2){
       cout << "[SKFlatMaker::hltReport] trigger names in trigger result (HLT)" << endl;
+      cout << "[SKFlatMaker::hltReport] trigName.size() = " << trigName.size() << endl;
       for(int itrig=0; itrig<(int)trigName.size(); itrig++)
         cout << "[SKFlatMaker::hltReport] trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
     }
 
-    //==== Loop over triggers we are interested in (i.e., ListHLT)
-    for( int itrigName = 0; itrigName < ntrigName; itrigName++ ){
 
-      HLT_TriggerName.push_back(ListHLT[itrigName]);
-      HLT_TriggerPrescale.push_back(ListHLTPS[itrigName]);
+    //==== iteration for each Trigger Name WildCards
+    //==== e.g., {"HLT_Mu*", "HLT_Ele*"}
+    for(unsigned int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ){
+      if(theDebugLevel) cout << "[SKFlatMaker::hltReport] [" << it_HLTWC << "th Input Trigger Name WildCard = " << HLTName_WildCard[it_HLTWC] << "]" << endl;
 
-      //==== Check if this trigger is fired
-      if( trigResult->accept(trigName.triggerIndex(ListHLT[itrigName])) ){
-        HLT_TriggerFired.push_back(true);
-      }
-      else{
-        HLT_TriggerFired.push_back(false);
-      }
-        
-    } // -- end of for( int itrigName = 0; itrigName < ntrigName; itrigName++ ) -- //
+      //==== find triggers in HLT matched to this WildCard
+      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), HLTName_WildCard[it_HLTWC]);
+
+      if( !matches.empty() ){
+
+        //==== iteration for each wildcard-matched triggers
+        BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
+
+          if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
+          HLT_TriggerName.push_back(*match); //save HLT list as a vector
+
+          //==== find modules corresponding to a trigger in HLT configuration
+          std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
+          if(theDebugLevel){
+            cout << "[SKFlatMaker::hltReport]   moduleNames.size() = " << moduleNames.size() << endl;
+            for(unsigned int it_md=0; it_md<moduleNames.size(); it_md++){
+              if(theDebugLevel) cout << "[SKFlatMaker::hltReport]     " << moduleNames.at(it_md) << endl;
+            }
+          }
+          string this_modulename = "";
+          //==== Last module = moduleNames[nmodules-1] is always "hltBoolEnd"
+          int nmodules = moduleNames.size();
+          if( nmodules-2 >= 0 ){
+            this_modulename = moduleNames[nmodules-2];
+          }
+          HLT_TriggerFilterName.push_back( this_modulename );
+
+          //==== find prescale value
+          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
+          HLT_TriggerPrescale.push_back(_preScaleValue);
+
+          //==== Check if this trigger is fired
+          if( trigResult->accept(trigName.triggerIndex(*match)) ){
+            HLT_TriggerFired.push_back(true);
+          }
+          else{
+            HLT_TriggerFired.push_back(false);
+          }
+
+        } // END Loop over matches
+
+      } // END matches not empty
+
+    } // END Loop over Trigger Wildcards
+
+    //==== Now, all trigers we are interested in are saved
 
     if(theStoreHLTObjectFlag){
 
@@ -1379,15 +1336,15 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
 
         string FiredFilters = "", FiredPaths = "";
 
-        //==== Path we are interested in are saved in : std::vector<std::string > ListHLT;
-        //==== Filter we are interested in are svaed in : std::vector<std::string > trigModuleNames;
+        //==== Path we are interested in are saved in : std::vector<std::string > HLT_TriggerName;
+        //==== Filter we are interested in are svaed in : std::vector<std::string > HLT_TriggerFilterName;
 
         //==== Loop over filters
         //cout << "This HLT Object : " << endl;
         for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter ){
           string this_filter = obj.filterLabels().at(i_filter);
           //cout << "  this_filter = " << this_filter << endl;
-          if(std::find( trigModuleNames.begin(), trigModuleNames.end(), this_filter) != trigModuleNames.end() ){
+          if(std::find( HLT_TriggerFilterName.begin(), HLT_TriggerFilterName.end(), this_filter) != HLT_TriggerFilterName.end() ){
             FiredFilters += this_filter+":";
           }
         } //==== END Filter Loop
@@ -1397,7 +1354,7 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
         for( size_t i_filter = 0; i_filter < pathNamesAll.size(); ++i_filter ){
           string this_path = pathNamesAll.at(i_filter);
           //cout << "  this_path = " << this_path << endl;
-          if(std::find( ListHLT.begin(), ListHLT.end(), this_path ) != ListHLT.end()){
+          if(std::find( HLT_TriggerName.begin(), HLT_TriggerName.end(), this_path ) != HLT_TriggerName.end()){
             FiredPaths += pathNamesAll.at(i_filter)+":";
           }
         } //==== END Filter Loop
