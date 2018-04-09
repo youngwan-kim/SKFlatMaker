@@ -511,6 +511,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_vtxNtracks.clear();
   jet_m.clear();
   jet_energy.clear();
+  jet_PileupJetId.clear();
 
   //==== Photon
   photon_pt.clear();
@@ -732,7 +733,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_vtxNtracks", "vector<int>", &jet_vtxNtracks);
     DYTree->Branch("jet_m", "vector<double>", &jet_m);
     DYTree->Branch("jet_energy", "vector<double>", &jet_energy);
-
+    DYTree->Branch("jet_PileupJetId", "vector<double>", &jet_PileupJetId);
   }
   
   // Electron
@@ -2229,6 +2230,14 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
     jet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
     jet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
+
+    int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
+    jet_partonPdgId.push_back( partonPdgId );
+
+    if( jets_iter->hasUserFloat("vtxNtracks") ) jet_vtxNtracks.push_back( jets_iter->userFloat("vtxNtracks") );
+    jet_m.push_back( jets_iter->mass() );
+    jet_energy.push_back( jets_iter->energy() );
+    if( jets_iter->hasUserFloat("pileupJetId:fullDiscriminant") ) jet_PileupJetId.push_back( jets_iter->userFloat("pileupJetId:fullDiscriminant") );
 
   } 
   

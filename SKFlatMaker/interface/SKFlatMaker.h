@@ -397,6 +397,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<int> jet_vtxNtracks;
   vector<double> jet_m;
   vector<double> jet_energy;
+  vector<double> jet_PileupJetId;
 
   //==== Electron
 
