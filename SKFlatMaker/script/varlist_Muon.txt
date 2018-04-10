@@ -44,9 +44,6 @@ int	muon_trackerHits	1
 int	muon_pixelHits	1
 int	muon_validmuonhits	1
 int	muon_trackerLayers	1
-int	muon_trackerHitsGLB	1
-int	muon_trackerLayersGLB	1
-int	muon_pixelHitsGLB	1
 double	muon_qoverp	1
 double	muon_theta	1
 double	muon_lambda	1
@@ -101,3 +98,5 @@ double	muon_TuneP_Py	1
 double	muon_TuneP_Pz	1
 double	muon_TuneP_eta	1
 double	muon_TuneP_phi	1
+double	muon_roch_sf	1
+double  muon_roch_sf_up  1

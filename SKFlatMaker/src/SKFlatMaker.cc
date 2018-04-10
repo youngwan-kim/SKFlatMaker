@@ -95,7 +95,9 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theKeepAllGen                     = iConfig.getUntrackedParameter<bool>("KeepAllGen", true);
   theStoreTTFlag                    = iConfig.getUntrackedParameter<bool>("StoreTTFlag", false);
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
-  
+
+  rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
+
   // -- Filters -- //
   
   // if( isMC )
@@ -440,9 +442,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_pixelHits.clear();
   muon_validmuonhits.clear();
   muon_trackerLayers.clear();
-  muon_trackerHitsGLB.clear();
-  muon_trackerLayersGLB.clear();
-  muon_pixelHitsGLB.clear();
   muon_qoverp.clear();
   muon_theta.clear();
   muon_lambda.clear();
@@ -497,6 +496,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_TuneP_Pz.clear();
   muon_TuneP_eta.clear();
   muon_TuneP_phi.clear();
+  muon_roch_sf.clear();
+  muon_roch_sf_up.clear();
 
   //==== Jet
   jet_pt.clear();
@@ -1014,9 +1015,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_pixelHits", "vector<int>", &muon_pixelHits);
     DYTree->Branch("muon_validmuonhits", "vector<int>", &muon_validmuonhits);
     DYTree->Branch("muon_trackerLayers", "vector<int>", &muon_trackerLayers);
-    DYTree->Branch("muon_trackerHitsGLB", "vector<int>", &muon_trackerHitsGLB);
-    DYTree->Branch("muon_trackerLayersGLB", "vector<int>", &muon_trackerLayersGLB);
-    DYTree->Branch("muon_pixelHitsGLB", "vector<int>", &muon_pixelHitsGLB);
     DYTree->Branch("muon_qoverp", "vector<double>", &muon_qoverp);
     DYTree->Branch("muon_theta", "vector<double>", &muon_theta);
     DYTree->Branch("muon_lambda", "vector<double>", &muon_lambda);
@@ -1071,6 +1069,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_TuneP_Pz", "vector<double>", &muon_TuneP_Pz);
     DYTree->Branch("muon_TuneP_eta", "vector<double>", &muon_TuneP_eta);
     DYTree->Branch("muon_TuneP_phi", "vector<double>", &muon_TuneP_phi);
+    DYTree->Branch("muon_roch_sf", "vector<double>", &muon_roch_sf);
+    DYTree->Branch("muon_roch_sf_up", "vector<double>", &muon_roch_sf_up);
   }
   
   // -- LHE info -- //
@@ -1503,10 +1503,17 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
     const pat::Muon imuon = muonHandle->at(i);
     
-    if( imuon.isStandAloneMuon() )   muon_isStandAlone.push_back( 1 );
-    if( imuon.isGlobalMuon() )     muon_isGlobal.push_back( 1 );     
-    if( imuon.isTrackerMuon() )   muon_isTracker.push_back( 1 );  
-    if( imuon.isPFMuon() )       muon_isPF.push_back( 1 );
+    if( imuon.isStandAloneMuon() ) muon_isStandAlone.push_back( 1 );
+    else muon_isStandAlone.push_back( 0 );
+
+    if( imuon.isGlobalMuon() ) muon_isGlobal.push_back( 1 );     
+    else muon_isGlobal.push_back( 0 );
+
+    if( imuon.isTrackerMuon() ) muon_isTracker.push_back( 1 );  
+    else muon_isTracker.push_back( 0 );
+
+    if( imuon.isPFMuon() ) muon_isPF.push_back( 1 );
+    else muon_isPF.push_back( 0 );
     
     // -- bits 0-1-2-3 = DT stations 1-2-3-4 -- //
     // -- bits 4-5-6-7 = CSC stations 1-2-3-4 -- //
@@ -1531,13 +1538,18 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     // reco::TrackRef cktTrack   = (muon::tevOptimized(imuon, 200, 17., 40., 0.25)).first;
     
     // cout << "##### Analyze:Muon Tracks #####" << endl;
+
+    muon_validhits.push_back( imuon.numberOfValidHits() );
     
-    
-    // -- Global track information -- //
+
+    //==== Global track
     if( glbTrack.isNonnull() ){
+
+      const reco::HitPattern & glbhit = glbTrack->hitPattern();
+
       muon_normchi.push_back( glbTrack->normalizedChi2() );
-      muon_validhits.push_back( glbTrack->numberOfValidHits() );
-      
+      muon_validmuonhits.push_back( glbhit.numberOfValidMuonHits() );
+
       muon_qoverp.push_back( glbTrack->qoverp() );
       muon_theta.push_back( glbTrack->theta() );
       muon_lambda.push_back( glbTrack->lambda() );
@@ -1553,50 +1565,67 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_vy.push_back( glbTrack->vy() );
       muon_vz.push_back( glbTrack->vz() );
       
-      const reco::HitPattern & glbhit = glbTrack->hitPattern();
-      muon_validmuonhits.push_back( glbhit.numberOfValidMuonHits() );
-      
-      muon_trackerHitsGLB.push_back( glbhit.numberOfValidTrackerHits() );
-      muon_pixelHitsGLB.push_back( glbhit.numberOfValidPixelHits() );
-      muon_trackerLayersGLB.push_back( glbhit.trackerLayersWithMeasurement() );
-      
-    } // -- end of if( glbTrack.isNonnull() ) -- //
-    else{
-      if( trackerTrack.isNonnull() ){
-        muon_normchi.push_back( trackerTrack->normalizedChi2() );
-        muon_validhits.push_back( trackerTrack->numberOfValidHits() );
-        
-        muon_qoverp.push_back( trackerTrack->qoverp() );
-        muon_theta.push_back( trackerTrack->theta() );
-        muon_lambda.push_back( trackerTrack->lambda() );
-        muon_dxy.push_back( trackerTrack->dxy() );
-        muon_d0.push_back( trackerTrack->d0() );
-        muon_dsz.push_back( trackerTrack->dsz() );
-        muon_dz.push_back( trackerTrack->dz() );
-        muon_dxyBS.push_back( trackerTrack->dxy(beamSpot.position()) );
-        muon_dszBS.push_back( trackerTrack->dsz(beamSpot.position()) );
-        muon_dzBS.push_back( trackerTrack->dz(beamSpot.position()) );
-        
-        muon_vx.push_back( trackerTrack->vx() );
-        muon_vy.push_back( trackerTrack->vy() );
-        muon_vz.push_back( trackerTrack->vz() );
-        
-        if( muonTrack.isNonnull() ){
-          const reco::HitPattern & muonhit = muonTrack->hitPattern();
-          muon_validmuonhits.push_back( muonhit.numberOfValidMuonHits() );
-        }
-        else
-          muon_validmuonhits.push_back( 0 );
+    }
+    //==== No Global track, but innertrack
+    else if( trackerTrack.isNonnull() ){
 
-      }
-    } // -- end of else of if( glbTrack.isNonnull() ) -- //
+      const reco::HitPattern & trkhit = trackerTrack->hitPattern();
+
+      muon_normchi.push_back( trackerTrack->normalizedChi2()  );
+      muon_validmuonhits.push_back( trkhit.numberOfValidMuonHits() );
       
+      muon_qoverp.push_back( trackerTrack->qoverp() );
+      muon_theta.push_back( trackerTrack->theta() );
+      muon_lambda.push_back( trackerTrack->lambda() );
+      muon_dxy.push_back( trackerTrack->dxy() );
+      muon_d0.push_back( trackerTrack->d0() );
+      muon_dsz.push_back( trackerTrack->dsz() );
+      muon_dz.push_back( trackerTrack->dz() );
+      muon_dxyBS.push_back( trackerTrack->dxy(beamSpot.position()) );
+      muon_dszBS.push_back( trackerTrack->dsz(beamSpot.position()) );
+      muon_dzBS.push_back( trackerTrack->dz(beamSpot.position()) );
+      
+      muon_vx.push_back( trackerTrack->vx() );
+      muon_vy.push_back( trackerTrack->vy() );
+      muon_vz.push_back( trackerTrack->vz() );
+      
+    }
+    //==== No Global, No Tracker -> StandAlone
+    else{
+
+      const reco::HitPattern & muonhit = muonTrack->hitPattern();
+
+      muon_normchi.push_back( muonTrack->normalizedChi2()  );
+      muon_validmuonhits.push_back( muonhit.numberOfValidMuonHits() );
+
+      muon_qoverp.push_back( muonTrack->qoverp() );
+      muon_theta.push_back( muonTrack->theta() );
+      muon_lambda.push_back( muonTrack->lambda() );
+      muon_dxy.push_back( muonTrack->dxy() );
+      muon_d0.push_back( muonTrack->d0() );
+      muon_dsz.push_back( muonTrack->dsz() );
+      muon_dz.push_back( muonTrack->dz() );
+      muon_dxyBS.push_back( muonTrack->dxy(beamSpot.position()) );
+      muon_dszBS.push_back( muonTrack->dsz(beamSpot.position()) );
+      muon_dzBS.push_back( muonTrack->dz(beamSpot.position()) );
+
+      muon_vx.push_back( muonTrack->vx() );
+      muon_vy.push_back( muonTrack->vy() );
+      muon_vz.push_back( muonTrack->vz() );
+
+    }
+
     if( trackerTrack.isNonnull() ){
       const reco::HitPattern & inhit = trackerTrack->hitPattern();
       
       muon_trackerHits.push_back( inhit.numberOfValidTrackerHits() );
       muon_pixelHits.push_back( inhit.numberOfValidPixelHits() );
       muon_trackerLayers.push_back( inhit.trackerLayersWithMeasurement() );
+    }
+    else{
+      muon_trackerHits.push_back( 0 );
+      muon_pixelHits.push_back( 0 );
+      muon_trackerLayers.push_back( 0 );
     }
       
     if( !pvHandle->empty() && !pvHandle->front().isFake() ){
@@ -1607,6 +1636,11 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       // muon_dxycktVTX.push_back( cktTrack->dxy(vtx.position()) );
       // muon_dszcktVTX.push_back( cktTrack->dsz(vtx.position()) );
       // muon_dzcktVTX.push_back( cktTrack->dz(vtx.position()) );
+    }
+    else{
+      muon_dxyVTX.push_back( 9999 );
+      muon_dszVTX.push_back( 9999 );
+      muon_dzVTX.push_back( 9999 );
     }
       
     // muon1 kinematics
@@ -1636,6 +1670,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_Best_eta.push_back( imuon.muonBestTrack()->eta() );
       muon_Best_phi.push_back( imuon.muonBestTrack()->phi() );
     }
+    else{
+      muon_Best_pt.push_back( -999 );
+      muon_Best_ptError.push_back( -999 );
+      muon_Best_Px.push_back( -999 );
+      muon_Best_Py.push_back( -999 );
+      muon_Best_Pz.push_back( -999 );
+      muon_Best_eta.push_back( -999 );
+      muon_Best_phi.push_back( -999 );
+    }
       
       
     // -- Inner Track -- //
@@ -1648,6 +1691,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_Inner_eta.push_back( imuon.innerTrack()->eta() );
       muon_Inner_phi.push_back( imuon.innerTrack()->phi() );
     }
+    else{
+      muon_Inner_pt.push_back( -999 );
+      muon_Inner_ptError.push_back( -999 );
+      muon_Inner_Px.push_back( -999 );
+      muon_Inner_Py.push_back( -999 );
+      muon_Inner_Pz.push_back( -999 );
+      muon_Inner_eta.push_back( -999 );
+      muon_Inner_phi.push_back( -999 );
+    }
       
     // -- Outer Track -- //
     if( imuon.outerTrack().isNonnull() ){
@@ -1658,6 +1710,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_Outer_Pz.push_back( imuon.outerTrack()->pz() );
       muon_Outer_eta.push_back( imuon.outerTrack()->eta() );
       muon_Outer_phi.push_back( imuon.outerTrack()->phi() );
+    }
+    else{
+      muon_Outer_pt.push_back( -999 );
+      muon_Outer_ptError.push_back( -999 );
+      muon_Outer_Px.push_back( -999 );
+      muon_Outer_Py.push_back( -999 );
+      muon_Outer_Pz.push_back( -999 );
+      muon_Outer_eta.push_back( -999 );
+      muon_Outer_phi.push_back( -999 );
     }
       
     // -- Global Track -- //
@@ -1670,6 +1731,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_GLB_eta.push_back( imuon.globalTrack()->eta() );
       muon_GLB_phi.push_back( imuon.globalTrack()->phi() );
     }
+    else{
+      muon_GLB_pt.push_back( -999 );
+      muon_GLB_ptError.push_back( -999 );
+      muon_GLB_Px.push_back( -999 );
+      muon_GLB_Py.push_back( -999 );
+      muon_GLB_Pz.push_back( -999 );
+      muon_GLB_eta.push_back( -999 );
+      muon_GLB_phi.push_back( -999 );
+    }
       
     // -- tuneP MuonBestTrack -- //
     if( imuon.tunePMuonBestTrack().isNonnull() ){
@@ -1680,6 +1750,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_TuneP_Pz.push_back( imuon.tunePMuonBestTrack()->pz() );
       muon_TuneP_eta.push_back( imuon.tunePMuonBestTrack()->eta() );
       muon_TuneP_phi.push_back( imuon.tunePMuonBestTrack()->phi() );
+    }
+    else{
+      muon_TuneP_pt.push_back( -999 );
+      muon_TuneP_ptError.push_back( -999 );
+      muon_TuneP_Px.push_back( -999 );
+      muon_TuneP_Py.push_back( -999 );
+      muon_TuneP_Pz.push_back( -999 );
+      muon_TuneP_eta.push_back( -999 );
+      muon_TuneP_phi.push_back( -999 );
     }
       
     //-- ISOLATIONS GO HERE -- //
@@ -1707,7 +1786,40 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_nChambers.push_back( imuon.numberOfChambers() ); // -- # of chambers -- //
     muon_matchedstations.push_back( imuon.numberOfMatchedStations() ); // -- # of chambers with matched segments -- //
     muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
-    
+
+    //==== Rochestor
+
+    double this_roccor = 1.;
+    double this_roccor_err = 0.;
+    //==== Data
+    if(!isMC){
+      this_roccor = rc.kScaleDT(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), 0, 0); //data
+      this_roccor_err = rc.kScaleDTerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi());
+    }
+    //==== MC
+    else{
+
+      gRandom->SetSeed( evtNum ); // to make the seed always same
+      double u1 = gRandom->Rndm();
+      double u2 = gRandom->Rndm();
+
+      int n_trackerLayersWithMeasurement = 0;
+      if(trackerTrack.isNonnull()) n_trackerLayersWithMeasurement = imuon.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+
+      //==== TODO Need to add gen matching
+      //==== Now using smearing
+      this_roccor = rc.kScaleAndSmearMC(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2, 0, 0);
+      this_roccor_err = rc.kScaleAndSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2);
+
+      //double mcSF = rc.kScaleFromGenMC(Q, pt, eta, phi, nl, genPt, u1, s=0, m=0); //(recommended), MC when matched gen muon is available
+      //double mcSF = rc.kScaleAndSmearMC(Q, pt, eta, phi, nl, u1, u2, s=0, m=0); //extra smearing when matched gen muon is not available
+      //double deltaMcSF = rc.kScaleFromGenMCerror(Q, pt, eta, phi, nl, genPt, u1);
+      //double deltaMcSF = rc.kScaleAndSmearMCerror(Q, pt, eta, phi, nl, u1, u2);
+    }
+
+    muon_roch_sf.push_back( this_roccor );
+    muon_roch_sf_up.push_back( this_roccor+this_roccor_err );
+
   } // -- End of imuon iteration -- //
   
 }
@@ -1893,11 +2005,15 @@ dummy = Vertex(p, e, 0, 0, 0);
     //std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt,vtx);
 
     const double gsfsign = ( (-elecTrk->dxy(vtx.position())) >=0 ) ? 1. : -1.;
-    if (ip3dpv.first) {
+    if(ip3dpv.first){
       double ip3d = gsfsign*ip3dpv.second.value();
       double ip3derr = ip3dpv.second.error();  
       electron_ip3D.push_back( ip3d );
       electron_sigip3D.push_back( ip3d/ip3derr );
+    }
+    else{
+      electron_ip3D.push_back( -999 );
+      electron_sigip3D.push_back( -999 );
     }
     
     electron_sigdxy.push_back( elecTrk->dxy() / elecTrk->dxyError() );
@@ -1915,11 +2031,23 @@ dummy = Vertex(p, e, 0, 0, 0);
       electron_gsfPhi.push_back( elecTrk->phi() );
       electron_gsfCharge.push_back( elecTrk->charge() );
     }
+    else{
+      electron_gsfpt.push_back( -999 );
+      electron_gsfPx.push_back( -999 );
+      electron_gsfPy.push_back( -999 );
+      electron_gsfPz.push_back( -999 );
+      electron_gsfEta.push_back( -999 );
+      electron_gsfPhi.push_back( -999 );
+      electron_gsfCharge.push_back( -999 );
+    }
       
     if( !pvHandle->empty() && !pvHandle->front().isFake() ){
-      //const reco::Vertex &vtx = pvHandle->front();
       electron_dxyVTX.push_back( elecTrk->dxy(vtx.position()) );
       electron_dzVTX.push_back( elecTrk->dz(vtx.position()) );
+    }
+    else{
+      electron_dxyVTX.push_back( -999 );
+      electron_dzVTX.push_back( -999 );
     }
       
     // -- for ID variables -- //
@@ -2085,6 +2213,10 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     if(it->numberOfMothers() > 0){
       gen_mother_PID.push_back( it->mother(0)->pdgId() );
       gen_mother_pt.push_back( it->mother(0)->pt() );
+    }
+    else{
+      gen_mother_PID.push_back( -999 );
+      gen_mother_pt.push_back( -999 );
     }
     
     int idx = -1;

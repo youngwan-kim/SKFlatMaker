@@ -32,7 +32,7 @@
 #include "DataFormats/MuonReco/interface/MuonTimeExtraMap.h"
 #include "DataFormats/MuonReco/interface/MuonCocktails.h"
 #include "DataFormats/MuonReco/interface/MuonCosmicCompatibility.h" // -- Variables shows how muon is cosmic-like
-
+#include "SKFlatMaker/SKFlatMaker/src/RoccoR.h"
 
 /////////////////////////
 // -- For Electrons -- //
@@ -156,6 +156,7 @@
 #include <TLorentzVector.h>
 #include <TVector3.h>
 #include <boost/foreach.hpp>
+#include <TRandom.h>
 
 using namespace std;
 using namespace pat;
@@ -679,8 +680,14 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_TuneP_Pz;
   vector<double> muon_TuneP_eta;
   vector<double> muon_TuneP_phi;
+  vector<double> muon_roch_sf;
+  vector<double> muon_roch_sf_up;
+
+  //==== Rochestor correction
+  RoccoR rc;
 
   //==== LHE
+
   vector<double> LHELepton_Px;
   vector<double> LHELepton_Py;
   vector<double> LHELepton_Pz;
@@ -689,6 +696,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<int> LHELepton_status;
  
   //==== GEN
+
   vector<double> gen_phi;
   vector<double> gen_eta;
   vector<double> gen_pt;
