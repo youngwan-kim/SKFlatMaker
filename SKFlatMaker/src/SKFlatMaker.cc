@@ -87,7 +87,7 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStoreFatJetFlag                = iConfig.getUntrackedParameter<bool>("StoreFatJetFlag", true);
   theStoreMETFlag                   = iConfig.getUntrackedParameter<bool>("StoreMETFlag", true);
   theStoreHLTReportFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTReportFlag", true);
-  
+  theStoreHLTObjectFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTObjectFlag", true);
   theStoreMuonFlag                  = iConfig.getUntrackedParameter<bool>("StoreMuonFlag", true);
   theStoreElectronFlag              = iConfig.getUntrackedParameter<bool>("StoreElectronFlag", true);
   theStoreLHEFlag                   = iConfig.getUntrackedParameter<bool>("StoreLHEFlag", false);
@@ -95,7 +95,9 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theKeepAllGen                     = iConfig.getUntrackedParameter<bool>("KeepAllGen", true);
   theStoreTTFlag                    = iConfig.getUntrackedParameter<bool>("StoreTTFlag", false);
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
-  
+
+  rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
+
   // -- Filters -- //
   
   // if( isMC )
@@ -156,6 +158,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   neutralHadronEt = 0;
 
   //==== MET
+
   pfMET_pt=-999;
   pfMET_phi=-999;
   pfMET_Px=-999;
@@ -173,6 +176,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pfMET_Type1_PhiCor_SumEt=-999;
 
   //==== Tracker Track
+
   TrackerTrack_dxy.clear();
   TrackerTrack_dxyErr.clear();
   TrackerTrack_d0.clear();
@@ -193,18 +197,19 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   TrackerTrack_charge.clear();
 
   //==== Trigger (object)
-  HLTObject_Type.clear();
-  HLTObject_Fired.clear();
-  HLTObject_Name.clear();
-  HLTObject_PS.clear();
+
+  HLT_TriggerName.clear();
+  HLT_TriggerFilterName.clear();
+  HLT_TriggerFired.clear();
+  HLT_TriggerPrescale.clear();
   HLTObject_pt.clear();
   HLTObject_eta.clear();
   HLTObject_phi.clear();
-  HLT_TriggerName.clear();
-  HLT_TriggerFired.clear();
-  HLT_TriggerPrescale.clear();
+  HLTObject_FiredFilters.clear();
+  HLTObject_FiredPaths.clear();
 
   //==== LHE
+
   LHELepton_Px.clear();
   LHELepton_Py.clear();
   LHELepton_Pz.clear();
@@ -213,6 +218,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   LHELepton_status.clear();
 
   //==== GEN
+
   gen_phi.clear();
   gen_eta.clear();
   gen_pt.clear();
@@ -374,8 +380,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_passMVAID_noIso_WP90.clear();
   electron_passMVAID_iso_WP80.clear();
   electron_passMVAID_iso_WP90.clear();
-  electron_passMVAID_WP80.clear();
-  electron_passMVAID_WP90.clear();
   electron_passHEEPID.clear();
   electron_ptUnCorr.clear();
   electron_etaUnCorr.clear();
@@ -391,7 +395,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_mva.clear();
   electron_zzmva.clear();
   electron_missinghits.clear();
-  electron_trigmatch.clear();
 
   //==== Muon
   muon_PfChargedHadronIsoR05.clear();
@@ -409,8 +412,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_isGlobal.clear();
   muon_isTracker.clear();
   muon_isStandAlone.clear();
-  muon_filterName.clear();
-  muon_trigmatch.clear();
+  muon_isTight.clear();
+  muon_isMedium.clear();
+  muon_isLoose.clear();
+  muon_isSoft.clear();
+  muon_isHighPt.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -435,15 +441,12 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_matchedstations.clear();
   muon_stationMask.clear();
   muon_nSegments.clear();
-  muon_chi2dof.clear();
+  muon_normchi.clear();
   muon_validhits.clear();
   muon_trackerHits.clear();
   muon_pixelHits.clear();
   muon_validmuonhits.clear();
   muon_trackerLayers.clear();
-  muon_trackerHitsGLB.clear();
-  muon_trackerLayersGLB.clear();
-  muon_pixelHitsGLB.clear();
   muon_qoverp.clear();
   muon_theta.clear();
   muon_lambda.clear();
@@ -498,6 +501,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_TuneP_Pz.clear();
   muon_TuneP_eta.clear();
   muon_TuneP_phi.clear();
+  muon_roch_sf.clear();
+  muon_roch_sf_up.clear();
 
   //==== Jet
   jet_pt.clear();
@@ -508,7 +513,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_rho.clear();
   jet_partonFlavour.clear();
   jet_hadronFlavour.clear();
-  jet_bTag.clear();
+  jet_CSVv2.clear();
+  jet_DeepCSV.clear();
+  jet_DeepFlavour.clear();
+  jet_CvsL.clear();
+  jet_CvsB.clear();
   jet_chargedHadronEnergyFraction.clear();
   jet_neutralHadronEnergyFraction.clear();
   jet_neutralEmEnergyFraction.clear();
@@ -535,7 +544,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_rho.clear();
   fatjet_partonFlavour.clear();
   fatjet_hadronFlavour.clear();
-  fatjet_bTag.clear();
+  fatjet_CSVv2.clear();
+  fatjet_DeepCSV.clear();
+  fatjet_DeepFlavour.clear();
+  fatjet_CvsL.clear();
+  fatjet_CvsB.clear();
   fatjet_looseJetID.clear();
   fatjet_tightJetID.clear();
   fatjet_tightLepVetoJetID.clear();
@@ -641,7 +654,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   
   // fills
   
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreHLTReportFlag" << endl;
   if( theStoreHLTReportFlag ) hltReport(iEvent);
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePriVtxFlag" << endl;
   if( theStorePriVtxFlag ) fillPrimaryVertex(iEvent);
 
@@ -754,16 +769,18 @@ void SKFlatMaker::beginJob()
 
   if(theStoreHLTReportFlag){
 
-    DYTree->Branch("HLTObject_Type", "vector<int>", &HLTObject_Type);
-    DYTree->Branch("HLTObject_Fired", "vector<int>", &HLTObject_Fired);
-    DYTree->Branch("HLTObject_Name", "vector<string>", &HLTObject_Name);
-    DYTree->Branch("HLTObject_PS", "vector<int>", &HLTObject_PS);
-    DYTree->Branch("HLTObject_pt", "vector<double>", &HLTObject_pt);
-    DYTree->Branch("HLTObject_eta", "vector<double>", &HLTObject_eta);
-    DYTree->Branch("HLTObject_phi", "vector<double>", &HLTObject_phi);
     DYTree->Branch("HLT_TriggerName", "vector<string>", &HLT_TriggerName);
     DYTree->Branch("HLT_TriggerFired", "vector<bool>", &HLT_TriggerFired);
     DYTree->Branch("HLT_TriggerPrescale", "vector<int>", &HLT_TriggerPrescale);
+
+    if(theStoreHLTObjectFlag){
+      DYTree->Branch("HLT_TriggerFilterName", "vector<string>", &HLT_TriggerFilterName);
+      DYTree->Branch("HLTObject_pt", "vector<double>", &HLTObject_pt);
+      DYTree->Branch("HLTObject_eta", "vector<double>", &HLTObject_eta);
+      DYTree->Branch("HLTObject_phi", "vector<double>", &HLTObject_phi);
+      DYTree->Branch("HLTObject_FiredFilters", "vector<string>", &HLTObject_FiredFilters);
+      DYTree->Branch("HLTObject_FiredPaths", "vector<string>", &HLTObject_FiredPaths);
+    }
 
   }
 
@@ -777,7 +794,11 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_rho", "vector<double>", &jet_rho);
     DYTree->Branch("jet_partonFlavour", "vector<int>", &jet_partonFlavour);
     DYTree->Branch("jet_hadronFlavour", "vector<int>", &jet_hadronFlavour);
-    DYTree->Branch("jet_bTag", "vector<double>", &jet_bTag);
+    DYTree->Branch("jet_CSVv2", "vector<double>", &jet_CSVv2);
+    DYTree->Branch("jet_DeepCSV", "vector<double>", &jet_DeepCSV);
+    DYTree->Branch("jet_DeepFlavour", "vector<double>", &jet_DeepFlavour);
+    DYTree->Branch("jet_CvsL", "vector<double>", &jet_CvsL);
+    DYTree->Branch("jet_CvsB", "vector<double>", &jet_CvsB);
     DYTree->Branch("jet_chargedHadronEnergyFraction", "vector<double>", &jet_chargedHadronEnergyFraction);
     DYTree->Branch("jet_neutralHadronEnergyFraction", "vector<double>", &jet_neutralHadronEnergyFraction);
     DYTree->Branch("jet_neutralEmEnergyFraction", "vector<double>", &jet_neutralEmEnergyFraction);
@@ -806,7 +827,11 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_rho", "vector<double>", &fatjet_rho);
     DYTree->Branch("fatjet_partonFlavour", "vector<int>", &fatjet_partonFlavour);
     DYTree->Branch("fatjet_hadronFlavour", "vector<int>", &fatjet_hadronFlavour);
-    DYTree->Branch("fatjet_bTag", "vector<double>", &fatjet_bTag);
+    DYTree->Branch("fatjet_CSVv2", "vector<double>", &fatjet_CSVv2);
+    DYTree->Branch("fatjet_DeepCSV", "vector<double>", &fatjet_DeepCSV);
+    DYTree->Branch("fatjet_DeepFlavour", "vector<double>", &fatjet_DeepFlavour);
+    DYTree->Branch("fatjet_CvsL", "vector<double>", &fatjet_CvsL);
+    DYTree->Branch("fatjet_CvsB", "vector<double>", &fatjet_CvsB);
     DYTree->Branch("fatjet_looseJetID", "vector<bool>", &fatjet_looseJetID);
     DYTree->Branch("fatjet_tightJetID", "vector<bool>", &fatjet_tightJetID);
     DYTree->Branch("fatjet_tightLepVetoJetID", "vector<bool>", &fatjet_tightLepVetoJetID);
@@ -946,8 +971,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_passMVAID_noIso_WP90", "vector<bool>", &electron_passMVAID_noIso_WP90);
     DYTree->Branch("electron_passMVAID_iso_WP80", "vector<bool>", &electron_passMVAID_iso_WP80);
     DYTree->Branch("electron_passMVAID_iso_WP90", "vector<bool>", &electron_passMVAID_iso_WP90);
-    DYTree->Branch("electron_passMVAID_WP80", "vector<bool>", &electron_passMVAID_WP80);
-    DYTree->Branch("electron_passMVAID_WP90", "vector<bool>", &electron_passMVAID_WP90);
     DYTree->Branch("electron_passHEEPID", "vector<bool>", &electron_passHEEPID);
     DYTree->Branch("electron_ptUnCorr", "vector<double>", &electron_ptUnCorr);
     DYTree->Branch("electron_etaUnCorr", "vector<double>", &electron_etaUnCorr);
@@ -963,7 +986,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_mva", "vector<double>", &electron_mva);
     DYTree->Branch("electron_zzmva", "vector<double>", &electron_zzmva);
     DYTree->Branch("electron_missinghits", "vector<int>", &electron_missinghits);
-    DYTree->Branch("electron_trigmatch", "vector<string>", &electron_trigmatch);
   }
   
   // -- muon variables -- //
@@ -980,12 +1002,15 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_PfNeutralHadronIsoR03", "vector<double>", &muon_PfNeutralHadronIsoR03);
     DYTree->Branch("muon_PfGammaIsoR03", "vector<double>", &muon_PfGammaIsoR03);
     DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
-    DYTree->Branch("muon_isPF", "vector<int>", &muon_isPF);
-    DYTree->Branch("muon_isGlobal", "vector<int>", &muon_isGlobal);
-    DYTree->Branch("muon_isTracker", "vector<int>", &muon_isTracker);
-    DYTree->Branch("muon_isStandAlone", "vector<int>", &muon_isStandAlone);
-    DYTree->Branch("muon_filterName", "vector<int>", &muon_filterName);
-    DYTree->Branch("muon_trigmatch", "vector<string>", &muon_trigmatch);
+    DYTree->Branch("muon_isPF", "vector<bool>", &muon_isPF);
+    DYTree->Branch("muon_isGlobal", "vector<bool>", &muon_isGlobal);
+    DYTree->Branch("muon_isTracker", "vector<bool>", &muon_isTracker);
+    DYTree->Branch("muon_isStandAlone", "vector<bool>", &muon_isStandAlone);
+    DYTree->Branch("muon_isTight", "vector<bool>", &muon_isTight);
+    DYTree->Branch("muon_isMedium", "vector<bool>", &muon_isMedium);
+    DYTree->Branch("muon_isLoose", "vector<bool>", &muon_isLoose);
+    DYTree->Branch("muon_isSoft", "vector<bool>", &muon_isSoft);
+    DYTree->Branch("muon_isHighPt", "vector<bool>", &muon_isHighPt);
     DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
@@ -1010,15 +1035,12 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_matchedstations", "vector<int>", &muon_matchedstations);
     DYTree->Branch("muon_stationMask", "vector<int>", &muon_stationMask);
     DYTree->Branch("muon_nSegments", "vector<int>", &muon_nSegments);
-    DYTree->Branch("muon_chi2dof", "vector<double>", &muon_chi2dof);
+    DYTree->Branch("muon_normchi", "vector<double>", &muon_normchi);
     DYTree->Branch("muon_validhits", "vector<int>", &muon_validhits);
     DYTree->Branch("muon_trackerHits", "vector<int>", &muon_trackerHits);
     DYTree->Branch("muon_pixelHits", "vector<int>", &muon_pixelHits);
     DYTree->Branch("muon_validmuonhits", "vector<int>", &muon_validmuonhits);
     DYTree->Branch("muon_trackerLayers", "vector<int>", &muon_trackerLayers);
-    DYTree->Branch("muon_trackerHitsGLB", "vector<int>", &muon_trackerHitsGLB);
-    DYTree->Branch("muon_trackerLayersGLB", "vector<int>", &muon_trackerLayersGLB);
-    DYTree->Branch("muon_pixelHitsGLB", "vector<int>", &muon_pixelHitsGLB);
     DYTree->Branch("muon_qoverp", "vector<double>", &muon_qoverp);
     DYTree->Branch("muon_theta", "vector<double>", &muon_theta);
     DYTree->Branch("muon_lambda", "vector<double>", &muon_lambda);
@@ -1073,7 +1095,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_TuneP_Pz", "vector<double>", &muon_TuneP_Pz);
     DYTree->Branch("muon_TuneP_eta", "vector<double>", &muon_TuneP_eta);
     DYTree->Branch("muon_TuneP_phi", "vector<double>", &muon_TuneP_phi);
-
+    DYTree->Branch("muon_roch_sf", "vector<double>", &muon_roch_sf);
+    DYTree->Branch("muon_roch_sf_up", "vector<double>", &muon_roch_sf_up);
   }
   
   // -- LHE info -- //
@@ -1235,80 +1258,12 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   HLTName_WildCard.clear();
   for(unsigned int i=0; i<temp_trigs.size(); i++ ) HLTName_WildCard.push_back(temp_trigs.at(i));
 
-  ListHLT.clear();
-  ListHLTPS.clear();
-  
   bool changedConfig;
   if(!hltConfig_.init(iRun, iSetup, processName, changedConfig)){
     LogError("HLTMuonVal") << "Initialization of HLTConfigProvider failed!!";
     return;
   }
-  else{
-    std::vector<std::string> triggerNames = hltConfig_.triggerNames();
-      
-    //==== print all trigger pathes inthe inputfile
-    for( size_t i = 0; i < triggerNames.size(); i++)
-      cout << "[SKFlatMaker::beginRun] Trigger Path: " << triggerNames[i] << endl;
-      
-    //==== iteration for each Trigger Name WildCards
-    for(unsigned int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ){
-      cout << "[SKFlatMaker::beginRun] [" << it_HLTWC << "th Input Trigger Name WildCard = " << HLTName_WildCard[it_HLTWC] << "]" << endl;
-    
-      //==== find triggers in HLT configuration matched with a input trigger using wild card -- //
-      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(triggerNames, HLTName_WildCard[it_HLTWC]);
-      
-      if( !matches.empty() ){
 
-        //==== iteration for each wildcard-matched trigger
-
-        BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
-          cout << "[SKFlatMaker::beginRun]   [matched trigger = " << *match << "]" << endl;
-          ListHLT.push_back(*match);//save HLT list as a vector
-        
-          //==== find modules corresponding to a trigger in HLT configuration
-          std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
-          if(theDebugLevel>=2){
-            for(unsigned int it_md=0; it_md<moduleNames.size(); it_md++){
-            cout << "[SKFlatMaker::beginRun]      " << moduleNames.at(it_md) << endl;
-            }
-          }
-
-          int nsize = moduleNames.size();
-          //==== Last module = moduleNames[nsize-1] is always "hltBoolEnd"
-          if( nsize-2 >= 0 ){
-            trigModuleNames.push_back(moduleNames[nsize-2]);
-          
-            if( nsize-3 >= 0 ){
-              trigModuleNames_preFil.push_back(moduleNames[nsize-3]);
-            }
-            else{
-              trigModuleNames_preFil.push_back("");
-            }
-          }
-
-          //==== find prescale value
-          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
-          ListHLTPS.push_back(_preScaleValue);
-      
-        } //==== end of BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches) -- //
-        
-      } //==== end of if( !matches.empty() ) -- //
-    
-      cout << endl;      
-    
-    } // -- end of for( int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ): trigger iteration -- //
-      
-  } // -- end of else of if (!hltConfig_.init(iRun, iSetup, processName, changedConfig)) -- //
-  
-  cout << "[SKFlatMaker::beginRun] #### Prescales ####" << endl;
-  for(unsigned int i = 0; i < ListHLT.size(); i++ )
-    cout << "[SKFlatMaker::beginRun] [" << ListHLT[i] << "]\t\t" << ListHLTPS[i] << endl;
-  
-  // trigger filters
-  for(unsigned int itrig = 0; itrig < ListHLT.size(); itrig++ )
-    cout << "[SKFlatMaker::beginRun] Filter name: " << itrig << " " << ListHLT[itrig] << " " << trigModuleNames[itrig] << " " << trigModuleNames_preFil[itrig] << endl;
-  
-  cout << "[SKFlatMaker::beginRun] ##### End of Begin Run #####" << endl;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------ //
@@ -1327,33 +1282,43 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
 {
 
   if(theDebugLevel) cout << "[SKFlatMaker::hltReport] called" << endl;
-  
-  int ntrigName = ListHLT.size();
-  
+
   Handle<TriggerResults> trigResult;
   iEvent.getByToken(TriggerToken, trigResult);
-  
+
   if( !trigResult.failedToGet() ){
-    int ntrigs = trigResult->size();
-    //==== all trigger pathes inthe inputfile
+
+    //==== All trigger paths in this event setup
     const edm::TriggerNames trigName = iEvent.triggerNames(*trigResult);
 
     if(theDebugLevel>=2){
       cout << "[SKFlatMaker::hltReport] trigger names in trigger result (HLT)" << endl;
+      cout << "[SKFlatMaker::hltReport] trigName.size() = " << trigName.size() << endl;
       for(int itrig=0; itrig<(int)trigName.size(); itrig++)
         cout << "[SKFlatMaker::hltReport] trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
     }
 
-    //==== Loop over triggers we are interested in (i.e., ListHLT)
-    for( int itrigName = 0; itrigName < ntrigName; itrigName++ ){
-      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), ListHLT[itrigName]);
 
-      HLT_TriggerName.push_back(ListHLT[itrigName]);
-      HLT_TriggerPrescale.push_back(ListHLTPS[itrigName]);
+    //==== iteration for each Trigger Name WildCards
+    //==== e.g., {"HLT_Mu*", "HLT_Ele*"}
+    for(unsigned int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ){
+      if(theDebugLevel) cout << "[SKFlatMaker::hltReport] [" << it_HLTWC << "th Input Trigger Name WildCard = " << HLTName_WildCard[it_HLTWC] << "]" << endl;
+
+      //==== find triggers in HLT matched to this WildCard
+      std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), HLTName_WildCard[it_HLTWC]);
 
       if( !matches.empty() ){
+
+        //==== iteration for each wildcard-matched triggers
+        //==== e.g., {"HLT_Mu8", "HLT_Mu17"}
         BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
-          if( trigName.triggerIndex(*match) >= (unsigned int)ntrigs ) continue;
+
+          if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
+          HLT_TriggerName.push_back(*match); //save HLT list as a vector
+
+          //==== find prescale value
+          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
+          HLT_TriggerPrescale.push_back(_preScaleValue);
 
           //==== Check if this trigger is fired
           if( trigResult->accept(trigName.triggerIndex(*match)) ){
@@ -1362,12 +1327,87 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
           else{
             HLT_TriggerFired.push_back(false);
           }
+
+          //==== Save Filter if theStoreHLTObjectFlag
+          if(theStoreHLTObjectFlag){
+            //==== find modules corresponding to a trigger in HLT configuration
+            std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
+            if(theDebugLevel){
+              cout << "[SKFlatMaker::hltReport]   moduleNames.size() = " << moduleNames.size() << endl;
+              for(unsigned int it_md=0; it_md<moduleNames.size(); it_md++){
+                if(theDebugLevel) cout << "[SKFlatMaker::hltReport]     " << moduleNames.at(it_md) << endl;
+              }
+            }
+            string this_modulename = "";
+            //==== Last module = moduleNames[nmodules-1] is always "hltBoolEnd"
+            int nmodules = moduleNames.size();
+            if( nmodules-2 >= 0 ){
+              this_modulename = moduleNames[nmodules-2];
+            }
+            HLT_TriggerFilterName.push_back( this_modulename );
+          }
+
+
+        } // END Loop over matches
+
+      } // END matches not empty
+
+    } // END Loop over Trigger Wildcards
+
+    //==== Now, all trigers we are interested in are saved
+
+    if(theStoreHLTObjectFlag){
+
+      //==== HLT Object for lepton matching
+      edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
+      iEvent.getByToken(TriggerObjectToken, triggerObject);
+
+      for(pat::TriggerObjectStandAlone obj : *triggerObject){
+
+        obj.unpackPathNames(trigName);
+        obj.unpackFilterLabels(iEvent, *trigResult);  //added Suoh
+
+        HLTObject_pt.push_back( obj.pt() );
+        HLTObject_eta.push_back( obj.eta() );
+        HLTObject_phi.push_back( obj.phi() );
+
+        string FiredFilters = "", FiredPaths = "";
+
+        //==== Path we are interested in are saved in : std::vector<std::string > HLT_TriggerName;
+        //==== Filter we are interested in are svaed in : std::vector<std::string > HLT_TriggerFilterName;
+
+        //==== Loop over filters
+        //cout << "This HLT Object : " << endl;
+        for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter ){
+          string this_filter = obj.filterLabels().at(i_filter);
+          //cout << "  this_filter = " << this_filter << endl;
+          if(std::find( HLT_TriggerFilterName.begin(), HLT_TriggerFilterName.end(), this_filter) != HLT_TriggerFilterName.end() ){
+            FiredFilters += this_filter+":";
+          }
+        } //==== END Filter Loop
+
+        //==== Loop over path
+        std::vector<std::string> pathNamesAll  = obj.pathNames(true); // Get path whose last filter is fired
+        for( size_t i_filter = 0; i_filter < pathNamesAll.size(); ++i_filter ){
+          string this_path = pathNamesAll.at(i_filter);
+          //cout << "  this_path = " << this_path << endl;
+          if(std::find( HLT_TriggerName.begin(), HLT_TriggerName.end(), this_path ) != HLT_TriggerName.end()){
+            FiredPaths += pathNamesAll.at(i_filter)+":";
+          }
+        } //==== END Filter Loop
+
+        if(theDebugLevel>=2){
+          cout << "  ==> FiredFilters = " << FiredFilters << endl;
+          cout << "  ==> FiredPaths = " << FiredPaths << endl;
         }
-        
-      }
-    
-    } // -- end of for( int itrigName = 0; itrigName < ntrigName; itrigName++ ) -- //
-      
+
+        HLTObject_FiredFilters.push_back( FiredFilters );
+        HLTObject_FiredPaths.push_back( FiredPaths );
+
+      } //==== END HLT Object loop
+
+    }
+
   } // -- end of if( !trigResult.failedToGet() ) -- //
   
   const bool isRD = iEvent.isRealData();
@@ -1398,9 +1438,6 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   //==== MiniAOD
   //==============
   
-  edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
-  iEvent.getByToken(TriggerObjectToken, triggerObject);
-  
   //save event filter infomation
   if (!iEvent.getByToken(METFilterResultsToken_PAT, METFilterResults)){
     iEvent.getByToken(METFilterResultsToken_RECO, METFilterResults);
@@ -1428,65 +1465,6 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0) Flag_ecalBadCalibFilter = METFilterResults -> accept(i);
   }
 
-  //==== Loop for Trigger Object
-  //==== We can check mu_mathced_trigger etc..
-  if( !trigResult.failedToGet() ){
-    const edm::TriggerNames names = iEvent.triggerNames(*trigResult);
-
-    //cout << "[# of trigger object in this event: " << (*triggerObject).size() << endl;
-    for (pat::TriggerObjectStandAlone obj : *triggerObject){
-      obj.unpackPathNames(names);
-      obj.unpackFilterLabels(iEvent, *trigResult);  //added Suoh
-      
-      //cout << "# Filters: " << obj.filterLabels().size() << endl;
-      for( size_t i_filter = 0; i_filter < obj.filterLabels().size(); ++i_filter ){
-
-        //==== Get the full name of i-th filter -- //
-        std::string fullname = obj.filterLabels()[i_filter];
-        //cout << "[JSKIM] fullname = " << fullname << endl;
-        std::string filterName;
-        
-        // -- Find ":" in the full name -- //
-        size_t m = fullname.find_first_of(':');
-        
-        // -- if ":" exists in the full name, takes the name before ":" as the filter name -- //
-        if( m != std::string::npos )
-          filterName = fullname.substr(0, m);
-        else
-          filterName = fullname;
-
-        //cout << "[JSKIM] filterName = " << filterName << endl;
-        
-        //==== Loop for the triggers that a user inserted in this code
-        for( int itf = 0; itf < ntrigName; itf++ ){
-          string name = "";
-      
-          //==== Store HLT object information only if trigModuleName is equal to this filter name
-          if( filterName == trigModuleNames[itf] ){
-            name = ListHLT[itf];
-            int _ps = ListHLTPS[itf];
-
-            HLTObject_Type.push_back( itf );
-            HLTObject_Fired.push_back( HLT_TriggerFired[itf] );
-            HLTObject_pt.push_back( obj.pt() );
-            HLTObject_eta.push_back( obj.eta() );
-            HLTObject_phi.push_back( obj.phi() );
-            HLTObject_Name.push_back(name);
-            HLTObject_PS.push_back(_ps);
-          }
-      
-          // cout << endl;
-      
-        } // -- end of for( int itf = 0; itf < ntrigName; itf++ ) -- //
-        
-        // cout << endl;
-        
-      } // -- end of filter iteration -- //
-    
-    } // -- end of trigger object iteration -- //
-      
-  } // -- end of !trigResult.failedToGet() -- //
-  
 }
 
 ///////////////////////////////////
@@ -1546,15 +1524,44 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   iEvent.getByToken(MuonToken, muonHandle);
   using reco::MuonCollection;
   MuonCollection::const_iterator imuon;
-  
-  for( unsigned i = 0; i != muonHandle->size(); i++ ){
+
+/*
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  if(isMC){
+    iEvent.getByToken(mcLabel_,genParticles);
+  }
+*/
+
+  for( unsigned int i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
     const pat::Muon imuon = muonHandle->at(i);
     
-    if( imuon.isStandAloneMuon() )   muon_isStandAlone.push_back( 1 );
-    if( imuon.isGlobalMuon() )     muon_isGlobal.push_back( 1 );     
-    if( imuon.isTrackerMuon() )   muon_isTracker.push_back( 1 );  
-    if( imuon.isPFMuon() )       muon_isPF.push_back( 1 );
+    if( imuon.isStandAloneMuon() ) muon_isStandAlone.push_back( true );
+    else muon_isStandAlone.push_back( false );
+
+    if( imuon.isGlobalMuon() ) muon_isGlobal.push_back( true );
+    else muon_isGlobal.push_back( false );
+
+    if( imuon.isTrackerMuon() ) muon_isTracker.push_back( true );
+    else muon_isTracker.push_back( false );
+
+    if( imuon.isPFMuon() ) muon_isPF.push_back( true );
+    else muon_isPF.push_back( false );
+
+    if( imuon.isTightMuon(vtx) ) muon_isTight.push_back( true );
+    else muon_isTight.push_back( false );
+
+    if( imuon.isMediumMuon() ) muon_isMedium.push_back( true );
+    else muon_isMedium.push_back( false );
+
+    if( imuon.isLooseMuon() ) muon_isLoose.push_back( true );
+    else muon_isLoose.push_back( false );
+
+    if( imuon.isSoftMuon(vtx) ) muon_isSoft.push_back( true );
+    else muon_isSoft.push_back( false );
+
+    if( imuon.isHighPtMuon(vtx) ) muon_isHighPt.push_back( true );
+    else muon_isHighPt.push_back( false );
     
     // -- bits 0-1-2-3 = DT stations 1-2-3-4 -- //
     // -- bits 4-5-6-7 = CSC stations 1-2-3-4 -- //
@@ -1579,13 +1586,18 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     // reco::TrackRef cktTrack   = (muon::tevOptimized(imuon, 200, 17., 40., 0.25)).first;
     
     // cout << "##### Analyze:Muon Tracks #####" << endl;
+
+    muon_validhits.push_back( imuon.numberOfValidHits() );
     
-    
-    // -- Global track information -- //
+
+    //==== Global track
     if( glbTrack.isNonnull() ){
-      muon_chi2dof.push_back( glbTrack->normalizedChi2() );
-      muon_validhits.push_back( glbTrack->numberOfValidHits() );
-      
+
+      const reco::HitPattern & glbhit = glbTrack->hitPattern();
+
+      muon_normchi.push_back( glbTrack->normalizedChi2() );
+      muon_validmuonhits.push_back( glbhit.numberOfValidMuonHits() );
+
       muon_qoverp.push_back( glbTrack->qoverp() );
       muon_theta.push_back( glbTrack->theta() );
       muon_lambda.push_back( glbTrack->lambda() );
@@ -1601,50 +1613,67 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_vy.push_back( glbTrack->vy() );
       muon_vz.push_back( glbTrack->vz() );
       
-      const reco::HitPattern & glbhit = glbTrack->hitPattern();
-      muon_validmuonhits.push_back( glbhit.numberOfValidMuonHits() );
-      
-      muon_trackerHitsGLB.push_back( glbhit.numberOfValidTrackerHits() );
-      muon_pixelHitsGLB.push_back( glbhit.numberOfValidPixelHits() );
-      muon_trackerLayersGLB.push_back( glbhit.trackerLayersWithMeasurement() );
-      
-    } // -- end of if( glbTrack.isNonnull() ) -- //
-    else{
-      if( trackerTrack.isNonnull() ){
-        muon_chi2dof.push_back( trackerTrack->normalizedChi2() );
-        muon_validhits.push_back( trackerTrack->numberOfValidHits() );
-        
-        muon_qoverp.push_back( trackerTrack->qoverp() );
-        muon_theta.push_back( trackerTrack->theta() );
-        muon_lambda.push_back( trackerTrack->lambda() );
-        muon_dxy.push_back( trackerTrack->dxy() );
-        muon_d0.push_back( trackerTrack->d0() );
-        muon_dsz.push_back( trackerTrack->dsz() );
-        muon_dz.push_back( trackerTrack->dz() );
-        muon_dxyBS.push_back( trackerTrack->dxy(beamSpot.position()) );
-        muon_dszBS.push_back( trackerTrack->dsz(beamSpot.position()) );
-        muon_dzBS.push_back( trackerTrack->dz(beamSpot.position()) );
-        
-        muon_vx.push_back( trackerTrack->vx() );
-        muon_vy.push_back( trackerTrack->vy() );
-        muon_vz.push_back( trackerTrack->vz() );
-        
-        if( muonTrack.isNonnull() ){
-          const reco::HitPattern & muonhit = muonTrack->hitPattern();
-          muon_validmuonhits.push_back( muonhit.numberOfValidMuonHits() );
-        }
-        else
-          muon_validmuonhits.push_back( 0 );
+    }
+    //==== No Global track, but innertrack
+    else if( trackerTrack.isNonnull() ){
 
-      }
-    } // -- end of else of if( glbTrack.isNonnull() ) -- //
+      const reco::HitPattern & trkhit = trackerTrack->hitPattern();
+
+      muon_normchi.push_back( trackerTrack->normalizedChi2()  );
+      muon_validmuonhits.push_back( trkhit.numberOfValidMuonHits() );
       
+      muon_qoverp.push_back( trackerTrack->qoverp() );
+      muon_theta.push_back( trackerTrack->theta() );
+      muon_lambda.push_back( trackerTrack->lambda() );
+      muon_dxy.push_back( trackerTrack->dxy() );
+      muon_d0.push_back( trackerTrack->d0() );
+      muon_dsz.push_back( trackerTrack->dsz() );
+      muon_dz.push_back( trackerTrack->dz() );
+      muon_dxyBS.push_back( trackerTrack->dxy(beamSpot.position()) );
+      muon_dszBS.push_back( trackerTrack->dsz(beamSpot.position()) );
+      muon_dzBS.push_back( trackerTrack->dz(beamSpot.position()) );
+      
+      muon_vx.push_back( trackerTrack->vx() );
+      muon_vy.push_back( trackerTrack->vy() );
+      muon_vz.push_back( trackerTrack->vz() );
+      
+    }
+    //==== No Global, No Tracker -> StandAlone
+    else{
+
+      const reco::HitPattern & muonhit = muonTrack->hitPattern();
+
+      muon_normchi.push_back( muonTrack->normalizedChi2()  );
+      muon_validmuonhits.push_back( muonhit.numberOfValidMuonHits() );
+
+      muon_qoverp.push_back( muonTrack->qoverp() );
+      muon_theta.push_back( muonTrack->theta() );
+      muon_lambda.push_back( muonTrack->lambda() );
+      muon_dxy.push_back( muonTrack->dxy() );
+      muon_d0.push_back( muonTrack->d0() );
+      muon_dsz.push_back( muonTrack->dsz() );
+      muon_dz.push_back( muonTrack->dz() );
+      muon_dxyBS.push_back( muonTrack->dxy(beamSpot.position()) );
+      muon_dszBS.push_back( muonTrack->dsz(beamSpot.position()) );
+      muon_dzBS.push_back( muonTrack->dz(beamSpot.position()) );
+
+      muon_vx.push_back( muonTrack->vx() );
+      muon_vy.push_back( muonTrack->vy() );
+      muon_vz.push_back( muonTrack->vz() );
+
+    }
+
     if( trackerTrack.isNonnull() ){
       const reco::HitPattern & inhit = trackerTrack->hitPattern();
       
       muon_trackerHits.push_back( inhit.numberOfValidTrackerHits() );
       muon_pixelHits.push_back( inhit.numberOfValidPixelHits() );
       muon_trackerLayers.push_back( inhit.trackerLayersWithMeasurement() );
+    }
+    else{
+      muon_trackerHits.push_back( 0 );
+      muon_pixelHits.push_back( 0 );
+      muon_trackerLayers.push_back( 0 );
     }
       
     if( !pvHandle->empty() && !pvHandle->front().isFake() ){
@@ -1655,6 +1684,11 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       // muon_dxycktVTX.push_back( cktTrack->dxy(vtx.position()) );
       // muon_dszcktVTX.push_back( cktTrack->dsz(vtx.position()) );
       // muon_dzcktVTX.push_back( cktTrack->dz(vtx.position()) );
+    }
+    else{
+      muon_dxyVTX.push_back( 9999 );
+      muon_dszVTX.push_back( 9999 );
+      muon_dzVTX.push_back( 9999 );
     }
       
     // muon1 kinematics
@@ -1684,6 +1718,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_Best_eta.push_back( imuon.muonBestTrack()->eta() );
       muon_Best_phi.push_back( imuon.muonBestTrack()->phi() );
     }
+    else{
+      muon_Best_pt.push_back( -999 );
+      muon_Best_ptError.push_back( -999 );
+      muon_Best_Px.push_back( -999 );
+      muon_Best_Py.push_back( -999 );
+      muon_Best_Pz.push_back( -999 );
+      muon_Best_eta.push_back( -999 );
+      muon_Best_phi.push_back( -999 );
+    }
       
       
     // -- Inner Track -- //
@@ -1696,6 +1739,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_Inner_eta.push_back( imuon.innerTrack()->eta() );
       muon_Inner_phi.push_back( imuon.innerTrack()->phi() );
     }
+    else{
+      muon_Inner_pt.push_back( -999 );
+      muon_Inner_ptError.push_back( -999 );
+      muon_Inner_Px.push_back( -999 );
+      muon_Inner_Py.push_back( -999 );
+      muon_Inner_Pz.push_back( -999 );
+      muon_Inner_eta.push_back( -999 );
+      muon_Inner_phi.push_back( -999 );
+    }
       
     // -- Outer Track -- //
     if( imuon.outerTrack().isNonnull() ){
@@ -1706,6 +1758,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_Outer_Pz.push_back( imuon.outerTrack()->pz() );
       muon_Outer_eta.push_back( imuon.outerTrack()->eta() );
       muon_Outer_phi.push_back( imuon.outerTrack()->phi() );
+    }
+    else{
+      muon_Outer_pt.push_back( -999 );
+      muon_Outer_ptError.push_back( -999 );
+      muon_Outer_Px.push_back( -999 );
+      muon_Outer_Py.push_back( -999 );
+      muon_Outer_Pz.push_back( -999 );
+      muon_Outer_eta.push_back( -999 );
+      muon_Outer_phi.push_back( -999 );
     }
       
     // -- Global Track -- //
@@ -1718,6 +1779,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_GLB_eta.push_back( imuon.globalTrack()->eta() );
       muon_GLB_phi.push_back( imuon.globalTrack()->phi() );
     }
+    else{
+      muon_GLB_pt.push_back( -999 );
+      muon_GLB_ptError.push_back( -999 );
+      muon_GLB_Px.push_back( -999 );
+      muon_GLB_Py.push_back( -999 );
+      muon_GLB_Pz.push_back( -999 );
+      muon_GLB_eta.push_back( -999 );
+      muon_GLB_phi.push_back( -999 );
+    }
       
     // -- tuneP MuonBestTrack -- //
     if( imuon.tunePMuonBestTrack().isNonnull() ){
@@ -1728,6 +1798,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_TuneP_Pz.push_back( imuon.tunePMuonBestTrack()->pz() );
       muon_TuneP_eta.push_back( imuon.tunePMuonBestTrack()->eta() );
       muon_TuneP_phi.push_back( imuon.tunePMuonBestTrack()->phi() );
+    }
+    else{
+      muon_TuneP_pt.push_back( -999 );
+      muon_TuneP_ptError.push_back( -999 );
+      muon_TuneP_Px.push_back( -999 );
+      muon_TuneP_Py.push_back( -999 );
+      muon_TuneP_Pz.push_back( -999 );
+      muon_TuneP_eta.push_back( -999 );
+      muon_TuneP_phi.push_back( -999 );
     }
       
     //-- ISOLATIONS GO HERE -- //
@@ -1755,7 +1834,83 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_nChambers.push_back( imuon.numberOfChambers() ); // -- # of chambers -- //
     muon_matchedstations.push_back( imuon.numberOfMatchedStations() ); // -- # of chambers with matched segments -- //
     muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
-    
+
+    //==== Rochestor
+
+    double this_roccor = 1.;
+    double this_roccor_err = 0.;
+    //==== Data
+    if(!isMC){
+      this_roccor = rc.kScaleDT(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), 0, 0); //data
+      this_roccor_err = rc.kScaleDTerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi());
+    }
+    //==== MC
+    else{
+
+      gRandom->SetSeed( evtNum ); // to make the seed always same
+      double u1 = gRandom->Rndm();
+      double u2 = gRandom->Rndm();
+
+      int n_trackerLayersWithMeasurement = 0;
+      if(trackerTrack.isNonnull()) n_trackerLayersWithMeasurement = imuon.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+
+/*
+      //==== Using GenPt
+
+      //cout << "[This Reco Muon] pt = " << imuon.pt() << ", eta = " << imuon.eta() << ", phi = " << imuon.phi() << endl;
+      //cout << "isTight = " << imuon.isTightMuon(vtx) << endl;
+      //cout << "isMediumMuon = " << imuon.isMediumMuon() << endl;
+      //cout << "isLoose = " << imuon.isLooseMuon() << endl;
+      //cout << "isPF = " << muon_isPF.at(i) << endl;
+      //cout << "isGlobal = " << muon_isGlobal.at(i) << endl;
+      //cout << "chi2 = " << muon_normchi.at(i) << endl;
+      //cout << "isTracker = " << muon_isTracker.at(i) << endl;
+      //cout << "isStandAlone = " << muon_isStandAlone.at(i) << endl;
+      //cout << "dxy = " << muon_dxyVTX.at(i) << endl;
+      //cout << "dz = " << muon_dzVTX.at(i) << endl;
+
+      int counter=0;
+      double this_genpt=-999.;
+      for( reco::GenParticleCollection::const_iterator genptl = genParticles->begin(); genptl != genParticles->end(); ++genptl, ++counter) {
+
+        //int idx = -1;
+        //for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ){
+        //  if( genptl->mother()==&(*mit) ){
+        //    idx = std::distance(genParticles->begin(),mit);
+        //    break;
+        //  }
+        //}
+        //cout << counter << "\t" << genptl->pdgId() << "\t" << idx << "\t" << "gen pt = " << genptl->pt() << ", eta = " << genptl->eta() << ", phi = " << genptl->phi() << endl;
+
+
+        if( fabs(genptl->pdgId()) != 13 ) continue;
+        if( !genptl->isPromptFinalState() ) continue;
+        if( reco::deltaR( imuon.eta(), imuon.phi(), genptl->eta(), genptl->phi() ) < 0.3 ){
+          this_genpt = genptl->pt();
+          break;
+        }
+      }
+      //cout << this_genpt << endl;
+
+      if(this_genpt>0){
+        this_roccor     = rc.kScaleFromGenMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u1, 0, 0);
+        this_roccor_err = rc.kScaleFromGenMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u1);
+      }
+      else{
+        this_roccor     = rc.kScaleAndSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2, 0, 0);
+        this_roccor_err = rc.kScaleAndSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2);
+      }
+*/
+
+      //==== TODO Now I'm not using genpt
+      this_roccor     = rc.kScaleAndSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2, 0, 0);
+      this_roccor_err = rc.kScaleAndSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2);
+
+    }
+
+    muon_roch_sf.push_back( this_roccor );
+    muon_roch_sf_up.push_back( this_roccor+this_roccor_err );
+
   } // -- End of imuon iteration -- //
   
 }
@@ -1941,11 +2096,15 @@ dummy = Vertex(p, e, 0, 0, 0);
     //std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt,vtx);
 
     const double gsfsign = ( (-elecTrk->dxy(vtx.position())) >=0 ) ? 1. : -1.;
-    if (ip3dpv.first) {
+    if(ip3dpv.first){
       double ip3d = gsfsign*ip3dpv.second.value();
       double ip3derr = ip3dpv.second.error();  
       electron_ip3D.push_back( ip3d );
       electron_sigip3D.push_back( ip3d/ip3derr );
+    }
+    else{
+      electron_ip3D.push_back( -999 );
+      electron_sigip3D.push_back( -999 );
     }
     
     electron_sigdxy.push_back( elecTrk->dxy() / elecTrk->dxyError() );
@@ -1963,11 +2122,23 @@ dummy = Vertex(p, e, 0, 0, 0);
       electron_gsfPhi.push_back( elecTrk->phi() );
       electron_gsfCharge.push_back( elecTrk->charge() );
     }
+    else{
+      electron_gsfpt.push_back( -999 );
+      electron_gsfPx.push_back( -999 );
+      electron_gsfPy.push_back( -999 );
+      electron_gsfPz.push_back( -999 );
+      electron_gsfEta.push_back( -999 );
+      electron_gsfPhi.push_back( -999 );
+      electron_gsfCharge.push_back( -999 );
+    }
       
     if( !pvHandle->empty() && !pvHandle->front().isFake() ){
-      //const reco::Vertex &vtx = pvHandle->front();
       electron_dxyVTX.push_back( elecTrk->dxy(vtx.position()) );
       electron_dzVTX.push_back( elecTrk->dz(vtx.position()) );
+    }
+    else{
+      electron_dxyVTX.push_back( -999 );
+      electron_dzVTX.push_back( -999 );
     }
       
     // -- for ID variables -- //
@@ -1979,7 +2150,8 @@ dummy = Vertex(p, e, 0, 0, 0);
     bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
     bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
     bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
-    
+    bool isPassHEEP = el -> electronID("heepElectronID-HEEPV70");
+
     // cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
     electron_passVetoID.push_back( isPassVeto );
     electron_passLooseID.push_back( isPassLoose );
@@ -1989,8 +2161,7 @@ dummy = Vertex(p, e, 0, 0, 0);
     electron_passMVAID_noIso_WP90.push_back( isPassMVA_noIso_WP90 );
     electron_passMVAID_iso_WP80.push_back( isPassMVA_iso_WP80 );
     electron_passMVAID_iso_WP90.push_back( isPassMVA_iso_WP90 );
-    
-    // electron_passHEEPID.push_back( isPassHEEP );
+    electron_passHEEPID.push_back( isPassHEEP );
     
   } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   
@@ -2133,6 +2304,10 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     if(it->numberOfMothers() > 0){
       gen_mother_PID.push_back( it->mother(0)->pdgId() );
       gen_mother_pt.push_back( it->mother(0)->pt() );
+    }
+    else{
+      gen_mother_PID.push_back( -999 );
+      gen_mother_pt.push_back( -999 );
     }
     
     int idx = -1;
@@ -2329,7 +2504,13 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_partonFlavour.push_back( jets_iter->partonFlavour() );
     jet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
-    jet_bTag.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    jet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
+    //jet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
+    jet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
+    jet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
+
     jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
     jet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
@@ -2396,7 +2577,12 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_partonFlavour.push_back( jets_iter->partonFlavour() );
     fatjet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
-    fatjet_bTag.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    fatjet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    fatjet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
+    //fatjet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
+    fatjet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
+    fatjet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
+
     fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
     fatjet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
@@ -2448,7 +2634,7 @@ void SKFlatMaker::fillTT(const edm::Event &iEvent)
   edm::Handle< std::vector< reco::GsfTrack > > gsfTracks; 
   iEvent.getByToken(GsfTrackToken, gsfTracks);
   
-  for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ){
+  for(unsigned int igsf = 0; igsf < gsfTracks->size(); igsf++ ){
     GsfTrackRef iTT(gsfTracks, igsf);
 
     //if( iTT->pt() < 1.0 || iTT->pt() > 100000 ) continue;

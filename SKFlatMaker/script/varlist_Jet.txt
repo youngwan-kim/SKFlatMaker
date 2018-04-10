@@ -6,7 +6,11 @@ double	jet_area	1
 double	jet_rho	1
 int	jet_partonFlavour	1
 int	jet_hadronFlavour	1
-double	jet_bTag	1
+double	jet_CSVv2	1
+double	jet_DeepCSV	1
+double	jet_DeepFlavour	1
+double	jet_CvsL	1
+double  jet_CvsB 1
 double	jet_chargedHadronEnergyFraction	1
 double	jet_neutralHadronEnergyFraction	1
 double	jet_neutralEmEnergyFraction	1
@@ -22,4 +26,4 @@ double	jet_m	1
 double	jet_energy	1
 double	jet_PileupJetId	1
 double	jet_shiftedEnUp	1
-double  jet_shiftedEnDown  1
+double	jet_shiftedEnDown	1

@@ -32,7 +32,7 @@
 #include "DataFormats/MuonReco/interface/MuonTimeExtraMap.h"
 #include "DataFormats/MuonReco/interface/MuonCocktails.h"
 #include "DataFormats/MuonReco/interface/MuonCosmicCompatibility.h" // -- Variables shows how muon is cosmic-like
-
+#include "SKFlatMaker/SKFlatMaker/src/RoccoR.h"
 
 /////////////////////////
 // -- For Electrons -- //
@@ -156,6 +156,7 @@
 #include <TLorentzVector.h>
 #include <TVector3.h>
 #include <boost/foreach.hpp>
+#include <TRandom.h>
 
 using namespace std;
 using namespace pat;
@@ -254,6 +255,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStoreFatJetFlag;                // Yes or No to store FatJet
   bool theStoreMETFlag;                // Yes or No to store MET 
   bool theStoreHLTReportFlag;             // Yes or No to store HLT reuslts (list of triggers fired)
+  bool theStoreHLTObjectFlag;
   bool theStoreMuonFlag;
   bool theStoreElectronFlag;
   bool theStoreLHEFlag;
@@ -276,10 +278,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::ESHandle<TransientTrackBuilder> theTTBuilder;
 
   std::vector<std::string > HLTName_WildCard;
-  std::vector<std::string > ListHLT;
-  std::vector<int > ListHLTPS;
-  std::vector<std::string > trigModuleNames;
-  std::vector<std::string > trigModuleNames_preFil;
   
   bool Flag_goodVertices;
   bool Flag_globalTightHalo2016Filter;
@@ -368,16 +366,15 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   //==== trigger object
 
-  vector<int> HLTObject_Type;
-  vector<int> HLTObject_Fired;
-  vector<string> HLTObject_Name;
-  vector<int> HLTObject_PS;
+  vector<string> HLT_TriggerName;
+  vector<string> HLT_TriggerFilterName;
+  vector<bool> HLT_TriggerFired;
+  vector<int> HLT_TriggerPrescale;
   vector<double> HLTObject_pt;
   vector<double> HLTObject_eta;
   vector<double> HLTObject_phi;
-  vector<string> HLT_TriggerName;
-  vector<bool> HLT_TriggerFired;
-  vector<int> HLT_TriggerPrescale;
+  vector<string> HLTObject_FiredFilters;
+  vector<string> HLTObject_FiredPaths;
 
   //==== Jet
 
@@ -389,7 +386,11 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_rho;
   vector<int> jet_partonFlavour;
   vector<int> jet_hadronFlavour;
-  vector<double> jet_bTag;
+  vector<double> jet_CSVv2;
+  vector<double> jet_DeepCSV;
+  vector<double> jet_DeepFlavour;
+  vector<double> jet_CvsL;
+  vector<double> jet_CvsB;
   vector<double> jet_chargedHadronEnergyFraction;
   vector<double> jet_neutralHadronEnergyFraction;
   vector<double> jet_neutralEmEnergyFraction;
@@ -424,7 +425,11 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> fatjet_rho;
   vector<int> fatjet_partonFlavour;
   vector<int> fatjet_hadronFlavour;
-  vector<double> fatjet_bTag;
+  vector<double> fatjet_CSVv2;
+  vector<double> fatjet_DeepCSV;
+  vector<double> fatjet_DeepFlavour;
+  vector<double> fatjet_CvsL;
+  vector<double> fatjet_CvsB;
   vector<bool> fatjet_looseJetID;
   vector<bool> fatjet_tightJetID;
   vector<bool> fatjet_tightLepVetoJetID;
@@ -563,8 +568,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<bool> electron_passMVAID_noIso_WP90;
   vector<bool> electron_passMVAID_iso_WP80;
   vector<bool> electron_passMVAID_iso_WP90;
-  vector<bool> electron_passMVAID_WP80;
-  vector<bool> electron_passMVAID_WP90;
   vector<bool> electron_passHEEPID;
   vector<double> electron_ptUnCorr;
   vector<double> electron_etaUnCorr;
@@ -580,7 +583,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_mva;
   vector<double> electron_zzmva;
   vector<int> electron_missinghits;
-  vector<string> electron_trigmatch;
 
   //==== Muon
 
@@ -595,12 +597,15 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_PfNeutralHadronIsoR03;
   vector<double> muon_PfGammaIsoR03;
   vector<double> muon_PFSumPUIsoR03;
-  vector<int> muon_isPF;
-  vector<int> muon_isGlobal;
-  vector<int> muon_isTracker;
-  vector<int> muon_isStandAlone;
-  vector<int> muon_filterName;
-  vector<string> muon_trigmatch;
+  vector<bool> muon_isPF;
+  vector<bool> muon_isGlobal;
+  vector<bool> muon_isTracker;
+  vector<bool> muon_isStandAlone;
+  vector<bool> muon_isTight;
+  vector<bool> muon_isMedium;
+  vector<bool> muon_isLoose;
+  vector<bool> muon_isSoft;
+  vector<bool> muon_isHighPt;
   vector<double> muon_dB;
   vector<double> muon_phi;
   vector<double> muon_eta;
@@ -625,7 +630,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<int> muon_matchedstations;
   vector<int> muon_stationMask;
   vector<int> muon_nSegments;
-  vector<double> muon_chi2dof;
+  vector<double> muon_normchi;
   vector<int> muon_validhits;
   vector<int> muon_trackerHits;
   vector<int> muon_pixelHits;
@@ -688,8 +693,14 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_TuneP_Pz;
   vector<double> muon_TuneP_eta;
   vector<double> muon_TuneP_phi;
+  vector<double> muon_roch_sf;
+  vector<double> muon_roch_sf_up;
+
+  //==== Rochestor correction
+  RoccoR rc;
 
   //==== LHE
+
   vector<double> LHELepton_Px;
   vector<double> LHELepton_Py;
   vector<double> LHELepton_Pz;
@@ -698,6 +709,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<int> LHELepton_status;
  
   //==== GEN
+
   vector<double> gen_phi;
   vector<double> gen_eta;
   vector<double> gen_pt;
