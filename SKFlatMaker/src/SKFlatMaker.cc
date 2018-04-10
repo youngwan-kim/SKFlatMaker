@@ -1498,8 +1498,15 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   iEvent.getByToken(MuonToken, muonHandle);
   using reco::MuonCollection;
   MuonCollection::const_iterator imuon;
-  
-  for( unsigned i = 0; i != muonHandle->size(); i++ ){
+
+/*
+  edm::Handle<reco::GenParticleCollection> genParticles;
+  if(isMC){
+    iEvent.getByToken(mcLabel_,genParticles);
+  }
+*/
+
+  for( unsigned int i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
     const pat::Muon imuon = muonHandle->at(i);
     
@@ -1806,15 +1813,58 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       int n_trackerLayersWithMeasurement = 0;
       if(trackerTrack.isNonnull()) n_trackerLayersWithMeasurement = imuon.innerTrack()->hitPattern().trackerLayersWithMeasurement();
 
-      //==== TODO Need to add gen matching
-      //==== Now using smearing
-      this_roccor = rc.kScaleAndSmearMC(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2, 0, 0);
+/*
+      //==== Using GenPt
+
+      //cout << "[This Reco Muon] pt = " << imuon.pt() << ", eta = " << imuon.eta() << ", phi = " << imuon.phi() << endl;
+      //cout << "isTight = " << imuon.isTightMuon(vtx) << endl;
+      //cout << "isMediumMuon = " << imuon.isMediumMuon() << endl;
+      //cout << "isLoose = " << imuon.isLooseMuon() << endl;
+      //cout << "isPF = " << muon_isPF.at(i) << endl;
+      //cout << "isGlobal = " << muon_isGlobal.at(i) << endl;
+      //cout << "chi2 = " << muon_normchi.at(i) << endl;
+      //cout << "isTracker = " << muon_isTracker.at(i) << endl;
+      //cout << "isStandAlone = " << muon_isStandAlone.at(i) << endl;
+      //cout << "dxy = " << muon_dxyVTX.at(i) << endl;
+      //cout << "dz = " << muon_dzVTX.at(i) << endl;
+
+      int counter=0;
+      double this_genpt=-999.;
+      for( reco::GenParticleCollection::const_iterator genptl = genParticles->begin(); genptl != genParticles->end(); ++genptl, ++counter) {
+
+        //int idx = -1;
+        //for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ){
+        //  if( genptl->mother()==&(*mit) ){
+        //    idx = std::distance(genParticles->begin(),mit);
+        //    break;
+        //  }
+        //}
+        //cout << counter << "\t" << genptl->pdgId() << "\t" << idx << "\t" << "gen pt = " << genptl->pt() << ", eta = " << genptl->eta() << ", phi = " << genptl->phi() << endl;
+
+
+        if( fabs(genptl->pdgId()) != 13 ) continue;
+        if( !genptl->isPromptFinalState() ) continue;
+        if( reco::deltaR( imuon.eta(), imuon.phi(), genptl->eta(), genptl->phi() ) < 0.3 ){
+          this_genpt = genptl->pt();
+          break;
+        }
+      }
+      //cout << this_genpt << endl;
+
+      if(this_genpt>0){
+        this_roccor     = rc.kScaleFromGenMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u1, 0, 0);
+        this_roccor_err = rc.kScaleFromGenMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u1);
+      }
+      else{
+        this_roccor     = rc.kScaleAndSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2, 0, 0);
+        this_roccor_err = rc.kScaleAndSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2);
+      }
+*/
+
+      //==== TODO Now I'm not using genpt
+      this_roccor     = rc.kScaleAndSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2, 0, 0);
       this_roccor_err = rc.kScaleAndSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2);
 
-      //double mcSF = rc.kScaleFromGenMC(Q, pt, eta, phi, nl, genPt, u1, s=0, m=0); //(recommended), MC when matched gen muon is available
-      //double mcSF = rc.kScaleAndSmearMC(Q, pt, eta, phi, nl, u1, u2, s=0, m=0); //extra smearing when matched gen muon is not available
-      //double deltaMcSF = rc.kScaleFromGenMCerror(Q, pt, eta, phi, nl, genPt, u1);
-      //double deltaMcSF = rc.kScaleAndSmearMCerror(Q, pt, eta, phi, nl, u1, u2);
     }
 
     muon_roch_sf.push_back( this_roccor );
@@ -2532,7 +2582,7 @@ void SKFlatMaker::fillTT(const edm::Event &iEvent)
   edm::Handle< std::vector< reco::GsfTrack > > gsfTracks; 
   iEvent.getByToken(GsfTrackToken, gsfTracks);
   
-  for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ){
+  for(unsigned int igsf = 0; igsf < gsfTracks->size(); igsf++ ){
     GsfTrackRef iTT(gsfTracks, igsf);
 
     //if( iTT->pt() < 1.0 || iTT->pt() > 100000 ) continue;
