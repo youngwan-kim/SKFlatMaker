@@ -9,6 +9,8 @@ int	jet_hadronFlavour	1
 double	jet_CSVv2	1
 double	jet_DeepCSV	1
 double	jet_DeepFlavour	1
+double	jet_CvsL	1
+double  jet_CvsB 1
 double	jet_chargedHadronEnergyFraction	1
 double	jet_neutralHadronEnergyFraction	1
 double	jet_neutralEmEnergyFraction	1

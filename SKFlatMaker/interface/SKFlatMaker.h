@@ -389,6 +389,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_CSVv2;
   vector<double> jet_DeepCSV;
   vector<double> jet_DeepFlavour;
+  vector<double> jet_CvsL;
+  vector<double> jet_CvsB;
   vector<double> jet_chargedHadronEnergyFraction;
   vector<double> jet_neutralHadronEnergyFraction;
   vector<double> jet_neutralEmEnergyFraction;
@@ -426,6 +428,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> fatjet_CSVv2;
   vector<double> fatjet_DeepCSV;
   vector<double> fatjet_DeepFlavour;
+  vector<double> fatjet_CvsL;
+  vector<double> fatjet_CvsB;
   vector<bool> fatjet_looseJetID;
   vector<bool> fatjet_tightJetID;
   vector<bool> fatjet_tightLepVetoJetID;
