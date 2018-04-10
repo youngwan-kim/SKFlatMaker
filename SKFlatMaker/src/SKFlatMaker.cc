@@ -513,7 +513,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_rho.clear();
   jet_partonFlavour.clear();
   jet_hadronFlavour.clear();
-  jet_bTag.clear();
+  jet_CSVv2.clear();
+  jet_DeepCSV.clear();
+  jet_DeepFlavour.clear();
   jet_chargedHadronEnergyFraction.clear();
   jet_neutralHadronEnergyFraction.clear();
   jet_neutralEmEnergyFraction.clear();
@@ -540,7 +542,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_rho.clear();
   fatjet_partonFlavour.clear();
   fatjet_hadronFlavour.clear();
-  fatjet_bTag.clear();
+  fatjet_CSVv2.clear();
+  fatjet_DeepCSV.clear();
+  fatjet_DeepFlavour.clear();
   fatjet_looseJetID.clear();
   fatjet_tightJetID.clear();
   fatjet_tightLepVetoJetID.clear();
@@ -786,7 +790,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_rho", "vector<double>", &jet_rho);
     DYTree->Branch("jet_partonFlavour", "vector<int>", &jet_partonFlavour);
     DYTree->Branch("jet_hadronFlavour", "vector<int>", &jet_hadronFlavour);
-    DYTree->Branch("jet_bTag", "vector<double>", &jet_bTag);
+    DYTree->Branch("jet_CSVv2", "vector<double>", &jet_CSVv2);
+    DYTree->Branch("jet_DeepCSV", "vector<double>", &jet_DeepCSV);
+    DYTree->Branch("jet_DeepFlavour", "vector<double>", &jet_DeepFlavour);
     DYTree->Branch("jet_chargedHadronEnergyFraction", "vector<double>", &jet_chargedHadronEnergyFraction);
     DYTree->Branch("jet_neutralHadronEnergyFraction", "vector<double>", &jet_neutralHadronEnergyFraction);
     DYTree->Branch("jet_neutralEmEnergyFraction", "vector<double>", &jet_neutralEmEnergyFraction);
@@ -815,7 +821,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_rho", "vector<double>", &fatjet_rho);
     DYTree->Branch("fatjet_partonFlavour", "vector<int>", &fatjet_partonFlavour);
     DYTree->Branch("fatjet_hadronFlavour", "vector<int>", &fatjet_hadronFlavour);
-    DYTree->Branch("fatjet_bTag", "vector<double>", &fatjet_bTag);
+    DYTree->Branch("fatjet_CSVv2", "vector<double>", &fatjet_CSVv2);
+    DYTree->Branch("fatjet_DeepCSV", "vector<double>", &fatjet_DeepCSV);
+    DYTree->Branch("fatjet_DeepFlavour", "vector<double>", &fatjet_DeepFlavour);
     DYTree->Branch("fatjet_looseJetID", "vector<bool>", &fatjet_looseJetID);
     DYTree->Branch("fatjet_tightJetID", "vector<bool>", &fatjet_tightJetID);
     DYTree->Branch("fatjet_tightLepVetoJetID", "vector<bool>", &fatjet_tightLepVetoJetID);
@@ -2488,7 +2496,11 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_partonFlavour.push_back( jets_iter->partonFlavour() );
     jet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
-    jet_bTag.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    jet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
+    //jet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
+
     jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
     jet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
@@ -2555,7 +2567,10 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_partonFlavour.push_back( jets_iter->partonFlavour() );
     fatjet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
-    fatjet_bTag.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    fatjet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+    fatjet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
+    //fatjet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
+
     fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
     fatjet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );

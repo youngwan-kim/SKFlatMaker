@@ -6,7 +6,9 @@ double	fatjet_area	1
 double	fatjet_rho	1
 int	fatjet_partonFlavour	1
 int	fatjet_hadronFlavour	1
-double	fatjet_bTag	1
+double	fatjet_CSVv2	1
+double  fatjet_DeepCSV 1 
+double  fatjet_DeepFlavour 1
 bool	fatjet_looseJetID	1
 bool	fatjet_tightJetID	1
 bool	fatjet_tightLepVetoJetID	1
