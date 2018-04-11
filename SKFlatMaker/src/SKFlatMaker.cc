@@ -646,6 +646,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if(jet_jecUnc) delete jet_jecUnc;
   jet_jecUnc = new JetCorrectionUncertainty(JetCorPar);
 
+  //==== For cross check
+  //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+  //if(jet_jecUnc_methodB) delete jet_jecUnc_methodB;
+  //jet_jecUnc_methodB = new JetCorrectionUncertainty("/u/user/jskim/scratch/CMSSW_9_4_2/src/SKFlatMaker/SKFlatMaker/data/JEC/MC/Fall17_17Nov2017_V6_MC/Fall17_17Nov2017_V6_MC_Uncertainty_AK4PFchs.txt");
+
   edm::ESHandle<JetCorrectorParametersCollection> FatJetCorParColl;
   iSetup.get<JetCorrectionsRecord>().get(fatjet_payloadName_,FatJetCorParColl);
   JetCorrectorParameters const & FatJetCorPar = (*FatJetCorParColl)["Uncertainty"];
@@ -2532,6 +2537,16 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     double unc = jet_jecUnc->getUncertainty(true);
     jet_shiftedEnUp.push_back( 1.+unc );
     jet_shiftedEnDown.push_back( 1.-unc ); // I found jet_jecUnc->getUncertainty(true) = jet_jecUnc->getUncertainty(false)
+
+
+    //==== For cross check
+    //==== methodB
+    //jet_jecUnc_methodB->setJetEta( jets_iter->eta() );
+    //jet_jecUnc_methodB->setJetPt( jets_iter->pt() ); 
+    //double unc_methodB = jet_jecUnc_methodB->getUncertainty(true);
+    //cout << "jec unc methodA = " << unc << endl;
+    //cout << "jec unc methodB = " << unc_methodB << endl << endl;
+
 
     if(isMC){
 
