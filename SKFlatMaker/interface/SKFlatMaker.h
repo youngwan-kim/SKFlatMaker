@@ -410,6 +410,7 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   //==== JEC
   JetCorrectionUncertainty *jet_jecUnc;
+  //JetCorrectionUncertainty *jet_jecUnc_methodB; // for cross check
   std::string jet_payloadName_;
   JetCorrectionUncertainty *fatjet_jecUnc;
   std::string fatjet_payloadName_;
