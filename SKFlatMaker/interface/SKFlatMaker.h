@@ -345,9 +345,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   int Nbtagged;
   int NbtaggedCloseMuon;
   
-  // -- PDf weights -- //
-  std::vector< double > PDFWeights;
-  
   // -- Flags in re-miniAOD -- //
   bool Flag_duplicateMuons;
   bool Flag_badMuons;
@@ -708,6 +705,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> LHELepton_E;
   vector<int> LHELepton_ID;
   vector<int> LHELepton_status;
+  vector< double > PDFWeights;
  
   //==== GEN
 

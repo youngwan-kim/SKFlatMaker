@@ -4,3 +4,4 @@ double	LHELepton_Pz	1
 double	LHELepton_E	1
 int	LHELepton_ID	1
 int	LHELepton_status	1
+double	PDFWeights	1

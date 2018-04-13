@@ -34,10 +34,3 @@
 <use name="root"/>
 <use name="boost"/>
 <flags EDM_PLUGIN="1"/>
-<export>
-   <lib name="SKFlatMaker/SKFlatMaker"/>
-   <use name="FWCore/Framework"/>
-   <use name="FWCore/PluginManager"/>
-   <use name="FWCore/ParameterSet"/>
-   <use name="root"/>
-</export>
