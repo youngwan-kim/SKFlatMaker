@@ -759,8 +759,6 @@ void SKFlatMaker::beginJob()
 
   
   
-  DYTree->Branch("PDFWeights", &PDFWeights);
-  
   if(theStorePriVtxFlag){
     DYTree->Branch("PVtrackSize", &PVtrackSize,"PVtrackSize/I");
     DYTree->Branch("PVchi2", &PVchi2,"PVchi2/D");
