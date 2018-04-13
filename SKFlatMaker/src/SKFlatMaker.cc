@@ -216,6 +216,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   LHELepton_E.clear();
   LHELepton_ID.clear();
   LHELepton_status.clear();
+  PDFWeights.clear();
 
   //==== GEN
 
@@ -262,8 +263,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pileUpReweightInMuonPhys = pileUpReweightMuonPhys = 1.0;
   pileUpReweightPlusMuonPhys = pileUpReweightMinusMuonPhys = 0.0;
   
-  PDFWeights.clear();
-
   //==== Electron
   electron_MVAIso.clear();
   electron_MVANoIso.clear();
@@ -1112,6 +1111,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("LHELepton_E", "vector<double>", &LHELepton_E);
     DYTree->Branch("LHELepton_ID", "vector<int>", &LHELepton_ID);
     DYTree->Branch("LHELepton_status", "vector<int>", &LHELepton_status);
+    DYTree->Branch("PDFWeights", "vector<double>", &PDFWeights);
   }
   
   // GEN info
