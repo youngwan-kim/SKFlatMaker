@@ -345,9 +345,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   int Nbtagged;
   int NbtaggedCloseMuon;
   
-  // -- PDf weights -- //
-  std::vector< double > PDFWeights;
-  
   // -- Flags in re-miniAOD -- //
   bool Flag_duplicateMuons;
   bool Flag_badMuons;
@@ -410,6 +407,7 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   //==== JEC
   JetCorrectionUncertainty *jet_jecUnc;
+  //JetCorrectionUncertainty *jet_jecUnc_methodB; // for cross check
   std::string jet_payloadName_;
   JetCorrectionUncertainty *fatjet_jecUnc;
   std::string fatjet_payloadName_;
@@ -707,6 +705,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> LHELepton_E;
   vector<int> LHELepton_ID;
   vector<int> LHELepton_status;
+  vector< double > PDFWeights;
  
   //==== GEN
 
