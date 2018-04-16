@@ -517,6 +517,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_DeepFlavour.clear();
   jet_CvsL.clear();
   jet_CvsB.clear();
+  jet_DeepCvsL.clear();
+  jet_DeepCvsB.clear();
   jet_chargedHadronEnergyFraction.clear();
   jet_neutralHadronEnergyFraction.clear();
   jet_neutralEmEnergyFraction.clear();
@@ -548,6 +550,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_DeepFlavour.clear();
   fatjet_CvsL.clear();
   fatjet_CvsB.clear();
+  fatjet_DeepCvsL.clear();
+  fatjet_DeepCvsB.clear();
+
   fatjet_looseJetID.clear();
   fatjet_tightJetID.clear();
   fatjet_tightLepVetoJetID.clear();
@@ -801,6 +806,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_DeepFlavour", "vector<double>", &jet_DeepFlavour);
     DYTree->Branch("jet_CvsL", "vector<double>", &jet_CvsL);
     DYTree->Branch("jet_CvsB", "vector<double>", &jet_CvsB);
+    DYTree->Branch("jet_DeepCvsL", "vector<double>", &jet_DeepCvsL);
+    DYTree->Branch("jet_DeepCvsB", "vector<double>", &jet_DeepCvsB);
     DYTree->Branch("jet_chargedHadronEnergyFraction", "vector<double>", &jet_chargedHadronEnergyFraction);
     DYTree->Branch("jet_neutralHadronEnergyFraction", "vector<double>", &jet_neutralHadronEnergyFraction);
     DYTree->Branch("jet_neutralEmEnergyFraction", "vector<double>", &jet_neutralEmEnergyFraction);
@@ -834,6 +841,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_DeepFlavour", "vector<double>", &fatjet_DeepFlavour);
     DYTree->Branch("fatjet_CvsL", "vector<double>", &fatjet_CvsL);
     DYTree->Branch("fatjet_CvsB", "vector<double>", &fatjet_CvsB);
+    DYTree->Branch("fatjet_DeepCvsL", "vector<double>", &fatjet_DeepCvsL);
+    DYTree->Branch("fatjet_DeepCvsB", "vector<double>", &fatjet_DeepCvsB);
     DYTree->Branch("fatjet_looseJetID", "vector<bool>", &fatjet_looseJetID);
     DYTree->Branch("fatjet_tightJetID", "vector<bool>", &fatjet_tightJetID);
     DYTree->Branch("fatjet_tightLepVetoJetID", "vector<bool>", &fatjet_tightLepVetoJetID);
@@ -2518,6 +2527,8 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //jet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
     jet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
     jet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
+    jet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
+    jet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
 
     jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
@@ -2586,6 +2597,7 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 
     if(jets_iter->pt()<170.) continue;
 
+    //==== https://hypernews.cern.ch/HyperNews/CMS/get/jet-algorithms/443/2.html
     fatjet_pt.push_back( jets_iter->pt() );
     fatjet_eta.push_back( jets_iter->eta() );
     fatjet_phi.push_back( jets_iter->phi() );
@@ -2600,6 +2612,8 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     //fatjet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
     fatjet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
     fatjet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
+    fatjet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
+    fatjet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
 
     fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
