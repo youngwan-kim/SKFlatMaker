@@ -2271,7 +2271,7 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 
   //==== Get Nominal
   double w_def = LHEInfo->originalXWGTUP(); // w_def is not always same as map_id_to_weight[DEFAULT_ID]; if POWHEG+JHUGen, BR(m4l) is applied to default w_def, but not in map_id_to_weight[DEFAULT_ID]
-  w_def = 1.; // FIXME we want reweight w.r.t w_def, so we can set it as
+  w_def = 1.; // FIXME we want reweight w.r.t w_def, so we can set it as 1
   double w_nominal(1.);
   if(PDFOrder_=="NLO"){
     if(gen_type==0) w_nominal = map_id_to_weight[3000]*w_def/map_id_to_weight[1001];
@@ -2302,7 +2302,7 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 
   if(PDFOrder_=="NLO"){
 
-    //==== PDF UP (Hessian)
+    //==== PDF Error (Hessian)
 
     int index_b = 3000;
     if(gen_type==1) index_b = 121;
