@@ -64,7 +64,7 @@ git clone https://github.com/sungbinoh/SKFlatMaker.git -b <branch_name>
 scram b -j 8
 
 # for crab submission, we need to remove old egamma files
-
+cd $CMSSW_BASE/external
 rm -rf slc6_amd64_gcc630/data/RecoEgamma/ElectronIdentification/data/Spring1*
 rm -rf slc6_amd64_gcc630/data/RecoEgamma/ElectronIdentification/data/PHYS14
 rm -rf slc6_amd64_gcc630/data/RecoEgamma/ElectronIdentification/data/*.xml
@@ -74,9 +74,9 @@ rm -rf slc6_amd64_gcc630/data/RecoEgamma/PhotonIdentification/data/PHYS14
 
 
 
-#test cmsRun
+# test cmsRun
 cd SKFlatMaker/SKFlatMaker/ntuples/suoh_test
-#modify DATA_cfg_test_2017promptReco.py file, eg) TESTFILE_DATA for your test rootfile, isMC also
+# modify DATA_cfg_test_2017promptReco.py file, eg) TESTFILE_DATA for your test rootfile, isMC also
 voms-proxy-init --voms cms
 cmsRun DATA_test_Nov17_ReReco.py #or DATA_test_2017_PromptReco.py, MC_test_944_mc2017.py
 ```
