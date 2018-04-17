@@ -98,6 +98,8 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
 
   rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
 
+  MaxNPDF_ = iConfig.getParameter<int>("MaxNPDF");
+
   // -- Filters -- //
   
   // if( isMC )
@@ -210,12 +212,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   //==== LHE
 
-  LHELepton_Px.clear();
-  LHELepton_Py.clear();
-  LHELepton_Pz.clear();
-  LHELepton_E.clear();
-  LHELepton_ID.clear();
-  LHELepton_status.clear();
   PDFWeights.clear();
 
   //==== GEN
@@ -1112,15 +1108,6 @@ void SKFlatMaker::beginJob()
   
   // -- LHE info -- //
   if( theStoreLHEFlag ){
-/*
-    //==== FIXME do we want this?
-    DYTree->Branch("LHELepton_Px", "vector<double>", &LHELepton_Px);
-    DYTree->Branch("LHELepton_Py", "vector<double>", &LHELepton_Py);
-    DYTree->Branch("LHELepton_Pz", "vector<double>", &LHELepton_Pz);
-    DYTree->Branch("LHELepton_E", "vector<double>", &LHELepton_E);
-    DYTree->Branch("LHELepton_ID", "vector<int>", &LHELepton_ID);
-    DYTree->Branch("LHELepton_status", "vector<int>", &LHELepton_status);
-*/
     DYTree->Branch("PDFWeights", "vector<double>", &PDFWeights);
   }
   
@@ -2249,28 +2236,25 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
       // Double_t M = lheParticles[idxParticle][4];    
       Int_t status = lheEvent.ISTUP[idxParticle];
       
-      LHELepton_ID.push_back( id );
-      LHELepton_status.push_back( status );
-      LHELepton_Px.push_back( Px );
-      LHELepton_Py.push_back( Py );
-      LHELepton_Pz.push_back( Pz );
-      LHELepton_E.push_back( E );
-      
     }
   }
 */
+
   // -- PDf weights for theoretical uncertainties: scale, PDF replica and alphaS variation -- //
   // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW -- //
   double OriginalWeight = LHEInfo->originalXWGTUP();
   //std::cout << "OriginalWeight: " << OriginalWeight << endl;
   int nWeight = (int)LHEInfo->weights().size();
   //std::cout << "nWeight: " << nWeight << endl;
-  
-  for(int i=0; i<nWeight; i++){
+
+  MaxNPDF_ = max(MaxNPDF_,nWeight);
+
+  for(int i=0; i<MaxNPDF_; i++){
     double weight = LHEInfo->weights()[i].wgt;
     double ratio = weight / OriginalWeight;
+
     PDFWeights.push_back( ratio );
-      
+
     //std::cout << i << "th weight = " << weight << "(ID=" << LHEInfo->weights()[i].id <<"), ratio w.r.t. original: " << ratio << endl;
   }
 }
@@ -2776,6 +2760,7 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
         std::cout << "[SKFlatMaker::endRun,lines] " << lines.at(iLine);
     }
       cout << "[SKFlatMaker::endRun] ##### End of information about PDF weights #####" << endl;
+      cout << "[SKFlatMaker::endRun] MaxNPDF_ = " <<  MaxNPDF_ << endl;
   }
 }
 

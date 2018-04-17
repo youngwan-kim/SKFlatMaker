@@ -311,7 +311,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   double pileUpReweightMuonPhys;
   double pileUpReweightPlusMuonPhys;
   double pileUpReweightMinusMuonPhys;
-  
+
+  int MaxNPDF_;
+
   TTree *DYTree;
   
   int nEvt;
@@ -703,12 +705,6 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   //==== LHE
 
-  vector<double> LHELepton_Px;
-  vector<double> LHELepton_Py;
-  vector<double> LHELepton_Pz;
-  vector<double> LHELepton_E;
-  vector<int> LHELepton_ID;
-  vector<int> LHELepton_status;
   vector< double > PDFWeights;
  
   //==== GEN
