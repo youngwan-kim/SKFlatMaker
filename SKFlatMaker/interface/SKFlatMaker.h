@@ -312,7 +312,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   double pileUpReweightPlusMuonPhys;
   double pileUpReweightMinusMuonPhys;
 
-  int MaxNPDF_;
+  string PDFOrder_;
+  int PDFIDShift_;
 
   TTree *DYTree;
   
@@ -705,7 +706,9 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   //==== LHE
 
-  vector< double > PDFWeights;
+  vector<double> PDFWeights_Scale;
+  vector<double> PDFWeights_Error;
+  vector<double> PDFWeights_AlphaS;
  
   //==== GEN
 

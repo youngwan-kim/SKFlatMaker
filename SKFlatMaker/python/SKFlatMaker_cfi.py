@@ -80,6 +80,7 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   FilterType = cms.untracked.int32(0),
 
   #### PDF ID's to be save
-  MaxNPDF = cms.int32(112),
+  PDFOrder = cms.string("NLO"),
+  PDFIDShift = cms.int32(0),
 
 )

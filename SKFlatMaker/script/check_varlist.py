@@ -94,14 +94,14 @@ for obj in objects:
           words = [vartype, varname]
           if not InFile(lines_header, words):
             HasMissingVariable = True
-            print '  vector<'+vartype+'> '+varname+';'
+            print '  '+vartype+' '+varname+';'
 
         elif WhatToPrint==1:
 
           words = [varname, '=']
           if not InFile(lines_src, words):
             HasMissingVariable = True
-            print '  '+varname+'.clear();'
+            print '  '+varname+' = -999;'
 
         elif WhatToPrint==2:
 
@@ -116,7 +116,7 @@ for obj in objects:
           words = ['DYTree', 'Branch', varname, '&', varname, vartypechar]
           if not InFile(lines_src, words):
             HasMissingVariable = True
-            print '    DYTree->Branch("'+varname+'", "vector<'+vartype+'>", &'+varname+');'
+            print '    DYTree->Branch("'+varname+'",&'+varname+',"'+varname+'/'+vartypechar+'");'
 
     if not HasMissingVariable:
       print "====> All okay"
