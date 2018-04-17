@@ -98,6 +98,8 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
 
   rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
 
+  MaxNPDF_ = iConfig.getParameter<int>("MaxNPDF");
+
   // -- Filters -- //
   
   // if( isMC )
@@ -210,12 +212,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   //==== LHE
 
-  LHELepton_Px.clear();
-  LHELepton_Py.clear();
-  LHELepton_Pz.clear();
-  LHELepton_E.clear();
-  LHELepton_ID.clear();
-  LHELepton_status.clear();
   PDFWeights.clear();
 
   //==== GEN
@@ -517,6 +513,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_DeepFlavour.clear();
   jet_CvsL.clear();
   jet_CvsB.clear();
+  jet_DeepCvsL.clear();
+  jet_DeepCvsB.clear();
   jet_chargedHadronEnergyFraction.clear();
   jet_neutralHadronEnergyFraction.clear();
   jet_neutralEmEnergyFraction.clear();
@@ -548,6 +546,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_DeepFlavour.clear();
   fatjet_CvsL.clear();
   fatjet_CvsB.clear();
+  fatjet_DeepCvsL.clear();
+  fatjet_DeepCvsB.clear();
+
   fatjet_looseJetID.clear();
   fatjet_tightJetID.clear();
   fatjet_tightLepVetoJetID.clear();
@@ -801,6 +802,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_DeepFlavour", "vector<double>", &jet_DeepFlavour);
     DYTree->Branch("jet_CvsL", "vector<double>", &jet_CvsL);
     DYTree->Branch("jet_CvsB", "vector<double>", &jet_CvsB);
+    DYTree->Branch("jet_DeepCvsL", "vector<double>", &jet_DeepCvsL);
+    DYTree->Branch("jet_DeepCvsB", "vector<double>", &jet_DeepCvsB);
     DYTree->Branch("jet_chargedHadronEnergyFraction", "vector<double>", &jet_chargedHadronEnergyFraction);
     DYTree->Branch("jet_neutralHadronEnergyFraction", "vector<double>", &jet_neutralHadronEnergyFraction);
     DYTree->Branch("jet_neutralEmEnergyFraction", "vector<double>", &jet_neutralEmEnergyFraction);
@@ -834,6 +837,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_DeepFlavour", "vector<double>", &fatjet_DeepFlavour);
     DYTree->Branch("fatjet_CvsL", "vector<double>", &fatjet_CvsL);
     DYTree->Branch("fatjet_CvsB", "vector<double>", &fatjet_CvsB);
+    DYTree->Branch("fatjet_DeepCvsL", "vector<double>", &fatjet_DeepCvsL);
+    DYTree->Branch("fatjet_DeepCvsB", "vector<double>", &fatjet_DeepCvsB);
     DYTree->Branch("fatjet_looseJetID", "vector<bool>", &fatjet_looseJetID);
     DYTree->Branch("fatjet_tightJetID", "vector<bool>", &fatjet_tightJetID);
     DYTree->Branch("fatjet_tightLepVetoJetID", "vector<bool>", &fatjet_tightLepVetoJetID);
@@ -1103,15 +1108,6 @@ void SKFlatMaker::beginJob()
   
   // -- LHE info -- //
   if( theStoreLHEFlag ){
-/*
-    //==== FIXME do we want this?
-    DYTree->Branch("LHELepton_Px", "vector<double>", &LHELepton_Px);
-    DYTree->Branch("LHELepton_Py", "vector<double>", &LHELepton_Py);
-    DYTree->Branch("LHELepton_Pz", "vector<double>", &LHELepton_Pz);
-    DYTree->Branch("LHELepton_E", "vector<double>", &LHELepton_E);
-    DYTree->Branch("LHELepton_ID", "vector<int>", &LHELepton_ID);
-    DYTree->Branch("LHELepton_status", "vector<int>", &LHELepton_status);
-*/
     DYTree->Branch("PDFWeights", "vector<double>", &PDFWeights);
   }
   
@@ -2240,28 +2236,25 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
       // Double_t M = lheParticles[idxParticle][4];    
       Int_t status = lheEvent.ISTUP[idxParticle];
       
-      LHELepton_ID.push_back( id );
-      LHELepton_status.push_back( status );
-      LHELepton_Px.push_back( Px );
-      LHELepton_Py.push_back( Py );
-      LHELepton_Pz.push_back( Pz );
-      LHELepton_E.push_back( E );
-      
     }
   }
 */
+
   // -- PDf weights for theoretical uncertainties: scale, PDF replica and alphaS variation -- //
   // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW -- //
   double OriginalWeight = LHEInfo->originalXWGTUP();
   //std::cout << "OriginalWeight: " << OriginalWeight << endl;
   int nWeight = (int)LHEInfo->weights().size();
   //std::cout << "nWeight: " << nWeight << endl;
-  
-  for(int i=0; i<nWeight; i++){
+
+  MaxNPDF_ = max(MaxNPDF_,nWeight);
+
+  for(int i=0; i<MaxNPDF_; i++){
     double weight = LHEInfo->weights()[i].wgt;
     double ratio = weight / OriginalWeight;
+
     PDFWeights.push_back( ratio );
-      
+
     //std::cout << i << "th weight = " << weight << "(ID=" << LHEInfo->weights()[i].id <<"), ratio w.r.t. original: " << ratio << endl;
   }
 }
@@ -2518,6 +2511,8 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //jet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
     jet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
     jet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
+    jet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
+    jet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
 
     jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
@@ -2525,6 +2520,32 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
     jet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
     jet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
+
+    //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
+    double NHF  = jets_iter->neutralHadronEnergyFraction();
+    double NEMF = jets_iter->neutralEmEnergyFraction();
+    double CHF  = jets_iter->chargedHadronEnergyFraction();
+    double MUF  = jets_iter->muonEnergyFraction();
+    double CEMF = jets_iter->chargedEmEnergyFraction();
+    double NumConst = jets_iter->chargedMultiplicity()+jets_iter->neutralMultiplicity();
+    double NumNeutralParticles =jets_iter->neutralMultiplicity();
+    double CHM      = jets_iter->chargedMultiplicity();
+    double eta = jets_iter->eta();
+
+    bool tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
+    bool tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+    if(fabs(eta)>3.0){
+      tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10) && fabs(eta)>3.0;
+      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+    }
+    else if(fabs(eta)>2.7){
+      tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2) && abs(eta)>2.7 && abs(eta)<=3.0;
+      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+    }
+
+    //jet_looseJetID.push_back(); // TODO in 2017, Loose is removed. Maybe we can remove this variable later when POG ID is finalized
+    jet_tightJetID.push_back(tightJetID);
+    jet_tightLepVetoJetID.push_back(tightLepVetoJetID);
 
     int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
     jet_partonPdgId.push_back( partonPdgId );
@@ -2586,6 +2607,7 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 
     if(jets_iter->pt()<170.) continue;
 
+    //==== https://hypernews.cern.ch/HyperNews/CMS/get/jet-algorithms/443/2.html
     fatjet_pt.push_back( jets_iter->pt() );
     fatjet_eta.push_back( jets_iter->eta() );
     fatjet_phi.push_back( jets_iter->phi() );
@@ -2600,6 +2622,8 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     //fatjet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
     fatjet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
     fatjet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
+    fatjet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
+    fatjet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
 
     fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
@@ -2607,6 +2631,33 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
     fatjet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
     fatjet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
+
+    //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
+    //==== TODO now, only AK4 ID are provided.. But I just put AK4 jet requirements here
+    double NHF  = jets_iter->neutralHadronEnergyFraction();
+    double NEMF = jets_iter->neutralEmEnergyFraction();
+    double CHF  = jets_iter->chargedHadronEnergyFraction();
+    double MUF  = jets_iter->muonEnergyFraction();
+    double CEMF = jets_iter->chargedEmEnergyFraction();
+    double NumConst = jets_iter->chargedMultiplicity()+jets_iter->neutralMultiplicity();
+    double NumNeutralParticles =jets_iter->neutralMultiplicity();
+    double CHM      = jets_iter->chargedMultiplicity();
+    double eta = jets_iter->eta();
+
+    bool tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
+    bool tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+    if(fabs(eta)>3.0){
+      tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10) && fabs(eta)>3.0;
+      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+    }
+    else if(fabs(eta)>2.7){
+      tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2) && abs(eta)>2.7 && abs(eta)<=3.0;
+      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+    }
+
+    //fatjet_looseJetID.push_back(); // TODO in 2017, Loose is removed. Maybe we can remove this variable later when POG ID is finalized
+    fatjet_tightJetID.push_back(tightJetID);
+    fatjet_tightLepVetoJetID.push_back(tightLepVetoJetID);
 
     int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
     fatjet_partonPdgId.push_back( partonPdgId );
@@ -2709,6 +2760,7 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
         std::cout << "[SKFlatMaker::endRun,lines] " << lines.at(iLine);
     }
       cout << "[SKFlatMaker::endRun] ##### End of information about PDF weights #####" << endl;
+      cout << "[SKFlatMaker::endRun] MaxNPDF_ = " <<  MaxNPDF_ << endl;
   }
 }
 
