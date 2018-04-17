@@ -2537,6 +2537,32 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
     jet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
 
+    //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
+    double NHF  = jets_iter->neutralHadronEnergyFraction();
+    double NEMF = jets_iter->neutralEmEnergyFraction();
+    double CHF  = jets_iter->chargedHadronEnergyFraction();
+    double MUF  = jets_iter->muonEnergyFraction();
+    double CEMF = jets_iter->chargedEmEnergyFraction();
+    double NumConst = jets_iter->chargedMultiplicity()+jets_iter->neutralMultiplicity();
+    double NumNeutralParticles =jets_iter->neutralMultiplicity();
+    double CHM      = jets_iter->chargedMultiplicity();
+    double eta = jets_iter->eta();
+
+    bool tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
+    bool tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+    if(fabs(eta)>3.0){
+      tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10) && fabs(eta)>3.0;
+      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+    }
+    else if(fabs(eta)>2.7){
+      tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2) && abs(eta)>2.7 && abs(eta)<=3.0;
+      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+    }
+
+    //jet_looseJetID.push_back(); // TODO in 2017, Loose is removed. Maybe we can remove this variable later when POG ID is finalized
+    jet_tightJetID.push_back(tightJetID);
+    jet_tightLepVetoJetID.push_back(tightLepVetoJetID);
+
     int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
     jet_partonPdgId.push_back( partonPdgId );
 
@@ -2621,6 +2647,33 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
     fatjet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
     fatjet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
+
+    //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
+    //==== TODO now, only AK4 ID are provided.. But I just put AK4 jet requirements here
+    double NHF  = jets_iter->neutralHadronEnergyFraction();
+    double NEMF = jets_iter->neutralEmEnergyFraction();
+    double CHF  = jets_iter->chargedHadronEnergyFraction();
+    double MUF  = jets_iter->muonEnergyFraction();
+    double CEMF = jets_iter->chargedEmEnergyFraction();
+    double NumConst = jets_iter->chargedMultiplicity()+jets_iter->neutralMultiplicity();
+    double NumNeutralParticles =jets_iter->neutralMultiplicity();
+    double CHM      = jets_iter->chargedMultiplicity();
+    double eta = jets_iter->eta();
+
+    bool tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
+    bool tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+    if(fabs(eta)>3.0){
+      tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10) && fabs(eta)>3.0;
+      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+    }
+    else if(fabs(eta)>2.7){
+      tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2) && abs(eta)>2.7 && abs(eta)<=3.0;
+      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+    }
+
+    //fatjet_looseJetID.push_back(); // TODO in 2017, Loose is removed. Maybe we can remove this variable later when POG ID is finalized
+    fatjet_tightJetID.push_back(tightJetID);
+    fatjet_tightLepVetoJetID.push_back(tightLepVetoJetID);
 
     int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
     fatjet_partonPdgId.push_back( partonPdgId );
