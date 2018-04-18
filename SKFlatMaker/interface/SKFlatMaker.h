@@ -263,7 +263,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStorePhotonFlag;
   bool theStoreTTFlag;
   bool theKeepAllGen;
-  bool isMC;  //turn gen on and off
+  bool IsData;
+  bool DoPileUp;
   
   // double theCrossSection;
   // double theFilterEfficiency;

@@ -70,7 +70,6 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
 {
   nEvt = 0;
   
-  isMC                              = iConfig.getUntrackedParameter<bool>("isMC");
   processName                       = iConfig.getUntrackedParameter<string>("processName", "HLT");
   theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
   
@@ -102,8 +101,8 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   PDFIDShift_ = iConfig.getParameter<int>("PDFIDShift");
 
   // -- Filters -- //
-  
-  // if( isMC )
+  DoPileUp = iConfig.getUntrackedParameter<bool>("DoPileUp");
+  // if( DoPileUp )
   // {
   //   PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
   //   PileUpRDMuonPhys_ = iConfig.getParameter< std::vector<double> >("PileUpRDMuonPhys");
@@ -604,7 +603,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   runNum = iEvent.id().run();
   evtNum = iEvent.id().event();
   lumiBlock = iEvent.id().luminosityBlock();
-  const bool isRD = iEvent.isRealData();
   
   // edm::Handle<double> weight_;
   // iEvent.getByLabel("PUweight", weight_);
@@ -619,7 +617,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   iSetup.get<GlobalTrackingGeometryRecord>().get(glbTrackingGeometry);
   
   // -- PileUp Reweighting -- //
-  if( isMC ){
+  IsData = iEvent.isRealData();
+  if( !IsData && DoPileUp ){
     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
     iEvent.getByToken(PileUpInfoToken, PupInfo);
     std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -678,11 +677,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if( theStoreMETFlag ) fillMET(iEvent);
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreLHEFlag" << endl;
-  //if( !isRD && theStoreLHEFlag ) fillLHEInfo(iEvent);
+  //if( !IsData && theStoreLHEFlag ) fillLHEInfo(iEvent);
   if(theStoreLHEFlag ) fillLHEInfo(iEvent);
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreGENFlag" << endl;
-  //if( !isRD && theStoreGENFlag ) fillGENInfo(iEvent);
+  //if( !IsData && theStoreGENFlag ) fillGENInfo(iEvent);
   if(theStoreGENFlag ) fillGENInfo(iEvent);
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePhotonFlag" << endl;
@@ -708,7 +707,7 @@ void SKFlatMaker::beginJob()
 {
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginJob] called" << endl;
-  // if( isMC )
+  // if( DoPileUp )
   // {
   // // Pileup Reweight: 2012, Summer12_S10
   // std::vector< float > _PUreweightRun2012 ;
@@ -735,6 +734,7 @@ void SKFlatMaker::beginJob()
   DYTree = fs->make<TTree>("SKFlat","SKFlat");
 
   // -- global event variables -- //
+  DYTree->Branch("IsData",&IsData,"IsData/O");
   DYTree->Branch("nTotal",&nEvt,"nTotal/I");
   DYTree->Branch("run",&runNum,"runNum/I");
   DYTree->Branch("event",&evtNum,"evtNum/l");
@@ -1417,8 +1417,7 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
 
   } // -- end of if( !trigResult.failedToGet() ) -- //
   
-  const bool isRD = iEvent.isRealData();
-  if( isRD ){
+  if( IsData ){
     Handle<TriggerResults> trigResultPAT;
     iEvent.getByToken(TriggerTokenPAT, trigResultPAT);
       
@@ -1534,7 +1533,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
 
 /*
   edm::Handle<reco::GenParticleCollection> genParticles;
-  if(isMC){
+  if(!IsData){
     iEvent.getByToken(mcLabel_,genParticles);
   }
 */
@@ -1847,7 +1846,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     double this_roccor = 1.;
     double this_roccor_err = 0.;
     //==== Data
-    if(!isMC){
+    if(IsData){
       this_roccor = rc.kScaleDT(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), 0, 0); //data
       this_roccor_err = rc.kScaleDTerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi());
     }
@@ -2666,7 +2665,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //cout << "jec unc methodB = " << unc_methodB << endl << endl;
 
 
-    if(isMC){
+    if(!IsData){
 
     }
 

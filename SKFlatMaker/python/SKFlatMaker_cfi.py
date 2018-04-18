@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
-  isMC = cms.untracked.bool(True),
+  DoPileUp = cms.untracked.bool(False),
   processName = cms.untracked.string("HLT"),
   DebugLevel = cms.untracked.int32(0),
 
