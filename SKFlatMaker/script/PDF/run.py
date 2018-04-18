@@ -3,6 +3,8 @@ import os
 lines = open('samplelist.txt').readlines()
 pdfidshifts = open('PDFIDShift.txt').readlines()
 
+hostname = os.environ['HOSTNAME']
+
 for line in lines:
 
   if "#" in line:
@@ -26,7 +28,8 @@ for line in lines:
 
   filepath = filepaths[0].replace('/xrootd','').strip('\n')
 
-  filepath = 'root://cms-xrd-global.cern.ch/'+filepath
+  if 'lxplus' not in hostname:
+    filepath = 'root://cms-xrd-global.cern.ch/'+filepath
 
   cmd = 'cmsRun RunSKFlatMaker.py '+filepath
 
@@ -37,6 +40,6 @@ for line in lines:
 
   final_cmd = cmd+' > logs/'+sample+'.log'
   print final_cmd
-  #os.system(final_cmd)
+  os.system(final_cmd)
 
 os.system('rm tmp.txt')
