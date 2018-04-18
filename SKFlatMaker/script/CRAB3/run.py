@@ -1,6 +1,8 @@
 import os
 
-txtfilename = 'samplelist_MC.txt'
+#txtfilename = 'samplelist_MC.txt'
+txtfilename = 'samplelist_DATA.txt'
+
 lines = open(txtfilename).readlines()
 pdfidshifts = open('PDFInfo.txt').readlines()
 
@@ -10,7 +12,7 @@ if ("DATA" in txtfilename) or ("Data" in txtfilename) or ("data" in txtfilename)
 if ("Private" in txtfilename) or ("private" in txtfilename):
   isData = "PrivateMC"
 
-os.system('cp RunSKFlatMaker.py crab_submission_'+isData+'/')
+os.system('cp RunSKFlatMaker.py crab_submission_'+isData)
 
 hostname = os.environ['HOSTNAME']
 
@@ -29,8 +31,8 @@ for line in lines:
 
   # DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8 0 LO  madgraph0
   # DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8  0 NLO madgraph1000
-  pdfshift = ""
-  order = ""
+  pdfshift = "0"
+  order = "NLO"
   gentype = ""
 
   if "MC" in isData:
