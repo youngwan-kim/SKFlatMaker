@@ -96,7 +96,6 @@ from SKFlatMaker.SKFlatMaker.SKFlatMaker_cfi import *
 from SKFlatMaker.SKFlatMaker.PUreweight2012_cff import *
 
 process.recoTree = SKFlatMaker.clone()
-process.recoTree.isMC = isMC
 process.recoTree.DebugLevel = cms.untracked.int32(1)
 process.recoTree.StoreHLTObjectFlag = False ##FIXME
 

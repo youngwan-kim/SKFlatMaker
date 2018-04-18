@@ -2273,13 +2273,16 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   w_def = 1.; // FIXME we want reweight w.r.t w_def, so we can set it as 1
   double w_nominal(1.);
   if(PDFOrder_=="NLO"){
+    //==== NNPDF31_nlo_hessian_pdfas, LHAPDF = 305800
     if(gen_type==0) w_nominal = map_id_to_weight[3000]*w_def/map_id_to_weight[1001];
     else if(gen_type==1) w_nominal = map_id_to_weight[121]*w_def/map_id_to_weight[1];
     else if(gen_type==2) w_nominal = map_id_to_weight[1121]*w_def/map_id_to_weight[1001];
     else w_nominal = 1.;
   }
+  //==== FIXME
   else{
     //==== Assuming LO
+    //==== NNPDF31_lo_as_0130, LHAPDF = 315200
     if(gen_type==0) w_nominal = map_id_to_weight[1850]*w_def/map_id_to_weight[1001];
     else if(gen_type==1) w_nominal = map_id_to_weight[1078]*w_def/map_id_to_weight[1];
     else if(gen_type==2) w_nominal = map_id_to_weight[2078]*w_def/map_id_to_weight[1001];
