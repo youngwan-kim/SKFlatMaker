@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
-  isMC = cms.untracked.bool(True),
+  DoPileUp = cms.untracked.bool(False),
   processName = cms.untracked.string("HLT"),
   DebugLevel = cms.untracked.int32(0),
 
@@ -80,6 +80,8 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   FilterType = cms.untracked.int32(0),
 
   #### PDF ID's to be save
-  MaxNPDF = cms.int32(112),
+  PDFOrder = cms.string("NLO"),
+  PDFIDShift = cms.int32(0),
+  PDFType = cms.string(""),
 
 )

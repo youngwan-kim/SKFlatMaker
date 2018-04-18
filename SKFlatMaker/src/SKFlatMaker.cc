@@ -70,7 +70,6 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
 {
   nEvt = 0;
   
-  isMC                              = iConfig.getUntrackedParameter<bool>("isMC");
   processName                       = iConfig.getUntrackedParameter<string>("processName", "HLT");
   theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
   
@@ -98,11 +97,20 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
 
   rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
 
-  MaxNPDF_ = iConfig.getParameter<int>("MaxNPDF");
+  PDFOrder_ = iConfig.getParameter<string>("PDFOrder");
+  PDFIDShift_ = iConfig.getParameter<int>("PDFIDShift");
+  PDFType_ = iConfig.getParameter<string>("PDFType");
+
+  if(PDFType_=="powheg") int_PDFType_=0;
+  else if(PDFType_=="madgraph0") int_PDFType_=1;
+  else if(PDFType_=="madgraph1000") int_PDFType_=2;
+  else{
+    int_PDFType_=-1;
+  }
 
   // -- Filters -- //
-  
-  // if( isMC )
+  DoPileUp = iConfig.getUntrackedParameter<bool>("DoPileUp");
+  // if( DoPileUp )
   // {
   //   PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
   //   PileUpRDMuonPhys_ = iConfig.getParameter< std::vector<double> >("PileUpRDMuonPhys");
@@ -212,7 +220,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   //==== LHE
 
-  PDFWeights.clear();
+  PDFWeights_Scale.clear();
+  PDFWeights_Error.clear();
+  PDFWeights_AlphaS.clear();
 
   //==== GEN
 
@@ -601,7 +611,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   runNum = iEvent.id().run();
   evtNum = iEvent.id().event();
   lumiBlock = iEvent.id().luminosityBlock();
-  const bool isRD = iEvent.isRealData();
   
   // edm::Handle<double> weight_;
   // iEvent.getByLabel("PUweight", weight_);
@@ -616,7 +625,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   iSetup.get<GlobalTrackingGeometryRecord>().get(glbTrackingGeometry);
   
   // -- PileUp Reweighting -- //
-  if( isMC ){
+  IsData = iEvent.isRealData();
+  if( !IsData && DoPileUp ){
     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
     iEvent.getByToken(PileUpInfoToken, PupInfo);
     std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -675,11 +685,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if( theStoreMETFlag ) fillMET(iEvent);
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreLHEFlag" << endl;
-  //if( !isRD && theStoreLHEFlag ) fillLHEInfo(iEvent);
+  //if( !IsData && theStoreLHEFlag ) fillLHEInfo(iEvent);
   if(theStoreLHEFlag ) fillLHEInfo(iEvent);
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreGENFlag" << endl;
-  //if( !isRD && theStoreGENFlag ) fillGENInfo(iEvent);
+  //if( !IsData && theStoreGENFlag ) fillGENInfo(iEvent);
   if(theStoreGENFlag ) fillGENInfo(iEvent);
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePhotonFlag" << endl;
@@ -705,7 +715,7 @@ void SKFlatMaker::beginJob()
 {
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginJob] called" << endl;
-  // if( isMC )
+  // if( DoPileUp )
   // {
   // // Pileup Reweight: 2012, Summer12_S10
   // std::vector< float > _PUreweightRun2012 ;
@@ -732,6 +742,7 @@ void SKFlatMaker::beginJob()
   DYTree = fs->make<TTree>("SKFlat","SKFlat");
 
   // -- global event variables -- //
+  DYTree->Branch("IsData",&IsData,"IsData/O");
   DYTree->Branch("nTotal",&nEvt,"nTotal/I");
   DYTree->Branch("run",&runNum,"runNum/I");
   DYTree->Branch("event",&evtNum,"evtNum/l");
@@ -1108,7 +1119,9 @@ void SKFlatMaker::beginJob()
   
   // -- LHE info -- //
   if( theStoreLHEFlag ){
-    DYTree->Branch("PDFWeights", "vector<double>", &PDFWeights);
+    DYTree->Branch("PDFWeights_Scale", "vector<double>", &PDFWeights_Scale);
+    DYTree->Branch("PDFWeights_Error", "vector<double>", &PDFWeights_Error);
+    DYTree->Branch("PDFWeights_AlphaS", "vector<double>", &PDFWeights_AlphaS);
   }
   
   // GEN info
@@ -1412,8 +1425,7 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
 
   } // -- end of if( !trigResult.failedToGet() ) -- //
   
-  const bool isRD = iEvent.isRealData();
-  if( isRD ){
+  if( IsData ){
     Handle<TriggerResults> trigResultPAT;
     iEvent.getByToken(TriggerTokenPAT, trigResultPAT);
       
@@ -1529,7 +1541,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
 
 /*
   edm::Handle<reco::GenParticleCollection> genParticles;
-  if(isMC){
+  if(!IsData){
     iEvent.getByToken(mcLabel_,genParticles);
   }
 */
@@ -1842,7 +1854,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     double this_roccor = 1.;
     double this_roccor_err = 0.;
     //==== Data
-    if(!isMC){
+    if(IsData){
       this_roccor = rc.kScaleDT(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), 0, 0); //data
       this_roccor_err = rc.kScaleDTerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi());
     }
@@ -2242,21 +2254,124 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 
   // -- PDf weights for theoretical uncertainties: scale, PDF replica and alphaS variation -- //
   // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW -- //
-  double OriginalWeight = LHEInfo->originalXWGTUP();
-  //std::cout << "OriginalWeight: " << OriginalWeight << endl;
   int nWeight = (int)LHEInfo->weights().size();
-  //std::cout << "nWeight: " << nWeight << endl;
 
-  MaxNPDF_ = max(MaxNPDF_,nWeight);
+  //==== https://indico.cern.ch/event/690726/contributions/2890915/attachments/1598277/2532794/2017_MC.pdf
+  //==== Check which convention
 
-  for(int i=0; i<MaxNPDF_; i++){
+  //==== if PDFType_ was wrong (i.e., int_PDFType_=-1), we find the type
+  //==== if not, it was found in the constructor
+  //==== find int_PDFType_ from the first event
+  if(int_PDFType_<0){
+
+    int_PDFType_ = 0; // powheg (RED)
+    for(int i=0; i<nWeight; i++){
+      if( stoi(LHEInfo->weights()[i].id.c_str())==1 ){
+        int_PDFType_ = 1; // madgraph0 (BLUE)
+        break;
+      }
+      if( stoi(LHEInfo->weights()[i].id.c_str())==1010 ){
+        int_PDFType_ = 2; // madgraph1000 (GREEN)
+        break;
+      }
+    }
+
+  }
+
+  //==== Save id-weight as a map
+  map<int,double> map_id_to_weight;
+  for(int i=0; i<nWeight; i++){
+    int this_id = stoi(LHEInfo->weights()[i].id.c_str())+PDFIDShift_;
+    map_id_to_weight[this_id] = LHEInfo->weights()[i].wgt;
+    if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight["<<this_id<<"] = " << map_id_to_weight[this_id] << endl;
+  }
+
+  //==== Get Nominal
+  double w_def = LHEInfo->originalXWGTUP(); // w_def is not always same as map_id_to_weight[DEFAULT_ID]; if POWHEG+JHUGen, BR(m4l) is applied to default w_def, but not in map_id_to_weight[DEFAULT_ID]
+  w_def = 1.; // FIXME we want reweight w.r.t w_def, so we can set it as 1
+  double w_nominal(1.);
+  if(PDFOrder_=="NLO"){
+    //==== NNPDF31_nlo_hessian_pdfas, LHAPDF = 305800
+    if(int_PDFType_==0) w_nominal = map_id_to_weight[3000]*w_def/map_id_to_weight[1001];
+    else if(int_PDFType_==1) w_nominal = map_id_to_weight[121]*w_def/map_id_to_weight[1];
+    else if(int_PDFType_==2) w_nominal = map_id_to_weight[1121]*w_def/map_id_to_weight[1001];
+    else w_nominal = 1.;
+  }
+  //==== FIXME
+  else{
+    //==== Assuming LO
+    //==== NNPDF31_lo_as_0130, LHAPDF = 315200
+    if(int_PDFType_==0) w_nominal = map_id_to_weight[1850]*w_def/map_id_to_weight[1001];
+    else if(int_PDFType_==1) w_nominal = map_id_to_weight[1078]*w_def/map_id_to_weight[1];
+    else if(int_PDFType_==2) w_nominal = map_id_to_weight[2078]*w_def/map_id_to_weight[1001];
+    else w_nominal = 1.;
+  }
+
+  //==== QCD Scale variation
+  //==== PDFWeights_Scale.at(0) should be applied as nominal reweighting
+  if(int_PDFType_==1){
+    for(int i=0;i<9;i++){
+      PDFWeights_Scale.push_back( w_nominal*map_id_to_weight[1+i]/map_id_to_weight[1] );
+    }
+  }
+  else{
+    for(int i=0;i<9;i++){
+      PDFWeights_Scale.push_back( w_nominal*map_id_to_weight[1001+i]/map_id_to_weight[1001] );
+    }
+  }
+
+  if(PDFOrder_=="NLO"){
+
+    //==== PDF Error (Hessian)
+
+    int index_b = 3000;
+    if(int_PDFType_==1) index_b = 121;
+    if(int_PDFType_==2) index_b = 1121;
+
+    double temp_Error(0.);
+    for(int i=1;i<=100;i++){
+      double this_diff = map_id_to_weight[index_b+i]-map_id_to_weight[index_b];
+      temp_Error += this_diff*this_diff;
+    }
+    double this_hessian_up = w_nominal*(1.+sqrt(temp_Error)/map_id_to_weight[index_b]);
+    double this_hessian_dn = w_nominal*(1.-sqrt(temp_Error)/map_id_to_weight[index_b]);
+    PDFWeights_Error.push_back(this_hessian_up);
+    PDFWeights_Error.push_back(this_hessian_dn);
+
+    //==== AlphaS
+
+    double this_as_up = w_nominal*(map_id_to_weight[index_b+101]-map_id_to_weight[index_b])/map_id_to_weight[index_b]*0.75;
+    double this_as_dn = w_nominal*(map_id_to_weight[index_b+102]-map_id_to_weight[index_b])/map_id_to_weight[index_b]*0.75;
+    PDFWeights_AlphaS.push_back(1.+this_as_up);
+    PDFWeights_AlphaS.push_back(1.-this_as_dn);
+
+  }
+
+  if(theDebugLevel){
+    cout << "[SKFlatMaker::fillLHEInfo] PDFType_ = " << PDFType_ << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] int_PDFType_ = " << int_PDFType_ << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] PDFOrder_ = " << PDFOrder_ << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] LHEInfo->originalXWGTUP() = " << LHEInfo->originalXWGTUP() << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] PDFIDShift_ = " << PDFIDShift_ << " : how much the weight id is shifted " << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] [PDFWeights_Scale]" << endl;
+    for(unsigned int i=0;i<PDFWeights_Scale.size();i++) cout << "[SKFlatMaker::fillLHEInfo] " << PDFWeights_Scale.at(i) << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] [PDFWeights_Error]" << endl;
+    for(unsigned int i=0;i<PDFWeights_Error.size();i++) cout << "[SKFlatMaker::fillLHEInfo] " << PDFWeights_Error.at(i) << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] [PDFWeights_AlphaS]" << endl;
+    for(unsigned int i=0;i<PDFWeights_AlphaS.size();i++) cout << "[SKFlatMaker::fillLHEInfo] " << PDFWeights_AlphaS.at(i) << endl;
+  }
+
+
+/*
+  for(int i=0; i<nWeight; i++){
     double weight = LHEInfo->weights()[i].wgt;
-    double ratio = weight / OriginalWeight;
+    double ratio = weight / w_def;
 
     PDFWeights.push_back( ratio );
 
     //std::cout << i << "th weight = " << weight << "(ID=" << LHEInfo->weights()[i].id <<"), ratio w.r.t. original: " << ratio << endl;
   }
+*/
 }
 
 ////////////////////////
@@ -2572,7 +2687,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //cout << "jec unc methodB = " << unc_methodB << endl << endl;
 
 
-    if(isMC){
+    if(!IsData){
 
     }
 
@@ -2742,26 +2857,26 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
 {
   if(theDebugLevel) cout << "[SKFlatMaker::endRun] called" << endl;
 
-
   // -- only when LHE information is available (ex> aMC@NLO, Powheg) case. Samples generated by pythia8 doesn't work! -- //
   if( this->theStoreLHEFlag ){
     // -- LHE information -- //
     // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW#Retrieving_the_weights -- //
     edm::Handle<LHERunInfoProduct> LHERunInfo;
     iRun.getByToken(LHERunInfoProductToken, LHERunInfo);
-    
+
     cout << "[SKFlatMaker::endRun] ##### Information about PDF weights #####" << endl;
     LHERunInfoProduct myLHERunInfoProduct = *(LHERunInfo.product());
     typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
-    for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++){
+    for(headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++){
       std::cout << "[SKFlatMaker::endRun,tag] " << iter->tag() << std::endl;
       std::vector<std::string> lines = iter->lines();
-      for (unsigned int iLine = 0; iLine<lines.size(); iLine++)
+      for (unsigned int iLine = 0; iLine<lines.size(); iLine++){
         std::cout << "[SKFlatMaker::endRun,lines] " << lines.at(iLine);
+      }
     }
-      cout << "[SKFlatMaker::endRun] ##### End of information about PDF weights #####" << endl;
-      cout << "[SKFlatMaker::endRun] MaxNPDF_ = " <<  MaxNPDF_ << endl;
+    cout << "[SKFlatMaker::endRun] ##### End of information about PDF weights #####" << endl;
   }
+
 }
 
 //define this as a plug-in
