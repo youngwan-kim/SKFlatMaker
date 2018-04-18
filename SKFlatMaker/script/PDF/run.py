@@ -36,7 +36,11 @@ for line in lines:
   for shiftsamples in pdfidshifts:
     words = shiftsamples.split()
     if words[0]==sample:
-      cmd = cmd+' '+words[1]
+      this_shift = words[1]
+      if "?" in this_shift:
+        this_shift = "0"
+      cmd = cmd+' '+this_shift
+      break
 
   final_cmd = cmd+' > logs/'+sample+'.log'
   print final_cmd

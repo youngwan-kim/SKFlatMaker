@@ -315,6 +315,8 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   string PDFOrder_;
   int PDFIDShift_;
+  string PDFType_;
+  int int_PDFType_;
 
   TTree *DYTree;
   
