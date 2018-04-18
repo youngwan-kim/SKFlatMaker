@@ -1,7 +1,7 @@
 import os
 
-#txtfilename = 'samplelist_MC.txt'
-txtfilename = 'samplelist_DATA.txt'
+txtfilename = 'samplelist_MC.txt'
+#txtfilename = 'samplelist_DATA.txt'
 
 lines = open(txtfilename).readlines()
 pdfidshifts = open('PDFInfo.txt').readlines()
@@ -12,6 +12,7 @@ if ("DATA" in txtfilename) or ("Data" in txtfilename) or ("data" in txtfilename)
 if ("Private" in txtfilename) or ("private" in txtfilename):
   isData = "PrivateMC"
 
+os.system('mkdir crab_submission_'+isData)
 os.system('cp RunSKFlatMaker.py crab_submission_'+isData)
 
 hostname = os.environ['HOSTNAME']
@@ -51,7 +52,7 @@ for line in lines:
   #os.system('mkdir -p crab_submission_'+isData+'/'+sample+'/')
   #outname = 'crab_submission_'+isData+'/'+sample+'/'+confs+'.py'
 
-  os.system('mkdir -p crab_submission_'+isData+'/')
+  #os.system('mkdir -p crab_submission_'+isData+'/')
   outname = 'crab_submission_'+isData+'/SubmitCrab__'+sample+'__'+confs+'.py'
   out = open(outname,'w')
 
