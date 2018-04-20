@@ -2720,7 +2720,7 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     //==== FatJet with pt 30~170 GeV are only for SM jet analysis
     //==== We can apply pt cut here
 
-    if(jets_iter->pt()<170.) continue;
+    if(jets_iter->pt()<=170.) continue;
 
     //==== https://hypernews.cern.ch/HyperNews/CMS/get/jet-algorithms/443/2.html
     fatjet_pt.push_back( jets_iter->pt() );
