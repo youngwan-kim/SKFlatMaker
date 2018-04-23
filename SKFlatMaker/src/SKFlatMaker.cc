@@ -426,6 +426,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_phi.clear();
   muon_eta.clear();
   muon_pt.clear();
+  muon_mass.clear();
   muon_cktpt.clear();
   muon_cktPx.clear();
   muon_cktPy.clear();
@@ -1033,6 +1034,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
     DYTree->Branch("muon_pt", "vector<double>", &muon_pt);
+    DYTree->Branch("muon_mass", "vector<double>", &muon_mass);
     DYTree->Branch("muon_cktpt", "vector<double>", &muon_cktpt);
     DYTree->Branch("muon_cktPx", "vector<double>", &muon_cktPx);
     DYTree->Branch("muon_cktPy", "vector<double>", &muon_cktPy);
@@ -1713,6 +1715,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     // muon_cktpTError.push_back( cktTrack->ptError() );
     
     muon_pt.push_back( imuon.pt() );
+    muon_pt.push_back( imuon.mass() );
     muon_Px.push_back( imuon.px() );
     muon_Py.push_back( imuon.py() );
     muon_Pz.push_back( imuon.pz() );

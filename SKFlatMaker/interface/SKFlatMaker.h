@@ -618,6 +618,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_phi;
   vector<double> muon_eta;
   vector<double> muon_pt;
+  vector<double> muon_mass;
   vector<double> muon_cktpt;
   vector<double> muon_cktPx;
   vector<double> muon_cktPy;
