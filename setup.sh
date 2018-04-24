@@ -1,2 +1,2 @@
 #!/bin/bash
-SKFlatTag=v9-4-4.2
+export SKFlatTag=v944_2
