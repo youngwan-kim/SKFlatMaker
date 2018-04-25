@@ -1715,7 +1715,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     // muon_cktpTError.push_back( cktTrack->ptError() );
     
     muon_pt.push_back( imuon.pt() );
-    muon_pt.push_back( imuon.mass() );
+    muon_mass.push_back( imuon.mass() );
     muon_Px.push_back( imuon.px() );
     muon_Py.push_back( imuon.py() );
     muon_Pz.push_back( imuon.pz() );
@@ -2233,7 +2233,7 @@ dummy = Vertex(p, e, 0, 0, 0);
 void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 {
   Handle<LHEEventProduct> LHEInfo;
-  iEvent.getByToken(LHEEventProductToken, LHEInfo);
+  if(!iEvent.getByToken(LHEEventProductToken, LHEInfo)) return;
   
 /*
   //==== FIXME do we want this?
@@ -2865,7 +2865,7 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
     // -- LHE information -- //
     // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW#Retrieving_the_weights -- //
     edm::Handle<LHERunInfoProduct> LHERunInfo;
-    iRun.getByToken(LHERunInfoProductToken, LHERunInfo);
+    if(iRun.getByToken(LHERunInfoProductToken, LHERunInfo)) return;
 
     cout << "[SKFlatMaker::endRun] ##### Information about PDF weights #####" << endl;
     LHERunInfoProduct myLHERunInfoProduct = *(LHERunInfo.product());
