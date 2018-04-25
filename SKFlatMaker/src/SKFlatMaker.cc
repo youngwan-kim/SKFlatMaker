@@ -2233,7 +2233,8 @@ dummy = Vertex(p, e, 0, 0, 0);
 void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 {
   Handle<LHEEventProduct> LHEInfo;
-  if(!iEvent.getByToken(LHEEventProductToken, LHEInfo)) return;
+  iEvent.getByToken(LHEEventProductToken, LHEInfo);
+  if(!LHEInfo.isValid()) return;
   
 /*
   //==== FIXME do we want this?
@@ -2865,7 +2866,8 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
     // -- LHE information -- //
     // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW#Retrieving_the_weights -- //
     edm::Handle<LHERunInfoProduct> LHERunInfo;
-    if(iRun.getByToken(LHERunInfoProductToken, LHERunInfo)) return;
+    iRun.getByToken(LHERunInfoProductToken, LHERunInfo);
+    if(!LHERunInfo.isValid()) return;
 
     cout << "[SKFlatMaker::endRun] ##### Information about PDF weights #####" << endl;
     LHERunInfoProduct myLHERunInfoProduct = *(LHERunInfo.product());

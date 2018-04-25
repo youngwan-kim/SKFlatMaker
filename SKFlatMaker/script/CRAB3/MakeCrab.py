@@ -1,7 +1,7 @@
 import os
 
-txtfilename = 'samplelist_MC.txt'
-#txtfilename = 'samplelist_DATA_DoubleMuon.txt'
+#txtfilename = 'samplelist_MC.txt'
+txtfilename = 'samplelist_DATA_DoubleMuon.txt'
 #txtfilename = 'samplelist_DATA_DoubleEG.txt'
 
 SKFlatTag = os.environ['SKFlatTag']
@@ -78,8 +78,21 @@ for line in lines:
       else:
         out.write("config.Data.unitsPerJob = 1\n")
     elif 'config.Data.outputDatasetTag' in sk_line:
-      out.write("config.Data.outputDatasetTag = 'SKFlat_"+SKFlatTag+"'\n")
-
+      if isData=="DATA":
+        period = ""
+        if "2017B" in confs:
+          period = "B"
+        elif "2017C" in confs:
+          period = "C"
+        elif "2017D" in confs:
+          period = "D"
+        elif "2017E" in confs:
+          period = "E"
+        elif "2017F" in confs:
+          period = "F"
+        out.write("config.Data.outputDatasetTag = 'SKFlat_"+SKFlatTag+"_period"+period+"'\n")
+      else:
+        out.write("config.Data.outputDatasetTag = 'SKFlat_"+SKFlatTag+"'\n")
     else:
       out.write(sk_line)
 
