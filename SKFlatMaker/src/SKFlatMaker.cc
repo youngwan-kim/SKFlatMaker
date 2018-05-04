@@ -426,6 +426,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_phi.clear();
   muon_eta.clear();
   muon_pt.clear();
+  muon_mass.clear();
   muon_cktpt.clear();
   muon_cktPx.clear();
   muon_cktPy.clear();
@@ -1033,6 +1034,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
     DYTree->Branch("muon_pt", "vector<double>", &muon_pt);
+    DYTree->Branch("muon_mass", "vector<double>", &muon_mass);
     DYTree->Branch("muon_cktpt", "vector<double>", &muon_cktpt);
     DYTree->Branch("muon_cktPx", "vector<double>", &muon_cktPx);
     DYTree->Branch("muon_cktPy", "vector<double>", &muon_cktPy);
@@ -1713,6 +1715,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     // muon_cktpTError.push_back( cktTrack->ptError() );
     
     muon_pt.push_back( imuon.pt() );
+    muon_mass.push_back( imuon.mass() );
     muon_Px.push_back( imuon.px() );
     muon_Py.push_back( imuon.py() );
     muon_Pz.push_back( imuon.pz() );
@@ -2231,6 +2234,7 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 {
   Handle<LHEEventProduct> LHEInfo;
   iEvent.getByToken(LHEEventProductToken, LHEInfo);
+  if(!LHEInfo.isValid()) return;
   
 /*
   //==== FIXME do we want this?
@@ -2720,7 +2724,7 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     //==== FatJet with pt 30~170 GeV are only for SM jet analysis
     //==== We can apply pt cut here
 
-    if(jets_iter->pt()<170.) continue;
+    if(jets_iter->pt()<=170.) continue;
 
     //==== https://hypernews.cern.ch/HyperNews/CMS/get/jet-algorithms/443/2.html
     fatjet_pt.push_back( jets_iter->pt() );
@@ -2863,6 +2867,7 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
     // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW#Retrieving_the_weights -- //
     edm::Handle<LHERunInfoProduct> LHERunInfo;
     iRun.getByToken(LHERunInfoProductToken, LHERunInfo);
+    if(!LHERunInfo.isValid()) return;
 
     cout << "[SKFlatMaker::endRun] ##### Information about PDF weights #####" << endl;
     LHERunInfoProduct myLHERunInfoProduct = *(LHERunInfo.product());

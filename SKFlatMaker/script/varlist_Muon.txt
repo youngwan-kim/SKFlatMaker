@@ -22,6 +22,7 @@ double	muon_dB	1
 double	muon_phi	1
 double	muon_eta	1
 double	muon_pt	1
+double	muon_mass	1
 double	muon_cktpt	1
 double	muon_cktPx	1
 double	muon_cktPy	1
