@@ -137,6 +137,7 @@
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
 
 ////////////////
@@ -188,7 +189,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
   virtual void fillTT(const edm::Event&);
-  
+
   bool reorder(double &a, double &b)
   {
     return a > b;
@@ -213,7 +214,12 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< LHEEventProduct >               LHEEventProductToken;
   edm::EDGetTokenT< LHERunInfoProduct >             LHERunInfoProductToken;
   edm::EDGetTokenT< reco::GenParticleCollection>    mcLabel_;
-  
+
+  edm::EDGetTokenT<pat::PackedCandidateCollection> pcToken_;
+  std::vector<double> miniIsoParams_;
+  std::vector<double> miniIsoParamsE_;
+  std::vector<double> miniIsoParamsB_;
+
   edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_PAT;
   edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_RECO;
   
@@ -244,9 +250,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   // edm::InputTag phoChargedIsolationLabel; 
   // edm::InputTag phoNeutralHadronIsolationLabel; 
   // edm::InputTag phoPhotonIsolationLabel;     
-  edm::FileInPath effAreaChHadronsFile;
-  edm::FileInPath effAreaNeuHadronsFile;
-  edm::FileInPath effAreaPhotonsFile;  
+  edm::FileInPath electron_EA_NHandPh_file;
+  edm::FileInPath photon_EA_CH_file;
+  edm::FileInPath photon_EA_HN_file;
+  edm::FileInPath photon_EA_Ph_file;
   
     
   // -- Store flags -- // 

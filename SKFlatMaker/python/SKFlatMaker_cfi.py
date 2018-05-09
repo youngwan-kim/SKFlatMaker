@@ -19,20 +19,29 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   LHERunInfoProduct = cms.untracked.InputTag("externalLHEProducer"),
   GenParticle = cms.untracked.InputTag("genParticles"),
 
+  #### MiniIso
+  pfCandsForMiniIso = cms.untracked.InputTag("packedPFCandidates"),
+  ## Muon
+  miniIsoParams = cms.vdouble(0.05, 0.2, 10.0, 0.5, 0.0001, 0.01, 0.01, 0.01, 0.0),
+  ## Electron
+  miniIsoParamsE = cms.vdouble(0.05, 0.2, 10.0, 0.0, 0.015, 0.015, 0.08, 0.0, 0.0),
+  miniIsoParamsB = cms.vdouble(0.05, 0.2, 10.0, 0.0, 0.000, 0.000, 0.00, 0.0, 0.0),
+
   # -- electron information -- #
   rho = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
   mvaIsoValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV1Values"),
   mvaNoIsoValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17NoIsoV1Values"),
   conversionsInputTag = cms.untracked.InputTag("allConversions"),
   GsfTrack = cms.untracked.InputTag("electronGsfTracks"),
+  electron_EA_NHandPh_file = cms.untracked.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt"),
 
   #### Rochestor
   roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.2017.v0/RoccoR2017v0.txt'),
 
   # -- photon information -- #
-  effAreaChHadFile = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfChargedHadrons_90percentBased_TrueVtx.txt"),
-  effAreaNeuHadFile= cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased_TrueVtx.txt"),
-  effAreaPhoFile   = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/PHYS14/effAreaPhotons_cone03_pfPhotons_90percentBased_TrueVtx.txt"),
+  photon_EA_CH_file = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfChargedHadrons_90percentBased_TrueVtx.txt"),
+  photon_EA_HN_file = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased_TrueVtx.txt"),
+  photon_EA_Ph_file = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased_TrueVtx.txt"),
 
   # -- Jet information -- #
   BDiscriminant_tcheff = cms.untracked.double(0.7),

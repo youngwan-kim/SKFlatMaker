@@ -45,6 +45,7 @@ MetToken                            ( consumes< std::vector<pat::MET> >         
 LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
 LHERunInfoProductToken              ( consumes< LHERunInfoProduct,edm::InRun >              (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
 mcLabel_                            ( consumes< reco::GenParticleCollection>                (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
+pcToken_                            ( consumes< pat::PackedCandidateCollection >            (iConfig.getUntrackedParameter<edm::InputTag>("pfCandsForMiniIso"))   ),
 
 // -- MET Filter tokens -- //
 METFilterResultsToken_PAT           ( consumes<edm::TriggerResults>                         (iConfig.getParameter<edm::InputTag>("METFilterResults_PAT"))),
@@ -72,13 +73,18 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   
   processName                       = iConfig.getUntrackedParameter<string>("processName", "HLT");
   theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
-  
-  effAreaChHadronsFile              = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaChHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfChargedHadrons_90percentBased.txt") );
-  effAreaNeuHadronsFile             = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaNeuHadFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased.txt") );
-  effAreaPhotonsFile                = iConfig.getUntrackedParameter<edm::FileInPath>( "effAreaPhoFile", edm::FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased.txt") );
 
-  jet_payloadName_                  = iConfig.getParameter<std::string>("AK4Jet_payloadName"),
-  fatjet_payloadName_               = iConfig.getParameter<std::string>("AK8Jet_payloadName"),
+  electron_EA_NHandPh_file          = iConfig.getUntrackedParameter<edm::FileInPath>( "electron_EA_NHandPh_file" );
+  photon_EA_CH_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_CH_file" );
+  photon_EA_HN_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_HN_file" );
+  photon_EA_Ph_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_Ph_file" );
+
+  miniIsoParams_                    = iConfig.getParameter< std::vector<double> >("miniIsoParams");
+  miniIsoParamsE_                   = iConfig.getParameter< std::vector<double> >("miniIsoParamsE");
+  miniIsoParamsB_                   = iConfig.getParameter< std::vector<double> >("miniIsoParamsB");
+
+  jet_payloadName_                  = iConfig.getParameter<std::string>("AK4Jet_payloadName");
+  fatjet_payloadName_               = iConfig.getParameter<std::string>("AK8Jet_payloadName");
   
   // -- Store Flags -- //
   theStorePriVtxFlag                = iConfig.getUntrackedParameter<bool>("StorePriVtxFlag", true);
@@ -2017,7 +2023,10 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   // -- muon for emu vertex -- //
   edm::Handle< std::vector<pat::Muon> > muonHandle;
   iEvent.getByToken(MuonToken, muonHandle);
-  
+
+  edm::FileInPath eaConstantsFile(electron_EA_NHandPh_file);
+  EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
+
   std::vector< double > _ambGsfTrkPt;
   if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] for ElecHandle starts, ElecHandle->size() : " << ElecHandle->size() << endl;
   
@@ -2111,9 +2120,6 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_puChIso03.push_back( pfChargedFromPU );
     electron_RelPFIso_dBeta.push_back( (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - 0.5 * pfChargedFromPU))/(el->pt()) );
     
-    // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt -- //
-    edm::FileInPath eaConstantsFile("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt");
-    EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
     float abseta = fabs(el->superCluster()->eta());
     float eA = effectiveAreas.getEffectiveArea(abseta);
     electron_RelPFIso_Rho.push_back( (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - Rho * eA))/(el->pt()) );
@@ -2498,10 +2504,10 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   edm::Handle< edm::View<pat::Photon> > UnCorrPhotonHandle;
   iEvent.getByToken(UnCorrPhotonToken, UnCorrPhotonHandle);
 
-  EffectiveAreas effAreaChHadrons_( effAreaChHadronsFile.fullPath() );
-  EffectiveAreas effAreaNeuHadrons_( effAreaNeuHadronsFile.fullPath() );
-  EffectiveAreas effAreaPhotons_( effAreaPhotonsFile.fullPath() );
-  
+  EffectiveAreas photon_EA_CH( photon_EA_CH_file.fullPath() );
+  EffectiveAreas photon_EA_HN( photon_EA_HN_file.fullPath() );
+  EffectiveAreas photon_EA_Ph( photon_EA_Ph_file.fullPath() );
+
   for(size_t i=0; i< PhotonHandle->size(); ++i){
     const auto pho = PhotonHandle->ptrAt(i);
     
@@ -2531,9 +2537,9 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
     photon_PhIso.push_back( phIso );
     
     float abseta = fabs( pho->superCluster()->eta());
-    photon_ChIsoWithEA.push_back( std::max( 0.0, chIso - Rho*effAreaChHadrons_.getEffectiveArea(abseta) ) );
-    photon_NhIsoWithEA.push_back( std::max( 0.0, nhIso - Rho*effAreaNeuHadrons_.getEffectiveArea(abseta) ) );
-    photon_PhIsoWithEA.push_back( std::max( 0.0, phIso - Rho*effAreaPhotons_.getEffectiveArea(abseta) ) );
+    photon_ChIsoWithEA.push_back( std::max( 0.0, chIso - Rho*photon_EA_CH.getEffectiveArea(abseta) ) );
+    photon_NhIsoWithEA.push_back( std::max( 0.0, nhIso - Rho*photon_EA_HN.getEffectiveArea(abseta) ) );
+    photon_PhIsoWithEA.push_back( std::max( 0.0, phIso - Rho*photon_EA_Ph.getEffectiveArea(abseta) ) );
     
     bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
     bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
