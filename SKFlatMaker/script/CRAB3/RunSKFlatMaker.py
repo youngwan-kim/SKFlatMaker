@@ -97,10 +97,10 @@ process.FastFilters = cms.Sequence( process.goodOfflinePrimaryVertices )
 ##################################
 # For E/gamma correction and VID #
 ##################################
-from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-setupEgammaPostRecoSeq(process,applyEnergyCorrections=False,
-                       applyVIDOnCorrectedEgamma=False,
-                       isMiniAOD=True)
+#from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+#setupEgammaPostRecoSeq(process,applyEnergyCorrections=False,
+#                       applyVIDOnCorrectedEgamma=False,
+#                       isMiniAOD=True)
 
 
 ######################
@@ -234,7 +234,7 @@ process.recoTree.StoreLHEFlag = isMC
 ####################
 process.p = cms.Path(
   process.FastFilters *
-  process.egammaPostRecoSeq *
+  #process.egammaPostRecoSeq *
   #process.calibratedPatElectrons *
   #process.calibratedPatPhotons *  
   #process.selectedElectrons *
