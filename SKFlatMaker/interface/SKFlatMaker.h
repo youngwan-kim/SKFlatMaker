@@ -335,6 +335,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   double photonEt;
   double chargedHadronEt;
   double neutralHadronEt;
+  double Rho;
   
   // double MET_sumEt;
   // double MET_pt;
@@ -346,15 +347,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   // double pfMET_px;
   // double pfMET_py;
   // double pfMET_phi;
-  int Njets;
   int Nelectrons;
-  int Nbtagged;
-  int NbtaggedCloseMuon;
-  
-  // -- Flags in re-miniAOD -- //
-  bool Flag_duplicateMuons;
-  bool Flag_badMuons;
-  bool Flag_noBadMuons;
   
   // PV
   int nVertices;
@@ -386,14 +379,18 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_phi;
   vector<double> jet_charge;
   vector<double> jet_area;
-  vector<double> jet_rho;
   vector<int> jet_partonFlavour;
   vector<int> jet_hadronFlavour;
   vector<double> jet_CSVv2;
   vector<double> jet_DeepCSV;
-  vector<double> jet_DeepFlavour;
   vector<double> jet_CvsL;
   vector<double> jet_CvsB;
+  vector<double> jet_DeepFlavour_b;
+  vector<double> jet_DeepFlavour_bb;
+  vector<double> jet_DeepFlavour_lepb;
+  vector<double> jet_DeepFlavour_c;
+  vector<double> jet_DeepFlavour_uds;
+  vector<double> jet_DeepFlavour_g;
   vector<double> jet_DeepCvsL;
   vector<double> jet_DeepCvsB;
   vector<double> jet_chargedHadronEnergyFraction;
@@ -428,14 +425,18 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> fatjet_phi;
   vector<double> fatjet_charge;
   vector<double> fatjet_area;
-  vector<double> fatjet_rho;
   vector<int> fatjet_partonFlavour;
   vector<int> fatjet_hadronFlavour;
   vector<double> fatjet_CSVv2;
   vector<double> fatjet_DeepCSV;
-  vector<double> fatjet_DeepFlavour;
   vector<double> fatjet_CvsL;
   vector<double> fatjet_CvsB;
+  vector<double> fatjet_DeepFlavour_b;
+  vector<double> fatjet_DeepFlavour_bb;
+  vector<double> fatjet_DeepFlavour_lepb;
+  vector<double> fatjet_DeepFlavour_c;
+  vector<double> fatjet_DeepFlavour_uds;
+  vector<double> fatjet_DeepFlavour_g;
   vector<double> fatjet_DeepCvsL;
   vector<double> fatjet_DeepCvsB;
   vector<bool> fatjet_looseJetID;
@@ -504,12 +505,14 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_Pnorm;
   vector<double> electron_InvEminusInvP;
   vector<double> electron_dxyVTX;
+  vector<double> electron_dxyerrVTX;
   vector<double> electron_dzVTX;
+  vector<double> electron_dzerrVTX;
+  vector<double> electron_3DIPVTX;
+  vector<double> electron_3DIPerrVTX;
   vector<double> electron_dxy;
   vector<double> electron_sigdxy;
   vector<double> electron_dz;
-  vector<double> electron_ip3D;
-  vector<double> electron_sigip3D;
   vector<double> electron_dxyBS;
   vector<double> electron_dzBS;
   vector<double> electron_AEff03;
@@ -659,7 +662,11 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_dzBS;
   vector<double> muon_dszBS;
   vector<double> muon_dxyVTX;
+  vector<double> muon_dxyerrVTX;
   vector<double> muon_dzVTX;
+  vector<double> muon_dzerrVTX;
+  vector<double> muon_3DIPVTX;
+  vector<double> muon_3DIPerrVTX;
   vector<double> muon_dszVTX;
   vector<double> muon_dxycktVTX;
   vector<double> muon_dzcktVTX;

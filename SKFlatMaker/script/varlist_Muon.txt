@@ -60,7 +60,11 @@ double	muon_dxyBS	1
 double	muon_dzBS	1
 double	muon_dszBS	1
 double	muon_dxyVTX	1
+double  muon_dxyerrVTX 1
 double	muon_dzVTX	1
+double  muon_dzerrVTX  1
+double  muon_3DIPVTX  1
+double  muon_3DIPerrVTX  1
 double	muon_dszVTX	1
 double	muon_dxycktVTX	1
 double	muon_dzcktVTX	1

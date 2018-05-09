@@ -146,11 +146,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Flag_eeBadScFilter = false;
   Flag_ecalBadCalibFilter = false;
 
-  
-  Flag_duplicateMuons = false;
-  Flag_badMuons = false;
-  Flag_noBadMuons = false;
-  
   nVertices = -1;
   PVtrackSize = -1;
   PVchi2 = -1;
@@ -166,6 +161,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   photonEt = 0;
   chargedHadronEt = 0;
   neutralHadronEt = 0;
+  Rho = 0;
 
   //==== MET
 
@@ -313,12 +309,14 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_Pnorm.clear();
   electron_InvEminusInvP.clear();
   electron_dxyVTX.clear();
+  electron_dxyerrVTX.clear();
   electron_dzVTX.clear();
+  electron_dzerrVTX.clear();
+  electron_3DIPVTX.clear();
+  electron_3DIPerrVTX.clear();
   electron_dxy.clear();
   electron_sigdxy.clear();
   electron_dz.clear();
-  electron_ip3D.clear();
-  electron_sigip3D.clear();
   electron_dxyBS.clear();
   electron_dzBS.clear();
   electron_AEff03.clear();
@@ -464,7 +462,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_dzBS.clear();
   muon_dszBS.clear();
   muon_dxyVTX.clear();
+  muon_dxyerrVTX.clear();
   muon_dzVTX.clear();
+  muon_dzerrVTX.clear();
+  muon_3DIPVTX.clear();
+  muon_3DIPerrVTX.clear();
   muon_dszVTX.clear();
   muon_dxycktVTX.clear();
   muon_dzcktVTX.clear();
@@ -516,14 +518,18 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_phi.clear();
   jet_charge.clear();
   jet_area.clear();
-  jet_rho.clear();
   jet_partonFlavour.clear();
   jet_hadronFlavour.clear();
   jet_CSVv2.clear();
   jet_DeepCSV.clear();
-  jet_DeepFlavour.clear();
   jet_CvsL.clear();
   jet_CvsB.clear();
+  jet_DeepFlavour_b.clear();
+  jet_DeepFlavour_bb.clear();
+  jet_DeepFlavour_lepb.clear();
+  jet_DeepFlavour_c.clear();
+  jet_DeepFlavour_uds.clear();
+  jet_DeepFlavour_g.clear();
   jet_DeepCvsL.clear();
   jet_DeepCvsB.clear();
   jet_chargedHadronEnergyFraction.clear();
@@ -549,17 +555,20 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_phi.clear();
   fatjet_charge.clear();
   fatjet_area.clear();
-  fatjet_rho.clear();
   fatjet_partonFlavour.clear();
   fatjet_hadronFlavour.clear();
   fatjet_CSVv2.clear();
   fatjet_DeepCSV.clear();
-  fatjet_DeepFlavour.clear();
   fatjet_CvsL.clear();
   fatjet_CvsB.clear();
+  fatjet_DeepFlavour_b.clear();
+  fatjet_DeepFlavour_bb.clear();
+  fatjet_DeepFlavour_lepb.clear();
+  fatjet_DeepFlavour_c.clear();
+  fatjet_DeepFlavour_uds.clear();
+  fatjet_DeepFlavour_g.clear();
   fatjet_DeepCvsL.clear();
   fatjet_DeepCvsB.clear();
-
   fatjet_looseJetID.clear();
   fatjet_tightJetID.clear();
   fatjet_tightLepVetoJetID.clear();
@@ -667,7 +676,12 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   JetCorrectorParameters const & FatJetCorPar = (*FatJetCorParColl)["Uncertainty"];
   if(fatjet_jecUnc) delete fatjet_jecUnc;
   fatjet_jecUnc = new JetCorrectionUncertainty(FatJetCorPar);
-  
+
+  //==== Event varialbes
+  edm::Handle< double > rhoHandle;
+  iEvent.getByToken(RhoToken,rhoHandle);
+  Rho = *rhoHandle;
+
   // fills
   
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreHLTReportFlag" << endl;
@@ -753,12 +767,9 @@ void SKFlatMaker::beginJob()
   // DYTree->Branch("photonEt",&photonEt,"photonEt/D");
   // DYTree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/D");
   // DYTree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/D");
+  DYTree->Branch("Rho",&Rho,"Rho/D");
   DYTree->Branch("nPV",&nVertices,"nVertices/I");
   
-  // -- Event filter Flags
-  DYTree->Branch("Flag_badMuons",&Flag_badMuons,"Flag_badMuons/O");
-  DYTree->Branch("Flag_duplicateMuons",&Flag_duplicateMuons,"Flag_duplicateMuons/O");
-  DYTree->Branch("Flag_noBadMuons",&Flag_noBadMuons,"Flag_noBadMuons/O");
   //MET Filters 2017
   DYTree->Branch("Flag_goodVertices",&Flag_goodVertices,"Flag_goodVertices/O");
   DYTree->Branch("Flag_globalTightHalo2016Filter",&Flag_globalTightHalo2016Filter,"Flag_globalTightHalo2016Filter/O");
@@ -806,14 +817,18 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_phi", "vector<double>", &jet_phi);
     DYTree->Branch("jet_charge", "vector<double>", &jet_charge);
     DYTree->Branch("jet_area", "vector<double>", &jet_area);
-    DYTree->Branch("jet_rho", "vector<double>", &jet_rho);
     DYTree->Branch("jet_partonFlavour", "vector<int>", &jet_partonFlavour);
     DYTree->Branch("jet_hadronFlavour", "vector<int>", &jet_hadronFlavour);
     DYTree->Branch("jet_CSVv2", "vector<double>", &jet_CSVv2);
     DYTree->Branch("jet_DeepCSV", "vector<double>", &jet_DeepCSV);
-    DYTree->Branch("jet_DeepFlavour", "vector<double>", &jet_DeepFlavour);
     DYTree->Branch("jet_CvsL", "vector<double>", &jet_CvsL);
     DYTree->Branch("jet_CvsB", "vector<double>", &jet_CvsB);
+    DYTree->Branch("jet_DeepFlavour_b", "vector<double>", &jet_DeepFlavour_b);
+    DYTree->Branch("jet_DeepFlavour_bb", "vector<double>", &jet_DeepFlavour_bb);
+    DYTree->Branch("jet_DeepFlavour_lepb", "vector<double>", &jet_DeepFlavour_lepb);
+    DYTree->Branch("jet_DeepFlavour_c", "vector<double>", &jet_DeepFlavour_c);
+    DYTree->Branch("jet_DeepFlavour_uds", "vector<double>", &jet_DeepFlavour_uds);
+    DYTree->Branch("jet_DeepFlavour_g", "vector<double>", &jet_DeepFlavour_g);
     DYTree->Branch("jet_DeepCvsL", "vector<double>", &jet_DeepCvsL);
     DYTree->Branch("jet_DeepCvsB", "vector<double>", &jet_DeepCvsB);
     DYTree->Branch("jet_chargedHadronEnergyFraction", "vector<double>", &jet_chargedHadronEnergyFraction);
@@ -841,12 +856,16 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_phi", "vector<double>", &fatjet_phi);
     DYTree->Branch("fatjet_charge", "vector<double>", &fatjet_charge);
     DYTree->Branch("fatjet_area", "vector<double>", &fatjet_area);
-    DYTree->Branch("fatjet_rho", "vector<double>", &fatjet_rho);
     DYTree->Branch("fatjet_partonFlavour", "vector<int>", &fatjet_partonFlavour);
     DYTree->Branch("fatjet_hadronFlavour", "vector<int>", &fatjet_hadronFlavour);
     DYTree->Branch("fatjet_CSVv2", "vector<double>", &fatjet_CSVv2);
     DYTree->Branch("fatjet_DeepCSV", "vector<double>", &fatjet_DeepCSV);
-    DYTree->Branch("fatjet_DeepFlavour", "vector<double>", &fatjet_DeepFlavour);
+    DYTree->Branch("fatjet_DeepFlavour_b", "vector<double>", &fatjet_DeepFlavour_b);
+    DYTree->Branch("fatjet_DeepFlavour_bb", "vector<double>", &fatjet_DeepFlavour_bb);
+    DYTree->Branch("fatjet_DeepFlavour_lepb", "vector<double>", &fatjet_DeepFlavour_lepb);
+    DYTree->Branch("fatjet_DeepFlavour_c", "vector<double>", &fatjet_DeepFlavour_c);
+    DYTree->Branch("fatjet_DeepFlavour_uds", "vector<double>", &fatjet_DeepFlavour_uds);
+    DYTree->Branch("fatjet_DeepFlavour_g", "vector<double>", &fatjet_DeepFlavour_g);
     DYTree->Branch("fatjet_CvsL", "vector<double>", &fatjet_CvsL);
     DYTree->Branch("fatjet_CvsB", "vector<double>", &fatjet_CvsB);
     DYTree->Branch("fatjet_DeepCvsL", "vector<double>", &fatjet_DeepCvsL);
@@ -918,12 +937,14 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_Pnorm", "vector<double>", &electron_Pnorm);
     DYTree->Branch("electron_InvEminusInvP", "vector<double>", &electron_InvEminusInvP);
     DYTree->Branch("electron_dxyVTX", "vector<double>", &electron_dxyVTX);
+    DYTree->Branch("electron_dxyerrVTX", "vector<double>", &electron_dxyerrVTX);
     DYTree->Branch("electron_dzVTX", "vector<double>", &electron_dzVTX);
+    DYTree->Branch("electron_dzerrVTX", "vector<double>", &electron_dzerrVTX);
+    DYTree->Branch("electron_3DIPVTX", "vector<double>", &electron_3DIPVTX);
+    DYTree->Branch("electron_3DIPerrVTX", "vector<double>", &electron_3DIPerrVTX);
     DYTree->Branch("electron_dxy", "vector<double>", &electron_dxy);
     DYTree->Branch("electron_sigdxy", "vector<double>", &electron_sigdxy);
     DYTree->Branch("electron_dz", "vector<double>", &electron_dz);
-    DYTree->Branch("electron_ip3D", "vector<double>", &electron_ip3D);
-    DYTree->Branch("electron_sigip3D", "vector<double>", &electron_sigip3D);
     DYTree->Branch("electron_dxyBS", "vector<double>", &electron_dxyBS);
     DYTree->Branch("electron_dzBS", "vector<double>", &electron_dzBS);
     DYTree->Branch("electron_AEff03", "vector<double>", &electron_AEff03);
@@ -1072,7 +1093,11 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_dzBS", "vector<double>", &muon_dzBS);
     DYTree->Branch("muon_dszBS", "vector<double>", &muon_dszBS);
     DYTree->Branch("muon_dxyVTX", "vector<double>", &muon_dxyVTX);
+    DYTree->Branch("muon_dxyerrVTX", "vector<double>", &muon_dxyerrVTX);
     DYTree->Branch("muon_dzVTX", "vector<double>", &muon_dzVTX);
+    DYTree->Branch("muon_dzerrVTX", "vector<double>", &muon_dzerrVTX);
+    DYTree->Branch("muon_3DIPVTX", "vector<double>", &muon_3DIPVTX);
+    DYTree->Branch("muon_3DIPerrVTX", "vector<double>", &muon_3DIPerrVTX);
     DYTree->Branch("muon_dszVTX", "vector<double>", &muon_dszVTX);
     DYTree->Branch("muon_dxycktVTX", "vector<double>", &muon_dxycktVTX);
     DYTree->Branch("muon_dzcktVTX", "vector<double>", &muon_dzcktVTX);
@@ -1437,15 +1462,17 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
       // cout << "trigger names in trigger result (PAT)" << endl;
       // for(int itrig=0; itrig<(int)trigName.size(); itrig++)
       //   cout << "trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
-      
-      if( trigResultPAT->accept(trigName.triggerIndex("Flag_badMuons")) ) Flag_badMuons = true;
-      if( trigResultPAT->accept(trigName.triggerIndex("Flag_duplicateMuons")) ) Flag_duplicateMuons = true;
-      if( trigResultPAT->accept(trigName.triggerIndex("Flag_noBadMuons")) ) Flag_noBadMuons = true;
-      
-      cout << "[SKFlatMaker::hltReport] Flag_badMuons: " << Flag_badMuons << endl;
-      cout << "[SKFlatMaker::hltReport] Flag_duplicateMuons: " << Flag_duplicateMuons << endl;
-      cout << "[SKFlatMaker::hltReport] Flag_noBadMuons: " << Flag_noBadMuons << endl;
-      cout << endl;
+
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_goodVertices")) ) Flag_goodVertices = true;
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_globalTightHalo2016Filter")) ) Flag_globalTightHalo2016Filter = true;
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_HBHENoiseFilter")) ) Flag_HBHENoiseFilter = true;
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_HBHENoiseIsoFilter")) ) Flag_HBHENoiseIsoFilter = true;
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_EcalDeadCellTriggerPrimitiveFilter")) ) Flag_EcalDeadCellTriggerPrimitiveFilter = true;
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_BadPFMuonFilter")) ) Flag_BadPFMuonFilter = true;
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_BadChargedCandidateFilter")) ) Flag_BadChargedCandidateFilter = true;
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_eeBadScFilter")) ) Flag_eeBadScFilter = true;
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_ecalBadCalibFilter")) ) Flag_ecalBadCalibFilter = true;
+ 
     }
   }
   
@@ -1693,18 +1720,38 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     }
       
     if( !pvHandle->empty() && !pvHandle->front().isFake() ){
+/*
       muon_dxyVTX.push_back( imuon.muonBestTrack()->dxy(vtx.position()) );
-      muon_dszVTX.push_back( imuon.muonBestTrack()->dsz(vtx.position()) );
       muon_dzVTX.push_back( imuon.muonBestTrack()->dz(vtx.position()) );
-  
+      muon_dszVTX.push_back( imuon.muonBestTrack()->dsz(vtx.position()) );
+*/
+
+      //==== https://github.com/cms-sw/cmssw/blob/3e032f6f8d88a5a63769f68fe525b4f06d72b55f/PhysicsTools/PatAlgos/plugins/PATMuonProducer.cc#L322-L345
+      //==== PAT dB are set with BestTrack
+
+      muon_dxyVTX.push_back( imuon.dB(pat::Muon::PV2D) );
+      muon_dxyerrVTX.push_back( imuon.edB(pat::Muon::PV2D) );
+      muon_dzVTX.push_back( imuon.dB(pat::Muon::PVDZ) );
+      muon_dzerrVTX.push_back( imuon.edB(pat::Muon::PVDZ) );
+      muon_3DIPVTX.push_back( imuon.dB(pat::Muon::PV3D) );
+      muon_3DIPerrVTX.push_back( imuon.edB(pat::Muon::PV3D) );
+
+      muon_dszVTX.push_back( imuon.muonBestTrack()->dsz(vtx.position()) );
+
       // muon_dxycktVTX.push_back( cktTrack->dxy(vtx.position()) );
       // muon_dszcktVTX.push_back( cktTrack->dsz(vtx.position()) );
       // muon_dzcktVTX.push_back( cktTrack->dz(vtx.position()) );
     }
     else{
+
       muon_dxyVTX.push_back( 9999 );
-      muon_dszVTX.push_back( 9999 );
+      muon_dxyerrVTX.push_back( 9999 );
       muon_dzVTX.push_back( 9999 );
+      muon_dzerrVTX.push_back( 9999 );
+      muon_3DIPVTX.push_back( 9999 );
+      muon_3DIPerrVTX.push_back( 9999 );
+
+      muon_dszVTX.push_back( 9999 );
     }
       
     // muon1 kinematics
@@ -1960,10 +2007,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::Handle<edm::ValueMap<float> > mvaNoIsoValues;
   iEvent.getByToken(mvaNoIsoValuesMapToken,mvaNoIsoValues);
   
-  // -- Get rho value -- //
-  edm::Handle< double > rhoHandle;
-  iEvent.getByToken(RhoToken, rhoHandle);
-  
   edm::Handle< std::vector<reco::Conversion> > conversions;
   iEvent.getByToken(ConversionsToken, conversions);
   
@@ -2073,7 +2116,7 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
     float abseta = fabs(el->superCluster()->eta());
     float eA = effectiveAreas.getEffectiveArea(abseta);
-    electron_RelPFIso_Rho.push_back( (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - *rhoHandle * eA))/(el->pt()) );
+    electron_RelPFIso_Rho.push_back( (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - Rho * eA))/(el->pt()) );
     
     // cout << "##### fillElectrons: Before elecTrk #####" << endl;
     
@@ -2086,50 +2129,40 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleMissingHitsCut.cc#L34-L41 -- //
     constexpr reco::HitPattern::HitCategory missingHitType = reco::HitPattern::MISSING_INNER_HITS;
     electron_mHits.push_back( elecTrk->hitPattern().numberOfAllHits(missingHitType) );
-    
-    //calculate IP3D
-    const reco::TransientTrack &tt = theTTBuilder->build(elecTrk);
-    //reco::TransientTrack &tt = theTTBuilder->build(elecTrk);
 
-    /*
-    Vertex dummy;
-    const Vertex *pv = &dummy;
-    if (pvHandle->size() != 0) { 
-pv = &*pvHandle->begin();
-    } else { // create a dummy PV
-Vertex::Error e;
-e(0, 0) = 0.0015 * 0.0015;
-e(1, 1) = 0.0015 * 0.0015;
-e(2, 2) = 15. * 15.;
-Vertex::Point p(0, 0, 0);
-dummy = Vertex(p, e, 0, 0, 0);
-    }
-    */
-    
-    const reco::Vertex &vtx = pvHandle->front();
-    //reco::Vertex &vtx = pvHandle->front();
-    
-    const std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt, vtx);
-    //std::pair<bool,Measurement1D> &ip3dpv = IPTools::absoluteImpactParameter3D(tt,vtx);
-
-    const double gsfsign = ( (-elecTrk->dxy(vtx.position())) >=0 ) ? 1. : -1.;
-    if(ip3dpv.first){
-      double ip3d = gsfsign*ip3dpv.second.value();
-      double ip3derr = ip3dpv.second.error();  
-      electron_ip3D.push_back( ip3d );
-      electron_sigip3D.push_back( ip3d/ip3derr );
-    }
-    else{
-      electron_ip3D.push_back( -999 );
-      electron_sigip3D.push_back( -999 );
-    }
-    
     electron_sigdxy.push_back( elecTrk->dxy() / elecTrk->dxyError() );
     electron_dxy.push_back( elecTrk->dxy() );
     electron_dz.push_back( elecTrk->dz() );
+
     electron_dxyBS.push_back( elecTrk->dxy(beamSpot.position()) );
     electron_dzBS.push_back( elecTrk->dz(beamSpot.position()) );
-    
+
+    if( !pvHandle->empty() && !pvHandle->front().isFake() ){
+
+/*
+      electron_dxyVTX.push_back( elecTrk->dxy(vtx.position()) );
+      electron_dzVTX.push_back( elecTrk->dz(vtx.position()) );
+*/
+
+      electron_dxyVTX.push_back( el->dB(pat::Electron::PV2D) );
+      electron_dxyerrVTX.push_back( el->edB(pat::Electron::PV2D) );
+      electron_dzVTX.push_back( el->dB(pat::Electron::PVDZ) );
+      electron_dzerrVTX.push_back( el->edB(pat::Electron::PVDZ) );
+      electron_3DIPVTX.push_back( el->dB(pat::Electron::PV3D) );
+      electron_3DIPerrVTX.push_back( el->edB(pat::Electron::PV3D) );
+
+    }
+    else{
+
+      electron_dxyVTX.push_back( -999 );
+      electron_dxyerrVTX.push_back( -999 );
+      electron_dzVTX.push_back( -999 );
+      electron_dzerrVTX.push_back( -999 );
+      electron_3DIPVTX.push_back( -999 );
+      electron_3DIPerrVTX.push_back( -999 );
+
+    }
+
     if( elecTrk.isNonnull() ){
       electron_gsfpt.push_back( elecTrk->pt() );
       electron_gsfPx.push_back( elecTrk->px() );
@@ -2147,15 +2180,6 @@ dummy = Vertex(p, e, 0, 0, 0);
       electron_gsfEta.push_back( -999 );
       electron_gsfPhi.push_back( -999 );
       electron_gsfCharge.push_back( -999 );
-    }
-      
-    if( !pvHandle->empty() && !pvHandle->front().isFake() ){
-      electron_dxyVTX.push_back( elecTrk->dxy(vtx.position()) );
-      electron_dzVTX.push_back( elecTrk->dz(vtx.position()) );
-    }
-    else{
-      electron_dxyVTX.push_back( -999 );
-      electron_dzVTX.push_back( -999 );
     }
       
     // -- for ID variables -- //
@@ -2474,11 +2498,6 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   edm::Handle< edm::View<pat::Photon> > UnCorrPhotonHandle;
   iEvent.getByToken(UnCorrPhotonToken, UnCorrPhotonHandle);
 
-  // Get rho
-  edm::Handle< double > rhoH;
-  iEvent.getByToken(RhoToken,rhoH);
-  float rho_ = *rhoH;
-  
   EffectiveAreas effAreaChHadrons_( effAreaChHadronsFile.fullPath() );
   EffectiveAreas effAreaNeuHadrons_( effAreaNeuHadronsFile.fullPath() );
   EffectiveAreas effAreaPhotons_( effAreaPhotonsFile.fullPath() );
@@ -2512,9 +2531,9 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
     photon_PhIso.push_back( phIso );
     
     float abseta = fabs( pho->superCluster()->eta());
-    photon_ChIsoWithEA.push_back( std::max( (float)0.0, chIso - rho_*effAreaChHadrons_.getEffectiveArea(abseta) ) );
-    photon_NhIsoWithEA.push_back( std::max( (float)0.0, nhIso - rho_*effAreaNeuHadrons_.getEffectiveArea(abseta) ) );
-    photon_PhIsoWithEA.push_back( std::max( (float)0.0, phIso - rho_*effAreaPhotons_.getEffectiveArea(abseta) ) );
+    photon_ChIsoWithEA.push_back( std::max( 0.0, chIso - Rho*effAreaChHadrons_.getEffectiveArea(abseta) ) );
+    photon_NhIsoWithEA.push_back( std::max( 0.0, nhIso - Rho*effAreaNeuHadrons_.getEffectiveArea(abseta) ) );
+    photon_PhIsoWithEA.push_back( std::max( 0.0, phIso - Rho*effAreaPhotons_.getEffectiveArea(abseta) ) );
     
     bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
     bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
@@ -2609,10 +2628,6 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
   
   if(jetHandle->size() == 0) return;
   
-  edm::Handle< double > rhojet;
-  iEvent.getByToken(RhoToken,rhojet);
-  double rho_jet = *rhojet;
-
   for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter){
 
     jet_pt.push_back( jets_iter->pt() );
@@ -2620,18 +2635,21 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_phi.push_back( jets_iter->phi() );
     jet_charge.push_back( jets_iter->jetCharge() );
     jet_area.push_back( jets_iter->jetArea() );
-    jet_rho.push_back( rho_jet );
     jet_partonFlavour.push_back( jets_iter->partonFlavour() );
     jet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
     //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     jet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
-    jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
-    //jet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
+    jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
     jet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
     jet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
-    jet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
-    jet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
+
+    double deepcharm_c = jets_iter->bDiscriminator("pfDeepCSVJetTags:probc");
+    double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
+    double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
+    double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
+    jet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
+    jet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
 
     jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
@@ -2714,10 +2732,6 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 
   if(jetHandle->size() == 0) return;
 
-  edm::Handle< double > rhojet;
-  iEvent.getByToken(RhoToken,rhojet);
-  double rho_jet = *rhojet;
-
   for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter){
 
     //==== https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/1785/1/1.html
@@ -2732,17 +2746,20 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_phi.push_back( jets_iter->phi() );
     fatjet_charge.push_back( jets_iter->jetCharge() );
     fatjet_area.push_back( jets_iter->jetArea() );
-    fatjet_rho.push_back( rho_jet );
     fatjet_partonFlavour.push_back( jets_iter->partonFlavour() );
     fatjet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
     fatjet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
-    fatjet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
-    //fatjet_DeepFlavour.push_back( jets_iter->bDiscriminator("") );
+    fatjet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
     fatjet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
     fatjet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
-    fatjet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
-    fatjet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
+
+    double deepcharm_c = jets_iter->bDiscriminator("pfDeepCSVJetTags:probc");
+    double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
+    double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
+    double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
+    fatjet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
+    fatjet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
 
     fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
