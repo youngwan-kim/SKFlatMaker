@@ -5,7 +5,7 @@
 
 ## Environment
 ```bash
-# setup for >= 9_4_6_patch1
+# setup for >= CMSSW_9_4_6_patch1
 export SCRAM_ARCH=slc6_amd64_gcc630 #Only for machines with different default compiler. Applying this line at lxplus might cause crash or error during scram
 
 # For machines with CVMFS
@@ -13,8 +13,8 @@ export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
 
 # make CMSSW directory
-cmsrel 9_4_6_patch1
-cd 9_4_6_patch1/src
+cmsrel CMSSW_9_4_6_patch1
+cd CMSSW_9_4_6_patch1/src
 cmsenv
 
 # add packages
