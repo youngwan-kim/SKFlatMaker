@@ -1940,6 +1940,11 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     cout << "HN = " << this_miniiso.neutralHadronIso() << endl;
     cout << "Ph = " << this_miniiso.photonIso() << endl;
     cout << "PU = " << this_miniiso.puChargedHadronIso() << endl;
+    cout << "---- MiniAOD MiniIso ----" << endl;
+    cout << "CH = " << imuon.miniPFIsolation().chargedHadronIso() << endl;
+    cout << "HN = " << imuon.miniPFIsolation().neutralHadronIso() << endl;
+    cout << "Ph = " << imuon.miniPFIsolation().photonIso() << endl;
+    cout << "PU = " << imuon.miniPFIsolation().puChargedHadronIso() << endl;
     cout << "---- Diff ----" << endl;
     cout << "dCH = " << imuon.pfIsolationR04().sumChargedHadronPt-this_miniiso.chargedHadronIso() << endl;
     cout << "dNH = " << imuon.pfIsolationR04().sumNeutralHadronEt-this_miniiso.neutralHadronIso() << endl;
@@ -2202,26 +2207,29 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     }
 
 /*
-    if(el->pt()>10.){
-      cout << "=======================" << endl;
-      cout << "Pt = " << el->pt() << endl;
-      cout << "isEE = " << el->isEE() << endl;
-      cout << "---- R03 ----" << endl;
-      cout << "CH = " << el->pfIsolationVariables().sumChargedHadronPt << endl;
-      cout << "NH = " << el->pfIsolationVariables().sumNeutralHadronEt << endl;
-      cout << "Ph = " << el->pfIsolationVariables().sumPhotonEt << endl;
-      cout << "PU = " << el->pfIsolationVariables().sumPUPt << endl;
-      cout << "---- Mini ----" << endl;
-      cout << "CH = " << this_miniiso.chargedHadronIso() << endl;
-      cout << "HN = " << this_miniiso.neutralHadronIso() << endl;
-      cout << "Ph = " << this_miniiso.photonIso() << endl;
-      cout << "PU = " << this_miniiso.puChargedHadronIso() << endl;
-      cout << "---- Diff ----" << endl;
-      cout << "dCH = " << el->pfIsolationVariables().sumChargedHadronPt-this_miniiso.chargedHadronIso() << endl;
-      cout << "dNH = " << el->pfIsolationVariables().sumNeutralHadronEt-this_miniiso.neutralHadronIso() << endl;
-      cout << "dPh = " << el->pfIsolationVariables().sumPhotonEt-this_miniiso.photonIso() << endl;
-      cout << "dPU = " << el->pfIsolationVariables().sumPUPt-this_miniiso.puChargedHadronIso() << endl;
-    }
+    cout << "=======================" << endl;
+    cout << "Pt = " << el->pt() << endl;
+    cout << "isEE = " << el->isEE() << endl;
+    cout << "---- R03 ----" << endl;
+    cout << "CH = " << el->pfIsolationVariables().sumChargedHadronPt << endl;
+    cout << "NH = " << el->pfIsolationVariables().sumNeutralHadronEt << endl;
+    cout << "Ph = " << el->pfIsolationVariables().sumPhotonEt << endl;
+    cout << "PU = " << el->pfIsolationVariables().sumPUPt << endl;
+    cout << "---- Mini ----" << endl;
+    cout << "CH = " << this_miniiso.chargedHadronIso() << endl;
+    cout << "HN = " << this_miniiso.neutralHadronIso() << endl;
+    cout << "Ph = " << this_miniiso.photonIso() << endl;
+    cout << "PU = " << this_miniiso.puChargedHadronIso() << endl;
+    cout << "---- MiniAOD MiniIso ----" << endl;
+    cout << "CH = " << el->miniPFIsolation().chargedHadronIso() << endl;
+    cout << "HN = " << el->miniPFIsolation().neutralHadronIso() << endl;
+    cout << "Ph = " << el->miniPFIsolation().photonIso() << endl;
+    cout << "PU = " << el->miniPFIsolation().puChargedHadronIso() << endl;
+    cout << "---- Diff ----" << endl;
+    cout << "dCH = " << el->pfIsolationVariables().sumChargedHadronPt-this_miniiso.chargedHadronIso() << endl;
+    cout << "dNH = " << el->pfIsolationVariables().sumNeutralHadronEt-this_miniiso.neutralHadronIso() << endl;
+    cout << "dPh = " << el->pfIsolationVariables().sumPhotonEt-this_miniiso.photonIso() << endl;
+    cout << "dPU = " << el->pfIsolationVariables().sumPUPt-this_miniiso.puChargedHadronIso() << endl;
 */
 
     electron_chMiniIso.push_back( this_miniiso.chargedHadronIso() );
