@@ -5,6 +5,8 @@ pdfidshifts = open('PDFIDShift.txt').readlines()
 
 hostname = os.environ['HOSTNAME']
 
+os.system('mkdir -p logs')
+
 for line in lines:
 
   if "#" in line:
