@@ -85,6 +85,9 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
 
   jet_payloadName_                  = iConfig.getParameter<std::string>("AK4Jet_payloadName");
   fatjet_payloadName_               = iConfig.getParameter<std::string>("AK8Jet_payloadName");
+
+  jet_jecUnc = NULL;
+  fatjet_jecUnc = NULL;
   
   // -- Store Flags -- //
   theStorePriVtxFlag                = iConfig.getUntrackedParameter<bool>("StorePriVtxFlag", true);
@@ -404,6 +407,10 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_mva.clear();
   electron_zzmva.clear();
   electron_missinghits.clear();
+  electron_chMiniIso.clear();
+  electron_nhMiniIso.clear();
+  electron_phMiniIso.clear();
+  electron_puChMiniIso.clear();
 
   //==== Muon
   muon_PfChargedHadronIsoR05.clear();
@@ -517,6 +524,10 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_TuneP_phi.clear();
   muon_roch_sf.clear();
   muon_roch_sf_up.clear();
+  muon_PfChargedHadronMiniIso.clear();
+  muon_PfNeutralHadronMiniIso.clear();
+  muon_PfGammaMiniIso.clear();
+  muon_PFSumPUMiniIso.clear();
 
   //==== Jet
   jet_pt.clear();
@@ -669,7 +680,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
   iSetup.get<JetCorrectionsRecord>().get(jet_payloadName_,JetCorParColl);
   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
-  if(jet_jecUnc) delete jet_jecUnc;
   jet_jecUnc = new JetCorrectionUncertainty(JetCorPar);
 
   //==== For cross check
@@ -680,7 +690,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::ESHandle<JetCorrectorParametersCollection> FatJetCorParColl;
   iSetup.get<JetCorrectionsRecord>().get(fatjet_payloadName_,FatJetCorParColl);
   JetCorrectorParameters const & FatJetCorPar = (*FatJetCorParColl)["Uncertainty"];
-  if(fatjet_jecUnc) delete fatjet_jecUnc;
   fatjet_jecUnc = new JetCorrectionUncertainty(FatJetCorPar);
 
   //==== Event varialbes
@@ -1032,6 +1041,10 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_mva", "vector<double>", &electron_mva);
     DYTree->Branch("electron_zzmva", "vector<double>", &electron_zzmva);
     DYTree->Branch("electron_missinghits", "vector<int>", &electron_missinghits);
+    DYTree->Branch("electron_chMiniIso", "vector<double>", &electron_chMiniIso);
+    DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
+    DYTree->Branch("electron_phMiniIso", "vector<double>", &electron_phMiniIso);
+    DYTree->Branch("electron_puChMiniIso", "vector<double>", &electron_puChMiniIso);
   }
   
   // -- muon variables -- //
@@ -1148,6 +1161,11 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_TuneP_phi", "vector<double>", &muon_TuneP_phi);
     DYTree->Branch("muon_roch_sf", "vector<double>", &muon_roch_sf);
     DYTree->Branch("muon_roch_sf_up", "vector<double>", &muon_roch_sf_up);
+    DYTree->Branch("muon_PfChargedHadronMiniIso", "vector<double>", &muon_PfChargedHadronMiniIso);
+    DYTree->Branch("muon_PfNeutralHadronMiniIso", "vector<double>", &muon_PfNeutralHadronMiniIso);
+    DYTree->Branch("muon_PfGammaMiniIso", "vector<double>", &muon_PfGammaMiniIso);
+    DYTree->Branch("muon_PFSumPUMiniIso", "vector<double>", &muon_PFSumPUMiniIso);
+
   }
   
   // -- LHE info -- //
@@ -1574,6 +1592,10 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   using reco::MuonCollection;
   MuonCollection::const_iterator imuon;
 
+  //==== Prepare PF for miniiso
+  edm::Handle<pat::PackedCandidateCollection> pc;
+  iEvent.getByToken(pcToken_, pc);
+
 /*
   edm::Handle<reco::GenParticleCollection> genParticles;
   if(!IsData){
@@ -1898,7 +1920,38 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_PfNeutralHadronIsoR03.push_back( imuon.pfIsolationR03().sumNeutralHadronEt );
     muon_PfGammaIsoR03.push_back( imuon.pfIsolationR03().sumPhotonEt );
     muon_PFSumPUIsoR03.push_back( imuon.pfIsolationR03().sumPUPt );
-    
+
+    //==== MiniIso
+    PFIsolation this_miniiso = GetMiniIso(pc, imuon.p4(),
+                                          miniIsoParams_[0], miniIsoParams_[1], miniIsoParams_[2],
+                                          miniIsoParams_[3], miniIsoParams_[4], miniIsoParams_[5],
+                                          miniIsoParams_[6], miniIsoParams_[7], miniIsoParams_[8]);
+
+/*
+    cout << "=======================" << endl;
+    cout << "Pt = " << imuon.pt() << endl;
+    cout << "---- R04 ----" << endl;
+    cout << "CH = " << imuon.pfIsolationR04().sumChargedHadronPt << endl;
+    cout << "NH = " << imuon.pfIsolationR04().sumNeutralHadronEt << endl;
+    cout << "Ph = " << imuon.pfIsolationR04().sumPhotonEt << endl;
+    cout << "PU = " << imuon.pfIsolationR04().sumPUPt << endl;
+    cout << "---- Mini ----" << endl;
+    cout << "CH = " << this_miniiso.chargedHadronIso() << endl;
+    cout << "HN = " << this_miniiso.neutralHadronIso() << endl;
+    cout << "Ph = " << this_miniiso.photonIso() << endl;
+    cout << "PU = " << this_miniiso.puChargedHadronIso() << endl;
+    cout << "---- Diff ----" << endl;
+    cout << "dCH = " << imuon.pfIsolationR04().sumChargedHadronPt-this_miniiso.chargedHadronIso() << endl;
+    cout << "dNH = " << imuon.pfIsolationR04().sumNeutralHadronEt-this_miniiso.neutralHadronIso() << endl;
+    cout << "dPh = " << imuon.pfIsolationR04().sumPhotonEt-this_miniiso.photonIso() << endl;
+    cout << "dPU = " << imuon.pfIsolationR04().sumPUPt-this_miniiso.puChargedHadronIso() << endl;
+*/
+
+    muon_PfChargedHadronMiniIso.push_back( this_miniiso.chargedHadronIso() );
+    muon_PfNeutralHadronMiniIso.push_back( this_miniiso.neutralHadronIso() );
+    muon_PfGammaMiniIso.push_back( this_miniiso.photonIso() );
+    muon_PFSumPUMiniIso.push_back( this_miniiso.puChargedHadronIso() );
+
     // -- Else -- //
     muon_charge.push_back( imuon.charge() );
     muon_nChambers.push_back( imuon.numberOfChambers() ); // -- # of chambers -- //
@@ -2904,6 +2957,59 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
     }
     cout << "[SKFlatMaker::endRun] ##### End of information about PDF weights #####" << endl;
   }
+
+}
+
+float SKFlatMaker::miniIsoDr(const math::XYZTLorentzVector &p4, float mindr, float maxdr, float kt_scale){
+  return std::max(mindr, std::min(maxdr, float(kt_scale/p4.pt())));
+}
+
+PFIsolation SKFlatMaker::GetMiniIso(edm::Handle<pat::PackedCandidateCollection> pfcands,
+                                 const math::XYZTLorentzVector &p4,
+                                 float mindr, float maxdr, float kt_scale,
+                                 float ptthresh, float deadcone_ch, float deadcone_pu,
+                                 float deadcone_ph, float deadcone_nh, float dZ_cut){
+
+/*
+  cout << "[SKFlatMaker::GetMiniIso] mindr = " << mindr << endl;
+  cout << "[SKFlatMaker::GetMiniIso] maxdr = " << maxdr << endl;
+  cout << "[SKFlatMaker::GetMiniIso] kt_scale = " << kt_scale << endl;
+  cout << "[SKFlatMaker::GetMiniIso] ptthresh = " << ptthresh << endl;
+  cout << "[SKFlatMaker::GetMiniIso] deadcone_ch = " << deadcone_ch << endl;
+  cout << "[SKFlatMaker::GetMiniIso] deadcone_pu = " << deadcone_pu << endl;
+  cout << "[SKFlatMaker::GetMiniIso] deadcone_ph = " << deadcone_ph << endl;
+  cout << "[SKFlatMaker::GetMiniIso] deadcone_nh = " << deadcone_nh << endl;
+  cout << "[SKFlatMaker::GetMiniIso] dZ_cut = " << dZ_cut << endl;
+*/
+
+  float chiso=0, nhiso=0, phiso=0, puiso=0;
+  float drcut = miniIsoDr(p4,mindr,maxdr,kt_scale);
+  for(const pat::PackedCandidate &pc : *pfcands){
+    float dr = deltaR(p4, pc.p4());
+    if(dr>drcut)  continue;
+    float pt = pc.p4().pt();
+    int id = pc.pdgId();
+    if(std::abs(id)==211){
+      bool fromPV = (pc.fromPV()>1 || fabs(pc.dz()) < dZ_cut);
+      if(fromPV && dr > deadcone_ch){
+        //==== if charged hadron and from primary vertex, add to charged hadron isolation
+        chiso += pt;
+      }
+      else if(!fromPV && pt > ptthresh && dr > deadcone_pu){
+        //==== if charged hadron and NOT from primary vertex, add to pileup isolation
+        puiso += pt;
+      }
+    }
+    //==== if neutral hadron, add to neutral hadron isolation
+    if(std::abs(id)==130 && pt>ptthresh && dr>deadcone_nh)
+      nhiso += pt;
+    //==== if photon, add to photon isolation
+    if(std::abs(id)==22 && pt>ptthresh && dr>deadcone_ph)
+      phiso += pt;
+
+  }
+
+  return pat::PFIsolation(chiso, nhiso, phiso, puiso);
 
 }
 

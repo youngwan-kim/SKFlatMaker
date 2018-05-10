@@ -138,6 +138,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "DataFormats/PatCandidates/interface/PFIsolation.h"
 
 
 ////////////////
@@ -189,6 +190,13 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
   virtual void fillTT(const edm::Event&);
+
+  virtual float miniIsoDr(const math::XYZTLorentzVector &p4, float mindr, float maxdr, float kt_scale);
+  virtual PFIsolation GetMiniIso(edm::Handle<pat::PackedCandidateCollection> pfcands,
+                                 const math::XYZTLorentzVector &p4,
+                                 float mindr, float maxdr, float kt_scale,
+                                 float ptthresh, float deadcone_ch, float deadcone_pu,
+                                 float deadcone_ph, float deadcone_nh, float dZ_cut);
 
   bool reorder(double &a, double &b)
   {
@@ -601,6 +609,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_mva;
   vector<double> electron_zzmva;
   vector<int> electron_missinghits;
+  vector<double> electron_chMiniIso;
+  vector<double> electron_nhMiniIso;
+  vector<double> electron_phMiniIso;
+  vector<double> electron_puChMiniIso;
 
   //==== Muon
 
@@ -718,6 +730,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_TuneP_phi;
   vector<double> muon_roch_sf;
   vector<double> muon_roch_sf_up;
+  vector<double> muon_PfChargedHadronMiniIso;
+  vector<double> muon_PfNeutralHadronMiniIso;
+  vector<double> muon_PfGammaMiniIso;
+  vector<double> muon_PFSumPUMiniIso;
 
   //==== Rochestor correction
   RoccoR rc;
