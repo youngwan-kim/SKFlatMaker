@@ -680,6 +680,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
   iSetup.get<JetCorrectionsRecord>().get(jet_payloadName_,JetCorParColl);
   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
+  if(jet_jecUnc) delete jet_jecUnc;
   jet_jecUnc = new JetCorrectionUncertainty(JetCorPar);
 
   //==== For cross check
@@ -690,6 +691,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   edm::ESHandle<JetCorrectorParametersCollection> FatJetCorParColl;
   iSetup.get<JetCorrectionsRecord>().get(fatjet_payloadName_,FatJetCorParColl);
   JetCorrectorParameters const & FatJetCorPar = (*FatJetCorParColl)["Uncertainty"];
+  if(fatjet_jecUnc) delete fatjet_jecUnc;
   fatjet_jecUnc = new JetCorrectionUncertainty(FatJetCorPar);
 
   //==== Event varialbes
