@@ -2077,6 +2077,10 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::Handle< std::vector<pat::Muon> > muonHandle;
   iEvent.getByToken(MuonToken, muonHandle);
 
+  //==== Prepare PF for miniiso
+  edm::Handle<pat::PackedCandidateCollection> pc;
+  iEvent.getByToken(pcToken_, pc);
+
   edm::FileInPath eaConstantsFile(electron_EA_NHandPh_file);
   EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
 
@@ -2176,7 +2180,55 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     float abseta = fabs(el->superCluster()->eta());
     float eA = effectiveAreas.getEffectiveArea(abseta);
     electron_RelPFIso_Rho.push_back( (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - Rho * eA))/(el->pt()) );
-    
+
+    //==== MiniIso
+    PFIsolation this_miniiso;
+
+    if(el->isEE()){
+
+      this_miniiso = GetMiniIso(pc, el->p4(),
+                                miniIsoParamsE_[0], miniIsoParamsE_[1], miniIsoParamsE_[2],
+                                miniIsoParamsE_[3], miniIsoParamsE_[4], miniIsoParamsE_[5],
+                                miniIsoParamsE_[6], miniIsoParamsE_[7], miniIsoParamsE_[8]);
+
+    }
+    else{
+
+      this_miniiso = GetMiniIso(pc, el->p4(),
+                                miniIsoParamsB_[0], miniIsoParamsB_[1], miniIsoParamsB_[2],
+                                miniIsoParamsB_[3], miniIsoParamsB_[4], miniIsoParamsB_[5],
+                                miniIsoParamsB_[6], miniIsoParamsB_[7], miniIsoParamsB_[8]);
+
+    }
+
+/*
+    if(el->pt()>10.){
+      cout << "=======================" << endl;
+      cout << "Pt = " << el->pt() << endl;
+      cout << "isEE = " << el->isEE() << endl;
+      cout << "---- R03 ----" << endl;
+      cout << "CH = " << el->pfIsolationVariables().sumChargedHadronPt << endl;
+      cout << "NH = " << el->pfIsolationVariables().sumNeutralHadronEt << endl;
+      cout << "Ph = " << el->pfIsolationVariables().sumPhotonEt << endl;
+      cout << "PU = " << el->pfIsolationVariables().sumPUPt << endl;
+      cout << "---- Mini ----" << endl;
+      cout << "CH = " << this_miniiso.chargedHadronIso() << endl;
+      cout << "HN = " << this_miniiso.neutralHadronIso() << endl;
+      cout << "Ph = " << this_miniiso.photonIso() << endl;
+      cout << "PU = " << this_miniiso.puChargedHadronIso() << endl;
+      cout << "---- Diff ----" << endl;
+      cout << "dCH = " << el->pfIsolationVariables().sumChargedHadronPt-this_miniiso.chargedHadronIso() << endl;
+      cout << "dNH = " << el->pfIsolationVariables().sumNeutralHadronEt-this_miniiso.neutralHadronIso() << endl;
+      cout << "dPh = " << el->pfIsolationVariables().sumPhotonEt-this_miniiso.photonIso() << endl;
+      cout << "dPU = " << el->pfIsolationVariables().sumPUPt-this_miniiso.puChargedHadronIso() << endl;
+    }
+*/
+
+    electron_chMiniIso.push_back( this_miniiso.chargedHadronIso() );
+    electron_nhMiniIso.push_back( this_miniiso.neutralHadronIso() );
+    electron_phMiniIso.push_back( this_miniiso.photonIso() );
+    electron_puChMiniIso.push_back( this_miniiso.puChargedHadronIso() );
+
     // cout << "##### fillElectrons: Before elecTrk #####" << endl;
     
     if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] Isolation" << endl;
