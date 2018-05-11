@@ -2759,18 +2759,62 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_partonFlavour.push_back( jets_iter->partonFlavour() );
     jet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
+    //=========================================================================
+    //==== Taggers
     //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    //=========================================================================
+
+    //=== CSVv2
+
     jet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
-    jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
+
+    //==== DeepCSV (B)
+/*
+    cout << "==============================" << endl;
+    cout << "---- BvsAll ----" << endl;
+    cout << "methodA = " << jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") << endl;
+*/
+    //==== methodA
+    //jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
+    //==== methodB
+    jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
+
+    //==== DeepFlavour
+
+    jet_DeepFlavour_b.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probb"));
+    jet_DeepFlavour_bb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probbb"));
+    jet_DeepFlavour_lepb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:problepb"));
+    jet_DeepFlavour_c.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probc"));
+    jet_DeepFlavour_uds.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probuds"));
+    jet_DeepFlavour_g.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probg"));
+
+    //==== Old Charm Tagger
+
     jet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
     jet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
 
-    double deepcharm_c = jets_iter->bDiscriminator("pfDeepCSVJetTags:probc");
-    double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
-    double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
-    double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
-    jet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
-    jet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
+    //==== DeepCSV charm tagger
+
+/*
+    cout << "---- CvsL ----" << endl;
+    cout << "methodA = " << deepcharm_c/(deepcharm_c+deepcharm_udsg) << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") << endl;
+    cout << "---- CvsB ----" << endl;
+    cout << "methodA = " << deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") << endl;
+*/
+    //==== methodA : it gives value = 0.5 or 0.333 when these are -1.. 
+    //double deepcharm_c = jets_iter->bDiscriminator("pfDeepCSVJetTags:probc");
+    //double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
+    //double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
+    //double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
+    //jet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
+    //jet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
+    //==== methodB
+    jet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
+    jet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
+
 
     jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
@@ -2870,17 +2914,62 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_partonFlavour.push_back( jets_iter->partonFlavour() );
     fatjet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
 
+    //=========================================================================
+    //==== Taggers
+    //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    //=========================================================================
+
+    //=== CSVv2
+
     fatjet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
-    fatjet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
+
+    //==== DeepCSV (B)
+/*
+    cout << "==============================" << endl;
+    cout << "---- BvsAll ----" << endl;
+    cout << "methodA = " << jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") << endl;
+*/
+    //==== methodA
+    //fatjet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
+    //==== methodB
+    fatjet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
+
+    //==== DeepFlavour
+
+    fatjet_DeepFlavour_b.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probb"));
+    fatjet_DeepFlavour_bb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probbb"));
+    fatjet_DeepFlavour_lepb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:problepb"));
+    fatjet_DeepFlavour_c.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probc"));
+    fatjet_DeepFlavour_uds.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probuds"));
+    fatjet_DeepFlavour_g.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probg"));
+
+    //==== Old Charm Tagger
+
     fatjet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
     fatjet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
 
-    double deepcharm_c = jets_iter->bDiscriminator("pfDeepCSVJetTags:probc");
-    double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
-    double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
-    double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
-    fatjet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
-    fatjet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
+    //==== DeepCSV charm tagger
+
+/*
+    cout << "---- CvsL ----" << endl;
+    cout << "methodA = " << deepcharm_c/(deepcharm_c+deepcharm_udsg) << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") << endl;
+    cout << "---- CvsB ----" << endl;
+    cout << "methodA = " << deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") << endl;
+*/
+    //==== methodA
+    //double deepcharm_c = jets_iter->bDiscriminator("pfDeepCSVJetTags:probc");
+    //double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
+    //double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
+    //double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
+    //fatjet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
+    //fatjet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
+    //==== methodB
+    fatjet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
+    fatjet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
+
 
     fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
