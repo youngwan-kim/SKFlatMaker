@@ -37,8 +37,8 @@ print 'PDFType = '+PDFType
 GT_MC = '94X_mc2017_realistic_v14' # -- 2017 Nov MC
 GT_DATA = '94X_dataRun2_v6' # -- 2017 prompt reco v1
 
-TESTFILE_MC = '/store/user/jskim/SKFlat/TestMiniAOD_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/0085B26F-3642-E811-8286-008CFAE45400.root'
-TESTFILE_DATA = '/stroe/user/jskim/SKFlat/TestMiniAOD_SingleMuon_periodB/31Mar2018-v1/001642F1-6638-E811-B4FA-0025905B857A.root'
+TESTFILE_MC = '/store/user/jskim/MiniAOD/TestMiniAOD_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/0085B26F-3642-E811-8286-008CFAE45400.root'
+TESTFILE_DATA = '/stroe/user/jskim/MiniAOD/TestMiniAOD_SingleMuon_periodB/31Mar2018-v1/001642F1-6638-E811-B4FA-0025905B857A.root'
 
 ####################################################################################################################
 
