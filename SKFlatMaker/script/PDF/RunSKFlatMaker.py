@@ -74,21 +74,6 @@ process.goodOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
 
 process.FastFilters = cms.Sequence( process.goodOfflinePrimaryVertices )
 
-##################################
-# For E/gamma correction and VID #
-##################################
-#from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-#setupEgammaPostRecoSeq(process,applyEnergyCorrections=False,
-#                       applyVIDOnCorrectedEgamma=False,
-#                       isMiniAOD=True)
-
-
-######################
-# MET Phi Correction #
-######################
-#from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-#runMetCorAndUncFromMiniAOD(process, isData=True )  #For MC isData=False
-
 #################
 # -- DY Tree -- #
 #################
@@ -97,20 +82,15 @@ from SKFlatMaker.SKFlatMaker.PUreweight2012_cff import *
 
 process.recoTree = SKFlatMaker.clone()
 process.recoTree.DebugLevel = cms.untracked.int32(1)
-process.recoTree.StoreHLTObjectFlag = False ##FIXME
+process.recoTree.StoreHLTObjectFlag = False
 
 # -- Objects without Corrections -- # 
 process.recoTree.Muon = cms.untracked.InputTag("slimmedMuons") # -- miniAOD -- #
 process.recoTree.Electron = cms.untracked.InputTag("slimmedElectrons") # -- miniAOD -- # before smearing
 process.recoTree.Photon = cms.untracked.InputTag("slimmedPhotons") # -- miniAOD -- #
-#process.recoTree.SmearedElectron = "calibratedPatElectrons" # -- Smeared Electron
-#process.recoTree.SmearedPhoton = "calibratedPatPhotons" # -- Smeared Photon
-process.recoTree.SmearedElectron = cms.untracked.InputTag("slimmedElectrons")
-process.recoTree.SmearedPhoton = cms.untracked.InputTag("slimmedPhotons")
-#process.recoTree.SmearedElectron = cms.untracked.InputTag("calibratedPatElectrons") # -- Smeared Electron
-#process.recoTree.SmearedPhoton = cms.untracked.InputTag("calibratedPatPhotons") # -- Smeared Photon
-#process.recoTree.Jet = cms.untracked.InputTag("slimmedJets") # -- miniAOD -- #
-#process.recoTree.MET = cms.untracked.InputTag("slimmedMETs") # -- miniAOD -- #
+process.recoTree.Jet = cms.untracked.InputTag("slimmedJets") # -- miniAOD -- #
+process.recoTree.FatJet = cms.untracked.InputTag("slimmedJetsAK8")
+process.recoTree.MET = cms.InputTag("slimmedMETs")
 process.recoTree.GenParticle = cms.untracked.InputTag("prunedGenParticles") # -- miniAOD -- #
 
 if "MLM" in TESTFILE_MC:
@@ -126,70 +106,8 @@ if isPrivateSample:
   process.recoTree.LHEEventProduct = cms.untracked.InputTag("source")
   process.recoTree.LHERunInfoProduct = cms.untracked.InputTag("source")
 
-# -- for electrons -- # chaged to 2017 ID Map
 process.recoTree.rho = cms.untracked.InputTag("fixedGridRhoFastjetAll")
 process.recoTree.conversionsInputTag = cms.untracked.InputTag("reducedEgamma:reducedConversions") # -- miniAOD -- #
-
-# -- for photons -- #
-process.recoTree.effAreaChHadFile = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfChargedHadrons_90percentBased_TrueVtx.txt")
-process.recoTree.effAreaNeuHadFile= cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfNeutralHadrons_90percentBased_TrueVtx.txt")
-process.recoTree.effAreaPhoFile   = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased_TrueVtx.txt")
-
-
-
-
-# -- Corrections -- #
-
-# -- JEC
-JEC_files = ('Fall17_17Nov2017BCDEF_V6_DATA', 'Fall17_17Nov2017_V6_MC')
-if isMC:
-  jecFile = JEC_files[1]
-else:
-  jecFile = JEC_files[0]
-
-from CondCore.CondDB.CondDB_cfi import CondDB
-if hasattr(CondDB, 'connect'): delattr(CondDB, 'connect')
-process.jec = cms.ESSource("PoolDBESSource",CondDB,
-    connect = cms.string('sqlite_fip:SKFlatMaker/SKFlatMaker/data/JEC/db/%s.db'%jecFile),            
-    toGet = cms.VPSet(
-        cms.PSet(
-            record = cms.string("JetCorrectionsRecord"),
-            tag = cms.string("JetCorrectorParametersCollection_%s_AK4PF"%jecFile),
-            label= cms.untracked.string("AK4PF")),
-        cms.PSet(
-            record = cms.string("JetCorrectionsRecord"),
-            tag = cms.string("JetCorrectorParametersCollection_%s_AK4PFchs"%jecFile),
-            label= cms.untracked.string("AK4PFchs")),
-        cms.PSet(
-            record = cms.string("JetCorrectionsRecord"),
-            tag = cms.string("JetCorrectorParametersCollection_%s_AK4PFPuppi"%jecFile),
-            label= cms.untracked.string("AK4PFPuppi")),
-    )
-)
-process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
-print "JEC based on", process.jec.connect
-process.load("PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff")
-from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-if isMC:
-  updateJetCollection(
-    process,
-    jetSource = cms.InputTag('slimmedJets'),
-    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
-    )
-else :
-  updateJetCollection(
-    process,
-    jetSource = cms.InputTag('slimmedJets'),
-    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
-    )
-
-process.recoTree.Jet = cms.untracked.InputTag("slimmedJets") # -- miniAOD -- #
-process.recoTree.FatJet = cms.untracked.InputTag("slimmedJetsAK8")
-
-# -- MET Correction
-from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-runMetCorAndUncFromMiniAOD(process, isData= not isMC, electronColl=cms.InputTag('slimmedElectrons'), jetCollUnskimmed=cms.InputTag('slimmedJets'))
-process.recoTree.MET = cms.InputTag("slimmedMETs","","PAT")
 
 # -- for Track & Vertex -- #
 process.recoTree.PrimaryVertex = cms.untracked.InputTag("offlineSlimmedPrimaryVertices") # -- miniAOD -- #
@@ -215,15 +133,6 @@ process.recoTree.StoreLHEFlag = isMC
 ####################
 process.p = cms.Path(
   process.FastFilters *
-  #process.egammaPostRecoSeq *
-  #process.calibratedPatElectrons *
-  #process.calibratedPatPhotons *  
-  #process.selectedElectrons *
-  #process.selectedPhotons *
-  #process.egmPhotonIDSequence *
-  #process.egmGsfElectronIDSequence *
-  #process.electronIDValueMapProducer *
-  #process.fullPatMetSequence *  #This is the phi corrections part
   process.recoTree
 )
 

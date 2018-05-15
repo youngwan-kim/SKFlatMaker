@@ -18,5 +18,3 @@ bool	photon_passLooseID	1
 bool	photon_passMediumID	1
 bool	photon_passTightID	1
 double	photon_ptUnCorr	1
-double	photon_etaUnCorr	1
-double	photon_phiUnCorr	1

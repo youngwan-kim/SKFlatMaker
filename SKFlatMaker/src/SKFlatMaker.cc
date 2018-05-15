@@ -33,10 +33,8 @@ using namespace isodeposit;
 SKFlatMaker::SKFlatMaker(const edm::ParameterSet& iConfig):
 // -- object tokens -- //
 MuonToken                           ( consumes< std::vector<pat::Muon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
-ElectronToken                       ( consumes< edm::View<pat::Electron> >                  (iConfig.getUntrackedParameter<edm::InputTag>("SmearedElectron")) ),
-UnCorrElectronToken                 ( consumes< edm::View<pat::Electron> >                  (iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
-PhotonToken                         ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("SmearedPhoton")) ),
-UnCorrPhotonToken                   ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
+ElectronToken                       ( consumes< edm::View<pat::Electron> >                  (iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
+PhotonToken                         ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
 JetToken                            ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
 FatJetToken                         ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("FatJet")) ),
 MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
@@ -69,6 +67,9 @@ PrimaryVertexToken                  ( consumes< reco::VertexCollection >        
 TrackToken                          ( consumes< edm::View<reco::Track> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
 PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
 {
+
+  if(theDebugLevel) cout << "[SKFlatMaker::SKFlatMaker] Constructor called" << endl;
+
   nEvt = 0;
   
   processName                       = iConfig.getUntrackedParameter<string>("processName", "HLT");
@@ -126,6 +127,8 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   //   PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC");
   // }
   
+  if(theDebugLevel) cout << "[SKFlatMaker::SKFlatMaker] Constructor finished" << endl;
+
 }
 
 SKFlatMaker::~SKFlatMaker() { }
@@ -393,17 +396,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_passMVAID_iso_WP80.clear();
   electron_passMVAID_iso_WP90.clear();
   electron_passHEEPID.clear();
-  electron_ptUnCorr.clear();
-  electron_etaUnCorr.clear();
-  electron_phiUnCorr.clear();
-  electron_PxUnCorr.clear();
-  electron_PyUnCorr.clear();
-  electron_PzUnCorr.clear();
   electron_EnergyUnCorr.clear();
-  electron_scEnergyUnCorr.clear();
-  electron_scEtaUnCorr.clear();
-  electron_scPhiUnCorr.clear();
-  electron_scEtUnCorr.clear();
   electron_mva.clear();
   electron_zzmva.clear();
   electron_missinghits.clear();
@@ -628,8 +621,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   photon_passMediumID.clear();
   photon_passTightID.clear();
   photon_ptUnCorr.clear();
-  photon_etaUnCorr.clear();
-  photon_phiUnCorr.clear();
 
   // cout << "[SKFlatMaker::analyze] Varialbe intilization done" << endl;
   
@@ -1029,17 +1020,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_passMVAID_iso_WP80", "vector<bool>", &electron_passMVAID_iso_WP80);
     DYTree->Branch("electron_passMVAID_iso_WP90", "vector<bool>", &electron_passMVAID_iso_WP90);
     DYTree->Branch("electron_passHEEPID", "vector<bool>", &electron_passHEEPID);
-    DYTree->Branch("electron_ptUnCorr", "vector<double>", &electron_ptUnCorr);
-    DYTree->Branch("electron_etaUnCorr", "vector<double>", &electron_etaUnCorr);
-    DYTree->Branch("electron_phiUnCorr", "vector<double>", &electron_phiUnCorr);
-    DYTree->Branch("electron_PxUnCorr", "vector<double>", &electron_PxUnCorr);
-    DYTree->Branch("electron_PyUnCorr", "vector<double>", &electron_PyUnCorr);
-    DYTree->Branch("electron_PzUnCorr", "vector<double>", &electron_PzUnCorr);
     DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
-    DYTree->Branch("electron_scEnergyUnCorr", "vector<double>", &electron_scEnergyUnCorr);
-    DYTree->Branch("electron_scEtaUnCorr", "vector<double>", &electron_scEtaUnCorr);
-    DYTree->Branch("electron_scPhiUnCorr", "vector<double>", &electron_scPhiUnCorr);
-    DYTree->Branch("electron_scEtUnCorr", "vector<double>", &electron_scEtUnCorr);
     DYTree->Branch("electron_mva", "vector<double>", &electron_mva);
     DYTree->Branch("electron_zzmva", "vector<double>", &electron_zzmva);
     DYTree->Branch("electron_missinghits", "vector<int>", &electron_missinghits);
@@ -1237,8 +1218,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("photon_passMediumID", "vector<bool>", &photon_passMediumID);
     DYTree->Branch("photon_passTightID", "vector<bool>", &photon_passTightID);
     DYTree->Branch("photon_ptUnCorr", "vector<double>", &photon_ptUnCorr);
-    DYTree->Branch("photon_etaUnCorr", "vector<double>", &photon_etaUnCorr);
-    DYTree->Branch("photon_phiUnCorr", "vector<double>", &photon_phiUnCorr);
   }
   
   
@@ -1292,6 +1271,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("pfMET_Type1_PhiCor_Py", &pfMET_Type1_PhiCor_Py, "pfMET_Type1_PhiCor_Py/D");
     DYTree->Branch("pfMET_Type1_PhiCor_SumEt", &pfMET_Type1_PhiCor_SumEt, "pfMET_Type1_PhiCor_SumEt/D");
   }
+
+  if(theDebugLevel) cout << "[SKFlatMaker::beginJob] finished" << endl;
+
 }
 
 void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
@@ -1331,6 +1313,8 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
     LogError("HLTMuonVal") << "Initialization of HLTConfigProvider failed!!";
     return;
   }
+
+  if(theDebugLevel) cout << "[SKFlatMaker::beginRun] finished" << endl;
 
 }
 
@@ -2097,26 +2081,24 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   for(int i=0; i< (int)ElecHandle->size(); i++){
     const auto el = ElecHandle->ptrAt(i);
     
-    //electron_MVAIso.push_back( (*mvaIsoValues)[el] );
-    //electron_MVANoIso.push_back( (*mvaNoIsoValues)[el] );
     electron_MVAIso.push_back( el -> userFloat("ElectronMVAEstimatorRun2Fall17IsoV1Values") );
     electron_MVANoIso.push_back( el -> userFloat("ElectronMVAEstimatorRun2Fall17NoIsoV1Values") );
-    //double ratio_E = el->userFloat("ecalTrkEnergyPostCorr") / el->energy();
     double elec_theta = el -> theta();
     double sin_theta = sin(elec_theta);
-    //electron_pt.push_back( el->pt() * ratio_E );
     electron_pt.push_back( el->userFloat("ecalTrkEnergyPostCorr") * sin_theta );
     electron_pt_Scale_Up.push_back( el->userFloat("energyScaleUp") * sin_theta );
     electron_pt_Scale_Down.push_back( el->userFloat("energyScaleDown") * sin_theta );
     electron_pt_Smear_Up.push_back( el->userFloat("energySigmaUp") * sin_theta );
     electron_pt_Smear_Down.push_back( el->userFloat("energySigmaDown") * sin_theta );
-    //double energy_t = el->userFloat("ecalTrkEnergyPreCorr") * sin_theta;
     electron_eta.push_back( el->eta() );
     electron_phi.push_back( el->phi() );
     electron_Px.push_back( el->px() );
     electron_Py.push_back( el->py() );
     electron_Pz.push_back( el->pz() );
-    //electron_Energy.push_back( el->energy() );
+
+    //==== UnCorrected
+    electron_EnergyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") );
+
     electron_Energy.push_back( el->userFloat("ecalTrkEnergyPostCorr") );
     electron_Energy_Scale_Up.push_back( el->userFloat("energyScaleUp") );
     electron_Energy_Scale_Down.push_back( el->userFloat("energyScaleDown") );
@@ -2324,50 +2306,9 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_passMVAID_iso_WP80.push_back( isPassMVA_iso_WP80 );
     electron_passMVAID_iso_WP90.push_back( isPassMVA_iso_WP90 );
     electron_passHEEPID.push_back( isPassHEEP );
-    
-  } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
-  
-  /////////////////////////////////
-  // -- un-corrected electron -- //
-  /////////////////////////////////
-  // -- save a few variables for the comparison with corrected one -- //
-  // -- WARNING: the order of uncorrected electrons in array may not be same with the corrected one! ... 
-  // -- so uncorrected one and corrected one should be matched via eta and phi comparison before using it! -- //
-  
-  edm::Handle< edm::View<pat::Electron> > UnCorrElecHandle;
-  iEvent.getByToken(UnCorrElectronToken, UnCorrElecHandle);
-  
-  for(int i=0; i< (int)UnCorrElecHandle->size(); i++){
-    const auto el = UnCorrElecHandle->ptrAt(i);
-    double elec_theta = el -> theta();
-    double sin_theta = sin(elec_theta);
-    double cos_theta = cos(elec_theta);
-    
-    electron_ptUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") * sin_theta );
-    electron_etaUnCorr.push_back( el->eta() );
-    electron_phiUnCorr.push_back( el->phi() );
-    double el_phi = el->phi();
-    //electron_PxUnCorr.push_back( el->px() );
-    //electron_PyUnCorr.push_back( el->py() );
-    //electron_PzUnCorr.push_back( el->pz() );
-    electron_PxUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") * sin_theta * cos(el_phi) );
-    electron_PyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") * sin_theta * sin(el_phi) );
-    electron_PzUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") * cos_theta );
-    //cout << "el->px() : " << el->px() << ", electron_PxUnCorr[i] : " << electron_PxUnCorr[i] << endl;
-    //cout << "el->py() : " << el->py() << ", electron_PyUnCorr[i] : " << electron_PyUnCorr[i] <<endl;
-    //cout << "el->pz() : " << el->pz() << ", electron_PzUnCorr[i] : " << electron_PzUnCorr[i] <<endl;
 
-    electron_EnergyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") );
-    
-    // -- Information from SuperCluster -- //
-    electron_scEnergyUnCorr.push_back( el->superCluster()->energy() );
-    electron_scEtaUnCorr.push_back( el->superCluster()->eta() );
-    electron_scPhiUnCorr.push_back( el->superCluster()->phi() );
-    double R = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y() +el->superCluster()->z()*el->superCluster()->z());
-    double Rt = sqrt(el->superCluster()->x()*el->superCluster()->x() + el->superCluster()->y()*el->superCluster()->y());
-    electron_scEtUnCorr.push_back( el->superCluster()->energy()*(Rt/R) );
-    
-  }
+
+  } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   
   // cout << "##### End of fillElectrons #####" << endl;
 }
@@ -2616,9 +2557,6 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
   edm::Handle< edm::View<pat::Photon> > PhotonHandle;
   iEvent.getByToken(PhotonToken, PhotonHandle);
   
-  edm::Handle< edm::View<pat::Photon> > UnCorrPhotonHandle;
-  iEvent.getByToken(UnCorrPhotonToken, UnCorrPhotonHandle);
-
   EffectiveAreas photon_EA_CH( photon_EA_CH_file.fullPath() );
   EffectiveAreas photon_EA_HN( photon_EA_HN_file.fullPath() );
   EffectiveAreas photon_EA_Ph( photon_EA_Ph_file.fullPath() );
@@ -2627,6 +2565,7 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
     const auto pho = PhotonHandle->ptrAt(i);
     
     double sin_theta = sin(pho->theta());
+    photon_ptUnCorr.push_back( pho -> userFloat("ecalEnergyPreCorr") * sin_theta );
     photon_pt.push_back( pho -> userFloat("ecalEnergyPostCorr") * sin_theta );
     //double pho_pt_noncor = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
     //cout << "pho->pt() : " << pho->pt() << ", pho_pt_noncor : " << pho_pt_noncor << ", Pt(cor) : " << photon_pt.at(i) << endl;
@@ -2667,17 +2606,12 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
     photon_passLooseID.push_back( isPassLoose );
     photon_passMediumID.push_back( isPassMedium );
     photon_passTightID.push_back( isPassTight );
-    
+
+
+
+
   }
   
-  for(size_t i=0; i< UnCorrPhotonHandle->size(); ++i){
-    const auto pho = UnCorrPhotonHandle->ptrAt(i);
-    double sin_theta = sin(pho->theta());
-    photon_ptUnCorr.push_back( pho -> userFloat("ecalEnergyPreCorr") * sin_theta );
-    photon_etaUnCorr.push_back( pho->eta() );
-    photon_phiUnCorr.push_back( pho->phi() );
-  }
-
 }
 
 

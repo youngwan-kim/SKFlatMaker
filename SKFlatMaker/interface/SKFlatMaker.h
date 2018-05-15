@@ -212,9 +212,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   // -- Tokens (for 76X) -- //
   edm::EDGetTokenT< std::vector<pat::Muon> >            MuonToken;
   edm::EDGetTokenT< edm::View<pat::Electron> >          ElectronToken;
-  edm::EDGetTokenT< edm::View<pat::Electron> >          UnCorrElectronToken;
   edm::EDGetTokenT< edm::View<pat::Photon> >            PhotonToken;
-  edm::EDGetTokenT< edm::View<pat::Photon> >            UnCorrPhotonToken;
   edm::EDGetTokenT< std::vector<pat::Jet> >             JetToken;
   edm::EDGetTokenT< std::vector<pat::Jet> >             FatJetToken;
   edm::EDGetTokenT< std::vector<pat::MET> >             MetToken;
@@ -595,17 +593,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<bool> electron_passMVAID_iso_WP80;
   vector<bool> electron_passMVAID_iso_WP90;
   vector<bool> electron_passHEEPID;
-  vector<double> electron_ptUnCorr;
-  vector<double> electron_etaUnCorr;
-  vector<double> electron_phiUnCorr;
-  vector<double> electron_PxUnCorr;
-  vector<double> electron_PyUnCorr;
-  vector<double> electron_PzUnCorr;
   vector<double> electron_EnergyUnCorr;
-  vector<double> electron_scEnergyUnCorr;
-  vector<double> electron_scEtaUnCorr;
-  vector<double> electron_scPhiUnCorr;
-  vector<double> electron_scEtUnCorr;
   vector<double> electron_mva;
   vector<double> electron_zzmva;
   vector<int> electron_missinghits;
@@ -803,8 +791,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<bool> photon_passMediumID;
   vector<bool> photon_passTightID;
   vector<double> photon_ptUnCorr;
-  vector<double> photon_etaUnCorr;
-  vector<double> photon_phiUnCorr;
 
   // Effective area constants for all isolation types
   // EffectiveAreas effAreaChHadrons_;

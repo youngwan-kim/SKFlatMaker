@@ -116,17 +116,7 @@ bool	electron_passMVAID_noIso_WP90	1
 bool	electron_passMVAID_iso_WP80	1
 bool	electron_passMVAID_iso_WP90	1
 bool	electron_passHEEPID	1
-double	electron_ptUnCorr	1
-double	electron_etaUnCorr	1
-double	electron_phiUnCorr	1
-double	electron_PxUnCorr	1
-double	electron_PyUnCorr	1
-double	electron_PzUnCorr	1
 double	electron_EnergyUnCorr	1
-double	electron_scEnergyUnCorr	1
-double	electron_scEtaUnCorr	1
-double	electron_scPhiUnCorr	1
-double	electron_scEtUnCorr	1
 double	electron_mva	1
 double	electron_zzmva	1
 int	electron_missinghits	1
