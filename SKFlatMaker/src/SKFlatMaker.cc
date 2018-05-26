@@ -68,12 +68,13 @@ TrackToken                          ( consumes< edm::View<reco::Track> >        
 PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
 {
 
+  theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
+
   if(theDebugLevel) cout << "[SKFlatMaker::SKFlatMaker] Constructor called" << endl;
 
   nEvt = 0;
   
   processName                       = iConfig.getUntrackedParameter<string>("processName", "HLT");
-  theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
 
   electron_EA_NHandPh_file          = iConfig.getUntrackedParameter<edm::FileInPath>( "electron_EA_NHandPh_file" );
   photon_EA_CH_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_CH_file" );
@@ -192,6 +193,21 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pfMET_Type1_PhiCor_Px=-999;
   pfMET_Type1_PhiCor_Py=-999;
   pfMET_Type1_PhiCor_SumEt=-999;
+  pfMET_pt_shifts.clear();
+  pfMET_phi_shifts.clear();
+  pfMET_Px_shifts.clear();
+  pfMET_Py_shifts.clear();
+  pfMET_SumEt_shifts.clear();
+  pfMET_Type1_pt_shifts.clear();
+  pfMET_Type1_phi_shifts.clear();
+  pfMET_Type1_Px_shifts.clear();
+  pfMET_Type1_Py_shifts.clear();
+  pfMET_Type1_SumEt_shifts.clear();
+  pfMET_Type1_PhiCor_pt_shifts.clear();
+  pfMET_Type1_PhiCor_phi_shifts.clear();
+  pfMET_Type1_PhiCor_Px_shifts.clear();
+  pfMET_Type1_PhiCor_Py_shifts.clear();
+  pfMET_Type1_PhiCor_SumEt_shifts.clear();
 
   //==== Tracker Track
 
@@ -349,6 +365,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_relIsoRho03.clear();
   electron_passConversionVeto.clear();
   electron_isGsfCtfScPixChargeConsistent.clear();
+  electron_isGsfScPixChargeConsistent.clear();
+  electron_isGsfCtfChargeConsistent.clear();
   electron_mHits.clear();
   electron_crack.clear();
   electron_ecalDriven.clear();
@@ -399,7 +417,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_EnergyUnCorr.clear();
   electron_mva.clear();
   electron_zzmva.clear();
-  electron_missinghits.clear();
   electron_chMiniIso.clear();
   electron_nhMiniIso.clear();
   electron_phMiniIso.clear();
@@ -973,6 +990,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_relIsoRho03", "vector<double>", &electron_relIsoRho03);
     DYTree->Branch("electron_passConversionVeto", "vector<bool>", &electron_passConversionVeto);
     DYTree->Branch("electron_isGsfCtfScPixChargeConsistent", "vector<bool>", &electron_isGsfCtfScPixChargeConsistent);
+    DYTree->Branch("electron_isGsfScPixChargeConsistent", "vector<bool>", &electron_isGsfScPixChargeConsistent);
+    DYTree->Branch("electron_isGsfCtfChargeConsistent", "vector<bool>", &electron_isGsfCtfChargeConsistent);
     DYTree->Branch("electron_mHits", "vector<int>", &electron_mHits);
     DYTree->Branch("electron_crack", "vector<int>", &electron_crack);
     DYTree->Branch("electron_ecalDriven", "vector<int>", &electron_ecalDriven);
@@ -1023,7 +1042,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
     DYTree->Branch("electron_mva", "vector<double>", &electron_mva);
     DYTree->Branch("electron_zzmva", "vector<double>", &electron_zzmva);
-    DYTree->Branch("electron_missinghits", "vector<int>", &electron_missinghits);
     DYTree->Branch("electron_chMiniIso", "vector<double>", &electron_chMiniIso);
     DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
     DYTree->Branch("electron_phMiniIso", "vector<double>", &electron_phMiniIso);
@@ -1270,6 +1288,21 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("pfMET_Type1_PhiCor_Px", &pfMET_Type1_PhiCor_Px, "pfMET_Type1_PhiCor_Px/D");
     DYTree->Branch("pfMET_Type1_PhiCor_Py", &pfMET_Type1_PhiCor_Py, "pfMET_Type1_PhiCor_Py/D");
     DYTree->Branch("pfMET_Type1_PhiCor_SumEt", &pfMET_Type1_PhiCor_SumEt, "pfMET_Type1_PhiCor_SumEt/D");
+    DYTree->Branch("pfMET_pt_shifts", "vector<double>", &pfMET_pt_shifts);
+    DYTree->Branch("pfMET_phi_shifts", "vector<double>", &pfMET_phi_shifts);
+    DYTree->Branch("pfMET_Px_shifts", "vector<double>", &pfMET_Px_shifts);
+    DYTree->Branch("pfMET_Py_shifts", "vector<double>", &pfMET_Py_shifts);
+    DYTree->Branch("pfMET_SumEt_shifts", "vector<double>", &pfMET_SumEt_shifts);
+    DYTree->Branch("pfMET_Type1_pt_shifts", "vector<double>", &pfMET_Type1_pt_shifts);
+    DYTree->Branch("pfMET_Type1_phi_shifts", "vector<double>", &pfMET_Type1_phi_shifts);
+    DYTree->Branch("pfMET_Type1_Px_shifts", "vector<double>", &pfMET_Type1_Px_shifts);
+    DYTree->Branch("pfMET_Type1_Py_shifts", "vector<double>", &pfMET_Type1_Py_shifts);
+    DYTree->Branch("pfMET_Type1_SumEt_shifts", "vector<double>", &pfMET_Type1_SumEt_shifts);
+    DYTree->Branch("pfMET_Type1_PhiCor_pt_shifts", "vector<double>", &pfMET_Type1_PhiCor_pt_shifts);
+    DYTree->Branch("pfMET_Type1_PhiCor_phi_shifts", "vector<double>", &pfMET_Type1_PhiCor_phi_shifts);
+    DYTree->Branch("pfMET_Type1_PhiCor_Px_shifts", "vector<double>", &pfMET_Type1_PhiCor_Px_shifts);
+    DYTree->Branch("pfMET_Type1_PhiCor_Py_shifts", "vector<double>", &pfMET_Type1_PhiCor_Py_shifts);
+    DYTree->Branch("pfMET_Type1_PhiCor_SumEt_shifts", "vector<double>", &pfMET_Type1_PhiCor_SumEt_shifts);
   }
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginJob] finished" << endl;
@@ -2085,6 +2118,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     electron_MVANoIso.push_back( el -> userFloat("ElectronMVAEstimatorRun2Fall17NoIsoV1Values") );
     double elec_theta = el -> theta();
     double sin_theta = sin(elec_theta);
+
     electron_pt.push_back( el->userFloat("ecalTrkEnergyPostCorr") * sin_theta );
     electron_pt_Scale_Up.push_back( el->userFloat("energyScaleUp") * sin_theta );
     electron_pt_Scale_Down.push_back( el->userFloat("energyScaleDown") * sin_theta );
@@ -2227,7 +2261,12 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     
     // -- Track - Impact Parameter, Conversion rejection, Converted -- //
     reco::GsfTrackRef elecTrk = el->gsfTrack();
-    
+
+    electron_passConversionVeto.push_back( el->passConversionVeto() );
+    electron_isGsfCtfScPixChargeConsistent.push_back( el->isGsfCtfScPixChargeConsistent() );
+    electron_isGsfScPixChargeConsistent.push_back( el->isGsfScPixChargeConsistent() );
+    electron_isGsfScPixChargeConsistent.push_back( el->isGsfScPixChargeConsistent() );
+
     // electron_mHits.push_back( elecTrk->numberOfLostHits() );
     // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleMissingHitsCut.cc#L34-L41 -- //
     constexpr reco::HitPattern::HitCategory missingHitType = reco::HitPattern::MISSING_INNER_HITS;
@@ -2631,8 +2670,6 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   pfMET_Py = metHandle->front().uncorPy();
   pfMET_SumEt = metHandle->front().uncorSumEt();
   
-  // printf("[pfMET] (pT, phi, Px, Py, sumEt) = (%.3lf, %.3lf, %.3lf, %.3lf, %.3lf)\n", pfMET_pT, pfMET_phi, pfMET_Px, pfMET_Py, pfMET_SumEt);
-  
   pfMET_Type1_pt = metHandle->front().pt();
   pfMET_Type1_phi = metHandle->front().phi();
   pfMET_Type1_Px = metHandle->front().px();
@@ -2644,28 +2681,41 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   pfMET_Type1_PhiCor_Px = metHandle->front().corPx(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_Py = metHandle->front().corPy(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_SumEt = metHandle->front().corSumEt(pat::MET::Type1XY);
-  
-  
-  // pat::METCollection::const_iterator iMET = metHandle->begin();
-  // MET_sumEt = iMET->sumEt();
-  // MET_pt = iMET->pt();
-  // MET_px = iMET->px();
-  // MET_py = iMET->py();
-  // MET_phi = iMET->phi();
-  
-  // edm::Handle<reco::PFMETCollection> pfMETcoll;
-  // iEvent.getByLabel(pfMetCollection_, pfMETcoll);
-  // if( pfMETcoll.isValid() )
-  // {
-  //   const PFMETCollection *pfmetcol = pfMETcoll.product();
-  //   const PFMET *pfmet;
-  //   pfmet = &(pfmetcol->front());
-  //   pfMET_sumEt = pfmet->sumEt();
-  //   pfMET_pt = pfmet->pt();
-  //   pfMET_px = pfmet->px();
-  //   pfMET_py = pfmet->py();
-  //   pfMET_phi = pfmet->phi();
-  // }
+
+
+  //cout << "[MET Check]" << endl;
+  //cout << "Uncorrected\t" << pfMET_pt << "\t" << pfMET_phi << endl;
+  //cout << "Cor(Raw)\t\t" <<  metHandle->front().corPt(pat::MET::Raw) << "\t" << metHandle->front().corPhi(pat::MET::Raw) << endl;
+  //cout << "Default(Type1)\t"     << pfMET_Type1_pt << "\t" << pfMET_Type1_phi << endl;
+  //cout << "Cor(Type1)\t\t\t" <<  metHandle->front().corPt(pat::MET::Type1) << "\t" << metHandle->front().corPhi(pat::MET::Type1) << endl;
+
+
+  //==== Uncertainties
+  //==== https://github.com/cms-sw/cmssw/blob/4dbb008c8f4473dc9beb26171d7dde863880d02e/DataFormats/PatCandidates/interface/MET.h#L151-L157
+
+  for(int i=0; i<pat::MET::METUncertaintySize; i++){
+
+    pfMET_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Raw) );
+    pfMET_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Raw) );
+    pfMET_Px_shifts.push_back( metHandle->front().shiftedPx(pat::MET::METUncertainty(i), pat::MET::Raw) );
+    pfMET_Py_shifts.push_back( metHandle->front().shiftedPy(pat::MET::METUncertainty(i), pat::MET::Raw) );
+    pfMET_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Raw) );
+
+    pfMET_Type1_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1) );
+    pfMET_Type1_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1) );
+    pfMET_Type1_Px_shifts.push_back( metHandle->front().shiftedPx(pat::MET::METUncertainty(i), pat::MET::Type1) );
+    pfMET_Type1_Py_shifts.push_back( metHandle->front().shiftedPy(pat::MET::METUncertainty(i), pat::MET::Type1) );
+    pfMET_Type1_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Type1) );
+
+    pfMET_Type1_PhiCor_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
+    pfMET_Type1_PhiCor_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
+    pfMET_Type1_PhiCor_Px_shifts.push_back( metHandle->front().shiftedPx(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
+    pfMET_Type1_PhiCor_Py_shifts.push_back( metHandle->front().shiftedPy(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
+    pfMET_Type1_PhiCor_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
+
+  }
+
+
 }
 
 /////////////////////////

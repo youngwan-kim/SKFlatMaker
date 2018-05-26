@@ -69,6 +69,8 @@ double	electron_relIsoBeta04	1
 double	electron_relIsoRho03	1
 bool	electron_passConversionVeto	1
 bool	electron_isGsfCtfScPixChargeConsistent	1
+bool	electron_isGsfScPixChargeConsistent	1
+bool	electron_isGsfCtfChargeConsistent	1
 int	electron_mHits	1
 int	electron_crack	1
 int	electron_ecalDriven	1
@@ -119,7 +121,6 @@ bool	electron_passHEEPID	1
 double	electron_EnergyUnCorr	1
 double	electron_mva	1
 double	electron_zzmva	1
-int	electron_missinghits	1
 double	electron_chMiniIso	1
 double	electron_nhMiniIso	1
 double	electron_phMiniIso	1

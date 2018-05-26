@@ -546,6 +546,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_relIsoRho03;
   vector<bool> electron_passConversionVeto;
   vector<bool> electron_isGsfCtfScPixChargeConsistent;
+  vector<bool> electron_isGsfScPixChargeConsistent;
+  vector<bool> electron_isGsfCtfChargeConsistent;
   vector<int> electron_mHits;
   vector<int> electron_crack;
   vector<int> electron_ecalDriven;
@@ -596,7 +598,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_EnergyUnCorr;
   vector<double> electron_mva;
   vector<double> electron_zzmva;
-  vector<int> electron_missinghits;
   vector<double> electron_chMiniIso;
   vector<double> electron_nhMiniIso;
   vector<double> electron_phMiniIso;
@@ -833,6 +834,21 @@ class SKFlatMaker : public edm::EDAnalyzer
   double pfMET_Type1_PhiCor_Px;
   double pfMET_Type1_PhiCor_Py;
   double pfMET_Type1_PhiCor_SumEt;
+  vector<double> pfMET_pt_shifts;
+  vector<double> pfMET_phi_shifts;
+  vector<double> pfMET_Px_shifts;
+  vector<double> pfMET_Py_shifts;
+  vector<double> pfMET_SumEt_shifts;
+  vector<double> pfMET_Type1_pt_shifts;
+  vector<double> pfMET_Type1_phi_shifts;
+  vector<double> pfMET_Type1_Px_shifts;
+  vector<double> pfMET_Type1_Py_shifts;
+  vector<double> pfMET_Type1_SumEt_shifts;
+  vector<double> pfMET_Type1_PhiCor_pt_shifts;
+  vector<double> pfMET_Type1_PhiCor_phi_shifts;
+  vector<double> pfMET_Type1_PhiCor_Px_shifts;
+  vector<double> pfMET_Type1_PhiCor_Py_shifts;
+  vector<double> pfMET_Type1_PhiCor_SumEt_shifts;
 
 };
 #endif
