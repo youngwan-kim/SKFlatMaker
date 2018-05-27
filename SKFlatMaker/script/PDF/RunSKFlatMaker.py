@@ -78,7 +78,6 @@ process.FastFilters = cms.Sequence( process.goodOfflinePrimaryVertices )
 # -- DY Tree -- #
 #################
 from SKFlatMaker.SKFlatMaker.SKFlatMaker_cfi import *
-from SKFlatMaker.SKFlatMaker.PUreweight2012_cff import *
 
 process.recoTree = SKFlatMaker.clone()
 process.recoTree.DebugLevel = cms.untracked.int32(1)
