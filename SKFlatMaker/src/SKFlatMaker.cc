@@ -2267,10 +2267,9 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_isGsfScPixChargeConsistent.push_back( el->isGsfScPixChargeConsistent() );
     electron_isGsfScPixChargeConsistent.push_back( el->isGsfScPixChargeConsistent() );
 
-    // electron_mHits.push_back( elecTrk->numberOfLostHits() );
-    // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleMissingHitsCut.cc#L34-L41 -- //
-    constexpr reco::HitPattern::HitCategory missingHitType = reco::HitPattern::MISSING_INNER_HITS;
-    electron_mHits.push_back( elecTrk->hitPattern().numberOfAllHits(missingHitType) );
+    //==== https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleMissingHitsCut.cc#L34-L41
+    constexpr auto missingHitType = reco::HitPattern::MISSING_INNER_HITS;
+    electron_mHits.push_back( elecTrk->hitPattern().numberOfLostHits(missingHitType) );
 
     electron_sigdxy.push_back( elecTrk->dxy() / elecTrk->dxyError() );
     electron_dxy.push_back( elecTrk->dxy() );
