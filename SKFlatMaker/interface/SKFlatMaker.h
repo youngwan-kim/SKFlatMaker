@@ -363,7 +363,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   int Nelectrons;
   
   // PV
-  int nVertices;
+  int nPV;
   int PVtrackSize;
   double PVchi2;
   double PVndof;

@@ -159,7 +159,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Flag_eeBadScFilter = false;
   Flag_ecalBadCalibFilter = false;
 
-  nVertices = -1;
+  nPV = -1;
   PVtrackSize = -1;
   PVchi2 = -1;
   PVndof = -1;
@@ -793,7 +793,7 @@ void SKFlatMaker::beginJob()
   // DYTree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/D");
   // DYTree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/D");
   DYTree->Branch("Rho",&Rho,"Rho/D");
-  DYTree->Branch("nPV",&nVertices,"nVertices/I");
+  DYTree->Branch("nPV",&nPV,"nPV/I");
   
   //MET Filters 2017
   DYTree->Branch("Flag_goodVertices",&Flag_goodVertices,"Flag_goodVertices/O");
@@ -1561,7 +1561,8 @@ void SKFlatMaker::fillPrimaryVertex(const edm::Event &iEvent)
   edm::Handle<reco::VertexCollection> pvHandle;
   iEvent.getByToken(PrimaryVertexToken, pvHandle);
   const reco::VertexCollection vtx = *(pvHandle.product());
-  
+  nPV = pvHandle->size();
+
   if( vtx.size() > 2 && theDebugLevel > 0) cout << "[SKFlatMaker::fillPrimaryVertex] Reconstructed "<< vtx.size() << " vertices" << endl;
   if (vtx.size() > 0 ){
     PVtrackSize = vtx.front().tracksSize();
@@ -1593,7 +1594,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   edm::Handle<reco::VertexCollection> pvHandle;
   iEvent.getByToken(PrimaryVertexToken, pvHandle);
   const reco::VertexCollection &vertices = *pvHandle.product();
-  nVertices = pvHandle->size();
+
   // -- What is the purpose of below line? -- //
   for(reco::VertexCollection::const_iterator it=vertices.begin() ; it!=vertices.end() ; ++it){
     RefVtx = it->position();
@@ -2333,6 +2334,52 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
     bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
     bool isPassHEEP = el -> electronID("heepElectronID-HEEPV70");
+
+/*
+    //==== checking pogboolean and cut-by-hand
+    if(isPassLoose){
+
+      double this_hovere = el->hadronicOverEm();
+      double corrE = el->userFloat("ecalTrkEnergyPostCorr");
+      double uncorrE = el->userFloat("ecalTrkEnergyPreCorr");
+      double scE = el->superCluster()->energy();
+
+      if(abseta<1.479){
+
+        double this_loosecut_corrE   = 0.05 + 1.12/corrE   + 0.0368*Rho/corrE;
+        double this_loosecut_uncorrE = 0.05 + 1.12/uncorrE + 0.0368*Rho/uncorrE;
+
+        if( !(this_hovere < this_loosecut_uncorrE) ){
+          cout << "---- |scEta| = " << abseta << endl;
+          cout << "hadronicOverEm() = " << this_hovere << endl;
+          cout << "this_loosecut_corrE = " << this_loosecut_corrE << endl;
+          cout << "this_loosecut_uncorrE = " << this_loosecut_uncorrE << endl;
+        }
+
+      }
+      else{
+
+        double this_loosecut_corrE   = 0.0414 + 0.5/corrE   + 0.201*Rho/corrE;
+        double this_loosecut_uncorrE = 0.0414 + 0.5/uncorrE + 0.201*Rho/uncorrE;
+        double this_loosecut_scE     = 0.0414 + 0.5/scE   + 0.201*Rho/scE;
+
+        if( !(this_hovere < this_loosecut_uncorrE) ){
+          cout << "fabs(el->superCluster()->eta()) = " << fabs(el->superCluster()->eta()) << endl;
+          cout << "fabs(el->eta()) = " << fabs(el->eta()) << endl;
+          cout << "el->electronID(\"cutBasedElectronID-Fall17-94X-V1-loose\") = " << el -> electronID("cutBasedElectronID-Fall17-94X-V1-loose") << endl;
+          cout << "el->hadronicOverEm() = " << el->hadronicOverEm() << endl;
+          cout << "el->userFloat(\"ecalTrkEnergyPreCorr\") = " << el->userFloat("ecalTrkEnergyPreCorr") << endl;
+          cout << "el->userFloat(\"ecalTrkEnergyPostCorr\") = " << el->userFloat("ecalTrkEnergyPostCorr") << endl;
+          cout << "el->superCluster()->energy() = " << el->superCluster()->energy() << endl;
+          cout << "Rho = " << Rho << endl;
+          cout << "this_loosecut_corrE = " << this_loosecut_corrE << endl;
+          cout << "this_loosecut_uncorrE = " << this_loosecut_uncorrE << endl;
+          cout << "this_loosecut_scE = " << this_loosecut_scE << endl;
+        }
+
+      }
+    }
+*/
 
     // cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
     electron_passVetoID.push_back( isPassVeto );
