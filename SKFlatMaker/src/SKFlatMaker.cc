@@ -2266,7 +2266,7 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_passConversionVeto.push_back( el->passConversionVeto() );
     electron_isGsfCtfScPixChargeConsistent.push_back( el->isGsfCtfScPixChargeConsistent() );
     electron_isGsfScPixChargeConsistent.push_back( el->isGsfScPixChargeConsistent() );
-    electron_isGsfScPixChargeConsistent.push_back( el->isGsfScPixChargeConsistent() );
+    electron_isGsfCtfChargeConsistent.push_back( el->isGsfCtfChargeConsistent() );
 
     //==== https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleMissingHitsCut.cc#L34-L41
     constexpr auto missingHitType = reco::HitPattern::MISSING_INNER_HITS;
