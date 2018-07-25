@@ -146,10 +146,16 @@ process.recoTree.StoreGENFlag = isMC
 process.recoTree.KeepAllGen = isMC
 process.recoTree.StoreLHEFlag = isMC
 
+from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+setupEgammaPostRecoSeq(process,
+                       runVID=False, #saves CPU time by not needlessly re-running VID
+                       era='2017-Nov17ReReco')
+
 ####################
 # -- Let it run -- #
 ####################
 process.p = cms.Path(
+  process.egammaPostRecoSeq *
   process.FastFilters *
   process.recoTree
 )
