@@ -1992,75 +1992,90 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
 
     double this_roccor = 1.;
     double this_roccor_err = 0.;
-    //==== Data
-    if(IsData){
-      this_roccor = rc.kScaleDT(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), 0, 0); //data
-      this_roccor_err = rc.kScaleDTerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi());
-    }
-    //==== MC
-    else{
 
-      gRandom->SetSeed( evtNum ); // to make the seed always same
-      double u1 = gRandom->Rndm();
-      double u2 = gRandom->Rndm();
+    //==== https://indico.cern.ch/event/460734/contributions/1131590/attachments/1183866/1715221/rochcor_run2_MuonPOG_110815.pdf
+    //==== Recommended pt range is pt>20 GeV
+    //==== JH asked to the authors, and they said pt 10~20 GeV MIGHT be okay..
+    //==== HOWEVER, few GeVs of muon shuold not use this correction,
+    //==== because the authors did not consider the radiations of low pt muons inside detectors
+    //==== So for now, if pt<10 GeV, no correction applied
+    if(imuon.pt()>10.){
 
-      int n_trackerLayersWithMeasurement = 0;
-      if(trackerTrack.isNonnull()) n_trackerLayersWithMeasurement = imuon.innerTrack()->hitPattern().trackerLayersWithMeasurement();
-
-/*
-      //==== Using GenPt
-
-      //cout << "[This Reco Muon] pt = " << imuon.pt() << ", eta = " << imuon.eta() << ", phi = " << imuon.phi() << endl;
-      //cout << "isTight = " << imuon.isTightMuon(vtx) << endl;
-      //cout << "isMediumMuon = " << imuon.isMediumMuon() << endl;
-      //cout << "isLoose = " << imuon.isLooseMuon() << endl;
-      //cout << "isPF = " << muon_isPF.at(i) << endl;
-      //cout << "isGlobal = " << muon_isGlobal.at(i) << endl;
-      //cout << "chi2 = " << muon_normchi.at(i) << endl;
-      //cout << "isTracker = " << muon_isTracker.at(i) << endl;
-      //cout << "isStandAlone = " << muon_isStandAlone.at(i) << endl;
-      //cout << "dxy = " << muon_dxyVTX.at(i) << endl;
-      //cout << "dz = " << muon_dzVTX.at(i) << endl;
-
-      int counter=0;
-      double this_genpt=-999.;
-      for( reco::GenParticleCollection::const_iterator genptl = genParticles->begin(); genptl != genParticles->end(); ++genptl, ++counter) {
-
-        //int idx = -1;
-        //for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ){
-        //  if( genptl->mother()==&(*mit) ){
-        //    idx = std::distance(genParticles->begin(),mit);
-        //    break;
-        //  }
-        //}
-        //cout << counter << "\t" << genptl->pdgId() << "\t" << idx << "\t" << "gen pt = " << genptl->pt() << ", eta = " << genptl->eta() << ", phi = " << genptl->phi() << endl;
-
-
-        if( fabs(genptl->pdgId()) != 13 ) continue;
-        if( !genptl->isPromptFinalState() ) continue;
-        if( reco::deltaR( imuon.eta(), imuon.phi(), genptl->eta(), genptl->phi() ) < 0.3 ){
-          this_genpt = genptl->pt();
-          break;
-        }
+      //==== Data
+      if(IsData){
+        this_roccor = rc.kScaleDT(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), 0, 0); //data
+        this_roccor_err = rc.kScaleDTerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi());
       }
-      //cout << this_genpt << endl;
-
-      if(this_genpt>0){
-        this_roccor     = rc.kScaleFromGenMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u1, 0, 0);
-        this_roccor_err = rc.kScaleFromGenMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u1);
-      }
+      //==== MC
       else{
-        this_roccor     = rc.kScaleAndSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2, 0, 0);
-        this_roccor_err = rc.kScaleAndSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2);
+
+        gRandom->SetSeed( evtNum ); // to make the seed always same
+        double u = gRandom->Rndm();
+
+        int n_trackerLayersWithMeasurement = 0;
+        if(trackerTrack.isNonnull()) n_trackerLayersWithMeasurement = imuon.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+
+  /*
+        //==== Using GenPt
+
+        //cout << "[This Reco Muon] pt = " << imuon.pt() << ", eta = " << imuon.eta() << ", phi = " << imuon.phi() << endl;
+        //cout << "isTight = " << imuon.isTightMuon(vtx) << endl;
+        //cout << "isMediumMuon = " << imuon.isMediumMuon() << endl;
+        //cout << "isLoose = " << imuon.isLooseMuon() << endl;
+        //cout << "isPF = " << muon_isPF.at(i) << endl;
+        //cout << "isGlobal = " << muon_isGlobal.at(i) << endl;
+        //cout << "chi2 = " << muon_normchi.at(i) << endl;
+        //cout << "isTracker = " << muon_isTracker.at(i) << endl;
+        //cout << "isStandAlone = " << muon_isStandAlone.at(i) << endl;
+        //cout << "dxy = " << muon_dxyVTX.at(i) << endl;
+        //cout << "dz = " << muon_dzVTX.at(i) << endl;
+
+        int counter=0;
+        double this_genpt=-999.;
+        for( reco::GenParticleCollection::const_iterator genptl = genParticles->begin(); genptl != genParticles->end(); ++genptl, ++counter) {
+
+          //int idx = -1;
+          //for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ){
+          //  if( genptl->mother()==&(*mit) ){
+          //    idx = std::distance(genParticles->begin(),mit);
+          //    break;
+          //  }
+          //}
+          //cout << counter << "\t" << genptl->pdgId() << "\t" << idx << "\t" << "gen pt = " << genptl->pt() << ", eta = " << genptl->eta() << ", phi = " << genptl->phi() << endl;
+
+
+          if( fabs(genptl->pdgId()) != 13 ) continue;
+          if( !genptl->isPromptFinalState() ) continue;
+          if( reco::deltaR( imuon.eta(), imuon.phi(), genptl->eta(), genptl->phi() ) < 0.3 ){
+            this_genpt = genptl->pt();
+            break;
+          }
+        }
+        //cout << this_genpt << endl;
+
+        if(this_genpt>0){
+          this_roccor     = rc.kScaleFromGenMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u, 0, 0);
+          this_roccor_err = rc.kScaleFromGenMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u);
+        }
+        else{
+          this_roccor     = rc.kSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u, 0, 0);
+          this_roccor_err = rc.kSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u);
+        }
+  */
+
+        //==== TODO Now I'm not using genpt
+        this_roccor     = rc.kSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u, 0, 0);
+        this_roccor_err = rc.kSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u);
+
       }
+
+    } // END IF pt>10 GeV
+/*
+    cout << "--------------------" << endl;
+    cout << "pt = " << imuon.pt() << endl;
+    cout << "this_roccor = " << this_roccor << endl;
+    cout << "this_roccor_err = " << this_roccor_err << endl;
 */
-
-      //==== TODO Now I'm not using genpt
-      this_roccor     = rc.kScaleAndSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2, 0, 0);
-      this_roccor_err = rc.kScaleAndSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u1, u2);
-
-    }
-
     muon_roch_sf.push_back( this_roccor );
     muon_roch_sf_up.push_back( this_roccor+this_roccor_err );
 
