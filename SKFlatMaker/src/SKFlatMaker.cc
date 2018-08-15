@@ -1941,13 +1941,13 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_PfGammaIsoR03.push_back( imuon.pfIsolationR03().sumPhotonEt );
     muon_PFSumPUIsoR03.push_back( imuon.pfIsolationR03().sumPUPt );
 
+/*
     //==== MiniIso
     PFIsolation this_miniiso = GetMiniIso(pc, imuon.p4(),
                                           miniIsoParams_[0], miniIsoParams_[1], miniIsoParams_[2],
                                           miniIsoParams_[3], miniIsoParams_[4], miniIsoParams_[5],
                                           miniIsoParams_[6], miniIsoParams_[7], miniIsoParams_[8]);
 
-/*
     cout << "=======================" << endl;
     cout << "Pt = " << imuon.pt() << endl;
     cout << "---- R04 ----" << endl;
@@ -1966,16 +1966,21 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     cout << "Ph = " << imuon.miniPFIsolation().photonIso() << endl;
     cout << "PU = " << imuon.miniPFIsolation().puChargedHadronIso() << endl;
     cout << "---- Diff ----" << endl;
-    cout << "dCH = " << imuon.pfIsolationR04().sumChargedHadronPt-this_miniiso.chargedHadronIso() << endl;
-    cout << "dNH = " << imuon.pfIsolationR04().sumNeutralHadronEt-this_miniiso.neutralHadronIso() << endl;
-    cout << "dPh = " << imuon.pfIsolationR04().sumPhotonEt-this_miniiso.photonIso() << endl;
-    cout << "dPU = " << imuon.pfIsolationR04().sumPUPt-this_miniiso.puChargedHadronIso() << endl;
-*/
+    cout << "dCH = " << this_miniiso.chargedHadronIso() - imuon.miniPFIsolation().chargedHadronIso() << endl;
+    cout << "dNH = " << this_miniiso.neutralHadronIso() - imuon.miniPFIsolation().neutralHadronIso() << endl;
+    cout << "dPh = " << this_miniiso.photonIso() - imuon.miniPFIsolation().photonIso() << endl;
+    cout << "dPU = " << this_miniiso.puChargedHadronIso() - imuon.miniPFIsolation().puChargedHadronIso() << endl;
 
     muon_PfChargedHadronMiniIso.push_back( this_miniiso.chargedHadronIso() );
     muon_PfNeutralHadronMiniIso.push_back( this_miniiso.neutralHadronIso() );
     muon_PfGammaMiniIso.push_back( this_miniiso.photonIso() );
     muon_PFSumPUMiniIso.push_back( this_miniiso.puChargedHadronIso() );
+*/
+
+    muon_PfChargedHadronMiniIso.push_back( imuon.miniPFIsolation().chargedHadronIso() );
+    muon_PfNeutralHadronMiniIso.push_back( imuon.miniPFIsolation().neutralHadronIso() );
+    muon_PfGammaMiniIso.push_back( imuon.miniPFIsolation().photonIso() );
+    muon_PFSumPUMiniIso.push_back( imuon.miniPFIsolation().puChargedHadronIso() );
 
     // -- Else -- //
     muon_charge.push_back( imuon.charge() );
@@ -2206,6 +2211,7 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_RelPFIso_Rho.push_back( (pfCharged + max<float>( 0.0, pfNeutral + pfPhoton - Rho * eA))/(el->pt()) );
 
     //==== MiniIso
+/*
     PFIsolation this_miniiso;
 
     if(el->isEE()){
@@ -2225,7 +2231,6 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
 
     }
 
-/*
     cout << "=======================" << endl;
     cout << "Pt = " << el->pt() << endl;
     cout << "isEE = " << el->isEE() << endl;
@@ -2245,16 +2250,21 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     cout << "Ph = " << el->miniPFIsolation().photonIso() << endl;
     cout << "PU = " << el->miniPFIsolation().puChargedHadronIso() << endl;
     cout << "---- Diff ----" << endl;
-    cout << "dCH = " << el->pfIsolationVariables().sumChargedHadronPt-this_miniiso.chargedHadronIso() << endl;
-    cout << "dNH = " << el->pfIsolationVariables().sumNeutralHadronEt-this_miniiso.neutralHadronIso() << endl;
-    cout << "dPh = " << el->pfIsolationVariables().sumPhotonEt-this_miniiso.photonIso() << endl;
-    cout << "dPU = " << el->pfIsolationVariables().sumPUPt-this_miniiso.puChargedHadronIso() << endl;
-*/
+    cout << "dCH = " << this_miniiso.chargedHadronIso() - el->miniPFIsolation().chargedHadronIso() << endl;
+    cout << "dNH = " << this_miniiso.neutralHadronIso() - el->miniPFIsolation().neutralHadronIso() << endl;
+    cout << "dPh = " << this_miniiso.photonIso() - el->miniPFIsolation().photonIso() << endl;
+    cout << "dPU = " << this_miniiso.puChargedHadronIso() - el->miniPFIsolation().puChargedHadronIso() << endl;
 
     electron_chMiniIso.push_back( this_miniiso.chargedHadronIso() );
     electron_nhMiniIso.push_back( this_miniiso.neutralHadronIso() );
     electron_phMiniIso.push_back( this_miniiso.photonIso() );
     electron_puChMiniIso.push_back( this_miniiso.puChargedHadronIso() );
+*/
+
+    electron_chMiniIso.push_back( el->miniPFIsolation().chargedHadronIso() );
+    electron_nhMiniIso.push_back( el->miniPFIsolation().neutralHadronIso() );
+    electron_phMiniIso.push_back( el->miniPFIsolation().photonIso() );
+    electron_puChMiniIso.push_back( el->miniPFIsolation().puChargedHadronIso() );
 
     // cout << "##### fillElectrons: Before elecTrk #####" << endl;
     
@@ -2903,6 +2913,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //cout << "jec unc methodA = " << unc << endl;
     //cout << "jec unc methodB = " << unc_methodB << endl << endl;
 
+    cout << "QGTagger:qgLikelihood = " << jets_iter->userFloat("QGTagger:qgLikelihood") << endl;
 
     if(!IsData){
 
