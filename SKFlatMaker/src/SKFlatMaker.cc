@@ -36,7 +36,9 @@ MuonToken                           ( consumes< std::vector<pat::Muon> >        
 ElectronToken                       ( consumes< edm::View<pat::Electron> >                  (iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
 PhotonToken                         ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
 JetToken                            ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
+genJetToken                         ( consumes< reco::GenJetCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("GenJet")) ),
 FatJetToken                         ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("FatJet")) ),
+genFatJetToken                      ( consumes< reco::GenJetCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("GenFatJet")) ),
 MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
 //MetToken                            ( consumes< pat::METCollection>                               (iConfig.getParameter<edm::InputTag>("MET")) ),
 
@@ -107,6 +109,21 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
 
   rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
+
+  //==================
+  //==== Prepare JER
+  //==================
+
+  //==== this method uses Spring16_25nsV6 (80X, 2016, ICHEP dataset) DATA/MC SFs ...
+  //jet_resolution = JME::JetResolution::get(iSetup, "AK4PFchs_pt");
+  //jet_resolution_sf = JME::JetResolutionScaleFactor::get(iSetup, "AK4PFchs");
+
+  jet_resolution = JME::JetResolution( edm::FileInPath( iConfig.getParameter<std::string>("AK4Jet_JER_PtRes_filepath") ).fullPath()  );
+  jet_resolution_sf = JME::JetResolutionScaleFactor( edm::FileInPath( iConfig.getParameter<std::string>("AK4Jet_JER_SF_filepath") ).fullPath() );
+  fatjet_resolution = JME::JetResolution( edm::FileInPath( iConfig.getParameter<std::string>("AK8Jet_JER_PtRes_filepath") ).fullPath()  );
+  fatjet_resolution_sf = JME::JetResolutionScaleFactor( edm::FileInPath( iConfig.getParameter<std::string>("AK8Jet_JER_SF_filepath") ).fullPath() );
+
+  //==== PDF
 
   PDFOrder_ = iConfig.getParameter<string>("PDFOrder");
   PDFIDShift_ = iConfig.getParameter<int>("PDFIDShift");
@@ -575,6 +592,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_PileupJetId.clear();
   jet_shiftedEnUp.clear();
   jet_shiftedEnDown.clear();
+  jet_smearedRes.clear();
+  jet_smearedResUp.clear();
+  jet_smearedResDown.clear();
 
   //==== FatJet
   fatjet_pt.clear();
@@ -616,6 +636,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_neutralMultiplicity.clear();
   fatjet_shiftedEnUp.clear();
   fatjet_shiftedEnDown.clear();
+  fatjet_smearedRes.clear();
+  fatjet_smearedResUp.clear();
+  fatjet_smearedResDown.clear();
 
   //==== Photon
   photon_pt.clear();
@@ -684,7 +707,12 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       
   }
 
+  //==================
   //==== Prepare JEC
+  //==================
+
+  //==== 1) AK4
+
   edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
   iSetup.get<JetCorrectionsRecord>().get(jet_payloadName_,JetCorParColl);
   JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
@@ -696,11 +724,17 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   //if(jet_jecUnc_methodB) delete jet_jecUnc_methodB;
   //jet_jecUnc_methodB = new JetCorrectionUncertainty("/u/user/jskim/scratch/CMSSW_9_4_2/src/SKFlatMaker/SKFlatMaker/data/JEC/MC/Fall17_17Nov2017_V6_MC/Fall17_17Nov2017_V6_MC_Uncertainty_AK4PFchs.txt");
 
+  //==== 2) AK8
+
   edm::ESHandle<JetCorrectorParametersCollection> FatJetCorParColl;
   iSetup.get<JetCorrectionsRecord>().get(fatjet_payloadName_,FatJetCorParColl);
   JetCorrectorParameters const & FatJetCorPar = (*FatJetCorParColl)["Uncertainty"];
   if(fatjet_jecUnc) delete fatjet_jecUnc;
   fatjet_jecUnc = new JetCorrectionUncertainty(FatJetCorPar);
+
+  //==== For JER, get genJets
+  iEvent.getByToken(genJetToken, m_genJets);
+  iEvent.getByToken(genFatJetToken, m_genFatJets);
 
   //==== Event varialbes
   edm::Handle< double > rhoHandle;
@@ -872,6 +906,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_PileupJetId", "vector<double>", &jet_PileupJetId);
     DYTree->Branch("jet_shiftedEnUp", "vector<double>", &jet_shiftedEnUp);
     DYTree->Branch("jet_shiftedEnDown", "vector<double>", &jet_shiftedEnDown);
+    DYTree->Branch("jet_smearedRes", "vector<double>", &jet_smearedRes);
+    DYTree->Branch("jet_smearedResUp", "vector<double>", &jet_smearedResUp);
+    DYTree->Branch("jet_smearedResDown", "vector<double>", &jet_smearedResDown);
 
   }
   
@@ -915,6 +952,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_neutralMultiplicity", "vector<int>", &fatjet_neutralMultiplicity);
     DYTree->Branch("fatjet_shiftedEnUp", "vector<double>", &fatjet_shiftedEnUp);
     DYTree->Branch("fatjet_shiftedEnDown", "vector<double>", &fatjet_shiftedEnDown);
+    DYTree->Branch("fatjet_smearedRes", "vector<double>", &fatjet_smearedRes);
+    DYTree->Branch("fatjet_smearedResUp", "vector<double>", &fatjet_smearedResUp);
+    DYTree->Branch("fatjet_smearedResDown", "vector<double>", &fatjet_smearedResDown);
   }
 
   // Electron
@@ -2803,7 +2843,16 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     cout << "[SKFlatMaker::fillJet] # of Jets = " << jetHandle->size() << endl;
   
   if(jetHandle->size() == 0) return;
-  
+
+  const JetCollection& ForJER_jets = *jetHandle;
+  unsigned int runNum_uint = static_cast <unsigned int> (iEvent.id().run());
+  unsigned int lumiNum_uint = static_cast <unsigned int> (iEvent.id().luminosityBlock());
+  unsigned int evNum_uint = static_cast <unsigned int> (iEvent.id().event());
+  unsigned int jet0eta = uint32_t(ForJER_jets.empty() ? 0 : ForJER_jets[0].eta()/0.01);
+  int m_nomVar=1;
+  std::uint32_t seed = jet0eta + m_nomVar + (lumiNum_uint<<10) + (runNum_uint<<20) + evNum_uint;
+  m_random_generator.seed(seed);
+
   for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter){
 
     jet_pt.push_back( jets_iter->pt() );
@@ -2912,13 +2961,16 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_energy.push_back( jets_iter->energy() );
     if( jets_iter->hasUserFloat("pileupJetId:fullDiscriminant") ) jet_PileupJetId.push_back( jets_iter->userFloat("pileupJetId:fullDiscriminant") );
 
+    //==========
+    //==== JEC
+    //==========
+
     //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
     jet_jecUnc->setJetEta( jets_iter->eta() );
     jet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
     double unc = jet_jecUnc->getUncertainty(true);
     jet_shiftedEnUp.push_back( 1.+unc );
     jet_shiftedEnDown.push_back( 1.-unc ); // I found jet_jecUnc->getUncertainty(true) = jet_jecUnc->getUncertainty(false)
-
 
     //==== For cross check
     //==== methodB
@@ -2928,11 +2980,93 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //cout << "jec unc methodA = " << unc << endl;
     //cout << "jec unc methodB = " << unc_methodB << endl << endl;
 
-    cout << "QGTagger:qgLikelihood = " << jets_iter->userFloat("QGTagger:qgLikelihood") << endl;
-
     if(!IsData){
 
+      //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures
+      //==== https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h
+      //==== https://github.com/cms-sw/cmssw/blob/aa14a75177e9f010b3b8d0af0440598735c49311/PhysicsTools/PatUtils/python/patPFMETCorrections_cff.py
+
+      //==========
+      //==== JER
+      //==========
+
+      double jer = jet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
+      double jer_sf = jet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
+      double jer_sf_UP = jet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
+      double jer_sf_DOWN = jet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
+
+      if(theDebugLevel){
+
+        cout << "#### Jet ####" << endl;
+        cout << "pt = " << jets_iter->pt() << endl;
+        cout << "eta = " << jets_iter->eta() << endl;
+        cout << "Rho = " << Rho << endl;
+        cout << "jer = " << jer << endl;
+        cout << "jer_sf = " << jer_sf << endl;
+        cout << "jer_sf_UP = " << jer_sf_UP << endl;
+
+      }
+
+      const reco::GenJet* genJet = nullptr;
+      genJet = match(*jets_iter, jets_iter->pt() * jer, "AK4");
+      double smearFactor = 1., smearFactor_UP = 1., smearFactor_DOWN = 1.;
+      if(genJet){
+
+        //==== Case 1: we have a "good" gen jet matched to the reco jet
+
+        double dPt = jets_iter->pt() - genJet->pt();
+        smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
+        smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
+        smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
+
+      }
+      else if (jer_sf > 1) {
+
+        //==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
+
+        double sigma = jer * std::sqrt(jer_sf * jer_sf - 1);
+        std::normal_distribution<> d(0, sigma);
+        smearFactor = 1. + d(m_random_generator);
+
+        double sigma_UP = jer * std::sqrt(jer_sf_UP * jer_sf_UP - 1);
+        std::normal_distribution<> d_UP(0, sigma_UP);
+        smearFactor_UP = 1. + d_UP(m_random_generator);
+
+        double sigma_DOWN = jer * std::sqrt(jer_sf_DOWN * jer_sf_DOWN - 1);
+        std::normal_distribution<> d_DOWN(0, sigma_DOWN);
+        smearFactor_DOWN = 1. + d_DOWN(m_random_generator);  
+
+      }
+      else{
+
+      }
+
+      //==== Negative or too small smearFactor. We would change direction of the jet
+      //==== and this is not what we want.
+      //==== Recompute the smearing factor in order to have jet.energy() == MIN_JET_ENERGY
+      double newSmearFactor = MIN_JET_ENERGY / jets_iter->energy();
+
+      smearFactor = std::max(smearFactor,newSmearFactor);
+      smearFactor_UP = std::max(smearFactor_UP,newSmearFactor);
+      smearFactor_DOWN = std::max(smearFactor_DOWN,newSmearFactor);
+
+      if(theDebugLevel){
+
+        cout << "--->" << endl;
+        cout << "smearFactor = " << smearFactor << endl;
+        cout << "smearFactor_UP = " << smearFactor_UP << endl;
+        cout << "smearFactor_DOWN = " << smearFactor_DOWN << endl;
+
+      }
+
+      jet_smearedRes.push_back(smearFactor);
+      jet_smearedResUp.push_back(smearFactor_UP);
+      jet_smearedResDown.push_back(smearFactor_DOWN);
+
     }
+
+    //cout << "QGTagger:qgLikelihood = " << jets_iter->userFloat("QGTagger:qgLikelihood") << endl;
+
 
   } 
   
@@ -2952,6 +3086,15 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     cout << "[SKFlatMaker::fillFatJet] # of FatJets = " << jetHandle->size() << endl;
 
   if(jetHandle->size() == 0) return;
+
+  const JetCollection& ForJER_jets = *jetHandle;
+  unsigned int runNum_uint = static_cast <unsigned int> (iEvent.id().run());
+  unsigned int lumiNum_uint = static_cast <unsigned int> (iEvent.id().luminosityBlock());
+  unsigned int evNum_uint = static_cast <unsigned int> (iEvent.id().event());
+  unsigned int jet0eta = uint32_t(ForJER_jets.empty() ? 0 : ForJER_jets[0].eta()/0.01);
+  int m_nomVar=1;
+  std::uint32_t seed = jet0eta + m_nomVar + (lumiNum_uint<<10) + (runNum_uint<<20) + evNum_uint;
+  m_random_generator.seed(seed);
 
   for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter){
 
@@ -3080,6 +3223,88 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     double unc = fatjet_jecUnc->getUncertainty(true);
     fatjet_shiftedEnUp.push_back( 1.+unc );
     fatjet_shiftedEnDown.push_back( 1.-unc ); // I found fatjet_jecUnc->getUncertainty(true) = fatjet_jecUnc->getUncertainty(false)
+
+    if(!IsData){
+
+      //==========
+      //==== JER
+      //==========
+
+      double jer = fatjet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
+      double jer_sf = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
+      double jer_sf_UP = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
+      double jer_sf_DOWN = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
+
+      if(theDebugLevel){
+
+        cout << "#### FatJet ####" << endl;
+        cout << "pt = " << jets_iter->pt() << endl;
+        cout << "eta = " << jets_iter->eta() << endl;
+        cout << "Rho = " << Rho << endl;
+        cout << "jer = " << jer << endl;
+        cout << "jer_sf = " << jer_sf << endl;
+        cout << "jer_sf_UP = " << jer_sf_UP << endl;
+
+      }
+
+      const reco::GenJet* genJet = nullptr;
+      genJet = match(*jets_iter, jets_iter->pt() * jer, "AK8");
+      double smearFactor = 1., smearFactor_UP = 1., smearFactor_DOWN = 1.;
+      if(genJet){
+
+        //==== Case 1: we have a "good" gen jet matched to the reco jet
+
+        double dPt = jets_iter->pt() - genJet->pt();
+        smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
+        smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
+        smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
+
+      }
+      else if (jer_sf > 1) {
+
+        //==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
+
+        double sigma = jer * std::sqrt(jer_sf * jer_sf - 1);
+        std::normal_distribution<> d(0, sigma);
+        smearFactor = 1. + d(m_random_generator);
+
+        double sigma_UP = jer * std::sqrt(jer_sf_UP * jer_sf_UP - 1);
+        std::normal_distribution<> d_UP(0, sigma_UP);
+        smearFactor_UP = 1. + d_UP(m_random_generator);
+
+        double sigma_DOWN = jer * std::sqrt(jer_sf_DOWN * jer_sf_DOWN - 1);
+        std::normal_distribution<> d_DOWN(0, sigma_DOWN);
+        smearFactor_DOWN = 1. + d_DOWN(m_random_generator);
+
+      }
+      else{
+
+      }
+
+      //==== Negative or too small smearFactor. We would change direction of the jet
+      //==== and this is not what we want.
+      //==== Recompute the smearing factor in order to have jet.energy() == MIN_JET_ENERGY
+      double newSmearFactor = MIN_JET_ENERGY / jets_iter->energy();
+
+      smearFactor = std::max(smearFactor,newSmearFactor);
+      smearFactor_UP = std::max(smearFactor_UP,newSmearFactor);
+      smearFactor_DOWN = std::max(smearFactor_DOWN,newSmearFactor);
+
+      if(theDebugLevel){
+
+        cout << "--->" << endl;
+        cout << "smearFactor = " << smearFactor << endl;
+        cout << "smearFactor_UP = " << smearFactor_UP << endl;
+        cout << "smearFactor_DOWN = " << smearFactor_DOWN << endl;
+
+      }
+
+      fatjet_smearedRes.push_back(smearFactor);
+      fatjet_smearedResUp.push_back(smearFactor_UP);
+      fatjet_smearedResDown.push_back(smearFactor_DOWN);
+
+    }
+
 
   }
 
@@ -3218,6 +3443,54 @@ PFIsolation SKFlatMaker::GetMiniIso(edm::Handle<pat::PackedCandidateCollection> 
 
   return pat::PFIsolation(chiso, nhiso, phiso, puiso);
 
+}
+
+template<class T>
+const reco::GenJet* SKFlatMaker::match(const T& jet, double resolution, TString whichjet){
+
+  edm::Handle<reco::GenJetCollection> this_genjets;
+
+  double m_dR_max = 0.4/2.;
+  if(whichjet=="AK4"){
+    this_genjets = m_genJets;
+    m_dR_max = 0.4/2.;
+  }
+  else if(whichjet=="AK8"){
+    this_genjets = m_genFatJets;
+    m_dR_max = 0.8/2.;
+  }
+  else{
+    cout << "[const reco::GenJet* SKFlatMaker::match] whichjet = " << whichjet << endl;
+  }
+
+  const reco::GenJetCollection& genJets = *this_genjets;
+
+  //==== Try to find a gen jet matching
+  //==== dR < m_dR_max
+  //==== dPt < m_dPt_max_factor * resolution
+
+  double m_dPt_max_factor = 3.;
+
+  double min_dR = std::numeric_limits<double>::infinity();
+  const reco::GenJet* matched_genJet = nullptr;
+
+  for (const auto& genJet: genJets) {
+      double dR = deltaR(genJet, jet);
+
+      if (dR > min_dR)
+          continue;
+
+      if (dR < m_dR_max ) {
+          double dPt = std::abs(genJet.pt() - jet.pt());
+          if (dPt > m_dPt_max_factor * resolution)
+              continue;
+
+          min_dR = dR;
+          matched_genJet = &genJet;
+      }
+  }
+
+  return matched_genJet;
 }
 
 //define this as a plug-in

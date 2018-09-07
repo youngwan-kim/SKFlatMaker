@@ -33,3 +33,6 @@ double	jet_energy	1
 double	jet_PileupJetId	1
 double	jet_shiftedEnUp	1
 double	jet_shiftedEnDown	1
+double	jet_smearedRes	1
+double	jet_smearedResUp	1
+double	jet_smearedResDown	1

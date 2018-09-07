@@ -6,6 +6,7 @@
 ////////////////////////////////
 #include <memory>
 #include <iostream>
+#include <random>
 
 //////////////////////
 // -- FrameWorks -- //
@@ -56,6 +57,8 @@
 ////////////////////
 // -- For Jets -- //
 ////////////////////
+#include "DataFormats/JetReco/interface/GenJet.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/PatCandidates/interface/Jet.h" // -- Analysis-level calorimeter jet class, Jet implements the analysis-level calorimeter jet class within the 'pat' namespace.
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
@@ -214,7 +217,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< edm::View<pat::Electron> >          ElectronToken;
   edm::EDGetTokenT< edm::View<pat::Photon> >            PhotonToken;
   edm::EDGetTokenT< std::vector<pat::Jet> >             JetToken;
+  edm::EDGetTokenT< reco::GenJetCollection >            genJetToken;
   edm::EDGetTokenT< std::vector<pat::Jet> >             FatJetToken;
+  edm::EDGetTokenT< reco::GenJetCollection >            genFatJetToken;
   edm::EDGetTokenT< std::vector<pat::MET> >             MetToken;
 
   edm::EDGetTokenT< LHEEventProduct >               LHEEventProductToken;
@@ -422,6 +427,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_PileupJetId;
   vector<double> jet_shiftedEnUp;
   vector<double> jet_shiftedEnDown;
+  vector<double> jet_smearedRes;
+  vector<double> jet_smearedResUp;
+  vector<double> jet_smearedResDown;
 
   //==== JEC
   JetCorrectionUncertainty *jet_jecUnc;
@@ -430,6 +438,20 @@ class SKFlatMaker : public edm::EDAnalyzer
   JetCorrectionUncertainty *fatjet_jecUnc;
   std::string fatjet_payloadName_;
 
+  //==== JER
+
+  static constexpr const double MIN_JET_ENERGY = 1e-2;
+  std::mt19937 m_random_generator;
+  template<class T>
+  const reco::GenJet* match(const T& jet, double resolution, TString whichjet);
+
+  JME::JetResolution jet_resolution;
+  JME::JetResolutionScaleFactor jet_resolution_sf;
+  edm::Handle<reco::GenJetCollection> m_genJets;
+
+  JME::JetResolution fatjet_resolution;
+  JME::JetResolutionScaleFactor fatjet_resolution_sf;
+  edm::Handle<reco::GenJetCollection> m_genFatJets;
 
   //==== FatJet
 
@@ -472,6 +494,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<int> fatjet_neutralMultiplicity;
   vector<double> fatjet_shiftedEnUp;
   vector<double> fatjet_shiftedEnDown;
+  vector<double> fatjet_smearedRes;
+  vector<double> fatjet_smearedResUp;
+  vector<double> fatjet_smearedResDown;
 
   //==== Electron
 
