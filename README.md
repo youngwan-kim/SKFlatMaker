@@ -21,8 +21,8 @@ git cms-merge-topic cms-egamma:EgammaPostRecoTools_940 #just adds in an extra fi
 scram b -j 8
 
 # copy this code
-git clone https://github.com/sungbinoh/SKFlatMaker.git
-git checkout <tag name>
+git clone git@github.com:jedori0228/SKFlatMaker.git
+git checkout <branch or tag>
 
 # compile
 scram b -j 8
