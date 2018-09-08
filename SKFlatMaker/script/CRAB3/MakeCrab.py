@@ -1,23 +1,31 @@
 import os
 
+txtfilename = 'samplelist_DATA_SingleMuon.txt'
 #txtfilename = 'samplelist_MC.txt'
-#txtfilename = 'samplelist_DATA_DoubleMuon.txt'
-#txtfilename = 'samplelist_DATA_DoubleEG.txt'
-#txtfilename = 'sameplist_DATA_2016_TEST.txt'
-txtfilename = 'samplelist_PrivateMC.txt'
+#txtfilename = 'samplelist_PrivateMC.txt'
 
 SKFlatTag = os.environ['SKFlatTag']
 
 lines = open(txtfilename).readlines()
 pdfidshifts = open('PDFInfo.txt').readlines()
 
-isData = "MC"
+str_sample = "DATA"
+isData = False
+isPrivateMC = False
 if ("DATA" in txtfilename) or ("Data" in txtfilename) or ("data" in txtfilename):
-  isData = "DATA"
+  str_sample = "DATA"
+  isData = True
+  isPrivateMC = False
+else:
+  str_sample = "MC"
+  isData = False
+  isPrivateMC = False
 if ("Private" in txtfilename) or ("private" in txtfilename):
-  isData = "PrivateMC"
+  str_sample = "PrivateMC"
+  isData = False
+  isPrivateMC = True
 
-base_dir = SKFlatTag+'/crab_submission_'+isData+'/'
+base_dir = SKFlatTag+'/crab_submission_'+str_sample+'/'
 
 os.system('mkdir -p '+base_dir)
 os.system('cp RunSKFlatMaker.py '+base_dir)
@@ -43,7 +51,7 @@ for line in lines:
   order = "NLO"
   gentype = ""
 
-  if "MC" in isData:
+  if not isData:
     for shiftsamples in pdfidshifts:
       words = shiftsamples.split()
       if words[0]==sample:
@@ -61,26 +69,26 @@ for line in lines:
 
   for sk_line in sk_lines:
     if "config.General.requestName" in sk_line:
-      if isData=="DATA":
+      if isData:
         out.write("config.General.requestName = '"+sample+"__"+confs+"'\n")
       else:
         out.write("config.General.requestName = '"+sample+"'\n")
     elif "config.JobType.pyCfgParams" in sk_line:
-      out.write("config.JobType.pyCfgParams = ['sampletype="+isData+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"']\n")
+      out.write("config.JobType.pyCfgParams = ['sampletype="+str_sample+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"']\n")
     elif "config.Data.inputDataset" in sk_line:
       out.write("config.Data.inputDataset = '"+line+"'\n")
     elif 'config.Data.splitting' in sk_line:
-      if isData=="DATA":
+      if isData:
         out.write("config.Data.splitting = 'LumiBased'\n")
       else:
         out.write("config.Data.splitting = 'FileBased'\n")
     elif 'config.Data.unitsPerJob' in sk_line:
-      if isData=="DATA":
+      if isData:
         out.write("config.Data.unitsPerJob = 100\n")
       else:
         out.write("config.Data.unitsPerJob = 1\n")
     elif 'config.Data.outputDatasetTag' in sk_line:
-      if isData=="DATA":
+      if isData:
         period = ""
         if "2017B" in confs:
           period = "B"
@@ -95,13 +103,19 @@ for line in lines:
         out.write("config.Data.outputDatasetTag = 'SKFlat_"+SKFlatTag+"_period"+period+"'\n")
       else:
         out.write("config.Data.outputDatasetTag = 'SKFlat_"+SKFlatTag+"'\n")
+
+    elif 'config.Site.storageSite' in sk_line:
+      if isPrivateMC:
+        out.write("config.Site.storageSite = 'T2_KR_KNU'\n")
+      else:
+        out.write("config.Site.storageSite = 'T3_KR_KISTI'\n")
     else:
       out.write(sk_line)
 
-  if isData=="DATA":
+  if isData:
     out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'\n")
 
-  if isData=="PrivateMC":
+  if isPrivateMC:
     out.write("config.Data.inputDBS = 'phys03'\n")
 
   cmd = 'crab submit -c SubmitCrab__'+sample+'__'+confs+'.py'
