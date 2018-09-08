@@ -37,7 +37,7 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   electron_EA_NHandPh_file = cms.untracked.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt"),
 
   #### Rochestor
-  roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v1/RoccoR2017v1.txt'),
+  roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v2/RoccoR2017.txt'),
 
   # -- photon information -- #
   photon_EA_CH_file = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfChargedHadrons_90percentBased_TrueVtx.txt"),

@@ -1,8 +1,13 @@
 Information:
 ------------
-Muon calibration package with 2016 and 2017 datasets
-Data: Run2017{B..F}-17Nov2017
+Muon calibration package for 2016 and 2017 datasets
+
+2016:
 Data: Run2016{B..H}-07Aug17
+MC: RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6 
+
+2017:
+Data: Run2017{B..F}-17Nov2017
 MC: RunIIFall17MiniAOD-RECOSIMstep_94X_mc2017_realistic_v10
 
 
@@ -10,12 +15,12 @@ Example
 -------------------------------------------------------------------------------------
 //for root macro
 #include "RoccoR.cc"
-RoccoR  rc("RoccoR2017v1.txt"); // or "RoccoR2016v1.txt"
+RoccoR  rc("RoccoR2017.txt"); // or "RoccoR2016.txt"
 
 //Or in cmssw:
 #include "RoccoR.h"
 RoccoR rc; 
-rc.init(edm::FileInPath("path/to/RoccoR2017v1.txt").fullPath()); // or "RoccoR2016v1.txt"
+rc.init(edm::FileInPath("path/to/RoccoR2017.txt").fullPath()); // or "RoccoR2016.txt"
 ------
 //scale factors for momentum of each muon:
 double dtSF = rc.kScaleDT(Q, pt, eta, phi, s=0, m=0); //data
