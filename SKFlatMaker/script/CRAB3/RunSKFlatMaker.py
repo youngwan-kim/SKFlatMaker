@@ -9,8 +9,6 @@ options.register('PDFOrder', "NLO", VarParsing.multiplicity.singleton, VarParsin
 options.register('PDFType', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFType: powheg/madgraph0/madgraph1000")
 options.parseArguments()
 
-
-
 isMC = True
 if ("DATA" in options.sampletype) or ("data" in options.sampletype) or ("Data" in options.sampletype):
   isMC = False
@@ -20,9 +18,15 @@ isPrivateSample = False
 if ("Private" in options.sampletype) or ("private" in options.sampletype):
   isPrivateSample = True
 
-PDFIDShift = options. PDFIDShift
-PDFOrder = options. PDFOrder
-PDFType = options. PDFType
+if len(options.inputFiles)==0:
+  if isMC:
+    options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/40000/D87C6B2A-5C42-E811-8FD7-001E677926A8.root')
+  else:
+    options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2017B/SingleMuon/MINIAOD/31Mar2018-v1/80000/54F30BE9-423C-E811-A315-0CC47A7C3410.root')
+
+PDFIDShift = options.PDFIDShift
+PDFOrder = options.PDFOrder
+PDFType = options.PDFType
 
 print 'isMC = '+str(isMC)
 print 'isPrivateSample = '+str(isPrivateSample)
@@ -36,9 +40,6 @@ print 'PDFType = '+PDFType
 
 GT_MC = '94X_mc2017_realistic_v14'
 GT_DATA = '94X_dataRun2_v6'
-
-TESTFILE_MC = '/store/user/jskim/MiniAOD/TestMiniAOD_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/0085B26F-3642-E811-8286-008CFAE45400.root'
-TESTFILE_DATA = '/store/user/jskim/MiniAOD/TestMiniAOD_SingleMuon_periodB/31Mar2018-v1/001642F1-6638-E811-B4FA-0025905B857A.root'
 
 ####################################################################################################################
 
@@ -54,16 +55,12 @@ process.options   = cms.untracked.PSet(
 )
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
-## Source
-FileName = TESTFILE_DATA
-if isMC: FileName = TESTFILE_MC
-
 process.source = cms.Source("PoolSource",
-	fileNames = cms.untracked.vstring( FileName ),
+	fileNames = cms.untracked.vstring( options.inputFiles ),
   #skipEvents=cms.untracked.uint32(5),
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 # -- Geometry and Detector Conditions (needed for a few patTuple production steps) -- #
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
@@ -150,6 +147,7 @@ from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 setupEgammaPostRecoSeq(process,
                        runVID=False, #saves CPU time by not needlessly re-running VID
                        era='2017-Nov17ReReco')
+#a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
 ####################
 # -- Let it run -- #

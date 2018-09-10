@@ -1,6 +1,11 @@
 import os
 
-lines = open('samplelist.txt').readlines()
+filename = 'samplelist.txt'
+#filename = 'samplelist_Private.txt'
+
+IsPrivate = ("Private" in filename)
+
+lines = open(filename).readlines()
 pdfidshifts = open('PDFIDShift.txt').readlines()
 
 hostname = os.environ['HOSTNAME']
@@ -18,6 +23,8 @@ for line in lines:
   sample = samplePDs[1]
 
   dascmd = '/cvmfs/cms.cern.ch/common/dasgoclient --limit=1 --query="file dataset='+line+'"'
+  if IsPrivate:
+    dascmd = '/cvmfs/cms.cern.ch/common/dasgoclient --limit=1 --query="file dataset='+line+' instance=prod/phys03"'
   print dascmd
 
   os.system(dascmd+' > tmp.txt')
@@ -30,19 +37,28 @@ for line in lines:
 
   filepath = filepaths[0].replace('/xrootd','').strip('\n')
 
-  if 'lxplus' not in hostname:
-    filepath = 'root://cms-xrd-global.cern.ch/'+filepath
+  #if 'lxplus' not in hostname:
+  filepath = 'root://cms-xrd-global.cern.ch/'+filepath
 
-  cmd = 'cmsRun RunSKFlatMaker.py '+filepath
+  cmd = 'cmsRun RunSKFlatMaker.py inputFiles='+filepath
 
+  InShiftTxt = False
   for shiftsamples in pdfidshifts:
     words = shiftsamples.split()
     if words[0]==sample:
+      InShiftTxt = True
       this_shift = words[1]
       if "?" in this_shift:
         this_shift = "0"
-      cmd = cmd+' '+this_shift
+      cmd = cmd+' PDFIDShift='+this_shift
       break
+  if not InShiftTxt:
+    cmd = cmd+' PDFIDShift=0'
+
+  if IsPrivate:
+    cmd = cmd+' sampletype=PrivateMC'
+  else:
+    cmd = cmd+' sampletype=MC'
 
   final_cmd = cmd+' > logs/'+sample+'.log'
   print final_cmd
