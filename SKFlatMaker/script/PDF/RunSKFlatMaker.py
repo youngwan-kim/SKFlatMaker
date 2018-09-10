@@ -1,24 +1,45 @@
 import FWCore.ParameterSet.Config as cms
-import sys
+import FWCore.ParameterSet.VarParsing as VarParsing
+
+from FWCore.ParameterSet.VarParsing import VarParsing
+options = VarParsing ('python')
+options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarParsing.varType.string, "sampletype: DATA/MC/PrivateMC")
+options.register('PDFIDShift', "0", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFIDShift: 0/M1/P1/..")
+options.register('PDFOrder', "NLO", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFOrder: LO/NLO/..")
+options.register('PDFType', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFType: powheg/madgraph0/madgraph1000")
+options.parseArguments()
+
+isMC = True
+if ("DATA" in options.sampletype) or ("data" in options.sampletype) or ("Data" in options.sampletype):
+  isMC = False
+if ("MC" in options.sampletype) or ("mc" in options.sampletype):
+  isMC = True
+isPrivateSample = False
+if ("Private" in options.sampletype) or ("private" in options.sampletype):
+  isPrivateSample = True
+
+if len(options.inputFiles)==0:
+  if isMC:
+    options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/40000/D87C6B2A-5C42-E811-8FD7-001E677926A8.root')
+  else:
+    options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2017B/SingleMuon/MINIAOD/31Mar2018-v1/80000/54F30BE9-423C-E811-A315-0CC47A7C3410.root')
+
+PDFIDShift = options.PDFIDShift
+PDFOrder = options.PDFOrder
+PDFType = options.PDFType
+
+print 'isMC = '+str(isMC)
+print 'isPrivateSample = '+str(isPrivateSample)
+print 'PDFIDShift = '+PDFIDShift
+print 'PDFOrder = '+PDFOrder
+print 'PDFType = '+PDFType
 
 #####################
 # -- set by hand -- #
 #####################
-isMC = True
-isPrivateSample = False
 
-GT_MC = '94X_mc2017_realistic_v12' # -- 2017 Nov MC
-GT_DATA = '94X_dataRun2_ReReco_EOY17_v2' # -- 2017 prompt reco v1
-
-TESTFILE_MC = '/store/user/jskim/MiniAOD/TestMiniAOD_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/005DC030-D3F4-E711-889A-02163E01A62D.root'
-
-if len(sys.argv)>2:
-  TESTFILE_MC = sys.argv[2]
-print TESTFILE_MC
-#TESTFILE_MC = '/store/user/jskim/MiniAOD/TestMiniAOD_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/005DC030-D3F4-E711-889A-02163E01A62D.root'
-#TESTFILE_MC = '/store/user/jskim/MiniAOD/TestMiniAOD_DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/006F49D4-E5FD-E711-A911-008CFAE45240.root'
-
-TESTFILE_DATA = ''
+GT_MC = '94X_mc2017_realistic_v14'
+GT_DATA = '94X_dataRun2_v6'
 
 ####################################################################################################################
 
@@ -32,14 +53,10 @@ process.options   = cms.untracked.PSet(
   SkipEvent = cms.untracked.vstring('ProductNotFound'),
   wantSummary = cms.untracked.bool(True) 
 )
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
-
-## Source
-FileName = TESTFILE_DATA
-if isMC: FileName = TESTFILE_MC
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.source = cms.Source("PoolSource",
-	fileNames = cms.untracked.vstring( FileName ),
+	fileNames = cms.untracked.vstring( options.inputFiles ),
   #skipEvents=cms.untracked.uint32(5),
 )
 
@@ -61,7 +78,7 @@ else:
 
 
 process.TFileService = cms.Service("TFileService",
-  fileName = cms.string('ntuple_skim_corrected.root')
+  fileName = cms.string('SKFlatNtuple.root')
 )
 
 # -- FastFilters -- //
@@ -80,26 +97,25 @@ process.FastFilters = cms.Sequence( process.goodOfflinePrimaryVertices )
 from SKFlatMaker.SKFlatMaker.SKFlatMaker_cfi import *
 
 process.recoTree = SKFlatMaker.clone()
-process.recoTree.DebugLevel = cms.untracked.int32(1)
-process.recoTree.StoreHLTObjectFlag = False
+process.recoTree.DebugLevel = cms.untracked.int32(0)
+process.recoTree.StoreHLTObjectFlag = False ##FIXME
 
 # -- Objects without Corrections -- # 
 process.recoTree.Muon = cms.untracked.InputTag("slimmedMuons") # -- miniAOD -- #
-process.recoTree.Electron = cms.untracked.InputTag("slimmedElectrons") # -- miniAOD -- # before smearing
+process.recoTree.Electron = cms.untracked.InputTag("slimmedElectrons") # -- miniAOD -- #
 process.recoTree.Photon = cms.untracked.InputTag("slimmedPhotons") # -- miniAOD -- #
 process.recoTree.Jet = cms.untracked.InputTag("slimmedJets") # -- miniAOD -- #
 process.recoTree.FatJet = cms.untracked.InputTag("slimmedJetsAK8")
 process.recoTree.MET = cms.InputTag("slimmedMETs")
 process.recoTree.GenParticle = cms.untracked.InputTag("prunedGenParticles") # -- miniAOD -- #
 
-if "MLM" in TESTFILE_MC:
-  process.recoTree.PDFOrder = cms.string("LO")
+process.recoTree.PDFOrder = cms.string(PDFOrder)
+process.recoTree.PDFType = cms.string(PDFType)
 
-if len(sys.argv)>3:
-  str_this_shift = sys.argv[3]
-  str_this_shift = str_this_shift.replace("M","-")
-  str_this_shift = str_this_shift.replace("P","+")
-  process.recoTree.PDFIDShift = cms.int32(int(str_this_shift))
+str_this_shift = PDFIDShift
+str_this_shift = str_this_shift.replace("M","-")
+str_this_shift = str_this_shift.replace("P","+")
+process.recoTree.PDFIDShift = cms.int32(int(str_this_shift))
 
 if isPrivateSample:
   process.recoTree.LHEEventProduct = cms.untracked.InputTag("source")
@@ -127,11 +143,17 @@ process.recoTree.StoreGENFlag = isMC
 process.recoTree.KeepAllGen = isMC
 process.recoTree.StoreLHEFlag = isMC
 
+from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+setupEgammaPostRecoSeq(process,
+                       runVID=False, #saves CPU time by not needlessly re-running VID
+                       era='2017-Nov17ReReco')
+#a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
+
 ####################
 # -- Let it run -- #
 ####################
 process.p = cms.Path(
+  process.egammaPostRecoSeq *
   process.FastFilters *
   process.recoTree
 )
-
