@@ -300,6 +300,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   bool Flag_goodVertices;
   bool Flag_globalTightHalo2016Filter;
+  bool Flag_globalSuperTightHalo2016Filter;
   bool Flag_HBHENoiseFilter;
   bool Flag_HBHENoiseIsoFilter;
   bool Flag_EcalDeadCellTriggerPrimitiveFilter;

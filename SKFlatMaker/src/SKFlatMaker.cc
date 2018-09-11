@@ -168,6 +168,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   
   Flag_goodVertices = false;
   Flag_globalTightHalo2016Filter = false;
+  Flag_globalSuperTightHalo2016Filter = false;
   Flag_HBHENoiseFilter = false;
   Flag_HBHENoiseIsoFilter = false;
   Flag_EcalDeadCellTriggerPrimitiveFilter = false;
@@ -832,6 +833,7 @@ void SKFlatMaker::beginJob()
   //MET Filters 2017
   DYTree->Branch("Flag_goodVertices",&Flag_goodVertices,"Flag_goodVertices/O");
   DYTree->Branch("Flag_globalTightHalo2016Filter",&Flag_globalTightHalo2016Filter,"Flag_globalTightHalo2016Filter/O");
+  DYTree->Branch("Flag_globalSuperTightHalo2016Filter",&Flag_globalSuperTightHalo2016Filter,"Flag_globalSuperTightHalo2016Filter/O");
   DYTree->Branch("Flag_HBHENoiseFilter",&Flag_HBHENoiseFilter,"Flag_HBHENoiseFilter/O");
   DYTree->Branch("Flag_HBHENoiseIsoFilter",&Flag_HBHENoiseIsoFilter,"Flag_HBHENoiseIsoFilter/O");
   DYTree->Branch("Flag_EcalDeadCellTriggerPrimitiveFilter",&Flag_EcalDeadCellTriggerPrimitiveFilter,"Flag_EcalDeadCellTriggerPrimitiveFilter/O");
@@ -1548,6 +1550,7 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
 
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_goodVertices")) ) Flag_goodVertices = true;
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_globalTightHalo2016Filter")) ) Flag_globalTightHalo2016Filter = true;
+      if( trigResultPAT->accept(trigName.triggerIndex("Flag_globalSuperTightHalo2016Filter")) ) Flag_globalSuperTightHalo2016Filter = true;
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_HBHENoiseFilter")) ) Flag_HBHENoiseFilter = true;
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_HBHENoiseIsoFilter")) ) Flag_HBHENoiseIsoFilter = true;
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_EcalDeadCellTriggerPrimitiveFilter")) ) Flag_EcalDeadCellTriggerPrimitiveFilter = true;
@@ -1582,6 +1585,7 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   for(unsigned int i = 0, n = METFilterResults->size(); i < n; ++i){
     if(strcmp(metNames.triggerName(i).c_str(), "Flag_goodVertices") == 0) Flag_goodVertices = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalTightHalo2016Filter") == 0) Flag_globalTightHalo2016Filter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalSuperTightHalo2016Filter") == 0) Flag_globalSuperTightHalo2016Filter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseFilter") == 0) Flag_HBHENoiseFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseIsoFilter") == 0) Flag_HBHENoiseIsoFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_EcalDeadCellTriggerPrimitiveFilter") == 0) Flag_EcalDeadCellTriggerPrimitiveFilter = METFilterResults -> accept(i);
