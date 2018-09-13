@@ -32,7 +32,8 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   rho = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
   conversionsInputTag = cms.untracked.InputTag("allConversions"),
   GsfTrack = cms.untracked.InputTag("electronGsfTracks"),
-  electron_EA_NHandPh_file = cms.untracked.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt"),
+  #electron_EA_NHandPh_file = cms.untracked.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt"),
+  electron_EA_NHandPh_file = cms.untracked.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt"),
 
   #### Rochestor
   roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v2/RoccoR2017.txt'),
