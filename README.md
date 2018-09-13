@@ -35,6 +35,8 @@ source setup.sh
 # test runs
 ```bash
 cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/test/
-cmsRun RunSKFlatMaker.py sampletype=DATA ## DATA
-cmsRun RunSKFlatMaker.py sampletype=MC ## MC
+cmsRun RunSKFlatMaker.py year=2016 sampletype=DATA ## Run 2016 DATA
+cmsRun RunSKFlatMaker.py year=2016 sampletype=MC ## Run 2016 MC
+cmsRun RunSKFlatMaker.py year=2017 sampletype=DATA ## Run 2017 DATA
+cmsRun RunSKFlatMaker.py year=2017 sampletype=MC ## Run 2017 MC
 ```
