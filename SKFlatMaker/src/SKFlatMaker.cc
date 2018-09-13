@@ -1656,12 +1656,10 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   edm::Handle<pat::PackedCandidateCollection> pc;
   iEvent.getByToken(pcToken_, pc);
 
-/*
   edm::Handle<reco::GenParticleCollection> genParticles;
   if(!IsData){
     iEvent.getByToken(mcLabel_,genParticles);
   }
-*/
 
   for( unsigned int i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
@@ -2055,7 +2053,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
         int n_trackerLayersWithMeasurement = 0;
         if(trackerTrack.isNonnull()) n_trackerLayersWithMeasurement = imuon.innerTrack()->hitPattern().trackerLayersWithMeasurement();
 
-  /*
+
         //==== Using GenPt
 
         //cout << "[This Reco Muon] pt = " << imuon.pt() << ", eta = " << imuon.eta() << ", phi = " << imuon.phi() << endl;
@@ -2072,6 +2070,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
 
         int counter=0;
         double this_genpt=-999.;
+        double mindr = 0.2;
         for( reco::GenParticleCollection::const_iterator genptl = genParticles->begin(); genptl != genParticles->end(); ++genptl, ++counter) {
 
           //int idx = -1;
@@ -2083,29 +2082,31 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
           //}
           //cout << counter << "\t" << genptl->pdgId() << "\t" << idx << "\t" << "gen pt = " << genptl->pt() << ", eta = " << genptl->eta() << ", phi = " << genptl->phi() << endl;
 
-
           if( fabs(genptl->pdgId()) != 13 ) continue;
-          if( !genptl->isPromptFinalState() ) continue;
-          if( reco::deltaR( imuon.eta(), imuon.phi(), genptl->eta(), genptl->phi() ) < 0.3 ){
+          if( genptl->status() != 1 ) continue;
+
+          double this_dr = reco::deltaR( imuon.eta(), imuon.phi(), genptl->eta(), genptl->phi() );
+          if( this_dr < mindr ){
             this_genpt = genptl->pt();
-            break;
+            mindr = this_dr;
           }
         }
         //cout << this_genpt << endl;
 
         if(this_genpt>0){
-          this_roccor     = rc.kScaleFromGenMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u, 0, 0);
-          this_roccor_err = rc.kScaleFromGenMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, this_genpt, u);
+          this_roccor     = rc.kSpreadMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), this_genpt, 0, 0);
+          this_roccor_err = rc.kSpreadMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), this_genpt);
         }
         else{
           this_roccor     = rc.kSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u, 0, 0);
           this_roccor_err = rc.kSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u);
         }
-  */
 
+/*
         //==== TODO Now I'm not using genpt
         this_roccor     = rc.kSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u, 0, 0);
         this_roccor_err = rc.kSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u);
+*/
 
       }
 
@@ -2116,6 +2117,38 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     cout << "this_roccor = " << this_roccor << endl;
     cout << "this_roccor_err = " << this_roccor_err << endl;
 */
+
+/*
+    //==== Debugging for large correction muons
+    if(this_roccor<-20){
+
+      cout << "#### RECO ####" << endl;
+      cout << "this_roccor = " << this_roccor << endl;
+      cout << "pt = " << imuon.pt() << endl;
+      cout << "eta = " << imuon.eta() << endl;
+      cout << "phi = " << imuon.phi() << endl;
+      cout << "muon_normchi = " << muon_normchi.at(i) << endl;
+      cout << "isLooseMuon = " << imuon.isLooseMuon() << endl;
+      cout << "#### GEN ####" << endl;
+      cout << "Index\tPID\tMotherIndex\tpt\teta\tphi" << endl;
+      int counter = 0;
+      for( reco::GenParticleCollection::const_iterator genptl = genParticles->begin(); genptl != genParticles->end(); ++genptl, ++counter) {
+
+        int idx = -1;
+        for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ){
+          if( genptl->mother()==&(*mit) ){
+            idx = std::distance(genParticles->begin(),mit);
+            break;
+          }
+        }
+
+        cout << counter << "\t" << genptl->pdgId() << "\t" << idx << "\t" << "gen pt = " << genptl->pt() << ", eta = " << genptl->eta() << ", phi = " << genptl->phi() << endl;
+
+      }
+
+    }
+*/
+
     muon_roch_sf.push_back( this_roccor );
     muon_roch_sf_up.push_back( this_roccor+this_roccor_err );
 
