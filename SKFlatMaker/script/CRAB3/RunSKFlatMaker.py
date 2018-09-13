@@ -7,7 +7,20 @@ options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarPar
 options.register('PDFIDShift', "0", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFIDShift: 0/M1/P1/..")
 options.register('PDFOrder', "NLO", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFOrder: LO/NLO/..")
 options.register('PDFType', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFType: powheg/madgraph0/madgraph1000")
+options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.int, "year: Which year")
 options.parseArguments()
+
+import sys
+
+Is2016 = False
+Is2017 = False
+if options.year==2016:
+  Is2016 = True
+elif options.year==2017:
+  Is2017 = True
+else:
+  ErrorMgs = "year is not correct; "+str(options.year)
+  sys.exit(ErrorMgs)
 
 isMC = True
 if ("DATA" in options.sampletype) or ("data" in options.sampletype) or ("Data" in options.sampletype):
@@ -18,11 +31,22 @@ isPrivateSample = False
 if ("Private" in options.sampletype) or ("private" in options.sampletype):
   isPrivateSample = True
 
+options.outputFile = "SKFlatNtuple.root"
 if len(options.inputFiles)==0:
-  if isMC:
-    options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/40000/D87C6B2A-5C42-E811-8FD7-001E677926A8.root')
-  else:
-    options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2017B/SingleMuon/MINIAOD/31Mar2018-v1/80000/54F30BE9-423C-E811-A315-0CC47A7C3410.root')
+  if Is2016:
+    if isMC:
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv3/TprimeBToTH_M-1700_RH_TuneCUETP8M1_13TeV-madgraph-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v1/80000/F0074325-18A2-E811-8F6A-0CC47A57CBCC.root')
+      options.outputFile = "SKFlatNtuple_2016_MC.root"
+    else:
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016B/SingleMuon/MINIAOD/17Jul2018_ver1-v1/80000/306DAB6C-068C-E811-9E30-0242AC1C0501.root')
+      options.outputFile = "SKFlatNtuple_2016_DATA.root"
+  if Is2017:
+    if isMC:
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/40000/D87C6B2A-5C42-E811-8FD7-001E677926A8.root')
+      options.outputFile = "SKFlatNtuple_2017_MC.root"
+    else:
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2017B/SingleMuon/MINIAOD/31Mar2018-v1/80000/54F30BE9-423C-E811-A315-0CC47A7C3410.root')
+      options.outputFile = "SKFlatNtuple_2017_DATA.root"
 
 PDFIDShift = options.PDFIDShift
 PDFOrder = options.PDFOrder
@@ -34,12 +58,16 @@ print 'PDFIDShift = '+PDFIDShift
 print 'PDFOrder = '+PDFOrder
 print 'PDFType = '+PDFType
 
-#####################
-# -- set by hand -- #
-#####################
+
+#### Global Tag
+#### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#2017_and_2016_re_miniAOD_94X_ver
 
 GT_MC = '94X_mc2017_realistic_v14'
 GT_DATA = '94X_dataRun2_v6'
+if Is2016:
+  GT_DATA = '94X_dataRun2_v10'
+  GT_MC = '94X_mcRun2_asymptotic_v3'
+
 
 ####################################################################################################################
 
@@ -78,18 +106,8 @@ else:
 
 
 process.TFileService = cms.Service("TFileService",
-  fileName = cms.string('SKFlatNtuple.root')
+  fileName = cms.string( options.outputFile )
 )
-
-# -- FastFilters -- //
-process.goodOfflinePrimaryVertices = cms.EDFilter("VertexSelector",
-   # src = cms.InputTag("offlinePrimaryVertices"),
-   src = cms.InputTag("offlineSlimmedPrimaryVertices"), # -- miniAOD -- #
-   cut = cms.string("!isFake && ndof > 4 && abs(z) < 24 && position.Rho < 2"), # tracksSize() > 3 for the older cut
-   filter = cms.bool(True),   # otherwise it won't filter the events, just produce an empty vertex collection.
-)
-
-process.FastFilters = cms.Sequence( process.goodOfflinePrimaryVertices )
 
 #################
 # -- DY Tree -- #
@@ -143,17 +161,22 @@ process.recoTree.StoreGENFlag = isMC
 process.recoTree.KeepAllGen = isMC
 process.recoTree.StoreLHEFlag = isMC
 
-from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-setupEgammaPostRecoSeq(process,
-                       runVID=False, #saves CPU time by not needlessly re-running VID
-                       era='2017-Nov17ReReco')
-#a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
+if Is2017:
+  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  setupEgammaPostRecoSeq(process,
+                         runVID=False, #saves CPU time by not needlessly re-running VID
+                         era='2017-Nov17ReReco')
+  #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
 ####################
 # -- Let it run -- #
 ####################
-process.p = cms.Path(
-  process.egammaPostRecoSeq *
-  process.FastFilters *
-  process.recoTree
-)
+if Is2016:
+  process.p = cms.Path(
+    process.recoTree
+  )
+if Is2017:
+  process.p = cms.Path(
+    process.egammaPostRecoSeq *
+    process.recoTree
+  )

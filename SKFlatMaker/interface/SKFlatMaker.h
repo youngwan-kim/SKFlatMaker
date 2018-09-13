@@ -235,8 +235,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_RECO;
   
   edm::EDGetTokenT< double >                          RhoToken;
-  edm::EDGetTokenT< edm::ValueMap<float> >            mvaIsoValuesMapToken;
-  edm::EDGetTokenT< edm::ValueMap<float> >            mvaNoIsoValuesMapToken;
   edm::EDGetTokenT< std::vector<reco::Conversion> >   ConversionsToken;
   edm::EDGetTokenT< std::vector< reco::GsfTrack > >   GsfTrackToken;
   

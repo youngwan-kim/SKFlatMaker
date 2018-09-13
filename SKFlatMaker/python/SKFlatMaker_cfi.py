@@ -30,11 +30,10 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
 
   # -- electron information -- #
   rho = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
-  mvaIsoValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17IsoV1Values"),
-  mvaNoIsoValuesMap = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Fall17NoIsoV1Values"),
   conversionsInputTag = cms.untracked.InputTag("allConversions"),
   GsfTrack = cms.untracked.InputTag("electronGsfTracks"),
-  electron_EA_NHandPh_file = cms.untracked.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt"),
+  #electron_EA_NHandPh_file = cms.untracked.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt"),
+  electron_EA_NHandPh_file = cms.untracked.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt"),
 
   #### Rochestor
   roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v2/RoccoR2017.txt'),
@@ -45,9 +44,6 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   photon_EA_Ph_file = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfPhotons_90percentBased_TrueVtx.txt"),
 
   # -- Jet information -- #
-  BDiscriminant_tcheff = cms.untracked.double(0.7),
-  BDiscriminant_tchpur = cms.untracked.double(0.7),
-  BDiscriminant_ssv = cms.untracked.double(2.05),
   AK4Jet_payloadName = cms.string('AK4PFchs'),
   AK8Jet_payloadName = cms.string('AK8PFPuppi'),
   AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt'),
