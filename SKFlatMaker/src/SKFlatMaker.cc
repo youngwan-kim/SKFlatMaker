@@ -53,8 +53,6 @@ METFilterResultsToken_RECO          ( consumes<edm::TriggerResults>             
 
 // -- Electron tokens -- //
 RhoToken                            ( consumes< double >                                    (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
-mvaIsoValuesMapToken                ( consumes< edm::ValueMap<float> >                      (iConfig.getParameter<edm::InputTag>("mvaIsoValuesMap"))  ),
-mvaNoIsoValuesMapToken              ( consumes< edm::ValueMap<float> >                      (iConfig.getParameter<edm::InputTag>("mvaNoIsoValuesMap"))  ),
 ConversionsToken                    ( consumes< std::vector<reco::Conversion> >             (iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
 GsfTrackToken                       ( consumes< std::vector< reco::GsfTrack > >             (iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
 
@@ -2144,13 +2142,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::Handle< edm::View<pat::Electron> > ElecHandle;
   iEvent.getByToken(ElectronToken, ElecHandle);
 
-  // -- electron MVA value -- //
-  edm::Handle<edm::ValueMap<float> > mvaIsoValues;
-  iEvent.getByToken(mvaIsoValuesMapToken,mvaIsoValues);
-  
-  edm::Handle<edm::ValueMap<float> > mvaNoIsoValues;
-  iEvent.getByToken(mvaNoIsoValuesMapToken,mvaNoIsoValues);
-  
   edm::Handle< std::vector<reco::Conversion> > conversions;
   iEvent.getByToken(ConversionsToken, conversions);
   
