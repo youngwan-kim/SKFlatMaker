@@ -2418,15 +2418,22 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
       electron_gsfCharge.push_back( -999 );
     }
       
-    // -- for ID variables -- //
-    bool isPassVeto  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-veto");
-    bool isPassLoose  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-loose");
-    bool isPassMedium = el -> electronID("cutBasedElectronID-Fall17-94X-V1-medium");
-    bool isPassTight  = el -> electronID("cutBasedElectronID-Fall17-94X-V1-tight");
+    //==== ID Booleans
+
+    //==== Cut Based
+    //==== 94x-V2 : https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Recipe_for_regular_users_formats
+    bool isPassVeto  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-veto");
+    bool isPassLoose  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-loose");
+    bool isPassMedium = el -> electronID("cutBasedElectronID-Fall17-94X-V2-medium");
+    bool isPassTight  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-tight");
+    //==== MVA Based
+    //==== Fall17 : https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2#VID_based_recipe_provides_pass_f
     bool isPassMVA_noIso_WP80 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp80");
     bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
     bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
     bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
+    //==== HEEP ID
+    //==== V7 : https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Configuring_and_Running_VID_in_a
     bool isPassHEEP = el -> electronID("heepElectronID-HEEPV70");
 
 /*
