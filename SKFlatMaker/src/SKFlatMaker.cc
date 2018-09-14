@@ -2216,6 +2216,14 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     electron_Py.push_back( el->py() );
     electron_Pz.push_back( el->pz() );
 
+/*
+    //==== Debugging lines for egamma correction
+    cout << "==== Electron ====" << endl;
+    cout << "el->energy() = " << el->energy() << endl;
+    cout << "el->userFloat(\"ecalTrkEnergyPreCorr\") = " << el->userFloat("ecalTrkEnergyPreCorr") << endl;
+    cout << "el->userFloat(\"ecalTrkEnergyPostCorr\") = " << el->userFloat("ecalTrkEnergyPostCorr") << endl;
+*/
+
     //==== UnCorrected
     electron_EnergyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") );
 
