@@ -581,7 +581,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_chargedEmEnergyFraction.clear();
   jet_chargedMultiplicity.clear();
   jet_neutralMultiplicity.clear();
-  jet_looseJetID.clear();
   jet_tightJetID.clear();
   jet_tightLepVetoJetID.clear();
   jet_partonPdgId.clear();
@@ -615,7 +614,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_DeepFlavour_g.clear();
   fatjet_DeepCvsL.clear();
   fatjet_DeepCvsB.clear();
-  fatjet_looseJetID.clear();
   fatjet_tightJetID.clear();
   fatjet_tightLepVetoJetID.clear();
   fatjet_partonPdgId.clear();
@@ -896,7 +894,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_chargedEmEnergyFraction", "vector<double>", &jet_chargedEmEnergyFraction);
     DYTree->Branch("jet_chargedMultiplicity", "vector<int>", &jet_chargedMultiplicity);
     DYTree->Branch("jet_neutralMultiplicity", "vector<int>", &jet_neutralMultiplicity);
-    DYTree->Branch("jet_looseJetID", "vector<bool>", &jet_looseJetID);
     DYTree->Branch("jet_tightJetID", "vector<bool>", &jet_tightJetID);
     DYTree->Branch("jet_tightLepVetoJetID", "vector<bool>", &jet_tightLepVetoJetID);
     DYTree->Branch("jet_partonPdgId", "vector<int>", &jet_partonPdgId);
@@ -932,7 +929,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_CvsB", "vector<double>", &fatjet_CvsB);
     DYTree->Branch("fatjet_DeepCvsL", "vector<double>", &fatjet_DeepCvsL);
     DYTree->Branch("fatjet_DeepCvsB", "vector<double>", &fatjet_DeepCvsB);
-    DYTree->Branch("fatjet_looseJetID", "vector<bool>", &fatjet_looseJetID);
     DYTree->Branch("fatjet_tightJetID", "vector<bool>", &fatjet_tightJetID);
     DYTree->Branch("fatjet_tightLepVetoJetID", "vector<bool>", &fatjet_tightLepVetoJetID);
     DYTree->Branch("fatjet_partonPdgId", "vector<int>", &fatjet_partonPdgId);
@@ -2985,7 +2981,6 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
       tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
     }
 
-    //jet_looseJetID.push_back(); // TODO in 2017, Loose is removed. Maybe we can remove this variable later when POG ID is finalized
     jet_tightJetID.push_back(tightJetID);
     jet_tightLepVetoJetID.push_back(tightLepVetoJetID);
 
@@ -3236,7 +3231,6 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
       tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
     }
 
-    //fatjet_looseJetID.push_back(); // TODO in 2017, Loose is removed. Maybe we can remove this variable later when POG ID is finalized
     fatjet_tightJetID.push_back(tightJetID);
     fatjet_tightLepVetoJetID.push_back(tightLepVetoJetID);
 

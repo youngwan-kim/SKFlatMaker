@@ -416,7 +416,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_chargedEmEnergyFraction;
   vector<int> jet_chargedMultiplicity;
   vector<int> jet_neutralMultiplicity;
-  vector<bool> jet_looseJetID;
   vector<bool> jet_tightJetID;
   vector<bool> jet_tightLepVetoJetID;
   vector<int> jet_partonPdgId;
@@ -473,7 +472,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> fatjet_DeepFlavour_g;
   vector<double> fatjet_DeepCvsL;
   vector<double> fatjet_DeepCvsB;
-  vector<bool> fatjet_looseJetID;
   vector<bool> fatjet_tightJetID;
   vector<bool> fatjet_tightLepVetoJetID;
   vector<int> fatjet_partonPdgId;
