@@ -57,6 +57,7 @@ print 'isPrivateSample = '+str(isPrivateSample)
 print 'PDFIDShift = '+PDFIDShift
 print 'PDFOrder = '+PDFOrder
 print 'PDFType = '+PDFType
+print 'year = '+str(options.year)
 
 
 #### Global Tag

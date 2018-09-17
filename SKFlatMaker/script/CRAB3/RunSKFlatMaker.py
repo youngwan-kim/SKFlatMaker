@@ -57,6 +57,7 @@ print 'isPrivateSample = '+str(isPrivateSample)
 print 'PDFIDShift = '+PDFIDShift
 print 'PDFOrder = '+PDFOrder
 print 'PDFType = '+PDFType
+print 'year = '+str(options.year)
 
 
 #### Global Tag
@@ -161,11 +162,31 @@ process.recoTree.StoreGENFlag = isMC
 process.recoTree.KeepAllGen = isMC
 process.recoTree.StoreLHEFlag = isMC
 
+#### EGamma ####
+
+myEleID =  [ 'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff',
+                        'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff',
+                        'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff',
+                        'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff',
+                        'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V1_cff',
+                        'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff',
+                        'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff',
+                        'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_HZZ_V1_cff',
+                        ]
+if Is2016:
+  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  setupEgammaPostRecoSeq(process,
+                         runVID=True, #saves CPU time by not needlessly re-running VID
+                         era='2016-Legacy',
+                         eleIDModules=myEleID)
+  #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
+
 if Is2017:
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
-                         runVID=False, #saves CPU time by not needlessly re-running VID
-                         era='2017-Nov17ReReco')
+                         runVID=True, #saves CPU time by not needlessly re-running VID
+                         era='2017-Nov17ReReco',
+                         eleIDModules=myEleID)
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
 ####################
@@ -173,6 +194,7 @@ if Is2017:
 ####################
 if Is2016:
   process.p = cms.Path(
+    process.egammaPostRecoSeq *
     process.recoTree
   )
 if Is2017:
