@@ -24,7 +24,7 @@ git cms-merge-topic UAEDF-tomc:eleCutBasedId_94X_V2
 scram b -j 8
 
 # Copy this code
-git clone git@github.com:jedori0228/SKFlatMaker.git
+git clone git@github.com:CMSSNU/SKFlatMaker.git
 git checkout <branch or tag>
 
 # Compile
