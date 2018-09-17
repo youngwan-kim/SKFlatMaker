@@ -593,6 +593,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_smearedRes.clear();
   jet_smearedResUp.clear();
   jet_smearedResDown.clear();
+  jet_JECL1FastJet.clear();
+  jet_JECFull.clear();
 
   //==== FatJet
   fatjet_pt.clear();
@@ -906,6 +908,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_smearedRes", "vector<double>", &jet_smearedRes);
     DYTree->Branch("jet_smearedResUp", "vector<double>", &jet_smearedResUp);
     DYTree->Branch("jet_smearedResDown", "vector<double>", &jet_smearedResDown);
+    DYTree->Branch("jet_JECL1FastJet", "vector<double>", &jet_JECL1FastJet);
+    DYTree->Branch("jet_JECFull", "vector<double>", &jet_JECFull);
 
   }
   
@@ -3018,6 +3022,28 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //double unc_methodB = jet_jecUnc_methodB->getUncertainty(true);
     //cout << "jec unc methodA = " << unc << endl;
     //cout << "jec unc methodB = " << unc_methodB << endl << endl;
+
+    //=======================================================================================================================
+    //==== Save JEC variables for Lepton-aware JEC
+    //==== https://github.com/cms-sw/cmssw/blob/02d4198c0b6615287fd88e9a8ff650aea994412e/PhysicsTools/NanoAOD/plugins/LeptonJetVarProducer.cc#L154-L184
+    //=======================================================================================================================
+
+    //==== Save L1 Correction
+    //==== auto L1Correctedjet = jets_iter->correctedP4("L1FastJet"); : "JET corrected up to L1FastJet"
+    //==== jets_iter->jecFactor("L1FastJet") = L1Correctedjet.pt()/jets_iter->pt()
+    //==== i.e., "FINAL JET" times "jecFactor(L1FastJet)" = "JET corrected up to L1FastJet"
+    //==== So, to get L1 correction alone,
+    //==== jecFactor("L1FastJet")/jecFactor("Uncorrected")
+
+    jet_JECL1FastJet.push_back( jets_iter->jecFactor("L1FastJet")/jets_iter->jecFactor("Uncorrected") );
+
+    //==== Save Full Correction
+    //==== auto uncorjet =  jets_iter->correctedP4("Uncorrected");
+    //==== jets_iter->jecFactor("Uncorrected") = uncorjet.pt()/jets_iter->pt()
+    auto uncorjet =  jets_iter->correctedP4("Uncorrected");
+    //cout << "uncorjet.pt()/jets_iter->pt() = " << uncorjet.pt()/jets_iter->pt() << endl;
+    //cout << ( jets_iter->jecFactor("Uncorrected") ) / ( uncorjet.pt()/jets_iter->pt() ) << endl;
+    jet_JECFull.push_back( jets_iter->pt()/uncorjet.pt() );
 
     if(!IsData){
 

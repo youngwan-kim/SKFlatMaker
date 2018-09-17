@@ -35,3 +35,5 @@ double	jet_shiftedEnDown	1
 double	jet_smearedRes	1
 double	jet_smearedResUp	1
 double	jet_smearedResDown	1
+double	jet_JECL1FastJet	1
+double  jet_JECFull  1

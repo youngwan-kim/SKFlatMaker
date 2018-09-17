@@ -428,6 +428,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_smearedRes;
   vector<double> jet_smearedResUp;
   vector<double> jet_smearedResDown;
+  vector<double> jet_JECL1FastJet;
+  vector<double> jet_JECFull;
 
   //==== JEC
   JetCorrectionUncertainty *jet_jecUnc;
