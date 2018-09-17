@@ -17,7 +17,6 @@ double	fatjet_CvsL	1
 double  fatjet_CvsB  1
 double  fatjet_DeepCvsL 1
 double  fatjet_DeepCvsB  1
-bool	fatjet_looseJetID	1
 bool	fatjet_tightJetID	1
 bool	fatjet_tightLepVetoJetID	1
 int	fatjet_partonPdgId	1
