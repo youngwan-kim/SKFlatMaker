@@ -1357,6 +1357,7 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   vector<string> temp_trigs = {
       "HLT_Mu*", "HLT_Ele*", "HLT_DoubleEle*", "HLT_DoublePhoton*", "HLT_IsoMu*", "HLT_Photon*",
       "HLT_oldMu100_v*", "HLT_TkMu100_v*",
+      "HLT_TkMu50_v*",
 
 /*
       //==== single muon triggers
