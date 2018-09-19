@@ -1440,6 +1440,21 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
         //==== e.g., {"HLT_Mu8", "HLT_Mu17"}
         BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
 
+          //==== Cleaningup
+          //==== https://github.com/CMSSNU/SKFlatMaker/issues/9
+
+          if(HLTName_WildCard[it_HLTWC]=="HLT_Mu*"){
+            if( (*match).find("HLT_Mu7p5") != std::string::npos ) continue;
+            if( (*match).find("Phi") != std::string::npos ) continue;
+            if( (*match).find("PFMETNoMu") != std::string::npos ) continue;
+
+          }
+          if( (*match).find("Onia") != std::string::npos ) continue;
+          if( (*match).find("CaloBTagCSV") != std::string::npos ) continue;
+          if( (*match).find("Tau") != std::string::npos ) continue;
+          if( (*match).find("EBOnly") != std::string::npos ) continue;
+
+
           if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
           HLT_TriggerName.push_back(*match); //save HLT list as a vector
 
