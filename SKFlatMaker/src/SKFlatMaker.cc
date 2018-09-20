@@ -1358,6 +1358,9 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
       "HLT_Mu*", "HLT_Ele*", "HLT_DoubleEle*", "HLT_DoublePhoton*", "HLT_IsoMu*", "HLT_Photon*",
       "HLT_oldMu100_v*", "HLT_TkMu100_v*",
       "HLT_TkMu50_v*",
+      "HLT_IsoTkMu24_v*",
+      "HLT_TripleMu*",
+      "HLT_DiMu*",
 
 /*
       //==== single muon triggers
@@ -1450,14 +1453,17 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
 
           }
           if( (*match).find("Onia") != std::string::npos ) continue;
+          if( (*match).find("BTagCSV") != std::string::npos ) continue;
           if( (*match).find("CaloBTagCSV") != std::string::npos ) continue;
           if( (*match).find("Tau") != std::string::npos ) continue;
           if( (*match).find("EBOnly") != std::string::npos ) continue;
           if( (*match).find("R9Id90") != std::string::npos ) continue;
+          if( (*match).find("R9Id85") != std::string::npos ) continue;
           if( (*match).find("DisplacedIdL") != std::string::npos ) continue;
           if( (*match).find("HighEta") != std::string::npos ) continue;
           if( (*match).find("EleCleaned") != std::string::npos ) continue;
           if( (*match).find("NoFiltersNoVtx") != std::string::npos ) continue;
+          if( (*match).find("WHbb") != std::string::npos ) continue;
 
           if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
           HLT_TriggerName.push_back(*match); //save HLT list as a vector
