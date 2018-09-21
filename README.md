@@ -18,10 +18,16 @@ cmsenv
 # https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
 git cms-init
 git cms-merge-topic cms-egamma:EgammaPostRecoTools_940 #just adds in an extra file to have a setup function to make things easier
+
 # https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Recipe_for_regular_users_formats
 # The Fall17_94X_V2 ID modules are included by default for CMSSW_10_2_X and higher, for CMSSW_9_4_X you can obtain them through following git cms-merge-topic: 
 git cms-merge-topic UAEDF-tomc:eleCutBasedId_94X_V2
 scram b -j 8
+
+# MET EE Noise filter
+# https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/1865.html
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
+git cms-merge-topic cms-met:METFixEE2017_949_v2
 
 # Copy this code
 git clone git@github.com:CMSSNU/SKFlatMaker.git

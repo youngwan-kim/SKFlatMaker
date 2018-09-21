@@ -85,7 +85,7 @@ process.options   = cms.untracked.PSet(
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.source = cms.Source("PoolSource",
-	fileNames = cms.untracked.vstring( options.inputFiles ),
+  fileNames = cms.untracked.vstring( options.inputFiles ),
   #skipEvents=cms.untracked.uint32(5),
 )
 
@@ -181,6 +181,11 @@ if Is2016:
                          eleIDModules=myEleID)
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
+  process.p = cms.Path(
+    process.egammaPostRecoSeq *
+    process.recoTree
+  )
+
 if Is2017:
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
@@ -189,16 +194,19 @@ if Is2017:
                          eleIDModules=myEleID)
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
-####################
-# -- Let it run -- #
-####################
-if Is2016:
-  process.p = cms.Path(
-    process.egammaPostRecoSeq *
-    process.recoTree
+  from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+
+  runMetCorAndUncFromMiniAOD (
+          process,
+          isData = (not isMC), # false for MC
+          fixEE2017 = True,
+          fixEE2017Params = {'userawPt': True, 'PtThreshold':50.0, 'MinEtaThreshold':2.65, 'MaxEtaThreshold': 3.139} ,
+          postfix = "ModifiedMET"
   )
-if Is2017:
+  process.recoTree.MET = cms.InputTag("slimmedMETsModifiedMET")
+
   process.p = cms.Path(
     process.egammaPostRecoSeq *
+    process.fullPatMetSequenceModifiedMET *
     process.recoTree
   )
