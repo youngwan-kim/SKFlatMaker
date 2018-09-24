@@ -313,7 +313,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_MVAIso.clear();
   electron_MVANoIso.clear();
   electron_et.clear();
-  electron_caloEnergy.clear();
   electron_Energy.clear();
   electron_Energy_Scale_Up.clear();
   electron_Energy_Scale_Down.clear();
@@ -324,16 +323,10 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_pt_Scale_Down.clear();
   electron_pt_Smear_Up.clear();
   electron_pt_Smear_Down.clear();
-  electron_Px.clear();
-  electron_Py.clear();
-  electron_Pz.clear();
   electron_eta.clear();
   electron_phi.clear();
   electron_charge.clear();
   electron_gsfpt.clear();
-  electron_gsfPx.clear();
-  electron_gsfPy.clear();
-  electron_gsfPz.clear();
   electron_gsfEta.clear();
   electron_gsfPhi.clear();
   electron_gsfCharge.clear();
@@ -349,8 +342,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_HoverE.clear();
   electron_fbrem.clear();
   electron_eOverP.clear();
-  electron_energyEC.clear();
-  electron_Pnorm.clear();
   electron_InvEminusInvP.clear();
   electron_dxyVTX.clear();
   electron_dxyerrVTX.clear();
@@ -363,54 +354,16 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_dz.clear();
   electron_dxyBS.clear();
   electron_dzBS.clear();
-  electron_AEff03.clear();
   electron_chIso03.clear();
   electron_nhIso03.clear();
   electron_phIso03.clear();
-  electron_pcIso03.clear();
   electron_puChIso03.clear();
-  electron_chIso04.clear();
-  electron_nhIso04.clear();
-  electron_phIso04.clear();
-  electron_pcIso04.clear();
-  electron_puChIso04.clear();
-  electron_relIsoCom03.clear();
-  electron_relIsoCom04.clear();
-  electron_relIsoBeta03.clear();
-  electron_relIsoBeta04.clear();
-  electron_relIsoRho03.clear();
   electron_passConversionVeto.clear();
   electron_isGsfCtfScPixChargeConsistent.clear();
   electron_isGsfScPixChargeConsistent.clear();
   electron_isGsfCtfChargeConsistent.clear();
   electron_mHits.clear();
-  electron_crack.clear();
   electron_ecalDriven.clear();
-  electron_isoEMHADDepth1.clear();
-  electron_25over55.clear();
-  electron_15over55.clear();
-  electron_isoHADDepth2.clear();
-  electron_isoptTrks.clear();
-  electron_modIsoEMHADDepth1.clear();
-  electron_modIsoptTrks.clear();
-  electron_modIsoEMHADDepth1Orig.clear();
-  electron_modIsoptTrksOrig.clear();
-  electron_ambGsf0pt.clear();
-  electron_ambGsf0Eta.clear();
-  electron_ambGsf0Phi.clear();
-  electron_ambGsf0Charge.clear();
-  electron_ambGsf1pt.clear();
-  electron_ambGsf1Eta.clear();
-  electron_ambGsf1Phi.clear();
-  electron_ambGsf1Charge.clear();
-  electron_ambGsf2pt.clear();
-  electron_ambGsf2Eta.clear();
-  electron_ambGsf2Phi.clear();
-  electron_ambGsf2Charge.clear();
-  electron_ambGsf3pt.clear();
-  electron_ambGsf3Eta.clear();
-  electron_ambGsf3Phi.clear();
-  electron_ambGsf3Charge.clear();
   electron_r9.clear();
   electron_scEnergy.clear();
   electron_scPreEnergy.clear();
@@ -431,8 +384,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_passMVAID_iso_WP90.clear();
   electron_passHEEPID.clear();
   electron_EnergyUnCorr.clear();
-  electron_mva.clear();
-  electron_zzmva.clear();
   electron_chMiniIso.clear();
   electron_nhMiniIso.clear();
   electron_phMiniIso.clear();
@@ -962,7 +913,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_MVAIso", "vector<double>", &electron_MVAIso);
     DYTree->Branch("electron_MVANoIso", "vector<double>", &electron_MVANoIso);
     DYTree->Branch("electron_et", "vector<double>", &electron_et);
-    DYTree->Branch("electron_caloEnergy", "vector<double>", &electron_caloEnergy);
     DYTree->Branch("electron_Energy", "vector<double>", &electron_Energy);
     DYTree->Branch("electron_Energy_Scale_Up", "vector<double>", &electron_Energy_Scale_Up);
     DYTree->Branch("electron_Energy_Scale_Down", "vector<double>", &electron_Energy_Scale_Down);
@@ -973,16 +923,10 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_pt_Scale_Down", "vector<double>", &electron_pt_Scale_Down);
     DYTree->Branch("electron_pt_Smear_Up", "vector<double>", &electron_pt_Smear_Up);
     DYTree->Branch("electron_pt_Smear_Down", "vector<double>", &electron_pt_Smear_Down);
-    DYTree->Branch("electron_Px", "vector<double>", &electron_Px);
-    DYTree->Branch("electron_Py", "vector<double>", &electron_Py);
-    DYTree->Branch("electron_Pz", "vector<double>", &electron_Pz);
     DYTree->Branch("electron_eta", "vector<double>", &electron_eta);
     DYTree->Branch("electron_phi", "vector<double>", &electron_phi);
     DYTree->Branch("electron_charge", "vector<int>", &electron_charge);
     DYTree->Branch("electron_gsfpt", "vector<double>", &electron_gsfpt);
-    DYTree->Branch("electron_gsfPx", "vector<double>", &electron_gsfPx);
-    DYTree->Branch("electron_gsfPy", "vector<double>", &electron_gsfPy);
-    DYTree->Branch("electron_gsfPz", "vector<double>", &electron_gsfPz);
     DYTree->Branch("electron_gsfEta", "vector<double>", &electron_gsfEta);
     DYTree->Branch("electron_gsfPhi", "vector<double>", &electron_gsfPhi);
     DYTree->Branch("electron_gsfCharge", "vector<int>", &electron_gsfCharge);
@@ -998,8 +942,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_HoverE", "vector<double>", &electron_HoverE);
     DYTree->Branch("electron_fbrem", "vector<double>", &electron_fbrem);
     DYTree->Branch("electron_eOverP", "vector<double>", &electron_eOverP);
-    DYTree->Branch("electron_energyEC", "vector<double>", &electron_energyEC);
-    DYTree->Branch("electron_Pnorm", "vector<double>", &electron_Pnorm);
     DYTree->Branch("electron_InvEminusInvP", "vector<double>", &electron_InvEminusInvP);
     DYTree->Branch("electron_dxyVTX", "vector<double>", &electron_dxyVTX);
     DYTree->Branch("electron_dxyerrVTX", "vector<double>", &electron_dxyerrVTX);
@@ -1012,54 +954,16 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_dz", "vector<double>", &electron_dz);
     DYTree->Branch("electron_dxyBS", "vector<double>", &electron_dxyBS);
     DYTree->Branch("electron_dzBS", "vector<double>", &electron_dzBS);
-    DYTree->Branch("electron_AEff03", "vector<double>", &electron_AEff03);
     DYTree->Branch("electron_chIso03", "vector<double>", &electron_chIso03);
     DYTree->Branch("electron_nhIso03", "vector<double>", &electron_nhIso03);
     DYTree->Branch("electron_phIso03", "vector<double>", &electron_phIso03);
-    DYTree->Branch("electron_pcIso03", "vector<double>", &electron_pcIso03);
     DYTree->Branch("electron_puChIso03", "vector<double>", &electron_puChIso03);
-    DYTree->Branch("electron_chIso04", "vector<double>", &electron_chIso04);
-    DYTree->Branch("electron_nhIso04", "vector<double>", &electron_nhIso04);
-    DYTree->Branch("electron_phIso04", "vector<double>", &electron_phIso04);
-    DYTree->Branch("electron_pcIso04", "vector<double>", &electron_pcIso04);
-    DYTree->Branch("electron_puChIso04", "vector<double>", &electron_puChIso04);
-    DYTree->Branch("electron_relIsoCom03", "vector<double>", &electron_relIsoCom03);
-    DYTree->Branch("electron_relIsoCom04", "vector<double>", &electron_relIsoCom04);
-    DYTree->Branch("electron_relIsoBeta03", "vector<double>", &electron_relIsoBeta03);
-    DYTree->Branch("electron_relIsoBeta04", "vector<double>", &electron_relIsoBeta04);
-    DYTree->Branch("electron_relIsoRho03", "vector<double>", &electron_relIsoRho03);
     DYTree->Branch("electron_passConversionVeto", "vector<bool>", &electron_passConversionVeto);
     DYTree->Branch("electron_isGsfCtfScPixChargeConsistent", "vector<bool>", &electron_isGsfCtfScPixChargeConsistent);
     DYTree->Branch("electron_isGsfScPixChargeConsistent", "vector<bool>", &electron_isGsfScPixChargeConsistent);
     DYTree->Branch("electron_isGsfCtfChargeConsistent", "vector<bool>", &electron_isGsfCtfChargeConsistent);
     DYTree->Branch("electron_mHits", "vector<int>", &electron_mHits);
-    DYTree->Branch("electron_crack", "vector<int>", &electron_crack);
     DYTree->Branch("electron_ecalDriven", "vector<int>", &electron_ecalDriven);
-    DYTree->Branch("electron_isoEMHADDepth1", "vector<double>", &electron_isoEMHADDepth1);
-    DYTree->Branch("electron_25over55", "vector<double>", &electron_25over55);
-    DYTree->Branch("electron_15over55", "vector<double>", &electron_15over55);
-    DYTree->Branch("electron_isoHADDepth2", "vector<double>", &electron_isoHADDepth2);
-    DYTree->Branch("electron_isoptTrks", "vector<double>", &electron_isoptTrks);
-    DYTree->Branch("electron_modIsoEMHADDepth1", "vector<double>", &electron_modIsoEMHADDepth1);
-    DYTree->Branch("electron_modIsoptTrks", "vector<double>", &electron_modIsoptTrks);
-    DYTree->Branch("electron_modIsoEMHADDepth1Orig", "vector<double>", &electron_modIsoEMHADDepth1Orig);
-    DYTree->Branch("electron_modIsoptTrksOrig", "vector<double>", &electron_modIsoptTrksOrig);
-    DYTree->Branch("electron_ambGsf0pt", "vector<double>", &electron_ambGsf0pt);
-    DYTree->Branch("electron_ambGsf0Eta", "vector<double>", &electron_ambGsf0Eta);
-    DYTree->Branch("electron_ambGsf0Phi", "vector<double>", &electron_ambGsf0Phi);
-    DYTree->Branch("electron_ambGsf0Charge", "vector<double>", &electron_ambGsf0Charge);
-    DYTree->Branch("electron_ambGsf1pt", "vector<double>", &electron_ambGsf1pt);
-    DYTree->Branch("electron_ambGsf1Eta", "vector<double>", &electron_ambGsf1Eta);
-    DYTree->Branch("electron_ambGsf1Phi", "vector<double>", &electron_ambGsf1Phi);
-    DYTree->Branch("electron_ambGsf1Charge", "vector<double>", &electron_ambGsf1Charge);
-    DYTree->Branch("electron_ambGsf2pt", "vector<double>", &electron_ambGsf2pt);
-    DYTree->Branch("electron_ambGsf2Eta", "vector<double>", &electron_ambGsf2Eta);
-    DYTree->Branch("electron_ambGsf2Phi", "vector<double>", &electron_ambGsf2Phi);
-    DYTree->Branch("electron_ambGsf2Charge", "vector<double>", &electron_ambGsf2Charge);
-    DYTree->Branch("electron_ambGsf3pt", "vector<double>", &electron_ambGsf3pt);
-    DYTree->Branch("electron_ambGsf3Eta", "vector<double>", &electron_ambGsf3Eta);
-    DYTree->Branch("electron_ambGsf3Phi", "vector<double>", &electron_ambGsf3Phi);
-    DYTree->Branch("electron_ambGsf3Charge", "vector<double>", &electron_ambGsf3Charge);
     DYTree->Branch("electron_r9", "vector<double>", &electron_r9);
     DYTree->Branch("electron_scEnergy", "vector<double>", &electron_scEnergy);
     DYTree->Branch("electron_scPreEnergy", "vector<double>", &electron_scPreEnergy);
@@ -1080,8 +984,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_passMVAID_iso_WP90", "vector<bool>", &electron_passMVAID_iso_WP90);
     DYTree->Branch("electron_passHEEPID", "vector<bool>", &electron_passHEEPID);
     DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
-    DYTree->Branch("electron_mva", "vector<double>", &electron_mva);
-    DYTree->Branch("electron_zzmva", "vector<double>", &electron_zzmva);
     DYTree->Branch("electron_chMiniIso", "vector<double>", &electron_chMiniIso);
     DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
     DYTree->Branch("electron_phMiniIso", "vector<double>", &electron_phMiniIso);
@@ -2225,7 +2127,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::FileInPath eaConstantsFile(electron_EA_NHandPh_file);
   EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
 
-  std::vector< double > _ambGsfTrkPt;
   if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] for ElecHandle starts, ElecHandle->size() : " << ElecHandle->size() << endl;
   
   for(int i=0; i< (int)ElecHandle->size(); i++){
@@ -2243,9 +2144,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     electron_pt_Smear_Down.push_back( el->userFloat("energySigmaDown") * sin_theta );
     electron_eta.push_back( el->eta() );
     electron_phi.push_back( el->phi() );
-    electron_Px.push_back( el->px() );
-    electron_Py.push_back( el->py() );
-    electron_Pz.push_back( el->pz() );
 
 /*
     //==== Debugging lines for egamma correction
@@ -2436,18 +2334,12 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
 
     if( elecTrk.isNonnull() ){
       electron_gsfpt.push_back( elecTrk->pt() );
-      electron_gsfPx.push_back( elecTrk->px() );
-      electron_gsfPy.push_back( elecTrk->py() );
-      electron_gsfPz.push_back( elecTrk->pz() );
       electron_gsfEta.push_back( elecTrk->eta() );
       electron_gsfPhi.push_back( elecTrk->phi() );
       electron_gsfCharge.push_back( elecTrk->charge() );
     }
     else{
       electron_gsfpt.push_back( -999 );
-      electron_gsfPx.push_back( -999 );
-      electron_gsfPy.push_back( -999 );
-      electron_gsfPz.push_back( -999 );
       electron_gsfEta.push_back( -999 );
       electron_gsfPhi.push_back( -999 );
       electron_gsfCharge.push_back( -999 );
