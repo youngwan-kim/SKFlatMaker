@@ -46,8 +46,9 @@ for obj in objects:
   # 0 = header
   # 1 = src, initilize
   # 2 = src, Branch
+  # 3 = src, fill value
 
-  for WhatToPrint in range(0,3):
+  for WhatToPrint in range(0,4):
 
     if WhatToPrint==0:
       print "#### interface/SKFlatMaker.h ####"
@@ -57,6 +58,9 @@ for obj in objects:
       print ""
     if WhatToPrint==2:
       print "#### src/SKFlatMaker.cc, SKFlatMaker::beginJob() ####"
+      print ""
+    if WhatToPrint==3:
+      print "#### src/SKFlatMaker.cc, SKFlatMaker::analyze() ####"
       print ""
 
     for line in lines:
@@ -87,6 +91,14 @@ for obj in objects:
           if not InFile(lines_src, words):
             HasMissingVariable = True
             print '    DYTree->Branch("'+varname+'", "vector<'+vartype+'>", &'+varname+');'
+
+        elif WhatToPrint==3:
+
+          words = [varname, "push_back"]
+          if not InFile(lines_src, words):
+            HasMissingVariable = True
+            #print '    '+varname+'.push_back( );'
+            print varname+' : not filled'
 
       else:
         if WhatToPrint==0:
