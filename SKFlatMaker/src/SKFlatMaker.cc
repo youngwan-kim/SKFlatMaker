@@ -313,7 +313,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_MVAIso.clear();
   electron_MVANoIso.clear();
   electron_et.clear();
-  electron_caloEnergy.clear();
   electron_Energy.clear();
   electron_Energy_Scale_Up.clear();
   electron_Energy_Scale_Down.clear();
@@ -324,16 +323,10 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_pt_Scale_Down.clear();
   electron_pt_Smear_Up.clear();
   electron_pt_Smear_Down.clear();
-  electron_Px.clear();
-  electron_Py.clear();
-  electron_Pz.clear();
   electron_eta.clear();
   electron_phi.clear();
   electron_charge.clear();
   electron_gsfpt.clear();
-  electron_gsfPx.clear();
-  electron_gsfPy.clear();
-  electron_gsfPz.clear();
   electron_gsfEta.clear();
   electron_gsfPhi.clear();
   electron_gsfCharge.clear();
@@ -349,8 +342,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_HoverE.clear();
   electron_fbrem.clear();
   electron_eOverP.clear();
-  electron_energyEC.clear();
-  electron_Pnorm.clear();
   electron_InvEminusInvP.clear();
   electron_dxyVTX.clear();
   electron_dxyerrVTX.clear();
@@ -363,54 +354,16 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_dz.clear();
   electron_dxyBS.clear();
   electron_dzBS.clear();
-  electron_AEff03.clear();
   electron_chIso03.clear();
   electron_nhIso03.clear();
   electron_phIso03.clear();
-  electron_pcIso03.clear();
   electron_puChIso03.clear();
-  electron_chIso04.clear();
-  electron_nhIso04.clear();
-  electron_phIso04.clear();
-  electron_pcIso04.clear();
-  electron_puChIso04.clear();
-  electron_relIsoCom03.clear();
-  electron_relIsoCom04.clear();
-  electron_relIsoBeta03.clear();
-  electron_relIsoBeta04.clear();
-  electron_relIsoRho03.clear();
   electron_passConversionVeto.clear();
   electron_isGsfCtfScPixChargeConsistent.clear();
   electron_isGsfScPixChargeConsistent.clear();
   electron_isGsfCtfChargeConsistent.clear();
   electron_mHits.clear();
-  electron_crack.clear();
   electron_ecalDriven.clear();
-  electron_isoEMHADDepth1.clear();
-  electron_25over55.clear();
-  electron_15over55.clear();
-  electron_isoHADDepth2.clear();
-  electron_isoptTrks.clear();
-  electron_modIsoEMHADDepth1.clear();
-  electron_modIsoptTrks.clear();
-  electron_modIsoEMHADDepth1Orig.clear();
-  electron_modIsoptTrksOrig.clear();
-  electron_ambGsf0pt.clear();
-  electron_ambGsf0Eta.clear();
-  electron_ambGsf0Phi.clear();
-  electron_ambGsf0Charge.clear();
-  electron_ambGsf1pt.clear();
-  electron_ambGsf1Eta.clear();
-  electron_ambGsf1Phi.clear();
-  electron_ambGsf1Charge.clear();
-  electron_ambGsf2pt.clear();
-  electron_ambGsf2Eta.clear();
-  electron_ambGsf2Phi.clear();
-  electron_ambGsf2Charge.clear();
-  electron_ambGsf3pt.clear();
-  electron_ambGsf3Eta.clear();
-  electron_ambGsf3Phi.clear();
-  electron_ambGsf3Charge.clear();
   electron_r9.clear();
   electron_scEnergy.clear();
   electron_scPreEnergy.clear();
@@ -431,17 +384,12 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_passMVAID_iso_WP90.clear();
   electron_passHEEPID.clear();
   electron_EnergyUnCorr.clear();
-  electron_mva.clear();
-  electron_zzmva.clear();
   electron_chMiniIso.clear();
   electron_nhMiniIso.clear();
   electron_phMiniIso.clear();
   electron_puChMiniIso.clear();
 
   //==== Muon
-  muon_PfChargedHadronIsoR05.clear();
-  muon_PfNeutralHadronIsoR05.clear();
-  muon_PfGammaIsoR05.clear();
   muon_PfChargedHadronIsoR04.clear();
   muon_PfNeutralHadronIsoR04.clear();
   muon_PfGammaIsoR04.clear();
@@ -464,15 +412,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_eta.clear();
   muon_pt.clear();
   muon_mass.clear();
-  muon_cktpt.clear();
-  muon_cktPx.clear();
-  muon_cktPy.clear();
-  muon_cktPz.clear();
-  muon_cktptError.clear();
-  muon_Px.clear();
-  muon_Py.clear();
-  muon_Pz.clear();
-  muon_sumtrkpt.clear();
   muon_trkiso.clear();
   muon_hcaliso.clear();
   muon_ecaliso.clear();
@@ -507,45 +446,27 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_3DIPVTX.clear();
   muon_3DIPerrVTX.clear();
   muon_dszVTX.clear();
-  muon_dxycktVTX.clear();
-  muon_dzcktVTX.clear();
-  muon_dszcktVTX.clear();
   muon_vx.clear();
   muon_vy.clear();
   muon_vz.clear();
   muon_Best_pt.clear();
   muon_Best_ptError.clear();
-  muon_Best_Px.clear();
-  muon_Best_Py.clear();
-  muon_Best_Pz.clear();
   muon_Best_eta.clear();
   muon_Best_phi.clear();
   muon_Inner_pt.clear();
   muon_Inner_ptError.clear();
-  muon_Inner_Px.clear();
-  muon_Inner_Py.clear();
-  muon_Inner_Pz.clear();
   muon_Inner_eta.clear();
   muon_Inner_phi.clear();
   muon_Outer_pt.clear();
   muon_Outer_ptError.clear();
-  muon_Outer_Px.clear();
-  muon_Outer_Py.clear();
-  muon_Outer_Pz.clear();
   muon_Outer_eta.clear();
   muon_Outer_phi.clear();
   muon_GLB_pt.clear();
   muon_GLB_ptError.clear();
-  muon_GLB_Px.clear();
-  muon_GLB_Py.clear();
-  muon_GLB_Pz.clear();
   muon_GLB_eta.clear();
   muon_GLB_phi.clear();
   muon_TuneP_pt.clear();
   muon_TuneP_ptError.clear();
-  muon_TuneP_Px.clear();
-  muon_TuneP_Py.clear();
-  muon_TuneP_Pz.clear();
   muon_TuneP_eta.clear();
   muon_TuneP_phi.clear();
   muon_roch_sf.clear();
@@ -962,7 +883,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_MVAIso", "vector<double>", &electron_MVAIso);
     DYTree->Branch("electron_MVANoIso", "vector<double>", &electron_MVANoIso);
     DYTree->Branch("electron_et", "vector<double>", &electron_et);
-    DYTree->Branch("electron_caloEnergy", "vector<double>", &electron_caloEnergy);
     DYTree->Branch("electron_Energy", "vector<double>", &electron_Energy);
     DYTree->Branch("electron_Energy_Scale_Up", "vector<double>", &electron_Energy_Scale_Up);
     DYTree->Branch("electron_Energy_Scale_Down", "vector<double>", &electron_Energy_Scale_Down);
@@ -973,16 +893,10 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_pt_Scale_Down", "vector<double>", &electron_pt_Scale_Down);
     DYTree->Branch("electron_pt_Smear_Up", "vector<double>", &electron_pt_Smear_Up);
     DYTree->Branch("electron_pt_Smear_Down", "vector<double>", &electron_pt_Smear_Down);
-    DYTree->Branch("electron_Px", "vector<double>", &electron_Px);
-    DYTree->Branch("electron_Py", "vector<double>", &electron_Py);
-    DYTree->Branch("electron_Pz", "vector<double>", &electron_Pz);
     DYTree->Branch("electron_eta", "vector<double>", &electron_eta);
     DYTree->Branch("electron_phi", "vector<double>", &electron_phi);
     DYTree->Branch("electron_charge", "vector<int>", &electron_charge);
     DYTree->Branch("electron_gsfpt", "vector<double>", &electron_gsfpt);
-    DYTree->Branch("electron_gsfPx", "vector<double>", &electron_gsfPx);
-    DYTree->Branch("electron_gsfPy", "vector<double>", &electron_gsfPy);
-    DYTree->Branch("electron_gsfPz", "vector<double>", &electron_gsfPz);
     DYTree->Branch("electron_gsfEta", "vector<double>", &electron_gsfEta);
     DYTree->Branch("electron_gsfPhi", "vector<double>", &electron_gsfPhi);
     DYTree->Branch("electron_gsfCharge", "vector<int>", &electron_gsfCharge);
@@ -998,8 +912,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_HoverE", "vector<double>", &electron_HoverE);
     DYTree->Branch("electron_fbrem", "vector<double>", &electron_fbrem);
     DYTree->Branch("electron_eOverP", "vector<double>", &electron_eOverP);
-    DYTree->Branch("electron_energyEC", "vector<double>", &electron_energyEC);
-    DYTree->Branch("electron_Pnorm", "vector<double>", &electron_Pnorm);
     DYTree->Branch("electron_InvEminusInvP", "vector<double>", &electron_InvEminusInvP);
     DYTree->Branch("electron_dxyVTX", "vector<double>", &electron_dxyVTX);
     DYTree->Branch("electron_dxyerrVTX", "vector<double>", &electron_dxyerrVTX);
@@ -1012,54 +924,16 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_dz", "vector<double>", &electron_dz);
     DYTree->Branch("electron_dxyBS", "vector<double>", &electron_dxyBS);
     DYTree->Branch("electron_dzBS", "vector<double>", &electron_dzBS);
-    DYTree->Branch("electron_AEff03", "vector<double>", &electron_AEff03);
     DYTree->Branch("electron_chIso03", "vector<double>", &electron_chIso03);
     DYTree->Branch("electron_nhIso03", "vector<double>", &electron_nhIso03);
     DYTree->Branch("electron_phIso03", "vector<double>", &electron_phIso03);
-    DYTree->Branch("electron_pcIso03", "vector<double>", &electron_pcIso03);
     DYTree->Branch("electron_puChIso03", "vector<double>", &electron_puChIso03);
-    DYTree->Branch("electron_chIso04", "vector<double>", &electron_chIso04);
-    DYTree->Branch("electron_nhIso04", "vector<double>", &electron_nhIso04);
-    DYTree->Branch("electron_phIso04", "vector<double>", &electron_phIso04);
-    DYTree->Branch("electron_pcIso04", "vector<double>", &electron_pcIso04);
-    DYTree->Branch("electron_puChIso04", "vector<double>", &electron_puChIso04);
-    DYTree->Branch("electron_relIsoCom03", "vector<double>", &electron_relIsoCom03);
-    DYTree->Branch("electron_relIsoCom04", "vector<double>", &electron_relIsoCom04);
-    DYTree->Branch("electron_relIsoBeta03", "vector<double>", &electron_relIsoBeta03);
-    DYTree->Branch("electron_relIsoBeta04", "vector<double>", &electron_relIsoBeta04);
-    DYTree->Branch("electron_relIsoRho03", "vector<double>", &electron_relIsoRho03);
     DYTree->Branch("electron_passConversionVeto", "vector<bool>", &electron_passConversionVeto);
     DYTree->Branch("electron_isGsfCtfScPixChargeConsistent", "vector<bool>", &electron_isGsfCtfScPixChargeConsistent);
     DYTree->Branch("electron_isGsfScPixChargeConsistent", "vector<bool>", &electron_isGsfScPixChargeConsistent);
     DYTree->Branch("electron_isGsfCtfChargeConsistent", "vector<bool>", &electron_isGsfCtfChargeConsistent);
     DYTree->Branch("electron_mHits", "vector<int>", &electron_mHits);
-    DYTree->Branch("electron_crack", "vector<int>", &electron_crack);
     DYTree->Branch("electron_ecalDriven", "vector<int>", &electron_ecalDriven);
-    DYTree->Branch("electron_isoEMHADDepth1", "vector<double>", &electron_isoEMHADDepth1);
-    DYTree->Branch("electron_25over55", "vector<double>", &electron_25over55);
-    DYTree->Branch("electron_15over55", "vector<double>", &electron_15over55);
-    DYTree->Branch("electron_isoHADDepth2", "vector<double>", &electron_isoHADDepth2);
-    DYTree->Branch("electron_isoptTrks", "vector<double>", &electron_isoptTrks);
-    DYTree->Branch("electron_modIsoEMHADDepth1", "vector<double>", &electron_modIsoEMHADDepth1);
-    DYTree->Branch("electron_modIsoptTrks", "vector<double>", &electron_modIsoptTrks);
-    DYTree->Branch("electron_modIsoEMHADDepth1Orig", "vector<double>", &electron_modIsoEMHADDepth1Orig);
-    DYTree->Branch("electron_modIsoptTrksOrig", "vector<double>", &electron_modIsoptTrksOrig);
-    DYTree->Branch("electron_ambGsf0pt", "vector<double>", &electron_ambGsf0pt);
-    DYTree->Branch("electron_ambGsf0Eta", "vector<double>", &electron_ambGsf0Eta);
-    DYTree->Branch("electron_ambGsf0Phi", "vector<double>", &electron_ambGsf0Phi);
-    DYTree->Branch("electron_ambGsf0Charge", "vector<double>", &electron_ambGsf0Charge);
-    DYTree->Branch("electron_ambGsf1pt", "vector<double>", &electron_ambGsf1pt);
-    DYTree->Branch("electron_ambGsf1Eta", "vector<double>", &electron_ambGsf1Eta);
-    DYTree->Branch("electron_ambGsf1Phi", "vector<double>", &electron_ambGsf1Phi);
-    DYTree->Branch("electron_ambGsf1Charge", "vector<double>", &electron_ambGsf1Charge);
-    DYTree->Branch("electron_ambGsf2pt", "vector<double>", &electron_ambGsf2pt);
-    DYTree->Branch("electron_ambGsf2Eta", "vector<double>", &electron_ambGsf2Eta);
-    DYTree->Branch("electron_ambGsf2Phi", "vector<double>", &electron_ambGsf2Phi);
-    DYTree->Branch("electron_ambGsf2Charge", "vector<double>", &electron_ambGsf2Charge);
-    DYTree->Branch("electron_ambGsf3pt", "vector<double>", &electron_ambGsf3pt);
-    DYTree->Branch("electron_ambGsf3Eta", "vector<double>", &electron_ambGsf3Eta);
-    DYTree->Branch("electron_ambGsf3Phi", "vector<double>", &electron_ambGsf3Phi);
-    DYTree->Branch("electron_ambGsf3Charge", "vector<double>", &electron_ambGsf3Charge);
     DYTree->Branch("electron_r9", "vector<double>", &electron_r9);
     DYTree->Branch("electron_scEnergy", "vector<double>", &electron_scEnergy);
     DYTree->Branch("electron_scPreEnergy", "vector<double>", &electron_scPreEnergy);
@@ -1080,8 +954,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_passMVAID_iso_WP90", "vector<bool>", &electron_passMVAID_iso_WP90);
     DYTree->Branch("electron_passHEEPID", "vector<bool>", &electron_passHEEPID);
     DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
-    DYTree->Branch("electron_mva", "vector<double>", &electron_mva);
-    DYTree->Branch("electron_zzmva", "vector<double>", &electron_zzmva);
     DYTree->Branch("electron_chMiniIso", "vector<double>", &electron_chMiniIso);
     DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
     DYTree->Branch("electron_phMiniIso", "vector<double>", &electron_phMiniIso);
@@ -1091,9 +963,6 @@ void SKFlatMaker::beginJob()
   // -- muon variables -- //
   if( theStoreMuonFlag ){
 
-    DYTree->Branch("muon_PfChargedHadronIsoR05", "vector<double>", &muon_PfChargedHadronIsoR05);
-    DYTree->Branch("muon_PfNeutralHadronIsoR05", "vector<double>", &muon_PfNeutralHadronIsoR05);
-    DYTree->Branch("muon_PfGammaIsoR05", "vector<double>", &muon_PfGammaIsoR05);
     DYTree->Branch("muon_PfChargedHadronIsoR04", "vector<double>", &muon_PfChargedHadronIsoR04);
     DYTree->Branch("muon_PfNeutralHadronIsoR04", "vector<double>", &muon_PfNeutralHadronIsoR04);
     DYTree->Branch("muon_PfGammaIsoR04", "vector<double>", &muon_PfGammaIsoR04);
@@ -1116,15 +985,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
     DYTree->Branch("muon_pt", "vector<double>", &muon_pt);
     DYTree->Branch("muon_mass", "vector<double>", &muon_mass);
-    DYTree->Branch("muon_cktpt", "vector<double>", &muon_cktpt);
-    DYTree->Branch("muon_cktPx", "vector<double>", &muon_cktPx);
-    DYTree->Branch("muon_cktPy", "vector<double>", &muon_cktPy);
-    DYTree->Branch("muon_cktPz", "vector<double>", &muon_cktPz);
-    DYTree->Branch("muon_cktptError", "vector<double>", &muon_cktptError);
-    DYTree->Branch("muon_Px", "vector<double>", &muon_Px);
-    DYTree->Branch("muon_Py", "vector<double>", &muon_Py);
-    DYTree->Branch("muon_Pz", "vector<double>", &muon_Pz);
-    DYTree->Branch("muon_sumtrkpt", "vector<double>", &muon_sumtrkpt);
     DYTree->Branch("muon_trkiso", "vector<double>", &muon_trkiso);
     DYTree->Branch("muon_hcaliso", "vector<double>", &muon_hcaliso);
     DYTree->Branch("muon_ecaliso", "vector<double>", &muon_ecaliso);
@@ -1159,45 +1019,27 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_3DIPVTX", "vector<double>", &muon_3DIPVTX);
     DYTree->Branch("muon_3DIPerrVTX", "vector<double>", &muon_3DIPerrVTX);
     DYTree->Branch("muon_dszVTX", "vector<double>", &muon_dszVTX);
-    DYTree->Branch("muon_dxycktVTX", "vector<double>", &muon_dxycktVTX);
-    DYTree->Branch("muon_dzcktVTX", "vector<double>", &muon_dzcktVTX);
-    DYTree->Branch("muon_dszcktVTX", "vector<double>", &muon_dszcktVTX);
     DYTree->Branch("muon_vx", "vector<double>", &muon_vx);
     DYTree->Branch("muon_vy", "vector<double>", &muon_vy);
     DYTree->Branch("muon_vz", "vector<double>", &muon_vz);
     DYTree->Branch("muon_Best_pt", "vector<double>", &muon_Best_pt);
     DYTree->Branch("muon_Best_ptError", "vector<double>", &muon_Best_ptError);
-    DYTree->Branch("muon_Best_Px", "vector<double>", &muon_Best_Px);
-    DYTree->Branch("muon_Best_Py", "vector<double>", &muon_Best_Py);
-    DYTree->Branch("muon_Best_Pz", "vector<double>", &muon_Best_Pz);
     DYTree->Branch("muon_Best_eta", "vector<double>", &muon_Best_eta);
     DYTree->Branch("muon_Best_phi", "vector<double>", &muon_Best_phi);
     DYTree->Branch("muon_Inner_pt", "vector<double>", &muon_Inner_pt);
     DYTree->Branch("muon_Inner_ptError", "vector<double>", &muon_Inner_ptError);
-    DYTree->Branch("muon_Inner_Px", "vector<double>", &muon_Inner_Px);
-    DYTree->Branch("muon_Inner_Py", "vector<double>", &muon_Inner_Py);
-    DYTree->Branch("muon_Inner_Pz", "vector<double>", &muon_Inner_Pz);
     DYTree->Branch("muon_Inner_eta", "vector<double>", &muon_Inner_eta);
     DYTree->Branch("muon_Inner_phi", "vector<double>", &muon_Inner_phi);
     DYTree->Branch("muon_Outer_pt", "vector<double>", &muon_Outer_pt);
     DYTree->Branch("muon_Outer_ptError", "vector<double>", &muon_Outer_ptError);
-    DYTree->Branch("muon_Outer_Px", "vector<double>", &muon_Outer_Px);
-    DYTree->Branch("muon_Outer_Py", "vector<double>", &muon_Outer_Py);
-    DYTree->Branch("muon_Outer_Pz", "vector<double>", &muon_Outer_Pz);
     DYTree->Branch("muon_Outer_eta", "vector<double>", &muon_Outer_eta);
     DYTree->Branch("muon_Outer_phi", "vector<double>", &muon_Outer_phi);
     DYTree->Branch("muon_GLB_pt", "vector<double>", &muon_GLB_pt);
     DYTree->Branch("muon_GLB_ptError", "vector<double>", &muon_GLB_ptError);
-    DYTree->Branch("muon_GLB_Px", "vector<double>", &muon_GLB_Px);
-    DYTree->Branch("muon_GLB_Py", "vector<double>", &muon_GLB_Py);
-    DYTree->Branch("muon_GLB_Pz", "vector<double>", &muon_GLB_Pz);
     DYTree->Branch("muon_GLB_eta", "vector<double>", &muon_GLB_eta);
     DYTree->Branch("muon_GLB_phi", "vector<double>", &muon_GLB_phi);
     DYTree->Branch("muon_TuneP_pt", "vector<double>", &muon_TuneP_pt);
     DYTree->Branch("muon_TuneP_ptError", "vector<double>", &muon_TuneP_ptError);
-    DYTree->Branch("muon_TuneP_Px", "vector<double>", &muon_TuneP_Px);
-    DYTree->Branch("muon_TuneP_Py", "vector<double>", &muon_TuneP_Py);
-    DYTree->Branch("muon_TuneP_Pz", "vector<double>", &muon_TuneP_Pz);
     DYTree->Branch("muon_TuneP_eta", "vector<double>", &muon_TuneP_eta);
     DYTree->Branch("muon_TuneP_phi", "vector<double>", &muon_TuneP_phi);
     DYTree->Branch("muon_roch_sf", "vector<double>", &muon_roch_sf);
@@ -1742,7 +1584,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     reco::TrackRef trackerTrack = imuon.innerTrack();
     reco::TrackRef muonTrack    = imuon.outerTrack();
     reco::TrackRef glbTrack     = imuon.globalTrack();
-    // reco::TrackRef cktTrack   = (muon::tevOptimized(imuon, 200, 17., 40., 0.25)).first;
     
     // cout << "##### Analyze:Muon Tracks #####" << endl;
 
@@ -1854,9 +1695,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
 
       muon_dszVTX.push_back( imuon.muonBestTrack()->dsz(vtx.position()) );
 
-      // muon_dxycktVTX.push_back( cktTrack->dxy(vtx.position()) );
-      // muon_dszcktVTX.push_back( cktTrack->dsz(vtx.position()) );
-      // muon_dzcktVTX.push_back( cktTrack->dz(vtx.position()) );
     }
     else{
 
@@ -1870,18 +1708,8 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_dszVTX.push_back( 9999 );
     }
       
-    // muon1 kinematics
-    // muon_cktpT.push_back( cktTrack->pt() );
-    // muon_cktPx.push_back( cktTrack->px() );
-    // muon_cktPy.push_back( cktTrack->py() );
-    // muon_cktPz.push_back( cktTrack->pz() );
-    // muon_cktpTError.push_back( cktTrack->ptError() );
-    
     muon_pt.push_back( imuon.pt() );
     muon_mass.push_back( imuon.mass() );
-    muon_Px.push_back( imuon.px() );
-    muon_Py.push_back( imuon.py() );
-    muon_Pz.push_back( imuon.pz() );
     muon_eta.push_back( imuon.eta() );
     muon_phi.push_back( imuon.phi() );
     
@@ -1892,18 +1720,12 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     if( imuon.muonBestTrack().isNonnull() ){
       muon_Best_pt.push_back( imuon.muonBestTrack()->pt() );
       muon_Best_ptError.push_back( imuon.muonBestTrack()->ptError() );
-      muon_Best_Px.push_back( imuon.muonBestTrack()->px() );
-      muon_Best_Py.push_back( imuon.muonBestTrack()->py() );
-      muon_Best_Pz.push_back( imuon.muonBestTrack()->pz() );
       muon_Best_eta.push_back( imuon.muonBestTrack()->eta() );
       muon_Best_phi.push_back( imuon.muonBestTrack()->phi() );
     }
     else{
       muon_Best_pt.push_back( -999 );
       muon_Best_ptError.push_back( -999 );
-      muon_Best_Px.push_back( -999 );
-      muon_Best_Py.push_back( -999 );
-      muon_Best_Pz.push_back( -999 );
       muon_Best_eta.push_back( -999 );
       muon_Best_phi.push_back( -999 );
     }
@@ -1913,18 +1735,12 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     if( imuon.innerTrack().isNonnull() ){
       muon_Inner_pt.push_back( imuon.innerTrack()->pt() );
       muon_Inner_ptError.push_back( imuon.innerTrack()->ptError() );
-      muon_Inner_Px.push_back( imuon.innerTrack()->px() );
-      muon_Inner_Py.push_back( imuon.innerTrack()->py() );
-      muon_Inner_Pz.push_back( imuon.innerTrack()->pz() );
       muon_Inner_eta.push_back( imuon.innerTrack()->eta() );
       muon_Inner_phi.push_back( imuon.innerTrack()->phi() );
     }
     else{
       muon_Inner_pt.push_back( -999 );
       muon_Inner_ptError.push_back( -999 );
-      muon_Inner_Px.push_back( -999 );
-      muon_Inner_Py.push_back( -999 );
-      muon_Inner_Pz.push_back( -999 );
       muon_Inner_eta.push_back( -999 );
       muon_Inner_phi.push_back( -999 );
     }
@@ -1933,18 +1749,12 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     if( imuon.outerTrack().isNonnull() ){
       muon_Outer_pt.push_back( imuon.outerTrack()->pt() );
       muon_Outer_ptError.push_back( imuon.outerTrack()->ptError() );
-      muon_Outer_Px.push_back( imuon.outerTrack()->px() );
-      muon_Outer_Py.push_back( imuon.outerTrack()->py() );
-      muon_Outer_Pz.push_back( imuon.outerTrack()->pz() );
       muon_Outer_eta.push_back( imuon.outerTrack()->eta() );
       muon_Outer_phi.push_back( imuon.outerTrack()->phi() );
     }
     else{
       muon_Outer_pt.push_back( -999 );
       muon_Outer_ptError.push_back( -999 );
-      muon_Outer_Px.push_back( -999 );
-      muon_Outer_Py.push_back( -999 );
-      muon_Outer_Pz.push_back( -999 );
       muon_Outer_eta.push_back( -999 );
       muon_Outer_phi.push_back( -999 );
     }
@@ -1953,18 +1763,12 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     if( imuon.globalTrack().isNonnull() ){
       muon_GLB_pt.push_back( imuon.globalTrack()->pt() );
       muon_GLB_ptError.push_back( imuon.globalTrack()->ptError() );
-      muon_GLB_Px.push_back( imuon.globalTrack()->px() );
-      muon_GLB_Py.push_back( imuon.globalTrack()->py() );
-      muon_GLB_Pz.push_back( imuon.globalTrack()->pz() );
       muon_GLB_eta.push_back( imuon.globalTrack()->eta() );
       muon_GLB_phi.push_back( imuon.globalTrack()->phi() );
     }
     else{
       muon_GLB_pt.push_back( -999 );
       muon_GLB_ptError.push_back( -999 );
-      muon_GLB_Px.push_back( -999 );
-      muon_GLB_Py.push_back( -999 );
-      muon_GLB_Pz.push_back( -999 );
       muon_GLB_eta.push_back( -999 );
       muon_GLB_phi.push_back( -999 );
     }
@@ -1973,18 +1777,12 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     if( imuon.tunePMuonBestTrack().isNonnull() ){
       muon_TuneP_pt.push_back( imuon.tunePMuonBestTrack()->pt() );
       muon_TuneP_ptError.push_back( imuon.tunePMuonBestTrack()->ptError() );
-      muon_TuneP_Px.push_back( imuon.tunePMuonBestTrack()->px() );
-      muon_TuneP_Py.push_back( imuon.tunePMuonBestTrack()->py() );
-      muon_TuneP_Pz.push_back( imuon.tunePMuonBestTrack()->pz() );
       muon_TuneP_eta.push_back( imuon.tunePMuonBestTrack()->eta() );
       muon_TuneP_phi.push_back( imuon.tunePMuonBestTrack()->phi() );
     }
     else{
       muon_TuneP_pt.push_back( -999 );
       muon_TuneP_ptError.push_back( -999 );
-      muon_TuneP_Px.push_back( -999 );
-      muon_TuneP_Py.push_back( -999 );
-      muon_TuneP_Pz.push_back( -999 );
       muon_TuneP_eta.push_back( -999 );
       muon_TuneP_phi.push_back( -999 );
     }
@@ -2225,7 +2023,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::FileInPath eaConstantsFile(electron_EA_NHandPh_file);
   EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
 
-  std::vector< double > _ambGsfTrkPt;
   if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] for ElecHandle starts, ElecHandle->size() : " << ElecHandle->size() << endl;
   
   for(int i=0; i< (int)ElecHandle->size(); i++){
@@ -2243,9 +2040,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     electron_pt_Smear_Down.push_back( el->userFloat("energySigmaDown") * sin_theta );
     electron_eta.push_back( el->eta() );
     electron_phi.push_back( el->phi() );
-    electron_Px.push_back( el->px() );
-    electron_Py.push_back( el->py() );
-    electron_Pz.push_back( el->pz() );
 
 /*
     //==== Debugging lines for egamma correction
@@ -2436,18 +2230,12 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
 
     if( elecTrk.isNonnull() ){
       electron_gsfpt.push_back( elecTrk->pt() );
-      electron_gsfPx.push_back( elecTrk->px() );
-      electron_gsfPy.push_back( elecTrk->py() );
-      electron_gsfPz.push_back( elecTrk->pz() );
       electron_gsfEta.push_back( elecTrk->eta() );
       electron_gsfPhi.push_back( elecTrk->phi() );
       electron_gsfCharge.push_back( elecTrk->charge() );
     }
     else{
       electron_gsfpt.push_back( -999 );
-      electron_gsfPx.push_back( -999 );
-      electron_gsfPy.push_back( -999 );
-      electron_gsfPz.push_back( -999 );
       electron_gsfEta.push_back( -999 );
       electron_gsfPhi.push_back( -999 );
       electron_gsfCharge.push_back( -999 );
