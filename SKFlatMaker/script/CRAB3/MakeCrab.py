@@ -99,14 +99,24 @@ for line in lines:
         period = ""
         if year+"B" in confs:
           period = "B"
+          if year=="2016":
+            if "ver1" in confs:
+              period = "B_ver1"
+            if "ver2" in confs:
+              period = "B_ver2"
         elif year+"C" in confs:
           period = "C"
-        elif year+"CD" in confs:
+        elif year+"D" in confs:
           period = "D"
-        elif year+"CE" in confs:
+        elif year+"E" in confs:
           period = "E"
-        elif year+"CF" in confs:
+        elif year+"F" in confs:
           period = "F"
+        elif year+"G" in confs:
+          period = "G"
+        elif year+"H" in confs:
+          period = "H"
+
         out.write("config.Data.outputDatasetTag = 'SKFlat_"+SKFlatTag+"_period"+period+"'\n")
       else:
         out.write("config.Data.outputDatasetTag = 'SKFlat_"+SKFlatTag+"'\n")
