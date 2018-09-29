@@ -76,6 +76,13 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   
   processName                       = iConfig.getUntrackedParameter<string>("processName", "HLT");
 
+  electron_IDtoSave                 = iConfig.getUntrackedParameter< std::vector<std::string> >("electron_IDtoSave");
+  cout << "[SKFlatMaker::SKFlatMaker]" << endl;
+  cout << "############# electron_IDtoSave #############" << endl;
+  for(unsigned int i=0; i<electron_IDtoSave.size(); i++){
+    cout << electron_IDtoSave.at(i) << endl;
+  }
+  cout << "#############################################" << endl;
   electron_EA_NHandPh_file          = iConfig.getUntrackedParameter<edm::FileInPath>( "electron_EA_NHandPh_file" );
   photon_EA_CH_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_CH_file" );
   photon_EA_HN_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_HN_file" );
@@ -374,15 +381,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_E55.clear();
   electron_RelPFIso_dBeta.clear();
   electron_RelPFIso_Rho.clear();
-  electron_passVetoID.clear();
-  electron_passLooseID.clear();
-  electron_passMediumID.clear();
-  electron_passTightID.clear();
-  electron_passMVAID_noIso_WP80.clear();
-  electron_passMVAID_noIso_WP90.clear();
-  electron_passMVAID_iso_WP80.clear();
-  electron_passMVAID_iso_WP90.clear();
-  electron_passHEEPID.clear();
+  electron_IDBit.clear();
   electron_EnergyUnCorr.clear();
   electron_chMiniIso.clear();
   electron_nhMiniIso.clear();
@@ -944,15 +943,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_E55", "vector<double>", &electron_E55);
     DYTree->Branch("electron_RelPFIso_dBeta", "vector<double>", &electron_RelPFIso_dBeta);
     DYTree->Branch("electron_RelPFIso_Rho", "vector<double>", &electron_RelPFIso_Rho);
-    DYTree->Branch("electron_passVetoID", "vector<bool>", &electron_passVetoID);
-    DYTree->Branch("electron_passLooseID", "vector<bool>", &electron_passLooseID);
-    DYTree->Branch("electron_passMediumID", "vector<bool>", &electron_passMediumID);
-    DYTree->Branch("electron_passTightID", "vector<bool>", &electron_passTightID);
-    DYTree->Branch("electron_passMVAID_noIso_WP80", "vector<bool>", &electron_passMVAID_noIso_WP80);
-    DYTree->Branch("electron_passMVAID_noIso_WP90", "vector<bool>", &electron_passMVAID_noIso_WP90);
-    DYTree->Branch("electron_passMVAID_iso_WP80", "vector<bool>", &electron_passMVAID_iso_WP80);
-    DYTree->Branch("electron_passMVAID_iso_WP90", "vector<bool>", &electron_passMVAID_iso_WP90);
-    DYTree->Branch("electron_passHEEPID", "vector<bool>", &electron_passHEEPID);
+    DYTree->Branch("electron_IDBit", "vector<int>", &electron_IDBit);
     DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
     DYTree->Branch("electron_chMiniIso", "vector<double>", &electron_chMiniIso);
     DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
@@ -2245,20 +2236,33 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
 
     //==== Cut Based
     //==== 94x-V2 : https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Recipe_for_regular_users_formats
-    bool isPassVeto  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-veto");
-    bool isPassLoose  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-loose");
-    bool isPassMedium = el -> electronID("cutBasedElectronID-Fall17-94X-V2-medium");
-    bool isPassTight  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-tight");
     //==== MVA Based
     //==== Fall17 : https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2#VID_based_recipe_provides_pass_f
-    bool isPassMVA_noIso_WP80 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp80");
-    bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
-    bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
-    bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
     //==== HEEP ID
     //==== V7 : https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Configuring_and_Running_VID_in_a
-    bool isPassHEEP = el -> electronID("heepElectronID-HEEPV70");
 
+    int IDBit = 0;
+    for(unsigned int it_ID=0; it_ID<electron_IDtoSave.size(); it_ID++){
+      if(el->electronID(electron_IDtoSave.at(it_ID))){
+        IDBit |= (1 << it_ID);
+      }
+      else{
+        IDBit &= ~(1 << it_ID);
+      }
+    }
+    electron_IDBit.push_back( IDBit );
+/*
+    cout << "Electron ID Bit = " << IDBit << endl;
+    cout << "--> CB veto = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-veto") << endl;
+    cout << "--> CB loose = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-loose") << endl;
+    cout << "--> CB medium = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-medium") << endl;
+    cout << "--> CB tight = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-tight") << endl;
+    cout << "--> MVA noIso WP80 = " << el->electronID("mvaEleID-Fall17-noIso-V1-wp80") << endl;
+    cout << "--> MVA noIso WP90 = " << el->electronID("mvaEleID-Fall17-noIso-V1-wp90") << endl;
+    cout << "--> MVA Iso WP80 = " << el->electronID("mvaEleID-Fall17-iso-V1-wp80") << endl;
+    cout << "--> MVA Iso WP90 = " << el->electronID("mvaEleID-Fall17-iso-V1-wp90") << endl;
+    cout << "--> Heepv70 = " << el->electronID("heepElectronID-HEEPV70") << endl;
+*/
 /*
     //==== checking pogboolean and cut-by-hand
     if(isPassLoose){
@@ -2304,18 +2308,6 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
       }
     }
 */
-
-    // cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
-    electron_passVetoID.push_back( isPassVeto );
-    electron_passLooseID.push_back( isPassLoose );
-    electron_passMediumID.push_back( isPassMedium );
-    electron_passTightID.push_back( isPassTight );
-    electron_passMVAID_noIso_WP80.push_back( isPassMVA_noIso_WP80 );
-    electron_passMVAID_noIso_WP90.push_back( isPassMVA_noIso_WP90 );
-    electron_passMVAID_iso_WP80.push_back( isPassMVA_iso_WP80 );
-    electron_passMVAID_iso_WP90.push_back( isPassMVA_iso_WP90 );
-    electron_passHEEPID.push_back( isPassHEEP );
-
 
   } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   
