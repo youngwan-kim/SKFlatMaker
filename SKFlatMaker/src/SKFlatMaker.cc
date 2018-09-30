@@ -233,8 +233,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   gen_phi.clear();
   gen_eta.clear();
   gen_pt.clear();
-  gen_Pz.clear();
-  gen_E.clear();
+  gen_mass.clear();
   gen_mother_index.clear();
   gen_status.clear();
   gen_PID.clear();
@@ -1017,8 +1016,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("gen_phi", "vector<double>", &gen_phi);
     DYTree->Branch("gen_eta", "vector<double>", &gen_eta);
     DYTree->Branch("gen_pt", "vector<double>", &gen_pt);
-    DYTree->Branch("gen_Pz", "vector<double>", &gen_Pz);
-    DYTree->Branch("gen_E", "vector<double>", &gen_E);
+    DYTree->Branch("gen_mass", "vector<double>", &gen_mass);
     DYTree->Branch("gen_mother_index", "vector<int>", &gen_mother_index);
     DYTree->Branch("gen_status", "vector<int>", &gen_status);
     DYTree->Branch("gen_PID", "vector<int>", &gen_PID);
@@ -2399,8 +2397,7 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     
     gen_PID.push_back( it->pdgId() );
     gen_pt.push_back( it->pt() );
-    gen_Pz.push_back( it->pz() );
-    gen_E.push_back( it->energy() );
+    gen_mass.push_back( it->mass() );
     gen_eta.push_back( it->eta() );
     gen_phi.push_back( it->phi() );
     gen_status.push_back( it->status() );

@@ -669,8 +669,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> gen_phi;
   vector<double> gen_eta;
   vector<double> gen_pt;
-  vector<double> gen_Pz;
-  vector<double> gen_E;
+  vector<double> gen_mass;
   vector<int> gen_mother_index;
   vector<int> gen_status;
   vector<int> gen_PID;
