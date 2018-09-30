@@ -6,15 +6,8 @@ double	muon_PfChargedHadronIsoR03	1
 double	muon_PfNeutralHadronIsoR03	1
 double	muon_PfGammaIsoR03	1
 double	muon_PFSumPUIsoR03	1
-bool	muon_isPF	1
-bool	muon_isGlobal	1
-bool	muon_isTracker	1
-bool	muon_isStandAlone	1
-bool	muon_isTight	1
-bool	muon_isMedium	1
-bool	muon_isLoose	1
-bool	muon_isSoft	1
-bool	muon_isHighPt	1
+unsigned int	muon_TypeBit	1
+unsigned int	muon_IDBit	1
 double	muon_dB	1
 double	muon_phi	1
 double	muon_eta	1

@@ -397,15 +397,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_PfNeutralHadronIsoR03.clear();
   muon_PfGammaIsoR03.clear();
   muon_PFSumPUIsoR03.clear();
-  muon_isPF.clear();
-  muon_isGlobal.clear();
-  muon_isTracker.clear();
-  muon_isStandAlone.clear();
-  muon_isTight.clear();
-  muon_isMedium.clear();
-  muon_isLoose.clear();
-  muon_isSoft.clear();
-  muon_isHighPt.clear();
+  muon_TypeBit.clear();
+  muon_IDBit.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -962,15 +955,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_PfNeutralHadronIsoR03", "vector<double>", &muon_PfNeutralHadronIsoR03);
     DYTree->Branch("muon_PfGammaIsoR03", "vector<double>", &muon_PfGammaIsoR03);
     DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
-    DYTree->Branch("muon_isPF", "vector<bool>", &muon_isPF);
-    DYTree->Branch("muon_isGlobal", "vector<bool>", &muon_isGlobal);
-    DYTree->Branch("muon_isTracker", "vector<bool>", &muon_isTracker);
-    DYTree->Branch("muon_isStandAlone", "vector<bool>", &muon_isStandAlone);
-    DYTree->Branch("muon_isTight", "vector<bool>", &muon_isTight);
-    DYTree->Branch("muon_isMedium", "vector<bool>", &muon_isMedium);
-    DYTree->Branch("muon_isLoose", "vector<bool>", &muon_isLoose);
-    DYTree->Branch("muon_isSoft", "vector<bool>", &muon_isSoft);
-    DYTree->Branch("muon_isHighPt", "vector<bool>", &muon_isHighPt);
+    DYTree->Branch("muon_TypeBit", "vector<unsigned int>", &muon_TypeBit);
+    DYTree->Branch("muon_IDBit", "vector<unsigned int>", &muon_IDBit);
     DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
@@ -1527,34 +1513,28 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   for( unsigned int i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
     const pat::Muon imuon = muonHandle->at(i);
-    
-    if( imuon.isStandAloneMuon() ) muon_isStandAlone.push_back( true );
-    else muon_isStandAlone.push_back( false );
+ 
+    //============================================================================================
+    //==== Muon selectors (Since 9_4_X) 
+    //==== https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Muon_selectors_Since_9_4_X
+    //============================================================================================
 
-    if( imuon.isGlobalMuon() ) muon_isGlobal.push_back( true );
-    else muon_isGlobal.push_back( false );
+    //==== DataFormats/MuonReco/interface/Muon.h
+    //==== imuon.isStandAloneMuon() : same as type_ & StandAloneMuon
+    //==== imuon.isGlobalMuon()  : same as type_ & GlobalMuon;
+    //==== imuon.isTrackerMuon() : same as type_ & TrackerMuon;
+    //==== imuon.isPFMuon() : same as type_ & PFMuon;
 
-    if( imuon.isTrackerMuon() ) muon_isTracker.push_back( true );
-    else muon_isTracker.push_back( false );
+    //==== https://github.com/cms-sw/cmssw/blob/acfa3a98a3433375e7814065546d927851104573/DataFormats/MuonReco/src/MuonSelectors.cc#L1003
+    //==== imuon.isTightMuon(vtx) : same as imuon.passed( reco::Muon::CutBasedIdTight );
+    //==== imuon.isMediumMuon() : same as imuon.passed( reco::Muon::CutBasedIdMedium );
+    //==== imuon.isLooseMuon() : same as imuon.passed( reco::Muon::CutBasedIdLoose );
+    //==== imuon.isSoftMuon(vtx) : same as imuon.passed( reco::Muon::SoftCutBasedId );
+    //==== imuon.isHighPtMuon(vtx) : same as imuon.passed( reco::Muon::CutBasedIdGlobalHighPt );
 
-    if( imuon.isPFMuon() ) muon_isPF.push_back( true );
-    else muon_isPF.push_back( false );
+    muon_TypeBit.push_back( imuon.type() );
+    muon_IDBit.push_back( imuon.selectors() );
 
-    if( imuon.isTightMuon(vtx) ) muon_isTight.push_back( true );
-    else muon_isTight.push_back( false );
-
-    if( imuon.isMediumMuon() ) muon_isMedium.push_back( true );
-    else muon_isMedium.push_back( false );
-
-    if( imuon.isLooseMuon() ) muon_isLoose.push_back( true );
-    else muon_isLoose.push_back( false );
-
-    if( imuon.isSoftMuon(vtx) ) muon_isSoft.push_back( true );
-    else muon_isSoft.push_back( false );
-
-    if( imuon.isHighPtMuon(vtx) ) muon_isHighPt.push_back( true );
-    else muon_isHighPt.push_back( false );
-    
     // -- bits 0-1-2-3 = DT stations 1-2-3-4 -- //
     // -- bits 4-5-6-7 = CSC stations 1-2-3-4 -- //
     int _segments = 0;
@@ -1879,11 +1859,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
         //cout << "isTight = " << imuon.isTightMuon(vtx) << endl;
         //cout << "isMediumMuon = " << imuon.isMediumMuon() << endl;
         //cout << "isLoose = " << imuon.isLooseMuon() << endl;
-        //cout << "isPF = " << muon_isPF.at(i) << endl;
-        //cout << "isGlobal = " << muon_isGlobal.at(i) << endl;
-        //cout << "chi2 = " << muon_normchi.at(i) << endl;
-        //cout << "isTracker = " << muon_isTracker.at(i) << endl;
-        //cout << "isStandAlone = " << muon_isStandAlone.at(i) << endl;
         //cout << "dxy = " << muon_dxyVTX.at(i) << endl;
         //cout << "dz = " << muon_dzVTX.at(i) << endl;
 

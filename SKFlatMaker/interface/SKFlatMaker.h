@@ -581,15 +581,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_PfNeutralHadronIsoR03;
   vector<double> muon_PfGammaIsoR03;
   vector<double> muon_PFSumPUIsoR03;
-  vector<bool> muon_isPF;
-  vector<bool> muon_isGlobal;
-  vector<bool> muon_isTracker;
-  vector<bool> muon_isStandAlone;
-  vector<bool> muon_isTight;
-  vector<bool> muon_isMedium;
-  vector<bool> muon_isLoose;
-  vector<bool> muon_isSoft;
-  vector<bool> muon_isHighPt;
+  vector<unsigned int> muon_TypeBit;
+  vector<unsigned int> muon_IDBit;
   vector<double> muon_dB;
   vector<double> muon_phi;
   vector<double> muon_eta;
