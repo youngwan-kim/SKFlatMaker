@@ -196,33 +196,21 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   pfMET_pt=-999;
   pfMET_phi=-999;
-  pfMET_Px=-999;
-  pfMET_Py=-999;
   pfMET_SumEt=-999;
   pfMET_Type1_pt=-999;
   pfMET_Type1_phi=-999;
-  pfMET_Type1_Px=-999;
-  pfMET_Type1_Py=-999;
   pfMET_Type1_SumEt=-999;
   pfMET_Type1_PhiCor_pt=-999;
   pfMET_Type1_PhiCor_phi=-999;
-  pfMET_Type1_PhiCor_Px=-999;
-  pfMET_Type1_PhiCor_Py=-999;
   pfMET_Type1_PhiCor_SumEt=-999;
   pfMET_pt_shifts.clear();
   pfMET_phi_shifts.clear();
-  pfMET_Px_shifts.clear();
-  pfMET_Py_shifts.clear();
   pfMET_SumEt_shifts.clear();
   pfMET_Type1_pt_shifts.clear();
   pfMET_Type1_phi_shifts.clear();
-  pfMET_Type1_Px_shifts.clear();
-  pfMET_Type1_Py_shifts.clear();
   pfMET_Type1_SumEt_shifts.clear();
   pfMET_Type1_PhiCor_pt_shifts.clear();
   pfMET_Type1_PhiCor_phi_shifts.clear();
-  pfMET_Type1_PhiCor_Px_shifts.clear();
-  pfMET_Type1_PhiCor_Py_shifts.clear();
   pfMET_Type1_PhiCor_SumEt_shifts.clear();
 
   //==== Tracker Track
@@ -1157,33 +1145,21 @@ void SKFlatMaker::beginJob()
   if( theStoreMETFlag ){
     DYTree->Branch("pfMET_pt", &pfMET_pt, "pfMET_pt/D");
     DYTree->Branch("pfMET_phi", &pfMET_phi, "pfMET_phi/D");
-    DYTree->Branch("pfMET_Px", &pfMET_Px, "pfMET_Px/D");
-    DYTree->Branch("pfMET_Py", &pfMET_Py, "pfMET_Py/D");
     DYTree->Branch("pfMET_SumEt", &pfMET_SumEt, "pfMET_SumEt/D");
     DYTree->Branch("pfMET_Type1_pt", &pfMET_Type1_pt, "pfMET_Type1_pt/D");
     DYTree->Branch("pfMET_Type1_phi", &pfMET_Type1_phi, "pfMET_Type1_phi/D");
-    DYTree->Branch("pfMET_Type1_Px", &pfMET_Type1_Px, "pfMET_Type1_Px/D");
-    DYTree->Branch("pfMET_Type1_Py", &pfMET_Type1_Py, "pfMET_Type1_Py/D");
     DYTree->Branch("pfMET_Type1_SumEt", &pfMET_Type1_SumEt, "pfMET_Type1_SumEt/D");
     DYTree->Branch("pfMET_Type1_PhiCor_pt", &pfMET_Type1_PhiCor_pt, "pfMET_Type1_PhiCor_pt/D");
     DYTree->Branch("pfMET_Type1_PhiCor_phi", &pfMET_Type1_PhiCor_phi, "pfMET_Type1_PhiCor_phi/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_Px", &pfMET_Type1_PhiCor_Px, "pfMET_Type1_PhiCor_Px/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_Py", &pfMET_Type1_PhiCor_Py, "pfMET_Type1_PhiCor_Py/D");
     DYTree->Branch("pfMET_Type1_PhiCor_SumEt", &pfMET_Type1_PhiCor_SumEt, "pfMET_Type1_PhiCor_SumEt/D");
     DYTree->Branch("pfMET_pt_shifts", "vector<double>", &pfMET_pt_shifts);
     DYTree->Branch("pfMET_phi_shifts", "vector<double>", &pfMET_phi_shifts);
-    DYTree->Branch("pfMET_Px_shifts", "vector<double>", &pfMET_Px_shifts);
-    DYTree->Branch("pfMET_Py_shifts", "vector<double>", &pfMET_Py_shifts);
     DYTree->Branch("pfMET_SumEt_shifts", "vector<double>", &pfMET_SumEt_shifts);
     DYTree->Branch("pfMET_Type1_pt_shifts", "vector<double>", &pfMET_Type1_pt_shifts);
     DYTree->Branch("pfMET_Type1_phi_shifts", "vector<double>", &pfMET_Type1_phi_shifts);
-    DYTree->Branch("pfMET_Type1_Px_shifts", "vector<double>", &pfMET_Type1_Px_shifts);
-    DYTree->Branch("pfMET_Type1_Py_shifts", "vector<double>", &pfMET_Type1_Py_shifts);
     DYTree->Branch("pfMET_Type1_SumEt_shifts", "vector<double>", &pfMET_Type1_SumEt_shifts);
     DYTree->Branch("pfMET_Type1_PhiCor_pt_shifts", "vector<double>", &pfMET_Type1_PhiCor_pt_shifts);
     DYTree->Branch("pfMET_Type1_PhiCor_phi_shifts", "vector<double>", &pfMET_Type1_PhiCor_phi_shifts);
-    DYTree->Branch("pfMET_Type1_PhiCor_Px_shifts", "vector<double>", &pfMET_Type1_PhiCor_Px_shifts);
-    DYTree->Branch("pfMET_Type1_PhiCor_Py_shifts", "vector<double>", &pfMET_Type1_PhiCor_Py_shifts);
     DYTree->Branch("pfMET_Type1_PhiCor_SumEt_shifts", "vector<double>", &pfMET_Type1_PhiCor_SumEt_shifts);
   }
 
@@ -2636,20 +2612,14 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   
   pfMET_pt = metHandle->front().uncorPt();
   pfMET_phi = metHandle->front().uncorPhi();
-  pfMET_Px = metHandle->front().uncorPx();
-  pfMET_Py = metHandle->front().uncorPy();
   pfMET_SumEt = metHandle->front().uncorSumEt();
   
   pfMET_Type1_pt = metHandle->front().pt();
   pfMET_Type1_phi = metHandle->front().phi();
-  pfMET_Type1_Px = metHandle->front().px();
-  pfMET_Type1_Py = metHandle->front().py();
   pfMET_Type1_SumEt = metHandle->front().sumEt();
   
   pfMET_Type1_PhiCor_pt = metHandle->front().corPt(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_phi = metHandle->front().corPhi(pat::MET::Type1XY);
-  pfMET_Type1_PhiCor_Px = metHandle->front().corPx(pat::MET::Type1XY);
-  pfMET_Type1_PhiCor_Py = metHandle->front().corPy(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_SumEt = metHandle->front().corSumEt(pat::MET::Type1XY);
 
 
@@ -2667,20 +2637,14 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
 
     pfMET_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Raw) );
     pfMET_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Raw) );
-    pfMET_Px_shifts.push_back( metHandle->front().shiftedPx(pat::MET::METUncertainty(i), pat::MET::Raw) );
-    pfMET_Py_shifts.push_back( metHandle->front().shiftedPy(pat::MET::METUncertainty(i), pat::MET::Raw) );
     pfMET_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Raw) );
 
     pfMET_Type1_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1) );
     pfMET_Type1_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1) );
-    pfMET_Type1_Px_shifts.push_back( metHandle->front().shiftedPx(pat::MET::METUncertainty(i), pat::MET::Type1) );
-    pfMET_Type1_Py_shifts.push_back( metHandle->front().shiftedPy(pat::MET::METUncertainty(i), pat::MET::Type1) );
     pfMET_Type1_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Type1) );
 
     pfMET_Type1_PhiCor_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
     pfMET_Type1_PhiCor_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
-    pfMET_Type1_PhiCor_Px_shifts.push_back( metHandle->front().shiftedPx(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
-    pfMET_Type1_PhiCor_Py_shifts.push_back( metHandle->front().shiftedPy(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
     pfMET_Type1_PhiCor_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
 
   }

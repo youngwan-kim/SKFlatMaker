@@ -354,16 +354,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   double neutralHadronEt;
   double Rho;
   
-  // double MET_sumEt;
-  // double MET_pt;
-  // double MET_px;
-  // double MET_py;
-  // double MET_phi;
-  // double pfMET_sumEt;
-  // double pfMET_pt;
-  // double pfMET_px;
-  // double pfMET_py;
-  // double pfMET_phi;
   int Nelectrons;
   
   // PV
@@ -766,33 +756,21 @@ class SKFlatMaker : public edm::EDAnalyzer
   //==== MET
   double pfMET_pt;
   double pfMET_phi;
-  double pfMET_Px;
-  double pfMET_Py;
   double pfMET_SumEt;
   double pfMET_Type1_pt;
   double pfMET_Type1_phi;
-  double pfMET_Type1_Px;
-  double pfMET_Type1_Py;
   double pfMET_Type1_SumEt;
   double pfMET_Type1_PhiCor_pt;
   double pfMET_Type1_PhiCor_phi;
-  double pfMET_Type1_PhiCor_Px;
-  double pfMET_Type1_PhiCor_Py;
   double pfMET_Type1_PhiCor_SumEt;
   vector<double> pfMET_pt_shifts;
   vector<double> pfMET_phi_shifts;
-  vector<double> pfMET_Px_shifts;
-  vector<double> pfMET_Py_shifts;
   vector<double> pfMET_SumEt_shifts;
   vector<double> pfMET_Type1_pt_shifts;
   vector<double> pfMET_Type1_phi_shifts;
-  vector<double> pfMET_Type1_Px_shifts;
-  vector<double> pfMET_Type1_Py_shifts;
   vector<double> pfMET_Type1_SumEt_shifts;
   vector<double> pfMET_Type1_PhiCor_pt_shifts;
   vector<double> pfMET_Type1_PhiCor_phi_shifts;
-  vector<double> pfMET_Type1_PhiCor_Px_shifts;
-  vector<double> pfMET_Type1_PhiCor_Py_shifts;
   vector<double> pfMET_Type1_PhiCor_SumEt_shifts;
 
 };
