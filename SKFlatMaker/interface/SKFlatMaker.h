@@ -192,7 +192,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void hltReport(const edm::Event &iEvent);          // fill list of triggers fired in an event
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
-  virtual void fillTT(const edm::Event&);
 
   virtual float miniIsoDr(const math::XYZTLorentzVector &p4, float mindr, float maxdr, float kt_scale);
   virtual PFIsolation GetMiniIso(edm::Handle<pat::PackedCandidateCollection> pfcands,
@@ -277,7 +276,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStoreLHEFlag;
   bool theStoreGENFlag;
   bool theStorePhotonFlag;
-  bool theStoreTTFlag;
   bool theKeepAllGen;
   bool IsData;
   bool DoPileUp;
@@ -728,26 +726,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   // EffectiveAreas effAreaNeuHadrons_;
   // EffectiveAreas effAreaPhotons_;
 
-  //==== Tracker Track
-  vector<double> TrackerTrack_dxy;
-  vector<double> TrackerTrack_dxyErr;
-  vector<double> TrackerTrack_d0;
-  vector<double> TrackerTrack_d0Err;
-  vector<double> TrackerTrack_dsz;
-  vector<double> TrackerTrack_dszErr;
-  vector<double> TrackerTrack_dz;
-  vector<double> TrackerTrack_dzErr;
-  vector<double> TrackerTrack_dxyBS;
-  vector<double> TrackerTrack_dszBS;
-  vector<double> TrackerTrack_dzBS;
-  vector<double> TrackerTrack_pt;
-  vector<double> TrackerTrack_Px;
-  vector<double> TrackerTrack_Py;
-  vector<double> TrackerTrack_Pz;
-  vector<double> TrackerTrack_eta;
-  vector<double> TrackerTrack_phi;
-  vector<double> TrackerTrack_charge; 
- 
   //==== MET
   double pfMET_pt;
   double pfMET_phi;

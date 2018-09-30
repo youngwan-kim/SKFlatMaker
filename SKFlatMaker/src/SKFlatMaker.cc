@@ -103,7 +103,6 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStoreLHEFlag                   = iConfig.getUntrackedParameter<bool>("StoreLHEFlag", false);
   theStoreGENFlag                   = iConfig.getUntrackedParameter<bool>("StoreGENFlag", true);
   theKeepAllGen                     = iConfig.getUntrackedParameter<bool>("KeepAllGen", true);
-  theStoreTTFlag                    = iConfig.getUntrackedParameter<bool>("StoreTTFlag", false);
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
 
   rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
@@ -212,27 +211,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pfMET_Type1_PhiCor_pt_shifts.clear();
   pfMET_Type1_PhiCor_phi_shifts.clear();
   pfMET_Type1_PhiCor_SumEt_shifts.clear();
-
-  //==== Tracker Track
-
-  TrackerTrack_dxy.clear();
-  TrackerTrack_dxyErr.clear();
-  TrackerTrack_d0.clear();
-  TrackerTrack_d0Err.clear();
-  TrackerTrack_dsz.clear();
-  TrackerTrack_dszErr.clear();
-  TrackerTrack_dz.clear();
-  TrackerTrack_dzErr.clear();
-  TrackerTrack_dxyBS.clear();
-  TrackerTrack_dszBS.clear();
-  TrackerTrack_dzBS.clear();
-  TrackerTrack_pt.clear();
-  TrackerTrack_Px.clear();
-  TrackerTrack_Py.clear();
-  TrackerTrack_Pz.clear();
-  TrackerTrack_eta.clear();
-  TrackerTrack_phi.clear();
-  TrackerTrack_charge.clear();
 
   //==== Trigger (object)
 
@@ -678,9 +656,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreElectronFlag" << endl;
   if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
 
-  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTTFlag" << endl;
-  if( theStoreTTFlag ) fillTT(iEvent);
-
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill" << endl;
   DYTree->Fill();
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill finished" << endl;
@@ -1110,27 +1085,6 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("pileUpReweightMuonPhys",&pileUpReweightMuonPhys,"pileUpReweightMuonPhys/D");
   DYTree->Branch("pileUpReweightPlusMuonPhys",&pileUpReweightPlusMuonPhys,"pileUpReweightPlusMuonPhys/D");
   DYTree->Branch("pileUpReweightMinusMuonPhys",&pileUpReweightMinusMuonPhys,"pileUpReweightMinusMuonPhys/D");
-  
-  if( theStoreTTFlag ){
-    DYTree->Branch("TrackerTrack_dxy", "vector<double>", &TrackerTrack_dxy);
-    DYTree->Branch("TrackerTrack_dxyErr", "vector<double>", &TrackerTrack_dxyErr);
-    DYTree->Branch("TrackerTrack_d0", "vector<double>", &TrackerTrack_d0);
-    DYTree->Branch("TrackerTrack_d0Err", "vector<double>", &TrackerTrack_d0Err);
-    DYTree->Branch("TrackerTrack_dsz", "vector<double>", &TrackerTrack_dsz);
-    DYTree->Branch("TrackerTrack_dszErr", "vector<double>", &TrackerTrack_dszErr);
-    DYTree->Branch("TrackerTrack_dz", "vector<double>", &TrackerTrack_dz);
-    DYTree->Branch("TrackerTrack_dzErr", "vector<double>", &TrackerTrack_dzErr);
-    DYTree->Branch("TrackerTrack_dxyBS", "vector<double>", &TrackerTrack_dxyBS);
-    DYTree->Branch("TrackerTrack_dszBS", "vector<double>", &TrackerTrack_dszBS);
-    DYTree->Branch("TrackerTrack_dzBS", "vector<double>", &TrackerTrack_dzBS);
-    DYTree->Branch("TrackerTrack_pt", "vector<double>", &TrackerTrack_pt);
-    DYTree->Branch("TrackerTrack_Px", "vector<double>", &TrackerTrack_Px);
-    DYTree->Branch("TrackerTrack_Py", "vector<double>", &TrackerTrack_Py);
-    DYTree->Branch("TrackerTrack_Pz", "vector<double>", &TrackerTrack_Pz);
-    DYTree->Branch("TrackerTrack_eta", "vector<double>", &TrackerTrack_eta);
-    DYTree->Branch("TrackerTrack_phi", "vector<double>", &TrackerTrack_phi);
-    DYTree->Branch("TrackerTrack_charge", "vector<double>", &TrackerTrack_charge);
-  }
   
   if( theStoreMETFlag ){
     DYTree->Branch("pfMET_pt", &pfMET_pt, "pfMET_pt/D");
@@ -3129,61 +3083,6 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 
   }
 
-}
-
-//////////////////////////////////////////////////////
-// -- Get Tracker track info (all single tracks) -- //
-//////////////////////////////////////////////////////
-void SKFlatMaker::fillTT(const edm::Event &iEvent)
-{
-  edm::Handle<edm::View<reco::Track> > trackHandle;
-  iEvent.getByToken(TrackToken, trackHandle);
-  
-  edm::Handle<reco::BeamSpot> beamSpotHandle;
-  iEvent.getByToken(BeamSpotToken, beamSpotHandle);
-  reco::BeamSpot beamSpot = (*beamSpotHandle);
-  
-  edm::Handle<reco::VertexCollection> _pvHandle;
-  iEvent.getByToken(PrimaryVertexToken, _pvHandle);
-  const reco::Vertex &vtx = _pvHandle->front();
-  
-  // to store gsftracks close to electrons
-  edm::Handle< std::vector< reco::GsfTrack > > gsfTracks; 
-  iEvent.getByToken(GsfTrackToken, gsfTracks);
-  
-  for(unsigned int igsf = 0; igsf < gsfTracks->size(); igsf++ ){
-    GsfTrackRef iTT(gsfTracks, igsf);
-
-    //if( iTT->pt() < 1.0 || iTT->pt() > 100000 ) continue;
-    bool _isMatch = false;
-    for( int i = 0; i < Nelectrons; i++ ){
-      double dpT = fabs(iTT->pt() - electron_gsfpt[i]);
-      double dR = deltaR(iTT->eta(), iTT->phi(), electron_gsfEta[i], electron_gsfPhi[i]);
-      //cout << "elec = " << i << " " << electron_gsfpt[i] << " " << electron_gsfEta[i] << " " << electron_gsfPhi[i] << " " << dR << endl;
-      if( dR < 0.001 && dpT < 1.0 ) _isMatch = true;
-    }
-    if( _isMatch ) continue;
-    
-    TrackerTrack_dxy.push_back( iTT->dxy(vtx.position()) );
-    TrackerTrack_dxyErr.push_back( iTT->dxyError() );
-    TrackerTrack_d0.push_back( iTT->d0() );
-    TrackerTrack_d0Err.push_back( iTT->d0Error() );
-    TrackerTrack_dsz.push_back( iTT->dsz(vtx.position()) );
-    TrackerTrack_dszErr.push_back( iTT->dszError() );
-    TrackerTrack_dz.push_back( iTT->dz(vtx.position()) );
-    TrackerTrack_dzErr.push_back( iTT->dzError() );
-    TrackerTrack_dxyBS.push_back( iTT->dxy(beamSpot.position()) );
-    TrackerTrack_dszBS.push_back( iTT->dsz(beamSpot.position()) );
-    TrackerTrack_dzBS.push_back( iTT->dz(beamSpot.position()) );
-    TrackerTrack_pt.push_back( iTT->pt() );
-    TrackerTrack_Px.push_back( iTT->px() );
-    TrackerTrack_Py.push_back( iTT->py() );
-    TrackerTrack_Pz.push_back( iTT->pz() );
-    TrackerTrack_eta.push_back( iTT->eta() );
-    TrackerTrack_phi.push_back( iTT->phi() );
-    TrackerTrack_charge.push_back( iTT->charge() );
-  } // -- end of for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ): GSFTrack iteration -- //
-  
 }
 
 void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
