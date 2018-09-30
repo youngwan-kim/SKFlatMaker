@@ -257,14 +257,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   gen_phi.clear();
   gen_eta.clear();
   gen_pt.clear();
-  gen_Px.clear();
-  gen_Py.clear();
   gen_Pz.clear();
   gen_E.clear();
-  gen_mother_PID.clear();
-  gen_mother_pt.clear();
   gen_mother_index.clear();
-  gen_charge.clear();
   gen_status.clear();
   gen_PID.clear();
   gen_isPrompt.clear();
@@ -1051,14 +1046,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("gen_phi", "vector<double>", &gen_phi);
     DYTree->Branch("gen_eta", "vector<double>", &gen_eta);
     DYTree->Branch("gen_pt", "vector<double>", &gen_pt);
-    DYTree->Branch("gen_Px", "vector<double>", &gen_Px);
-    DYTree->Branch("gen_Py", "vector<double>", &gen_Py);
     DYTree->Branch("gen_Pz", "vector<double>", &gen_Pz);
     DYTree->Branch("gen_E", "vector<double>", &gen_E);
-    DYTree->Branch("gen_mother_PID", "vector<int>", &gen_mother_PID);
-    DYTree->Branch("gen_mother_pt", "vector<double>", &gen_mother_pt);
     DYTree->Branch("gen_mother_index", "vector<int>", &gen_mother_index);
-    DYTree->Branch("gen_charge", "vector<int>", &gen_charge);
     DYTree->Branch("gen_status", "vector<int>", &gen_status);
     DYTree->Branch("gen_PID", "vector<int>", &gen_PID);
     DYTree->Branch("gen_isPrompt", "vector<int>", &gen_isPrompt);
@@ -2467,13 +2457,10 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     
     gen_PID.push_back( it->pdgId() );
     gen_pt.push_back( it->pt() );
-    gen_Px.push_back( it->px() );
-    gen_Py.push_back( it->py() );
     gen_Pz.push_back( it->pz() );
     gen_E.push_back( it->energy() );
     gen_eta.push_back( it->eta() );
     gen_phi.push_back( it->phi() );
-    gen_charge.push_back( it->charge() );
     gen_status.push_back( it->status() );
     
     //Flags (Ref: https://indico.cern.ch/event/402279/contribution/5/attachments/805964/1104514/mcaod-Jun17-2015.pdf)
@@ -2491,15 +2478,6 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     gen_fromHardProcessDecayed.push_back( it->fromHardProcessDecayed() );
     gen_fromHardProcessFinalState.push_back( it->fromHardProcessFinalState() );
     gen_isMostlyLikePythia6Status3.push_back( it->fromHardProcessBeforeFSR() );
-    
-    if(it->numberOfMothers() > 0){
-      gen_mother_PID.push_back( it->mother(0)->pdgId() );
-      gen_mother_pt.push_back( it->mother(0)->pt() );
-    }
-    else{
-      gen_mother_PID.push_back( -999 );
-      gen_mother_pt.push_back( -999 );
-    }
     
     int idx = -1;
     for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ){
