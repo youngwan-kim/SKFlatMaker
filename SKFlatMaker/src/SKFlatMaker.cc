@@ -216,8 +216,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   HLT_TriggerName.clear();
   HLT_TriggerFilterName.clear();
-  HLT_TriggerFired.clear();
-  HLT_TriggerPrescale.clear();
   HLTObject_pt.clear();
   HLTObject_eta.clear();
   HLTObject_phi.clear();
@@ -734,8 +732,6 @@ void SKFlatMaker::beginJob()
   if(theStoreHLTReportFlag){
 
     DYTree->Branch("HLT_TriggerName", "vector<string>", &HLT_TriggerName);
-    DYTree->Branch("HLT_TriggerFired", "vector<bool>", &HLT_TriggerFired);
-    DYTree->Branch("HLT_TriggerPrescale", "vector<int>", &HLT_TriggerPrescale);
 
     if(theStoreHLTObjectFlag){
       DYTree->Branch("HLT_TriggerFilterName", "vector<string>", &HLT_TriggerFilterName);
@@ -1229,18 +1225,10 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
           if( (*match).find("eta2p1") != std::string::npos ) continue;
 
           if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
-          HLT_TriggerName.push_back(*match); //save HLT list as a vector
-
-          //==== find prescale value
-          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
-          HLT_TriggerPrescale.push_back(_preScaleValue);
 
           //==== Check if this trigger is fired
           if( trigResult->accept(trigName.triggerIndex(*match)) ){
-            HLT_TriggerFired.push_back(true);
-          }
-          else{
-            HLT_TriggerFired.push_back(false);
+            HLT_TriggerName.push_back(*match); //save HLT list as a vector
           }
 
           //==== Save Filter if theStoreHLTObjectFlag

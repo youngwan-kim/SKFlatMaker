@@ -369,8 +369,6 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   vector<string> HLT_TriggerName;
   vector<string> HLT_TriggerFilterName;
-  vector<bool> HLT_TriggerFired;
-  vector<int> HLT_TriggerPrescale;
   vector<double> HLTObject_pt;
   vector<double> HLTObject_eta;
   vector<double> HLTObject_phi;
