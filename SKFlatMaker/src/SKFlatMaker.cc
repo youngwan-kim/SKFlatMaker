@@ -943,7 +943,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_E55", "vector<double>", &electron_E55);
     DYTree->Branch("electron_RelPFIso_dBeta", "vector<double>", &electron_RelPFIso_dBeta);
     DYTree->Branch("electron_RelPFIso_Rho", "vector<double>", &electron_RelPFIso_Rho);
-    DYTree->Branch("electron_IDBit", "vector<int>", &electron_IDBit);
+    DYTree->Branch("electron_IDBit", "vector<unsigned int>", &electron_IDBit);
     DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
     DYTree->Branch("electron_chMiniIso", "vector<double>", &electron_chMiniIso);
     DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
@@ -2241,7 +2241,7 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     //==== HEEP ID
     //==== V7 : https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Configuring_and_Running_VID_in_a
 
-    int IDBit = 0;
+    unsigned int IDBit = 0;
     for(unsigned int it_ID=0; it_ID<electron_IDtoSave.size(); it_ID++){
       if(el->electronID(electron_IDtoSave.at(it_ID))){
         IDBit |= (1 << it_ID);

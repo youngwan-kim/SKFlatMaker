@@ -564,7 +564,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_E55;
   vector<double> electron_RelPFIso_dBeta;
   vector<double> electron_RelPFIso_Rho;
-  vector<int> electron_IDBit;
+  vector<unsigned int> electron_IDBit;
   vector<double> electron_EnergyUnCorr;
   vector<double> electron_chMiniIso;
   vector<double> electron_nhMiniIso;

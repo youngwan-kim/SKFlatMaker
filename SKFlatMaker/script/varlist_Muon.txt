@@ -11,10 +11,10 @@ bool	muon_isGlobal	1
 bool	muon_isTracker	1
 bool	muon_isStandAlone	1
 bool	muon_isTight	1
-bool	muon_isMedium 1
+bool	muon_isMedium	1
 bool	muon_isLoose	1
-bool	muon_isSoft 1
-bool	muon_isHighPt 1
+bool	muon_isSoft	1
+bool	muon_isHighPt	1
 double	muon_dB	1
 double	muon_phi	1
 double	muon_eta	1
@@ -48,7 +48,7 @@ double	muon_dxyBS	1
 double	muon_dzBS	1
 double	muon_dszBS	1
 double	muon_dxyVTX	1
-double	muon_dxyerrVTX 1
+double	muon_dxyerrVTX	1
 double	muon_dzVTX	1
 double	muon_dzerrVTX	1
 double	muon_3DIPVTX	1

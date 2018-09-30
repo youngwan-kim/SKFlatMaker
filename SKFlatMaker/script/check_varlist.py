@@ -64,7 +64,7 @@ for obj in objects:
       print ""
 
     for line in lines:
-      words = line.split()
+      words = line.strip('\n').split('\t')
 
       vartype = words[0]
       varname = words[1]
@@ -122,6 +122,8 @@ for obj in objects:
             vartypechar = "D"
           elif vartype=="int":
             vartypechar = "I"
+          elif vartype=="unsigned int":
+            vartypechar = "i"
           elif vartype=="bool":
             vartypechar = "O"
 
