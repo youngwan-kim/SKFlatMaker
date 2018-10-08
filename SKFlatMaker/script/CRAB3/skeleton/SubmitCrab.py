@@ -4,7 +4,7 @@ config = config()
 
 config.General.requestName = 'DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8' ## EDIT
 config.General.workArea = 'crab_projects'
-config.General.transferLogs = True
+config.General.transferLogs = False
 config.General.transferOutputs = True
 
 config.JobType.pluginName = 'Analysis'
