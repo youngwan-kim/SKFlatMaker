@@ -81,7 +81,6 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   StoreGENFlag = cms.untracked.bool(True),
   KeepAllGen = cms.untracked.bool(True),   
   StorePriVtxFlag = cms.untracked.bool(True),
-  StoreTTFlag = cms.untracked.bool(False),
   StoreHLTReportFlag = cms.untracked.bool(True),
   StoreHLTObjectFlag = cms.untracked.bool(False),
 

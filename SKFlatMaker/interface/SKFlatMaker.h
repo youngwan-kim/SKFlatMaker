@@ -192,7 +192,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void hltReport(const edm::Event &iEvent);          // fill list of triggers fired in an event
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
-  virtual void fillTT(const edm::Event&);
 
   virtual float miniIsoDr(const math::XYZTLorentzVector &p4, float mindr, float maxdr, float kt_scale);
   virtual PFIsolation GetMiniIso(edm::Handle<pat::PackedCandidateCollection> pfcands,
@@ -277,7 +276,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStoreLHEFlag;
   bool theStoreGENFlag;
   bool theStorePhotonFlag;
-  bool theStoreTTFlag;
   bool theKeepAllGen;
   bool IsData;
   bool DoPileUp;
@@ -354,16 +352,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   double neutralHadronEt;
   double Rho;
   
-  // double MET_sumEt;
-  // double MET_pt;
-  // double MET_px;
-  // double MET_py;
-  // double MET_phi;
-  // double pfMET_sumEt;
-  // double pfMET_pt;
-  // double pfMET_px;
-  // double pfMET_py;
-  // double pfMET_phi;
   int Nelectrons;
   
   // PV
@@ -381,8 +369,6 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   vector<string> HLT_TriggerName;
   vector<string> HLT_TriggerFilterName;
-  vector<bool> HLT_TriggerFired;
-  vector<int> HLT_TriggerPrescale;
   vector<double> HLTObject_pt;
   vector<double> HLTObject_eta;
   vector<double> HLTObject_phi;
@@ -686,14 +672,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> gen_phi;
   vector<double> gen_eta;
   vector<double> gen_pt;
-  vector<double> gen_Px;
-  vector<double> gen_Py;
-  vector<double> gen_Pz;
-  vector<double> gen_E;
-  vector<int> gen_mother_PID;
-  vector<double> gen_mother_pt;
+  vector<double> gen_mass;
   vector<int> gen_mother_index;
-  vector<int> gen_charge;
   vector<int> gen_status;
   vector<int> gen_PID;
   vector<int> gen_isPrompt;
@@ -746,56 +726,24 @@ class SKFlatMaker : public edm::EDAnalyzer
   // EffectiveAreas effAreaNeuHadrons_;
   // EffectiveAreas effAreaPhotons_;
 
-  //==== Tracker Track
-  vector<double> TrackerTrack_dxy;
-  vector<double> TrackerTrack_dxyErr;
-  vector<double> TrackerTrack_d0;
-  vector<double> TrackerTrack_d0Err;
-  vector<double> TrackerTrack_dsz;
-  vector<double> TrackerTrack_dszErr;
-  vector<double> TrackerTrack_dz;
-  vector<double> TrackerTrack_dzErr;
-  vector<double> TrackerTrack_dxyBS;
-  vector<double> TrackerTrack_dszBS;
-  vector<double> TrackerTrack_dzBS;
-  vector<double> TrackerTrack_pt;
-  vector<double> TrackerTrack_Px;
-  vector<double> TrackerTrack_Py;
-  vector<double> TrackerTrack_Pz;
-  vector<double> TrackerTrack_eta;
-  vector<double> TrackerTrack_phi;
-  vector<double> TrackerTrack_charge; 
- 
   //==== MET
   double pfMET_pt;
   double pfMET_phi;
-  double pfMET_Px;
-  double pfMET_Py;
   double pfMET_SumEt;
   double pfMET_Type1_pt;
   double pfMET_Type1_phi;
-  double pfMET_Type1_Px;
-  double pfMET_Type1_Py;
   double pfMET_Type1_SumEt;
   double pfMET_Type1_PhiCor_pt;
   double pfMET_Type1_PhiCor_phi;
-  double pfMET_Type1_PhiCor_Px;
-  double pfMET_Type1_PhiCor_Py;
   double pfMET_Type1_PhiCor_SumEt;
   vector<double> pfMET_pt_shifts;
   vector<double> pfMET_phi_shifts;
-  vector<double> pfMET_Px_shifts;
-  vector<double> pfMET_Py_shifts;
   vector<double> pfMET_SumEt_shifts;
   vector<double> pfMET_Type1_pt_shifts;
   vector<double> pfMET_Type1_phi_shifts;
-  vector<double> pfMET_Type1_Px_shifts;
-  vector<double> pfMET_Type1_Py_shifts;
   vector<double> pfMET_Type1_SumEt_shifts;
   vector<double> pfMET_Type1_PhiCor_pt_shifts;
   vector<double> pfMET_Type1_PhiCor_phi_shifts;
-  vector<double> pfMET_Type1_PhiCor_Px_shifts;
-  vector<double> pfMET_Type1_PhiCor_Py_shifts;
   vector<double> pfMET_Type1_PhiCor_SumEt_shifts;
 
 };

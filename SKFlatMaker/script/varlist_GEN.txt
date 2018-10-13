@@ -1,14 +1,8 @@
 double	gen_phi	1
 double	gen_eta	1
 double	gen_pt	1
-double	gen_Px	1
-double	gen_Py	1
-double	gen_Pz	1
-double	gen_E	1
-int	gen_mother_PID	1
-double	gen_mother_pt	1
+double	gen_mass	1
 int	gen_mother_index	1
-int	gen_charge	1
 int	gen_status	1
 int	gen_PID	1
 int	gen_isPrompt	1
