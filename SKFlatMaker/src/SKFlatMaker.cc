@@ -76,6 +76,13 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   
   processName                       = iConfig.getUntrackedParameter<string>("processName", "HLT");
 
+  electron_IDtoSave                 = iConfig.getUntrackedParameter< std::vector<std::string> >("electron_IDtoSave");
+  cout << "[SKFlatMaker::SKFlatMaker]" << endl;
+  cout << "############# electron_IDtoSave #############" << endl;
+  for(unsigned int i=0; i<electron_IDtoSave.size(); i++){
+    cout << electron_IDtoSave.at(i) << endl;
+  }
+  cout << "#############################################" << endl;
   electron_EA_NHandPh_file          = iConfig.getUntrackedParameter<edm::FileInPath>( "electron_EA_NHandPh_file" );
   photon_EA_CH_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_CH_file" );
   photon_EA_HN_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_HN_file" );
@@ -332,15 +339,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_E55.clear();
   electron_RelPFIso_dBeta.clear();
   electron_RelPFIso_Rho.clear();
-  electron_passVetoID.clear();
-  electron_passLooseID.clear();
-  electron_passMediumID.clear();
-  electron_passTightID.clear();
-  electron_passMVAID_noIso_WP80.clear();
-  electron_passMVAID_noIso_WP90.clear();
-  electron_passMVAID_iso_WP80.clear();
-  electron_passMVAID_iso_WP90.clear();
-  electron_passHEEPID.clear();
+  electron_IDBit.clear();
   electron_EnergyUnCorr.clear();
   electron_chMiniIso.clear();
   electron_nhMiniIso.clear();
@@ -356,15 +355,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_PfNeutralHadronIsoR03.clear();
   muon_PfGammaIsoR03.clear();
   muon_PFSumPUIsoR03.clear();
-  muon_isPF.clear();
-  muon_isGlobal.clear();
-  muon_isTracker.clear();
-  muon_isStandAlone.clear();
-  muon_isTight.clear();
-  muon_isMedium.clear();
-  muon_isLoose.clear();
-  muon_isSoft.clear();
-  muon_isHighPt.clear();
+  muon_TypeBit.clear();
+  muon_IDBit.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -902,15 +894,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_E55", "vector<double>", &electron_E55);
     DYTree->Branch("electron_RelPFIso_dBeta", "vector<double>", &electron_RelPFIso_dBeta);
     DYTree->Branch("electron_RelPFIso_Rho", "vector<double>", &electron_RelPFIso_Rho);
-    DYTree->Branch("electron_passVetoID", "vector<bool>", &electron_passVetoID);
-    DYTree->Branch("electron_passLooseID", "vector<bool>", &electron_passLooseID);
-    DYTree->Branch("electron_passMediumID", "vector<bool>", &electron_passMediumID);
-    DYTree->Branch("electron_passTightID", "vector<bool>", &electron_passTightID);
-    DYTree->Branch("electron_passMVAID_noIso_WP80", "vector<bool>", &electron_passMVAID_noIso_WP80);
-    DYTree->Branch("electron_passMVAID_noIso_WP90", "vector<bool>", &electron_passMVAID_noIso_WP90);
-    DYTree->Branch("electron_passMVAID_iso_WP80", "vector<bool>", &electron_passMVAID_iso_WP80);
-    DYTree->Branch("electron_passMVAID_iso_WP90", "vector<bool>", &electron_passMVAID_iso_WP90);
-    DYTree->Branch("electron_passHEEPID", "vector<bool>", &electron_passHEEPID);
+    DYTree->Branch("electron_IDBit", "vector<unsigned int>", &electron_IDBit);
     DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
     DYTree->Branch("electron_chMiniIso", "vector<double>", &electron_chMiniIso);
     DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
@@ -929,15 +913,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_PfNeutralHadronIsoR03", "vector<double>", &muon_PfNeutralHadronIsoR03);
     DYTree->Branch("muon_PfGammaIsoR03", "vector<double>", &muon_PfGammaIsoR03);
     DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
-    DYTree->Branch("muon_isPF", "vector<bool>", &muon_isPF);
-    DYTree->Branch("muon_isGlobal", "vector<bool>", &muon_isGlobal);
-    DYTree->Branch("muon_isTracker", "vector<bool>", &muon_isTracker);
-    DYTree->Branch("muon_isStandAlone", "vector<bool>", &muon_isStandAlone);
-    DYTree->Branch("muon_isTight", "vector<bool>", &muon_isTight);
-    DYTree->Branch("muon_isMedium", "vector<bool>", &muon_isMedium);
-    DYTree->Branch("muon_isLoose", "vector<bool>", &muon_isLoose);
-    DYTree->Branch("muon_isSoft", "vector<bool>", &muon_isSoft);
-    DYTree->Branch("muon_isHighPt", "vector<bool>", &muon_isHighPt);
+    DYTree->Branch("muon_TypeBit", "vector<unsigned int>", &muon_TypeBit);
+    DYTree->Branch("muon_IDBit", "vector<unsigned int>", &muon_IDBit);
     DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
@@ -1448,34 +1425,28 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   for( unsigned int i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
     const pat::Muon imuon = muonHandle->at(i);
-    
-    if( imuon.isStandAloneMuon() ) muon_isStandAlone.push_back( true );
-    else muon_isStandAlone.push_back( false );
+ 
+    //============================================================================================
+    //==== Muon selectors (Since 9_4_X) 
+    //==== https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Muon_selectors_Since_9_4_X
+    //============================================================================================
 
-    if( imuon.isGlobalMuon() ) muon_isGlobal.push_back( true );
-    else muon_isGlobal.push_back( false );
+    //==== DataFormats/MuonReco/interface/Muon.h
+    //==== imuon.isStandAloneMuon() : same as type_ & StandAloneMuon
+    //==== imuon.isGlobalMuon()  : same as type_ & GlobalMuon;
+    //==== imuon.isTrackerMuon() : same as type_ & TrackerMuon;
+    //==== imuon.isPFMuon() : same as type_ & PFMuon;
 
-    if( imuon.isTrackerMuon() ) muon_isTracker.push_back( true );
-    else muon_isTracker.push_back( false );
+    //==== https://github.com/cms-sw/cmssw/blob/acfa3a98a3433375e7814065546d927851104573/DataFormats/MuonReco/src/MuonSelectors.cc#L1003
+    //==== imuon.isTightMuon(vtx) : same as imuon.passed( reco::Muon::CutBasedIdTight );
+    //==== imuon.isMediumMuon() : same as imuon.passed( reco::Muon::CutBasedIdMedium );
+    //==== imuon.isLooseMuon() : same as imuon.passed( reco::Muon::CutBasedIdLoose );
+    //==== imuon.isSoftMuon(vtx) : same as imuon.passed( reco::Muon::SoftCutBasedId );
+    //==== imuon.isHighPtMuon(vtx) : same as imuon.passed( reco::Muon::CutBasedIdGlobalHighPt );
 
-    if( imuon.isPFMuon() ) muon_isPF.push_back( true );
-    else muon_isPF.push_back( false );
+    muon_TypeBit.push_back( imuon.type() );
+    muon_IDBit.push_back( imuon.selectors() );
 
-    if( imuon.isTightMuon(vtx) ) muon_isTight.push_back( true );
-    else muon_isTight.push_back( false );
-
-    if( imuon.isMediumMuon() ) muon_isMedium.push_back( true );
-    else muon_isMedium.push_back( false );
-
-    if( imuon.isLooseMuon() ) muon_isLoose.push_back( true );
-    else muon_isLoose.push_back( false );
-
-    if( imuon.isSoftMuon(vtx) ) muon_isSoft.push_back( true );
-    else muon_isSoft.push_back( false );
-
-    if( imuon.isHighPtMuon(vtx) ) muon_isHighPt.push_back( true );
-    else muon_isHighPt.push_back( false );
-    
     // -- bits 0-1-2-3 = DT stations 1-2-3-4 -- //
     // -- bits 4-5-6-7 = CSC stations 1-2-3-4 -- //
     int _segments = 0;
@@ -1802,11 +1773,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
         //cout << "isTight = " << imuon.isTightMuon(vtx) << endl;
         //cout << "isMediumMuon = " << imuon.isMediumMuon() << endl;
         //cout << "isLoose = " << imuon.isLooseMuon() << endl;
-        //cout << "isPF = " << muon_isPF.at(i) << endl;
-        //cout << "isGlobal = " << muon_isGlobal.at(i) << endl;
-        //cout << "chi2 = " << muon_normchi.at(i) << endl;
-        //cout << "isTracker = " << muon_isTracker.at(i) << endl;
-        //cout << "isStandAlone = " << muon_isStandAlone.at(i) << endl;
         //cout << "dxy = " << muon_dxyVTX.at(i) << endl;
         //cout << "dz = " << muon_dzVTX.at(i) << endl;
 
@@ -2159,20 +2125,33 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
 
     //==== Cut Based
     //==== 94x-V2 : https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Recipe_for_regular_users_formats
-    bool isPassVeto  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-veto");
-    bool isPassLoose  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-loose");
-    bool isPassMedium = el -> electronID("cutBasedElectronID-Fall17-94X-V2-medium");
-    bool isPassTight  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-tight");
     //==== MVA Based
     //==== Fall17 : https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2#VID_based_recipe_provides_pass_f
-    bool isPassMVA_noIso_WP80 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp80");
-    bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
-    bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
-    bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
     //==== HEEP ID
     //==== V7 : https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Configuring_and_Running_VID_in_a
-    bool isPassHEEP = el -> electronID("heepElectronID-HEEPV70");
 
+    unsigned int IDBit = 0;
+    for(unsigned int it_ID=0; it_ID<electron_IDtoSave.size(); it_ID++){
+      if(el->electronID(electron_IDtoSave.at(it_ID))){
+        IDBit |= (1 << it_ID);
+      }
+      else{
+        IDBit &= ~(1 << it_ID);
+      }
+    }
+    electron_IDBit.push_back( IDBit );
+/*
+    cout << "Electron ID Bit = " << IDBit << endl;
+    cout << "--> CB veto = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-veto") << endl;
+    cout << "--> CB loose = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-loose") << endl;
+    cout << "--> CB medium = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-medium") << endl;
+    cout << "--> CB tight = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-tight") << endl;
+    cout << "--> MVA noIso WP80 = " << el->electronID("mvaEleID-Fall17-noIso-V1-wp80") << endl;
+    cout << "--> MVA noIso WP90 = " << el->electronID("mvaEleID-Fall17-noIso-V1-wp90") << endl;
+    cout << "--> MVA Iso WP80 = " << el->electronID("mvaEleID-Fall17-iso-V1-wp80") << endl;
+    cout << "--> MVA Iso WP90 = " << el->electronID("mvaEleID-Fall17-iso-V1-wp90") << endl;
+    cout << "--> Heepv70 = " << el->electronID("heepElectronID-HEEPV70") << endl;
+*/
 /*
     //==== checking pogboolean and cut-by-hand
     if(isPassLoose){
@@ -2218,18 +2197,6 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
       }
     }
 */
-
-    // cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
-    electron_passVetoID.push_back( isPassVeto );
-    electron_passLooseID.push_back( isPassLoose );
-    electron_passMediumID.push_back( isPassMedium );
-    electron_passTightID.push_back( isPassTight );
-    electron_passMVAID_noIso_WP80.push_back( isPassMVA_noIso_WP80 );
-    electron_passMVAID_noIso_WP90.push_back( isPassMVA_noIso_WP90 );
-    electron_passMVAID_iso_WP80.push_back( isPassMVA_iso_WP80 );
-    electron_passMVAID_iso_WP90.push_back( isPassMVA_iso_WP90 );
-    electron_passHEEPID.push_back( isPassHEEP );
-
 
   } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   

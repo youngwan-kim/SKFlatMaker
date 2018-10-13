@@ -31,8 +31,8 @@ double	electron_HoverE	1
 double	electron_fbrem	1
 double	electron_eOverP	1
 double	electron_InvEminusInvP	1
-double	electron_dxyVTX 1
-double	electron_dxyerrVTX 1
+double	electron_dxyVTX	1
+double	electron_dxyerrVTX	1
 double	electron_dzVTX	1
 double	electron_dzerrVTX	1
 double	electron_3DIPVTX	1
@@ -62,15 +62,7 @@ double	electron_E25	1
 double	electron_E55	1
 double	electron_RelPFIso_dBeta	1
 double	electron_RelPFIso_Rho	1
-bool	electron_passVetoID	1
-bool	electron_passLooseID	1
-bool	electron_passMediumID	1
-bool	electron_passTightID	1
-bool	electron_passMVAID_noIso_WP80	1
-bool	electron_passMVAID_noIso_WP90	1
-bool	electron_passMVAID_iso_WP80	1
-bool	electron_passMVAID_iso_WP90	1
-bool	electron_passHEEPID	1
+unsigned int	electron_IDBit	1
 double	electron_EnergyUnCorr	1
 double	electron_chMiniIso	1
 double	electron_nhMiniIso	1

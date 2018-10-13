@@ -487,6 +487,7 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   //==== Electron
 
+  vector<std::string> electron_IDtoSave;
   vector<double> electron_MVAIso;
   vector<double> electron_MVANoIso;
   vector<double> electron_et;
@@ -551,15 +552,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_E55;
   vector<double> electron_RelPFIso_dBeta;
   vector<double> electron_RelPFIso_Rho;
-  vector<bool> electron_passVetoID;
-  vector<bool> electron_passLooseID;
-  vector<bool> electron_passMediumID;
-  vector<bool> electron_passTightID;
-  vector<bool> electron_passMVAID_noIso_WP80;
-  vector<bool> electron_passMVAID_noIso_WP90;
-  vector<bool> electron_passMVAID_iso_WP80;
-  vector<bool> electron_passMVAID_iso_WP90;
-  vector<bool> electron_passHEEPID;
+  vector<unsigned int> electron_IDBit;
   vector<double> electron_EnergyUnCorr;
   vector<double> electron_chMiniIso;
   vector<double> electron_nhMiniIso;
@@ -576,15 +569,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_PfNeutralHadronIsoR03;
   vector<double> muon_PfGammaIsoR03;
   vector<double> muon_PFSumPUIsoR03;
-  vector<bool> muon_isPF;
-  vector<bool> muon_isGlobal;
-  vector<bool> muon_isTracker;
-  vector<bool> muon_isStandAlone;
-  vector<bool> muon_isTight;
-  vector<bool> muon_isMedium;
-  vector<bool> muon_isLoose;
-  vector<bool> muon_isSoft;
-  vector<bool> muon_isHighPt;
+  vector<unsigned int> muon_TypeBit;
+  vector<unsigned int> muon_IDBit;
   vector<double> muon_dB;
   vector<double> muon_phi;
   vector<double> muon_eta;
