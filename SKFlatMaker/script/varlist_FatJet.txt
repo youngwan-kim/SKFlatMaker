@@ -32,6 +32,7 @@ double  fatjet_chargedHadronEnergyFraction 1
 double  fatjet_neutralHadronEnergyFraction 1
 double  fatjet_neutralEmEnergyFraction 1
 double  fatjet_chargedEmEnergyFraction 1
+double	fatjet_muonEnergyFraction	1
 int fatjet_chargedMultiplicity 1
 int fatjet_neutralMultiplicity 1
 double  fatjet_shiftedEnUp 1

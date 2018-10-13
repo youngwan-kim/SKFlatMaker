@@ -414,6 +414,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_neutralHadronEnergyFraction;
   vector<double> jet_neutralEmEnergyFraction;
   vector<double> jet_chargedEmEnergyFraction;
+  vector<double> jet_muonEnergyFraction;
   vector<int> jet_chargedMultiplicity;
   vector<int> jet_neutralMultiplicity;
   vector<bool> jet_tightJetID;
@@ -489,6 +490,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> fatjet_neutralHadronEnergyFraction;
   vector<double> fatjet_neutralEmEnergyFraction;
   vector<double> fatjet_chargedEmEnergyFraction;
+  vector<double> fatjet_muonEnergyFraction;
   vector<int> fatjet_chargedMultiplicity;
   vector<int> fatjet_neutralMultiplicity;
   vector<double> fatjet_shiftedEnUp;
@@ -662,6 +664,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_TuneP_ptError;
   vector<double> muon_TuneP_eta;
   vector<double> muon_TuneP_phi;
+  vector<double> muon_TuneP_charge;
   vector<double> muon_roch_sf;
   vector<double> muon_roch_sf_up;
   vector<double> muon_PfChargedHadronMiniIso;

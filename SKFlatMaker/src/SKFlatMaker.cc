@@ -469,6 +469,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_TuneP_ptError.clear();
   muon_TuneP_eta.clear();
   muon_TuneP_phi.clear();
+  muon_TuneP_charge.clear();
   muon_roch_sf.clear();
   muon_roch_sf_up.clear();
   muon_PfChargedHadronMiniIso.clear();
@@ -500,6 +501,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_neutralHadronEnergyFraction.clear();
   jet_neutralEmEnergyFraction.clear();
   jet_chargedEmEnergyFraction.clear();
+  jet_muonEnergyFraction.clear();
   jet_chargedMultiplicity.clear();
   jet_neutralMultiplicity.clear();
   jet_tightJetID.clear();
@@ -552,6 +554,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_neutralHadronEnergyFraction.clear();
   fatjet_neutralEmEnergyFraction.clear();
   fatjet_chargedEmEnergyFraction.clear();
+  fatjet_muonEnergyFraction.clear();
   fatjet_chargedMultiplicity.clear();
   fatjet_neutralMultiplicity.clear();
   fatjet_shiftedEnUp.clear();
@@ -815,6 +818,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_neutralHadronEnergyFraction", "vector<double>", &jet_neutralHadronEnergyFraction);
     DYTree->Branch("jet_neutralEmEnergyFraction", "vector<double>", &jet_neutralEmEnergyFraction);
     DYTree->Branch("jet_chargedEmEnergyFraction", "vector<double>", &jet_chargedEmEnergyFraction);
+    DYTree->Branch("jet_muonEnergyFraction", "vector<double>", &jet_muonEnergyFraction);
     DYTree->Branch("jet_chargedMultiplicity", "vector<int>", &jet_chargedMultiplicity);
     DYTree->Branch("jet_neutralMultiplicity", "vector<int>", &jet_neutralMultiplicity);
     DYTree->Branch("jet_tightJetID", "vector<bool>", &jet_tightJetID);
@@ -869,6 +873,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_neutralHadronEnergyFraction", "vector<double>", &fatjet_neutralHadronEnergyFraction);
     DYTree->Branch("fatjet_neutralEmEnergyFraction", "vector<double>", &fatjet_neutralEmEnergyFraction);
     DYTree->Branch("fatjet_chargedEmEnergyFraction", "vector<double>", &fatjet_chargedEmEnergyFraction);
+    DYTree->Branch("fatjet_muonEnergyFraction", "vector<double>", &fatjet_muonEnergyFraction);
     DYTree->Branch("fatjet_chargedMultiplicity", "vector<int>", &fatjet_chargedMultiplicity);
     DYTree->Branch("fatjet_neutralMultiplicity", "vector<int>", &fatjet_neutralMultiplicity);
     DYTree->Branch("fatjet_shiftedEnUp", "vector<double>", &fatjet_shiftedEnUp);
@@ -1042,6 +1047,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_TuneP_ptError", "vector<double>", &muon_TuneP_ptError);
     DYTree->Branch("muon_TuneP_eta", "vector<double>", &muon_TuneP_eta);
     DYTree->Branch("muon_TuneP_phi", "vector<double>", &muon_TuneP_phi);
+    DYTree->Branch("muon_TuneP_charge", "vector<double>", &muon_TuneP_charge);
     DYTree->Branch("muon_roch_sf", "vector<double>", &muon_roch_sf);
     DYTree->Branch("muon_roch_sf_up", "vector<double>", &muon_roch_sf_up);
     DYTree->Branch("muon_PfChargedHadronMiniIso", "vector<double>", &muon_PfChargedHadronMiniIso);
@@ -1779,12 +1785,14 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_TuneP_ptError.push_back( imuon.tunePMuonBestTrack()->ptError() );
       muon_TuneP_eta.push_back( imuon.tunePMuonBestTrack()->eta() );
       muon_TuneP_phi.push_back( imuon.tunePMuonBestTrack()->phi() );
+      muon_TuneP_charge.push_back( imuon.imuon.tunePMuonBestTrack()->charge() );
     }
     else{
       muon_TuneP_pt.push_back( -999 );
       muon_TuneP_ptError.push_back( -999 );
       muon_TuneP_eta.push_back( -999 );
       muon_TuneP_phi.push_back( -999 );
+      muon_TuneP_charge.push_back( -999 );
     }
       
     //-- ISOLATIONS GO HERE -- //
@@ -2783,6 +2791,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
     jet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
     jet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
+    jet_muonEnergyFraction.push_back( jets_iter->muonEnergyFraction() );
     jet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
     jet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
 
@@ -3054,6 +3063,7 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
     fatjet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
     fatjet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
+    fatjet_muonEnergyFraction.push_back( jets_iter->muonEnergyFraction() );
     fatjet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
     fatjet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
 

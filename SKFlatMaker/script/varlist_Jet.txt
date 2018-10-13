@@ -21,6 +21,7 @@ double	jet_chargedHadronEnergyFraction	1
 double	jet_neutralHadronEnergyFraction	1
 double	jet_neutralEmEnergyFraction	1
 double	jet_chargedEmEnergyFraction	1
+double	jet_muonEnergyFraction	1
 int	jet_chargedMultiplicity	1
 int	jet_neutralMultiplicity	1
 bool	jet_tightJetID	1
