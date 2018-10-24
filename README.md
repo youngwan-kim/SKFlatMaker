@@ -21,7 +21,8 @@ git cms-merge-topic cms-egamma:EgammaPostRecoTools_940 #just adds in an extra fi
 
 # https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Recipe_for_regular_users_formats
 # The Fall17_94X_V2 ID modules are included by default for CMSSW_10_2_X and higher, for CMSSW_9_4_X you can obtain them through following git cms-merge-topic: 
-git cms-merge-topic UAEDF-tomc:eleCutBasedId_94X_V2
+# Both CutBased and MVA
+git cms-merge-topic guitargeek:EgammaID_9_4_X
 scram b -j 8
 
 # MET EE Noise filter
