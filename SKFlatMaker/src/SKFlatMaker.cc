@@ -1662,7 +1662,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_TuneP_ptError.push_back( imuon.tunePMuonBestTrack()->ptError() );
       muon_TuneP_eta.push_back( imuon.tunePMuonBestTrack()->eta() );
       muon_TuneP_phi.push_back( imuon.tunePMuonBestTrack()->phi() );
-      muon_TuneP_charge.push_back( imuon.imuon.tunePMuonBestTrack()->charge() );
+      muon_TuneP_charge.push_back( imuon.tunePMuonBestTrack()->charge() );
     }
     else{
       muon_TuneP_pt.push_back( -999 );
