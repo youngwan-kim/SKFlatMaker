@@ -517,6 +517,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_dPhiIn;
   vector<double> electron_sigmaIEtaIEta;
   vector<double> electron_Full5x5_SigmaIEtaIEta;
+  vector<double> electron_e2x5OverE5x5;
+  vector<double> electron_e1x5OverE5x5;
   vector<double> electron_HoverE;
   vector<double> electron_fbrem;
   vector<double> electron_eOverP;
@@ -558,6 +560,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_nhMiniIso;
   vector<double> electron_phMiniIso;
   vector<double> electron_puChMiniIso;
+  vector<double> electron_trackIso;
+  vector<double> electron_dr03EcalRecHitSumEt;
+  vector<double> electron_dr03HcalDepth1TowerSumEt;
 
   //==== Muon
 

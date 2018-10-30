@@ -304,6 +304,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_dPhiIn.clear();
   electron_sigmaIEtaIEta.clear();
   electron_Full5x5_SigmaIEtaIEta.clear();
+  electron_e2x5OverE5x5.clear();
+  electron_e1x5OverE5x5.clear();
   electron_HoverE.clear();
   electron_fbrem.clear();
   electron_eOverP.clear();
@@ -345,6 +347,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_nhMiniIso.clear();
   electron_phMiniIso.clear();
   electron_puChMiniIso.clear();
+  electron_trackIso.clear();
+  electron_dr03EcalRecHitSumEt.clear();
+  electron_dr03HcalDepth1TowerSumEt.clear();
 
   //==== Muon
   muon_PfChargedHadronIsoR04.clear();
@@ -859,6 +864,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_dPhiIn", "vector<double>", &electron_dPhiIn);
     DYTree->Branch("electron_sigmaIEtaIEta", "vector<double>", &electron_sigmaIEtaIEta);
     DYTree->Branch("electron_Full5x5_SigmaIEtaIEta", "vector<double>", &electron_Full5x5_SigmaIEtaIEta);
+    DYTree->Branch("electron_e2x5OverE5x5", "vector<double>", &electron_e2x5OverE5x5);
+    DYTree->Branch("electron_e1x5OverE5x5", "vector<double>", &electron_e1x5OverE5x5);
     DYTree->Branch("electron_HoverE", "vector<double>", &electron_HoverE);
     DYTree->Branch("electron_fbrem", "vector<double>", &electron_fbrem);
     DYTree->Branch("electron_eOverP", "vector<double>", &electron_eOverP);
@@ -900,6 +907,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
     DYTree->Branch("electron_phMiniIso", "vector<double>", &electron_phMiniIso);
     DYTree->Branch("electron_puChMiniIso", "vector<double>", &electron_puChMiniIso);
+    DYTree->Branch("electron_trackIso", "vector<double>", &electron_trackIso);
+    DYTree->Branch("electron_dr03EcalRecHitSumEt", "vector<double>", &electron_dr03EcalRecHitSumEt);
+    DYTree->Branch("electron_dr03HcalDepth1TowerSumEt", "vector<double>", &electron_dr03HcalDepth1TowerSumEt);
   }
   
   // -- muon variables -- //
@@ -1964,6 +1974,14 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     electron_E15.push_back( el->e1x5() );
     electron_E25.push_back( el->e2x5Max() );
     electron_E55.push_back( el->e5x5() );
+
+    //==== HEEP
+    const double e5x5 = el->full5x5_e5x5();
+    const double e2x5OverE5x5 = e5x5!=0 ? el->full5x5_e2x5Max()/e5x5 : 0;
+    const double e1x5OverE5x5 = e5x5!=0 ? el->full5x5_e1x5()/e5x5 : 0;
+    electron_e2x5OverE5x5.push_back( e2x5OverE5x5 );
+    electron_e1x5OverE5x5.push_back( e1x5OverE5x5 );
+
     // electron_HoverE.push_back( el->hcalOverEcal() );
     electron_HoverE.push_back( el->hadronicOverEm() ); // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleHadronicOverEMCut.cc#L40 -- //
     electron_etaWidth.push_back( el->superCluster()->etaWidth() );
@@ -2058,6 +2076,10 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_nhMiniIso.push_back( el->miniPFIsolation().neutralHadronIso() );
     electron_phMiniIso.push_back( el->miniPFIsolation().photonIso() );
     electron_puChMiniIso.push_back( el->miniPFIsolation().puChargedHadronIso() );
+    electron_trackIso.push_back( el->trackIso() );
+
+    electron_dr03EcalRecHitSumEt.push_back( el->dr03EcalRecHitSumEt() );
+    electron_dr03HcalDepth1TowerSumEt.push_back( el->dr03HcalDepth1TowerSumEt() );
 
     // cout << "##### fillElectrons: Before elecTrk #####" << endl;
     

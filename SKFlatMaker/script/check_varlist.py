@@ -28,6 +28,10 @@ objects = [
 "Trigger",
 ]
 
+BashColor_Red = '\033[0;31m'
+BashColor_Green = '\033[0;32m'
+BashColor_NC = '\033[0m'
+
 lines_header = open('../interface/SKFlatMaker.h').readlines()
 lines_src = open('../src/SKFlatMaker.cc').readlines()
 
@@ -132,6 +136,8 @@ for obj in objects:
             print '    DYTree->Branch("'+varname+'",&'+varname+',"'+varname+'/'+vartypechar+'");'
 
     if not HasMissingVariable:
-      print "====> All okay"
+      print "====> "+BashColor_Green+"All okay"+BashColor_NC
+    else:
+      print "====> "+BashColor_Green+"Missing "+BashColor_NC
 
     print ""
