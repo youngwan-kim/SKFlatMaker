@@ -192,7 +192,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void hltReport(const edm::Event &iEvent);          // fill list of triggers fired in an event
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
-  virtual void fillTT(const edm::Event&);
 
   virtual float miniIsoDr(const math::XYZTLorentzVector &p4, float mindr, float maxdr, float kt_scale);
   virtual PFIsolation GetMiniIso(edm::Handle<pat::PackedCandidateCollection> pfcands,
@@ -277,7 +276,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStoreLHEFlag;
   bool theStoreGENFlag;
   bool theStorePhotonFlag;
-  bool theStoreTTFlag;
   bool theKeepAllGen;
   bool IsData;
   bool DoPileUp;
@@ -354,16 +352,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   double neutralHadronEt;
   double Rho;
   
-  // double MET_sumEt;
-  // double MET_pt;
-  // double MET_px;
-  // double MET_py;
-  // double MET_phi;
-  // double pfMET_sumEt;
-  // double pfMET_pt;
-  // double pfMET_px;
-  // double pfMET_py;
-  // double pfMET_phi;
   int Nelectrons;
   
   // PV
@@ -381,8 +369,6 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   vector<string> HLT_TriggerName;
   vector<string> HLT_TriggerFilterName;
-  vector<bool> HLT_TriggerFired;
-  vector<int> HLT_TriggerPrescale;
   vector<double> HLTObject_pt;
   vector<double> HLTObject_eta;
   vector<double> HLTObject_phi;
@@ -414,6 +400,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> jet_neutralHadronEnergyFraction;
   vector<double> jet_neutralEmEnergyFraction;
   vector<double> jet_chargedEmEnergyFraction;
+  vector<double> jet_muonEnergyFraction;
   vector<int> jet_chargedMultiplicity;
   vector<int> jet_neutralMultiplicity;
   vector<bool> jet_tightJetID;
@@ -489,6 +476,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> fatjet_neutralHadronEnergyFraction;
   vector<double> fatjet_neutralEmEnergyFraction;
   vector<double> fatjet_chargedEmEnergyFraction;
+  vector<double> fatjet_muonEnergyFraction;
   vector<int> fatjet_chargedMultiplicity;
   vector<int> fatjet_neutralMultiplicity;
   vector<double> fatjet_shiftedEnUp;
@@ -499,6 +487,7 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   //==== Electron
 
+  vector<std::string> electron_IDtoSave;
   vector<double> electron_MVAIso;
   vector<double> electron_MVANoIso;
   vector<double> electron_et;
@@ -528,6 +517,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_dPhiIn;
   vector<double> electron_sigmaIEtaIEta;
   vector<double> electron_Full5x5_SigmaIEtaIEta;
+  vector<double> electron_e2x5OverE5x5;
+  vector<double> electron_e1x5OverE5x5;
   vector<double> electron_HoverE;
   vector<double> electron_fbrem;
   vector<double> electron_eOverP;
@@ -563,20 +554,15 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_E55;
   vector<double> electron_RelPFIso_dBeta;
   vector<double> electron_RelPFIso_Rho;
-  vector<bool> electron_passVetoID;
-  vector<bool> electron_passLooseID;
-  vector<bool> electron_passMediumID;
-  vector<bool> electron_passTightID;
-  vector<bool> electron_passMVAID_noIso_WP80;
-  vector<bool> electron_passMVAID_noIso_WP90;
-  vector<bool> electron_passMVAID_iso_WP80;
-  vector<bool> electron_passMVAID_iso_WP90;
-  vector<bool> electron_passHEEPID;
+  vector<unsigned int> electron_IDBit;
   vector<double> electron_EnergyUnCorr;
   vector<double> electron_chMiniIso;
   vector<double> electron_nhMiniIso;
   vector<double> electron_phMiniIso;
   vector<double> electron_puChMiniIso;
+  vector<double> electron_trackIso;
+  vector<double> electron_dr03EcalRecHitSumEt;
+  vector<double> electron_dr03HcalDepth1TowerSumEt;
 
   //==== Muon
 
@@ -588,15 +574,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_PfNeutralHadronIsoR03;
   vector<double> muon_PfGammaIsoR03;
   vector<double> muon_PFSumPUIsoR03;
-  vector<bool> muon_isPF;
-  vector<bool> muon_isGlobal;
-  vector<bool> muon_isTracker;
-  vector<bool> muon_isStandAlone;
-  vector<bool> muon_isTight;
-  vector<bool> muon_isMedium;
-  vector<bool> muon_isLoose;
-  vector<bool> muon_isSoft;
-  vector<bool> muon_isHighPt;
+  vector<unsigned int> muon_TypeBit;
+  vector<unsigned int> muon_IDBit;
   vector<double> muon_dB;
   vector<double> muon_phi;
   vector<double> muon_eta;
@@ -662,6 +641,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_TuneP_ptError;
   vector<double> muon_TuneP_eta;
   vector<double> muon_TuneP_phi;
+  vector<double> muon_TuneP_charge;
   vector<double> muon_roch_sf;
   vector<double> muon_roch_sf_up;
   vector<double> muon_PfChargedHadronMiniIso;
@@ -683,14 +663,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> gen_phi;
   vector<double> gen_eta;
   vector<double> gen_pt;
-  vector<double> gen_Px;
-  vector<double> gen_Py;
-  vector<double> gen_Pz;
-  vector<double> gen_E;
-  vector<int> gen_mother_PID;
-  vector<double> gen_mother_pt;
+  vector<double> gen_mass;
   vector<int> gen_mother_index;
-  vector<int> gen_charge;
   vector<int> gen_status;
   vector<int> gen_PID;
   vector<int> gen_isPrompt;
@@ -743,56 +717,24 @@ class SKFlatMaker : public edm::EDAnalyzer
   // EffectiveAreas effAreaNeuHadrons_;
   // EffectiveAreas effAreaPhotons_;
 
-  //==== Tracker Track
-  vector<double> TrackerTrack_dxy;
-  vector<double> TrackerTrack_dxyErr;
-  vector<double> TrackerTrack_d0;
-  vector<double> TrackerTrack_d0Err;
-  vector<double> TrackerTrack_dsz;
-  vector<double> TrackerTrack_dszErr;
-  vector<double> TrackerTrack_dz;
-  vector<double> TrackerTrack_dzErr;
-  vector<double> TrackerTrack_dxyBS;
-  vector<double> TrackerTrack_dszBS;
-  vector<double> TrackerTrack_dzBS;
-  vector<double> TrackerTrack_pt;
-  vector<double> TrackerTrack_Px;
-  vector<double> TrackerTrack_Py;
-  vector<double> TrackerTrack_Pz;
-  vector<double> TrackerTrack_eta;
-  vector<double> TrackerTrack_phi;
-  vector<double> TrackerTrack_charge; 
- 
   //==== MET
   double pfMET_pt;
   double pfMET_phi;
-  double pfMET_Px;
-  double pfMET_Py;
   double pfMET_SumEt;
   double pfMET_Type1_pt;
   double pfMET_Type1_phi;
-  double pfMET_Type1_Px;
-  double pfMET_Type1_Py;
   double pfMET_Type1_SumEt;
   double pfMET_Type1_PhiCor_pt;
   double pfMET_Type1_PhiCor_phi;
-  double pfMET_Type1_PhiCor_Px;
-  double pfMET_Type1_PhiCor_Py;
   double pfMET_Type1_PhiCor_SumEt;
   vector<double> pfMET_pt_shifts;
   vector<double> pfMET_phi_shifts;
-  vector<double> pfMET_Px_shifts;
-  vector<double> pfMET_Py_shifts;
   vector<double> pfMET_SumEt_shifts;
   vector<double> pfMET_Type1_pt_shifts;
   vector<double> pfMET_Type1_phi_shifts;
-  vector<double> pfMET_Type1_Px_shifts;
-  vector<double> pfMET_Type1_Py_shifts;
   vector<double> pfMET_Type1_SumEt_shifts;
   vector<double> pfMET_Type1_PhiCor_pt_shifts;
   vector<double> pfMET_Type1_PhiCor_phi_shifts;
-  vector<double> pfMET_Type1_PhiCor_Px_shifts;
-  vector<double> pfMET_Type1_PhiCor_Py_shifts;
   vector<double> pfMET_Type1_PhiCor_SumEt_shifts;
 
 };

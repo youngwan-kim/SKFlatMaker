@@ -76,6 +76,13 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   
   processName                       = iConfig.getUntrackedParameter<string>("processName", "HLT");
 
+  electron_IDtoSave                 = iConfig.getUntrackedParameter< std::vector<std::string> >("electron_IDtoSave");
+  cout << "[SKFlatMaker::SKFlatMaker]" << endl;
+  cout << "############# electron_IDtoSave #############" << endl;
+  for(unsigned int i=0; i<electron_IDtoSave.size(); i++){
+    cout << electron_IDtoSave.at(i) << endl;
+  }
+  cout << "#############################################" << endl;
   electron_EA_NHandPh_file          = iConfig.getUntrackedParameter<edm::FileInPath>( "electron_EA_NHandPh_file" );
   photon_EA_CH_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_CH_file" );
   photon_EA_HN_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_HN_file" );
@@ -103,7 +110,6 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStoreLHEFlag                   = iConfig.getUntrackedParameter<bool>("StoreLHEFlag", false);
   theStoreGENFlag                   = iConfig.getUntrackedParameter<bool>("StoreGENFlag", true);
   theKeepAllGen                     = iConfig.getUntrackedParameter<bool>("KeepAllGen", true);
-  theStoreTTFlag                    = iConfig.getUntrackedParameter<bool>("StoreTTFlag", false);
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
 
   rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
@@ -196,62 +202,27 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   pfMET_pt=-999;
   pfMET_phi=-999;
-  pfMET_Px=-999;
-  pfMET_Py=-999;
   pfMET_SumEt=-999;
   pfMET_Type1_pt=-999;
   pfMET_Type1_phi=-999;
-  pfMET_Type1_Px=-999;
-  pfMET_Type1_Py=-999;
   pfMET_Type1_SumEt=-999;
   pfMET_Type1_PhiCor_pt=-999;
   pfMET_Type1_PhiCor_phi=-999;
-  pfMET_Type1_PhiCor_Px=-999;
-  pfMET_Type1_PhiCor_Py=-999;
   pfMET_Type1_PhiCor_SumEt=-999;
   pfMET_pt_shifts.clear();
   pfMET_phi_shifts.clear();
-  pfMET_Px_shifts.clear();
-  pfMET_Py_shifts.clear();
   pfMET_SumEt_shifts.clear();
   pfMET_Type1_pt_shifts.clear();
   pfMET_Type1_phi_shifts.clear();
-  pfMET_Type1_Px_shifts.clear();
-  pfMET_Type1_Py_shifts.clear();
   pfMET_Type1_SumEt_shifts.clear();
   pfMET_Type1_PhiCor_pt_shifts.clear();
   pfMET_Type1_PhiCor_phi_shifts.clear();
-  pfMET_Type1_PhiCor_Px_shifts.clear();
-  pfMET_Type1_PhiCor_Py_shifts.clear();
   pfMET_Type1_PhiCor_SumEt_shifts.clear();
-
-  //==== Tracker Track
-
-  TrackerTrack_dxy.clear();
-  TrackerTrack_dxyErr.clear();
-  TrackerTrack_d0.clear();
-  TrackerTrack_d0Err.clear();
-  TrackerTrack_dsz.clear();
-  TrackerTrack_dszErr.clear();
-  TrackerTrack_dz.clear();
-  TrackerTrack_dzErr.clear();
-  TrackerTrack_dxyBS.clear();
-  TrackerTrack_dszBS.clear();
-  TrackerTrack_dzBS.clear();
-  TrackerTrack_pt.clear();
-  TrackerTrack_Px.clear();
-  TrackerTrack_Py.clear();
-  TrackerTrack_Pz.clear();
-  TrackerTrack_eta.clear();
-  TrackerTrack_phi.clear();
-  TrackerTrack_charge.clear();
 
   //==== Trigger (object)
 
   HLT_TriggerName.clear();
   HLT_TriggerFilterName.clear();
-  HLT_TriggerFired.clear();
-  HLT_TriggerPrescale.clear();
   HLTObject_pt.clear();
   HLTObject_eta.clear();
   HLTObject_phi.clear();
@@ -269,14 +240,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   gen_phi.clear();
   gen_eta.clear();
   gen_pt.clear();
-  gen_Px.clear();
-  gen_Py.clear();
-  gen_Pz.clear();
-  gen_E.clear();
-  gen_mother_PID.clear();
-  gen_mother_pt.clear();
+  gen_mass.clear();
   gen_mother_index.clear();
-  gen_charge.clear();
   gen_status.clear();
   gen_PID.clear();
   gen_isPrompt.clear();
@@ -339,6 +304,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_dPhiIn.clear();
   electron_sigmaIEtaIEta.clear();
   electron_Full5x5_SigmaIEtaIEta.clear();
+  electron_e2x5OverE5x5.clear();
+  electron_e1x5OverE5x5.clear();
   electron_HoverE.clear();
   electron_fbrem.clear();
   electron_eOverP.clear();
@@ -374,20 +341,15 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_E55.clear();
   electron_RelPFIso_dBeta.clear();
   electron_RelPFIso_Rho.clear();
-  electron_passVetoID.clear();
-  electron_passLooseID.clear();
-  electron_passMediumID.clear();
-  electron_passTightID.clear();
-  electron_passMVAID_noIso_WP80.clear();
-  electron_passMVAID_noIso_WP90.clear();
-  electron_passMVAID_iso_WP80.clear();
-  electron_passMVAID_iso_WP90.clear();
-  electron_passHEEPID.clear();
+  electron_IDBit.clear();
   electron_EnergyUnCorr.clear();
   electron_chMiniIso.clear();
   electron_nhMiniIso.clear();
   electron_phMiniIso.clear();
   electron_puChMiniIso.clear();
+  electron_trackIso.clear();
+  electron_dr03EcalRecHitSumEt.clear();
+  electron_dr03HcalDepth1TowerSumEt.clear();
 
   //==== Muon
   muon_PfChargedHadronIsoR04.clear();
@@ -398,15 +360,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_PfNeutralHadronIsoR03.clear();
   muon_PfGammaIsoR03.clear();
   muon_PFSumPUIsoR03.clear();
-  muon_isPF.clear();
-  muon_isGlobal.clear();
-  muon_isTracker.clear();
-  muon_isStandAlone.clear();
-  muon_isTight.clear();
-  muon_isMedium.clear();
-  muon_isLoose.clear();
-  muon_isSoft.clear();
-  muon_isHighPt.clear();
+  muon_TypeBit.clear();
+  muon_IDBit.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -469,6 +424,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_TuneP_ptError.clear();
   muon_TuneP_eta.clear();
   muon_TuneP_phi.clear();
+  muon_TuneP_charge.clear();
   muon_roch_sf.clear();
   muon_roch_sf_up.clear();
   muon_PfChargedHadronMiniIso.clear();
@@ -500,6 +456,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_neutralHadronEnergyFraction.clear();
   jet_neutralEmEnergyFraction.clear();
   jet_chargedEmEnergyFraction.clear();
+  jet_muonEnergyFraction.clear();
   jet_chargedMultiplicity.clear();
   jet_neutralMultiplicity.clear();
   jet_tightJetID.clear();
@@ -552,6 +509,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_neutralHadronEnergyFraction.clear();
   fatjet_neutralEmEnergyFraction.clear();
   fatjet_chargedEmEnergyFraction.clear();
+  fatjet_muonEnergyFraction.clear();
   fatjet_chargedMultiplicity.clear();
   fatjet_neutralMultiplicity.clear();
   fatjet_shiftedEnUp.clear();
@@ -695,9 +653,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreElectronFlag" << endl;
   if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
 
-  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTTFlag" << endl;
-  if( theStoreTTFlag ) fillTT(iEvent);
-
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill" << endl;
   DYTree->Fill();
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] Tree Fill finished" << endl;
@@ -776,8 +731,6 @@ void SKFlatMaker::beginJob()
   if(theStoreHLTReportFlag){
 
     DYTree->Branch("HLT_TriggerName", "vector<string>", &HLT_TriggerName);
-    DYTree->Branch("HLT_TriggerFired", "vector<bool>", &HLT_TriggerFired);
-    DYTree->Branch("HLT_TriggerPrescale", "vector<int>", &HLT_TriggerPrescale);
 
     if(theStoreHLTObjectFlag){
       DYTree->Branch("HLT_TriggerFilterName", "vector<string>", &HLT_TriggerFilterName);
@@ -815,6 +768,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_neutralHadronEnergyFraction", "vector<double>", &jet_neutralHadronEnergyFraction);
     DYTree->Branch("jet_neutralEmEnergyFraction", "vector<double>", &jet_neutralEmEnergyFraction);
     DYTree->Branch("jet_chargedEmEnergyFraction", "vector<double>", &jet_chargedEmEnergyFraction);
+    DYTree->Branch("jet_muonEnergyFraction", "vector<double>", &jet_muonEnergyFraction);
     DYTree->Branch("jet_chargedMultiplicity", "vector<int>", &jet_chargedMultiplicity);
     DYTree->Branch("jet_neutralMultiplicity", "vector<int>", &jet_neutralMultiplicity);
     DYTree->Branch("jet_tightJetID", "vector<bool>", &jet_tightJetID);
@@ -869,6 +823,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_neutralHadronEnergyFraction", "vector<double>", &fatjet_neutralHadronEnergyFraction);
     DYTree->Branch("fatjet_neutralEmEnergyFraction", "vector<double>", &fatjet_neutralEmEnergyFraction);
     DYTree->Branch("fatjet_chargedEmEnergyFraction", "vector<double>", &fatjet_chargedEmEnergyFraction);
+    DYTree->Branch("fatjet_muonEnergyFraction", "vector<double>", &fatjet_muonEnergyFraction);
     DYTree->Branch("fatjet_chargedMultiplicity", "vector<int>", &fatjet_chargedMultiplicity);
     DYTree->Branch("fatjet_neutralMultiplicity", "vector<int>", &fatjet_neutralMultiplicity);
     DYTree->Branch("fatjet_shiftedEnUp", "vector<double>", &fatjet_shiftedEnUp);
@@ -909,6 +864,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_dPhiIn", "vector<double>", &electron_dPhiIn);
     DYTree->Branch("electron_sigmaIEtaIEta", "vector<double>", &electron_sigmaIEtaIEta);
     DYTree->Branch("electron_Full5x5_SigmaIEtaIEta", "vector<double>", &electron_Full5x5_SigmaIEtaIEta);
+    DYTree->Branch("electron_e2x5OverE5x5", "vector<double>", &electron_e2x5OverE5x5);
+    DYTree->Branch("electron_e1x5OverE5x5", "vector<double>", &electron_e1x5OverE5x5);
     DYTree->Branch("electron_HoverE", "vector<double>", &electron_HoverE);
     DYTree->Branch("electron_fbrem", "vector<double>", &electron_fbrem);
     DYTree->Branch("electron_eOverP", "vector<double>", &electron_eOverP);
@@ -944,20 +901,15 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_E55", "vector<double>", &electron_E55);
     DYTree->Branch("electron_RelPFIso_dBeta", "vector<double>", &electron_RelPFIso_dBeta);
     DYTree->Branch("electron_RelPFIso_Rho", "vector<double>", &electron_RelPFIso_Rho);
-    DYTree->Branch("electron_passVetoID", "vector<bool>", &electron_passVetoID);
-    DYTree->Branch("electron_passLooseID", "vector<bool>", &electron_passLooseID);
-    DYTree->Branch("electron_passMediumID", "vector<bool>", &electron_passMediumID);
-    DYTree->Branch("electron_passTightID", "vector<bool>", &electron_passTightID);
-    DYTree->Branch("electron_passMVAID_noIso_WP80", "vector<bool>", &electron_passMVAID_noIso_WP80);
-    DYTree->Branch("electron_passMVAID_noIso_WP90", "vector<bool>", &electron_passMVAID_noIso_WP90);
-    DYTree->Branch("electron_passMVAID_iso_WP80", "vector<bool>", &electron_passMVAID_iso_WP80);
-    DYTree->Branch("electron_passMVAID_iso_WP90", "vector<bool>", &electron_passMVAID_iso_WP90);
-    DYTree->Branch("electron_passHEEPID", "vector<bool>", &electron_passHEEPID);
+    DYTree->Branch("electron_IDBit", "vector<unsigned int>", &electron_IDBit);
     DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
     DYTree->Branch("electron_chMiniIso", "vector<double>", &electron_chMiniIso);
     DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
     DYTree->Branch("electron_phMiniIso", "vector<double>", &electron_phMiniIso);
     DYTree->Branch("electron_puChMiniIso", "vector<double>", &electron_puChMiniIso);
+    DYTree->Branch("electron_trackIso", "vector<double>", &electron_trackIso);
+    DYTree->Branch("electron_dr03EcalRecHitSumEt", "vector<double>", &electron_dr03EcalRecHitSumEt);
+    DYTree->Branch("electron_dr03HcalDepth1TowerSumEt", "vector<double>", &electron_dr03HcalDepth1TowerSumEt);
   }
   
   // -- muon variables -- //
@@ -971,15 +923,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_PfNeutralHadronIsoR03", "vector<double>", &muon_PfNeutralHadronIsoR03);
     DYTree->Branch("muon_PfGammaIsoR03", "vector<double>", &muon_PfGammaIsoR03);
     DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
-    DYTree->Branch("muon_isPF", "vector<bool>", &muon_isPF);
-    DYTree->Branch("muon_isGlobal", "vector<bool>", &muon_isGlobal);
-    DYTree->Branch("muon_isTracker", "vector<bool>", &muon_isTracker);
-    DYTree->Branch("muon_isStandAlone", "vector<bool>", &muon_isStandAlone);
-    DYTree->Branch("muon_isTight", "vector<bool>", &muon_isTight);
-    DYTree->Branch("muon_isMedium", "vector<bool>", &muon_isMedium);
-    DYTree->Branch("muon_isLoose", "vector<bool>", &muon_isLoose);
-    DYTree->Branch("muon_isSoft", "vector<bool>", &muon_isSoft);
-    DYTree->Branch("muon_isHighPt", "vector<bool>", &muon_isHighPt);
+    DYTree->Branch("muon_TypeBit", "vector<unsigned int>", &muon_TypeBit);
+    DYTree->Branch("muon_IDBit", "vector<unsigned int>", &muon_IDBit);
     DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
@@ -1042,6 +987,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_TuneP_ptError", "vector<double>", &muon_TuneP_ptError);
     DYTree->Branch("muon_TuneP_eta", "vector<double>", &muon_TuneP_eta);
     DYTree->Branch("muon_TuneP_phi", "vector<double>", &muon_TuneP_phi);
+    DYTree->Branch("muon_TuneP_charge", "vector<double>", &muon_TuneP_charge);
     DYTree->Branch("muon_roch_sf", "vector<double>", &muon_roch_sf);
     DYTree->Branch("muon_roch_sf_up", "vector<double>", &muon_roch_sf_up);
     DYTree->Branch("muon_PfChargedHadronMiniIso", "vector<double>", &muon_PfChargedHadronMiniIso);
@@ -1063,14 +1009,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("gen_phi", "vector<double>", &gen_phi);
     DYTree->Branch("gen_eta", "vector<double>", &gen_eta);
     DYTree->Branch("gen_pt", "vector<double>", &gen_pt);
-    DYTree->Branch("gen_Px", "vector<double>", &gen_Px);
-    DYTree->Branch("gen_Py", "vector<double>", &gen_Py);
-    DYTree->Branch("gen_Pz", "vector<double>", &gen_Pz);
-    DYTree->Branch("gen_E", "vector<double>", &gen_E);
-    DYTree->Branch("gen_mother_PID", "vector<int>", &gen_mother_PID);
-    DYTree->Branch("gen_mother_pt", "vector<double>", &gen_mother_pt);
+    DYTree->Branch("gen_mass", "vector<double>", &gen_mass);
     DYTree->Branch("gen_mother_index", "vector<int>", &gen_mother_index);
-    DYTree->Branch("gen_charge", "vector<int>", &gen_charge);
     DYTree->Branch("gen_status", "vector<int>", &gen_status);
     DYTree->Branch("gen_PID", "vector<int>", &gen_PID);
     DYTree->Branch("gen_isPrompt", "vector<int>", &gen_isPrompt);
@@ -1133,57 +1073,24 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("pileUpReweightPlusMuonPhys",&pileUpReweightPlusMuonPhys,"pileUpReweightPlusMuonPhys/D");
   DYTree->Branch("pileUpReweightMinusMuonPhys",&pileUpReweightMinusMuonPhys,"pileUpReweightMinusMuonPhys/D");
   
-  if( theStoreTTFlag ){
-    DYTree->Branch("TrackerTrack_dxy", "vector<double>", &TrackerTrack_dxy);
-    DYTree->Branch("TrackerTrack_dxyErr", "vector<double>", &TrackerTrack_dxyErr);
-    DYTree->Branch("TrackerTrack_d0", "vector<double>", &TrackerTrack_d0);
-    DYTree->Branch("TrackerTrack_d0Err", "vector<double>", &TrackerTrack_d0Err);
-    DYTree->Branch("TrackerTrack_dsz", "vector<double>", &TrackerTrack_dsz);
-    DYTree->Branch("TrackerTrack_dszErr", "vector<double>", &TrackerTrack_dszErr);
-    DYTree->Branch("TrackerTrack_dz", "vector<double>", &TrackerTrack_dz);
-    DYTree->Branch("TrackerTrack_dzErr", "vector<double>", &TrackerTrack_dzErr);
-    DYTree->Branch("TrackerTrack_dxyBS", "vector<double>", &TrackerTrack_dxyBS);
-    DYTree->Branch("TrackerTrack_dszBS", "vector<double>", &TrackerTrack_dszBS);
-    DYTree->Branch("TrackerTrack_dzBS", "vector<double>", &TrackerTrack_dzBS);
-    DYTree->Branch("TrackerTrack_pt", "vector<double>", &TrackerTrack_pt);
-    DYTree->Branch("TrackerTrack_Px", "vector<double>", &TrackerTrack_Px);
-    DYTree->Branch("TrackerTrack_Py", "vector<double>", &TrackerTrack_Py);
-    DYTree->Branch("TrackerTrack_Pz", "vector<double>", &TrackerTrack_Pz);
-    DYTree->Branch("TrackerTrack_eta", "vector<double>", &TrackerTrack_eta);
-    DYTree->Branch("TrackerTrack_phi", "vector<double>", &TrackerTrack_phi);
-    DYTree->Branch("TrackerTrack_charge", "vector<double>", &TrackerTrack_charge);
-  }
-  
   if( theStoreMETFlag ){
     DYTree->Branch("pfMET_pt", &pfMET_pt, "pfMET_pt/D");
     DYTree->Branch("pfMET_phi", &pfMET_phi, "pfMET_phi/D");
-    DYTree->Branch("pfMET_Px", &pfMET_Px, "pfMET_Px/D");
-    DYTree->Branch("pfMET_Py", &pfMET_Py, "pfMET_Py/D");
     DYTree->Branch("pfMET_SumEt", &pfMET_SumEt, "pfMET_SumEt/D");
     DYTree->Branch("pfMET_Type1_pt", &pfMET_Type1_pt, "pfMET_Type1_pt/D");
     DYTree->Branch("pfMET_Type1_phi", &pfMET_Type1_phi, "pfMET_Type1_phi/D");
-    DYTree->Branch("pfMET_Type1_Px", &pfMET_Type1_Px, "pfMET_Type1_Px/D");
-    DYTree->Branch("pfMET_Type1_Py", &pfMET_Type1_Py, "pfMET_Type1_Py/D");
     DYTree->Branch("pfMET_Type1_SumEt", &pfMET_Type1_SumEt, "pfMET_Type1_SumEt/D");
     DYTree->Branch("pfMET_Type1_PhiCor_pt", &pfMET_Type1_PhiCor_pt, "pfMET_Type1_PhiCor_pt/D");
     DYTree->Branch("pfMET_Type1_PhiCor_phi", &pfMET_Type1_PhiCor_phi, "pfMET_Type1_PhiCor_phi/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_Px", &pfMET_Type1_PhiCor_Px, "pfMET_Type1_PhiCor_Px/D");
-    DYTree->Branch("pfMET_Type1_PhiCor_Py", &pfMET_Type1_PhiCor_Py, "pfMET_Type1_PhiCor_Py/D");
     DYTree->Branch("pfMET_Type1_PhiCor_SumEt", &pfMET_Type1_PhiCor_SumEt, "pfMET_Type1_PhiCor_SumEt/D");
     DYTree->Branch("pfMET_pt_shifts", "vector<double>", &pfMET_pt_shifts);
     DYTree->Branch("pfMET_phi_shifts", "vector<double>", &pfMET_phi_shifts);
-    DYTree->Branch("pfMET_Px_shifts", "vector<double>", &pfMET_Px_shifts);
-    DYTree->Branch("pfMET_Py_shifts", "vector<double>", &pfMET_Py_shifts);
     DYTree->Branch("pfMET_SumEt_shifts", "vector<double>", &pfMET_SumEt_shifts);
     DYTree->Branch("pfMET_Type1_pt_shifts", "vector<double>", &pfMET_Type1_pt_shifts);
     DYTree->Branch("pfMET_Type1_phi_shifts", "vector<double>", &pfMET_Type1_phi_shifts);
-    DYTree->Branch("pfMET_Type1_Px_shifts", "vector<double>", &pfMET_Type1_Px_shifts);
-    DYTree->Branch("pfMET_Type1_Py_shifts", "vector<double>", &pfMET_Type1_Py_shifts);
     DYTree->Branch("pfMET_Type1_SumEt_shifts", "vector<double>", &pfMET_Type1_SumEt_shifts);
     DYTree->Branch("pfMET_Type1_PhiCor_pt_shifts", "vector<double>", &pfMET_Type1_PhiCor_pt_shifts);
     DYTree->Branch("pfMET_Type1_PhiCor_phi_shifts", "vector<double>", &pfMET_Type1_PhiCor_phi_shifts);
-    DYTree->Branch("pfMET_Type1_PhiCor_Px_shifts", "vector<double>", &pfMET_Type1_PhiCor_Px_shifts);
-    DYTree->Branch("pfMET_Type1_PhiCor_Py_shifts", "vector<double>", &pfMET_Type1_PhiCor_Py_shifts);
     DYTree->Branch("pfMET_Type1_PhiCor_SumEt_shifts", "vector<double>", &pfMET_Type1_PhiCor_SumEt_shifts);
   }
 
@@ -1309,18 +1216,10 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
           if( (*match).find("eta2p1") != std::string::npos ) continue;
 
           if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
-          HLT_TriggerName.push_back(*match); //save HLT list as a vector
-
-          //==== find prescale value
-          int _preScaleValue = hltConfig_.prescaleValue(0, *match);
-          HLT_TriggerPrescale.push_back(_preScaleValue);
 
           //==== Check if this trigger is fired
           if( trigResult->accept(trigName.triggerIndex(*match)) ){
-            HLT_TriggerFired.push_back(true);
-          }
-          else{
-            HLT_TriggerFired.push_back(false);
+            HLT_TriggerName.push_back(*match); //save HLT list as a vector
           }
 
           //==== Save Filter if theStoreHLTObjectFlag
@@ -1536,34 +1435,28 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   for( unsigned int i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
     const pat::Muon imuon = muonHandle->at(i);
-    
-    if( imuon.isStandAloneMuon() ) muon_isStandAlone.push_back( true );
-    else muon_isStandAlone.push_back( false );
+ 
+    //============================================================================================
+    //==== Muon selectors (Since 9_4_X) 
+    //==== https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Muon_selectors_Since_9_4_X
+    //============================================================================================
 
-    if( imuon.isGlobalMuon() ) muon_isGlobal.push_back( true );
-    else muon_isGlobal.push_back( false );
+    //==== DataFormats/MuonReco/interface/Muon.h
+    //==== imuon.isStandAloneMuon() : same as type_ & StandAloneMuon
+    //==== imuon.isGlobalMuon()  : same as type_ & GlobalMuon;
+    //==== imuon.isTrackerMuon() : same as type_ & TrackerMuon;
+    //==== imuon.isPFMuon() : same as type_ & PFMuon;
 
-    if( imuon.isTrackerMuon() ) muon_isTracker.push_back( true );
-    else muon_isTracker.push_back( false );
+    //==== https://github.com/cms-sw/cmssw/blob/acfa3a98a3433375e7814065546d927851104573/DataFormats/MuonReco/src/MuonSelectors.cc#L1003
+    //==== imuon.isTightMuon(vtx) : same as imuon.passed( reco::Muon::CutBasedIdTight );
+    //==== imuon.isMediumMuon() : same as imuon.passed( reco::Muon::CutBasedIdMedium );
+    //==== imuon.isLooseMuon() : same as imuon.passed( reco::Muon::CutBasedIdLoose );
+    //==== imuon.isSoftMuon(vtx) : same as imuon.passed( reco::Muon::SoftCutBasedId );
+    //==== imuon.isHighPtMuon(vtx) : same as imuon.passed( reco::Muon::CutBasedIdGlobalHighPt );
 
-    if( imuon.isPFMuon() ) muon_isPF.push_back( true );
-    else muon_isPF.push_back( false );
+    muon_TypeBit.push_back( imuon.type() );
+    muon_IDBit.push_back( imuon.selectors() );
 
-    if( imuon.isTightMuon(vtx) ) muon_isTight.push_back( true );
-    else muon_isTight.push_back( false );
-
-    if( imuon.isMediumMuon() ) muon_isMedium.push_back( true );
-    else muon_isMedium.push_back( false );
-
-    if( imuon.isLooseMuon() ) muon_isLoose.push_back( true );
-    else muon_isLoose.push_back( false );
-
-    if( imuon.isSoftMuon(vtx) ) muon_isSoft.push_back( true );
-    else muon_isSoft.push_back( false );
-
-    if( imuon.isHighPtMuon(vtx) ) muon_isHighPt.push_back( true );
-    else muon_isHighPt.push_back( false );
-    
     // -- bits 0-1-2-3 = DT stations 1-2-3-4 -- //
     // -- bits 4-5-6-7 = CSC stations 1-2-3-4 -- //
     int _segments = 0;
@@ -1779,12 +1672,14 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       muon_TuneP_ptError.push_back( imuon.tunePMuonBestTrack()->ptError() );
       muon_TuneP_eta.push_back( imuon.tunePMuonBestTrack()->eta() );
       muon_TuneP_phi.push_back( imuon.tunePMuonBestTrack()->phi() );
+      muon_TuneP_charge.push_back( imuon.tunePMuonBestTrack()->charge() );
     }
     else{
       muon_TuneP_pt.push_back( -999 );
       muon_TuneP_ptError.push_back( -999 );
       muon_TuneP_eta.push_back( -999 );
       muon_TuneP_phi.push_back( -999 );
+      muon_TuneP_charge.push_back( -999 );
     }
       
     //-- ISOLATIONS GO HERE -- //
@@ -1888,11 +1783,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
         //cout << "isTight = " << imuon.isTightMuon(vtx) << endl;
         //cout << "isMediumMuon = " << imuon.isMediumMuon() << endl;
         //cout << "isLoose = " << imuon.isLooseMuon() << endl;
-        //cout << "isPF = " << muon_isPF.at(i) << endl;
-        //cout << "isGlobal = " << muon_isGlobal.at(i) << endl;
-        //cout << "chi2 = " << muon_normchi.at(i) << endl;
-        //cout << "isTracker = " << muon_isTracker.at(i) << endl;
-        //cout << "isStandAlone = " << muon_isStandAlone.at(i) << endl;
         //cout << "dxy = " << muon_dxyVTX.at(i) << endl;
         //cout << "dz = " << muon_dzVTX.at(i) << endl;
 
@@ -2084,6 +1974,14 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     electron_E15.push_back( el->e1x5() );
     electron_E25.push_back( el->e2x5Max() );
     electron_E55.push_back( el->e5x5() );
+
+    //==== HEEP
+    const double e5x5 = el->full5x5_e5x5();
+    const double e2x5OverE5x5 = e5x5!=0 ? el->full5x5_e2x5Max()/e5x5 : 0;
+    const double e1x5OverE5x5 = e5x5!=0 ? el->full5x5_e1x5()/e5x5 : 0;
+    electron_e2x5OverE5x5.push_back( e2x5OverE5x5 );
+    electron_e1x5OverE5x5.push_back( e1x5OverE5x5 );
+
     // electron_HoverE.push_back( el->hcalOverEcal() );
     electron_HoverE.push_back( el->hadronicOverEm() ); // -- https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/plugins/cuts/GsfEleHadronicOverEMCut.cc#L40 -- //
     electron_etaWidth.push_back( el->superCluster()->etaWidth() );
@@ -2178,6 +2076,10 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_nhMiniIso.push_back( el->miniPFIsolation().neutralHadronIso() );
     electron_phMiniIso.push_back( el->miniPFIsolation().photonIso() );
     electron_puChMiniIso.push_back( el->miniPFIsolation().puChargedHadronIso() );
+    electron_trackIso.push_back( el->trackIso() );
+
+    electron_dr03EcalRecHitSumEt.push_back( el->dr03EcalRecHitSumEt() );
+    electron_dr03HcalDepth1TowerSumEt.push_back( el->dr03HcalDepth1TowerSumEt() );
 
     // cout << "##### fillElectrons: Before elecTrk #####" << endl;
     
@@ -2245,20 +2147,33 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
 
     //==== Cut Based
     //==== 94x-V2 : https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Recipe_for_regular_users_formats
-    bool isPassVeto  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-veto");
-    bool isPassLoose  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-loose");
-    bool isPassMedium = el -> electronID("cutBasedElectronID-Fall17-94X-V2-medium");
-    bool isPassTight  = el -> electronID("cutBasedElectronID-Fall17-94X-V2-tight");
     //==== MVA Based
     //==== Fall17 : https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentificationRun2#VID_based_recipe_provides_pass_f
-    bool isPassMVA_noIso_WP80 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp80");
-    bool isPassMVA_noIso_WP90 = el -> electronID("mvaEleID-Fall17-noIso-V1-wp90");
-    bool isPassMVA_iso_WP80 = el -> electronID("mvaEleID-Fall17-iso-V1-wp80");
-    bool isPassMVA_iso_WP90 = el -> electronID("mvaEleID-Fall17-iso-V1-wp90");
     //==== HEEP ID
     //==== V7 : https://twiki.cern.ch/twiki/bin/view/CMS/HEEPElectronIdentificationRun2#Configuring_and_Running_VID_in_a
-    bool isPassHEEP = el -> electronID("heepElectronID-HEEPV70");
 
+    unsigned int IDBit = 0;
+    for(unsigned int it_ID=0; it_ID<electron_IDtoSave.size(); it_ID++){
+      if(el->electronID(electron_IDtoSave.at(it_ID))){
+        IDBit |= (1 << it_ID);
+      }
+      else{
+        IDBit &= ~(1 << it_ID);
+      }
+    }
+    electron_IDBit.push_back( IDBit );
+/*
+    cout << "Electron ID Bit = " << IDBit << endl;
+    cout << "--> CB veto = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-veto") << endl;
+    cout << "--> CB loose = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-loose") << endl;
+    cout << "--> CB medium = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-medium") << endl;
+    cout << "--> CB tight = " << el->electronID("cutBasedElectronID-Fall17-94X-V2-tight") << endl;
+    cout << "--> MVA noIso WP80 = " << el->electronID("mvaEleID-Fall17-noIso-V1-wp80") << endl;
+    cout << "--> MVA noIso WP90 = " << el->electronID("mvaEleID-Fall17-noIso-V1-wp90") << endl;
+    cout << "--> MVA Iso WP80 = " << el->electronID("mvaEleID-Fall17-iso-V1-wp80") << endl;
+    cout << "--> MVA Iso WP90 = " << el->electronID("mvaEleID-Fall17-iso-V1-wp90") << endl;
+    cout << "--> Heepv70 = " << el->electronID("heepElectronID-HEEPV70") << endl;
+*/
 /*
     //==== checking pogboolean and cut-by-hand
     if(isPassLoose){
@@ -2304,18 +2219,6 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
       }
     }
 */
-
-    // cout << "isPassVeto: " << isPassVeto << ", isPassLoose: " << isPassLoose << ", isPassMedium: " << isPassMedium << ", isPassTight: " << isPassTight << endl;
-    electron_passVetoID.push_back( isPassVeto );
-    electron_passLooseID.push_back( isPassLoose );
-    electron_passMediumID.push_back( isPassMedium );
-    electron_passTightID.push_back( isPassTight );
-    electron_passMVAID_noIso_WP80.push_back( isPassMVA_noIso_WP80 );
-    electron_passMVAID_noIso_WP90.push_back( isPassMVA_noIso_WP90 );
-    electron_passMVAID_iso_WP80.push_back( isPassMVA_iso_WP80 );
-    electron_passMVAID_iso_WP90.push_back( isPassMVA_iso_WP90 );
-    electron_passHEEPID.push_back( isPassHEEP );
-
 
   } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   
@@ -2491,13 +2394,9 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     
     gen_PID.push_back( it->pdgId() );
     gen_pt.push_back( it->pt() );
-    gen_Px.push_back( it->px() );
-    gen_Py.push_back( it->py() );
-    gen_Pz.push_back( it->pz() );
-    gen_E.push_back( it->energy() );
+    gen_mass.push_back( it->mass() );
     gen_eta.push_back( it->eta() );
     gen_phi.push_back( it->phi() );
-    gen_charge.push_back( it->charge() );
     gen_status.push_back( it->status() );
     
     //Flags (Ref: https://indico.cern.ch/event/402279/contribution/5/attachments/805964/1104514/mcaod-Jun17-2015.pdf)
@@ -2515,15 +2414,6 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     gen_fromHardProcessDecayed.push_back( it->fromHardProcessDecayed() );
     gen_fromHardProcessFinalState.push_back( it->fromHardProcessFinalState() );
     gen_isMostlyLikePythia6Status3.push_back( it->fromHardProcessBeforeFSR() );
-    
-    if(it->numberOfMothers() > 0){
-      gen_mother_PID.push_back( it->mother(0)->pdgId() );
-      gen_mother_pt.push_back( it->mother(0)->pt() );
-    }
-    else{
-      gen_mother_PID.push_back( -999 );
-      gen_mother_pt.push_back( -999 );
-    }
     
     int idx = -1;
     for( reco::GenParticleCollection::const_iterator mit = genParticles->begin(); mit != genParticles->end(); ++mit ){
@@ -2636,20 +2526,14 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   
   pfMET_pt = metHandle->front().uncorPt();
   pfMET_phi = metHandle->front().uncorPhi();
-  pfMET_Px = metHandle->front().uncorPx();
-  pfMET_Py = metHandle->front().uncorPy();
   pfMET_SumEt = metHandle->front().uncorSumEt();
   
   pfMET_Type1_pt = metHandle->front().pt();
   pfMET_Type1_phi = metHandle->front().phi();
-  pfMET_Type1_Px = metHandle->front().px();
-  pfMET_Type1_Py = metHandle->front().py();
   pfMET_Type1_SumEt = metHandle->front().sumEt();
   
   pfMET_Type1_PhiCor_pt = metHandle->front().corPt(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_phi = metHandle->front().corPhi(pat::MET::Type1XY);
-  pfMET_Type1_PhiCor_Px = metHandle->front().corPx(pat::MET::Type1XY);
-  pfMET_Type1_PhiCor_Py = metHandle->front().corPy(pat::MET::Type1XY);
   pfMET_Type1_PhiCor_SumEt = metHandle->front().corSumEt(pat::MET::Type1XY);
 
 
@@ -2667,20 +2551,14 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
 
     pfMET_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Raw) );
     pfMET_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Raw) );
-    pfMET_Px_shifts.push_back( metHandle->front().shiftedPx(pat::MET::METUncertainty(i), pat::MET::Raw) );
-    pfMET_Py_shifts.push_back( metHandle->front().shiftedPy(pat::MET::METUncertainty(i), pat::MET::Raw) );
     pfMET_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Raw) );
 
     pfMET_Type1_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1) );
     pfMET_Type1_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1) );
-    pfMET_Type1_Px_shifts.push_back( metHandle->front().shiftedPx(pat::MET::METUncertainty(i), pat::MET::Type1) );
-    pfMET_Type1_Py_shifts.push_back( metHandle->front().shiftedPy(pat::MET::METUncertainty(i), pat::MET::Type1) );
     pfMET_Type1_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Type1) );
 
     pfMET_Type1_PhiCor_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
     pfMET_Type1_PhiCor_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
-    pfMET_Type1_PhiCor_Px_shifts.push_back( metHandle->front().shiftedPx(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
-    pfMET_Type1_PhiCor_Py_shifts.push_back( metHandle->front().shiftedPy(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
     pfMET_Type1_PhiCor_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
 
   }
@@ -2783,6 +2661,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
     jet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
     jet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
+    jet_muonEnergyFraction.push_back( jets_iter->muonEnergyFraction() );
     jet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
     jet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
 
@@ -3054,6 +2933,7 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
     fatjet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
     fatjet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
+    fatjet_muonEnergyFraction.push_back( jets_iter->muonEnergyFraction() );
     fatjet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
     fatjet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
 
@@ -3187,61 +3067,6 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 
   }
 
-}
-
-//////////////////////////////////////////////////////
-// -- Get Tracker track info (all single tracks) -- //
-//////////////////////////////////////////////////////
-void SKFlatMaker::fillTT(const edm::Event &iEvent)
-{
-  edm::Handle<edm::View<reco::Track> > trackHandle;
-  iEvent.getByToken(TrackToken, trackHandle);
-  
-  edm::Handle<reco::BeamSpot> beamSpotHandle;
-  iEvent.getByToken(BeamSpotToken, beamSpotHandle);
-  reco::BeamSpot beamSpot = (*beamSpotHandle);
-  
-  edm::Handle<reco::VertexCollection> _pvHandle;
-  iEvent.getByToken(PrimaryVertexToken, _pvHandle);
-  const reco::Vertex &vtx = _pvHandle->front();
-  
-  // to store gsftracks close to electrons
-  edm::Handle< std::vector< reco::GsfTrack > > gsfTracks; 
-  iEvent.getByToken(GsfTrackToken, gsfTracks);
-  
-  for(unsigned int igsf = 0; igsf < gsfTracks->size(); igsf++ ){
-    GsfTrackRef iTT(gsfTracks, igsf);
-
-    //if( iTT->pt() < 1.0 || iTT->pt() > 100000 ) continue;
-    bool _isMatch = false;
-    for( int i = 0; i < Nelectrons; i++ ){
-      double dpT = fabs(iTT->pt() - electron_gsfpt[i]);
-      double dR = deltaR(iTT->eta(), iTT->phi(), electron_gsfEta[i], electron_gsfPhi[i]);
-      //cout << "elec = " << i << " " << electron_gsfpt[i] << " " << electron_gsfEta[i] << " " << electron_gsfPhi[i] << " " << dR << endl;
-      if( dR < 0.001 && dpT < 1.0 ) _isMatch = true;
-    }
-    if( _isMatch ) continue;
-    
-    TrackerTrack_dxy.push_back( iTT->dxy(vtx.position()) );
-    TrackerTrack_dxyErr.push_back( iTT->dxyError() );
-    TrackerTrack_d0.push_back( iTT->d0() );
-    TrackerTrack_d0Err.push_back( iTT->d0Error() );
-    TrackerTrack_dsz.push_back( iTT->dsz(vtx.position()) );
-    TrackerTrack_dszErr.push_back( iTT->dszError() );
-    TrackerTrack_dz.push_back( iTT->dz(vtx.position()) );
-    TrackerTrack_dzErr.push_back( iTT->dzError() );
-    TrackerTrack_dxyBS.push_back( iTT->dxy(beamSpot.position()) );
-    TrackerTrack_dszBS.push_back( iTT->dsz(beamSpot.position()) );
-    TrackerTrack_dzBS.push_back( iTT->dz(beamSpot.position()) );
-    TrackerTrack_pt.push_back( iTT->pt() );
-    TrackerTrack_Px.push_back( iTT->px() );
-    TrackerTrack_Py.push_back( iTT->py() );
-    TrackerTrack_Pz.push_back( iTT->pz() );
-    TrackerTrack_eta.push_back( iTT->eta() );
-    TrackerTrack_phi.push_back( iTT->phi() );
-    TrackerTrack_charge.push_back( iTT->charge() );
-  } // -- end of for(unsigned igsf = 0; igsf < gsfTracks->size(); igsf++ ): GSFTrack iteration -- //
-  
 }
 
 void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
