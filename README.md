@@ -31,7 +31,9 @@ git cms-merge-topic cms-met:METFixEE2017_949_v2
 
 # Copy this code
 git clone git@github.com:CMSSNU/SKFlatMaker.git
+cd SKFlatMaker
 git checkout <branch or tag>
+cd $CMSSW_BASE/src
 
 # Compile
 scram b -j 8
@@ -55,6 +57,12 @@ cd v949cand2_2__CMSSW_9_4_9_cand2/src
 cmsenv
 source /cvmfs/cms.cern.ch/crab3/crab.sh
 voms-proxy-init --voms cms -valid 9999:00
+# now, do the same as "Environment" above, just before "# Copy this code"
+git clone git@github.com:CMSSNU/SKFlatMaker.git
+cd SKFlatMaker
+git checkout v949cand2_2 ## This is let us use exactly same tag without any modifications..
+cd $CMSSW_BASE/src
+scram b -j 8
 ```
 Then do Environment above.
 
