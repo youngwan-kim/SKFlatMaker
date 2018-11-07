@@ -41,7 +41,7 @@ cd $CMSSW_BASE/src/SKFlatMaker
 source setup.sh
 ```
 
-## For Production
+## For the Production
 I recommend you to make a clean workind directory when we do the central production.
 
 Also, I recommend using lxplus
@@ -68,7 +68,7 @@ python MakeCrab.py
 # then it will print crab submission commands
 # copy them somewhere
 cd $SKFlatTag/2017/crab_submission_DATA/
-# run the submission commands
+# now, run the submission commands
 ```
 
 ## test runs
