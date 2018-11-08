@@ -83,7 +83,7 @@ git cms-merge-topic cms-met:METFixEE2017_949_v2
 
 git clone git@github.com:CMSSNU/SKFlatMaker.git
 cd SKFlatMaker
-git checkout v949cand2_2 ## This is let us use exactly same tag without any modifications..
+git checkout v949cand2_2 ## This let us use exactly same tag without any modifications..
 cd $CMSSW_BASE/src
 scram b -j4
 
