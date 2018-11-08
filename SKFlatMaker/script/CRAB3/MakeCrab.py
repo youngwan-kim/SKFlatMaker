@@ -47,6 +47,10 @@ for line in lines:
   line = line.strip('\n')
   samplePDs = line.split("/")
 
+  #continue if blank line or invalid format
+  if len(samplePDs)<4:
+    continue
+  
   sample = samplePDs[1]
   confs = samplePDs[2]
 
