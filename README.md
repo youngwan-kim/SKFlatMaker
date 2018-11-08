@@ -44,7 +44,7 @@ source setup.sh
 ```
 
 ## For the Production
-I recommend you to make a clean workind directory when we do the central production.
+I recommend you to make a clean working directory when we do the central production.
 
 Also, I recommend using lxplus
 
