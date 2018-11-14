@@ -172,15 +172,23 @@ myEleID =  [
 ]
 
 if Is2016:
-  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-  setupEgammaPostRecoSeq(process,
-                         runVID=True, #saves CPU time by not needlessly re-running VID
-                         era='2016-Legacy',
-                         eleIDModules=myEleID)
-  #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
+
+  process.recoTree.electron_IDtoSave = cms.untracked.vstring(
+'cutBasedElectronID-Summer16-80X-V1-veto',
+'cutBasedElectronID-Summer16-80X-V1-loose',
+'cutBasedElectronID-Summer16-80X-V1-medium',
+'cutBasedElectronID-Summer16-80X-V1-tight',
+'mvaEleID-Spring16-GeneralPurpose-V1-wp80',
+'mvaEleID-Spring16-GeneralPurpose-V1-wp90',
+'mvaEleID-Spring16-HZZ-V1-wpLoose',
+'mvaEleID-Spring16-HZZ-V1-wpLoose', ### DUMMY
+'mvaEleID-Spring16-GeneralPurpose-V1-wp80',  ### DUMMY
+'mvaEleID-Spring16-GeneralPurpose-V1-wp90', ### DUMMY
+'mvaEleID-Spring16-HZZ-V1-wpLoose', ### DUMMY
+"heepElectronID-HEEPV70",
+  )
 
   process.p = cms.Path(
-    process.egammaPostRecoSeq *
     process.recoTree
   )
 
