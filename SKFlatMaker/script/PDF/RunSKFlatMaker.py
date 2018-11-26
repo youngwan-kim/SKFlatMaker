@@ -4,9 +4,11 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarParsing.varType.string, "sampletype: DATA/MC/PrivateMC")
-options.register('PDFIDShift', "0", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFIDShift: 0/M1/P1/..")
-options.register('PDFOrder', "NLO", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFOrder: LO/NLO/..")
-options.register('PDFType', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDFType: powheg/madgraph0/madgraph1000")
+options.register('ScaleIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Scale ID range: 1,9")
+options.register('PDFErrorType', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error type: gaussian,hessian")
+options.register('PDFErrorIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error ID range: 1001,1100")
+options.register('PDFAlphaSIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS ID range: 1101,1102")
+options.register('PDFAlphaSScaleValue', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS Scale values: 1.5,1.5")
 options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.int, "year: Which year")
 options.parseArguments()
 
@@ -48,15 +50,23 @@ if len(options.inputFiles)==0:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2017B/SingleMuon/MINIAOD/31Mar2018-v1/80000/54F30BE9-423C-E811-A315-0CC47A7C3410.root')
       options.outputFile = "SKFlatNtuple_2017_DATA.root"
 
-PDFIDShift = options.PDFIDShift
-PDFOrder = options.PDFOrder
-PDFType = options.PDFType
+
+ScaleIDRange = [int(options.ScaleIDRange.split(',')[0]), int(options.ScaleIDRange.split(',')[1])]
+PDFErrorIDRange = [int(options.PDFErrorIDRange.split(',')[0]), int(options.PDFErrorIDRange.split(',')[1])]
+PDFAlphaSIDRange = [int(options.PDFAlphaSIDRange.split(',')[0]), int(options.PDFAlphaSIDRange.split(',')[1])]
+PDFAlphaSScaleValue = [float(options.PDFAlphaSScaleValue.split(',')[0]), float(options.PDFAlphaSScaleValue.split(',')[1])]
 
 print 'isMC = '+str(isMC)
 print 'isPrivateSample = '+str(isPrivateSample)
-print 'PDFIDShift = '+PDFIDShift
-print 'PDFOrder = '+PDFOrder
-print 'PDFType = '+PDFType
+print 'ScaleIDRange = ',
+print ScaleIDRange
+print 'PDFErrorType = '+options.PDFErrorType
+print 'PDFErrorIDRange = ',
+print PDFErrorIDRange
+print 'PDFAlphaSIDRange = ',
+print PDFAlphaSIDRange
+print 'PDFAlphaSScaleValue = ',
+print PDFAlphaSScaleValue
 print 'year = '+str(options.year)
 
 
@@ -89,7 +99,7 @@ process.source = cms.Source("PoolSource",
   #skipEvents=cms.untracked.uint32(5),
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
 # -- Geometry and Detector Conditions (needed for a few patTuple production steps) -- #
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
@@ -116,7 +126,7 @@ process.TFileService = cms.Service("TFileService",
 from SKFlatMaker.SKFlatMaker.SKFlatMaker_cfi import *
 
 process.recoTree = SKFlatMaker.clone()
-process.recoTree.DebugLevel = cms.untracked.int32(0)
+process.recoTree.DebugLevel = cms.untracked.int32(1)
 process.recoTree.StoreHLTObjectFlag = False ##FIXME
 
 # -- Objects without Corrections -- # 
@@ -128,13 +138,11 @@ process.recoTree.FatJet = cms.untracked.InputTag("slimmedJetsAK8")
 process.recoTree.MET = cms.InputTag("slimmedMETs")
 process.recoTree.GenParticle = cms.untracked.InputTag("prunedGenParticles") # -- miniAOD -- #
 
-process.recoTree.PDFOrder = cms.string(PDFOrder)
-process.recoTree.PDFType = cms.string(PDFType)
-
-str_this_shift = PDFIDShift
-str_this_shift = str_this_shift.replace("M","-")
-str_this_shift = str_this_shift.replace("P","+")
-process.recoTree.PDFIDShift = cms.int32(int(str_this_shift))
+process.recoTree.ScaleIDRange = cms.untracked.vint32(ScaleIDRange)
+process.recoTree.PDFErrorType = cms.untracked.string(options.PDFErrorType)
+process.recoTree.PDFErrorIDRange = cms.untracked.vint32(PDFErrorIDRange)
+process.recoTree.PDFAlphaSIDRange = cms.untracked.vint32(PDFAlphaSIDRange)
+process.recoTree.PDFAlphaSScaleValue = cms.untracked.vdouble(PDFAlphaSScaleValue)
 
 if isPrivateSample:
   process.recoTree.LHEEventProduct = cms.untracked.InputTag("source")

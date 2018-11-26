@@ -104,7 +104,7 @@ cd $SKFlatTag/2017/crab_submission_DATA/
 ```bash
 cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/test/
 cmsRun RunSKFlatMaker.py year=2016 sampletype=DATA ## Run 2016 DATA
-cmsRun RunSKFlatMaker.py year=2016 sampletype=MC ## Run 2016 MC
+cmsRun RunSKFlatMaker.py year=2016 sampletype=MC PDFErrorType=hessian ## Run 2016 MC
 cmsRun RunSKFlatMaker.py year=2017 sampletype=DATA ## Run 2017 DATA
-cmsRun RunSKFlatMaker.py year=2017 sampletype=MC ## Run 2017 MC
+cmsRun RunSKFlatMaker.py year=2017 sampletype=MC PDFErrorType=hessian ## Run 2017 MC
 ```

@@ -328,10 +328,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   double pileUpReweightPlusMuonPhys;
   double pileUpReweightMinusMuonPhys;
 
-  string PDFOrder_;
-  int PDFIDShift_;
-  string PDFType_;
-  int int_PDFType_;
+  std::vector< int > ScaleIDRange_, PDFErrorIDRange_, PDFAlphaSIDRange_;
+  std::string PDFErrorType_;
+  std::vector< double > PDFAlphaSScaleValue_;
 
   TTree *DYTree;
   

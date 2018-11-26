@@ -1,4 +1,5 @@
 import os
+import sys
 
 txtfilename = '2016_DATA.txt'
 #txtfilename = '2016_MC.txt'
@@ -6,6 +7,7 @@ txtfilename = '2016_DATA.txt'
 #txtfilename = '2017_MC.txt'
 
 SKFlatTag = os.environ['SKFlatTag']
+SKFlatWD = os.environ['SKFlatWD']
 
 year = "-1"
 if "2016" in txtfilename:
@@ -14,7 +16,6 @@ if "2017" in txtfilename:
   year = "2017"
 
 lines = open(txtfilename).readlines()
-pdfidshifts = open(year+'_PDFInfo.txt').readlines()
 
 str_sample = "DATA"
 isData = False
@@ -53,25 +54,43 @@ for line in lines:
   
   sample = samplePDs[1]
   confs = samplePDs[2]
+  cmd = 'crab submit -c SubmitCrab__'+sample+'__'+confs+'.py'
 
-  # cmsRun RunSKFlatMaker.py <DATA/MC/PrivateMC> <PDFIDShift;M1> <NLO/LO> <powheg/madgraph0/madgraph1000>
-
-  # DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8 0 LO  madgraph0
-  # DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8  0 NLO madgraph1000
-  pdfshift = "0"
-  order = "NLO"
-  gentype = ""
-
+  ArgsListString = "['sampletype="+str_sample+"','year="+year+"'"
+  # ['sampletype="+str_sample+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"','year="+year+"']
   if not isData:
-    for shiftsamples in pdfidshifts:
-      words = shiftsamples.split()
-      if words[0]==sample:
-        pdfshift = words[1]
-        order = words[2]
-        gentype = words[3]
+    HasFile = os.path.isfile(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+year+'/'+sample+'.txt')
 
-  if order=="?":
-    order="NLO"
+    if HasFile:
+
+      MCInfoLines = open(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+year+'/'+sample+'.txt').readlines()
+      words = MCInfoLines[0].split()
+      # 1001,1009 gaussian  2001,2100 2101,2102 1.5,1.5
+      ScaleIDRange = words[0]
+      PDFErrorType = words[1]
+      PDFErrorIDRange = words[2]
+      PDFAlphaSIDRange = words[3]
+      PDFAlphaSScaleValue = words[4]
+
+      ArgsListString += ",'PDFErrorType="+PDFErrorType+"'"
+      ArgsListString += ",'ScaleIDRange="+ScaleIDRange+"'"
+      ArgsListString += ",'PDFErrorIDRange="+PDFErrorIDRange+"'"
+      ArgsListString += ",'PDFAlphaSIDRange="+PDFAlphaSIDRange+"'"
+      ArgsListString += ",'PDFAlphaSScaleValue="+PDFAlphaSScaleValue+"'"
+
+      if "999" in MCInfoLines[0]:
+        print '#### Has Issue : '+sample
+        continue
+
+
+    else:
+      ### to avoid exit()
+      print '#### No MCPDFInfo : '+sample
+      ArgsListString += ",'PDFErrorType="+"hessian"+"'"
+      continue
+
+  ArgsListString += "]"
+
 
   sk_lines = open('skeleton/SubmitCrab.py').readlines()
 
@@ -85,7 +104,8 @@ for line in lines:
       else:
         out.write("config.General.requestName = '"+sample+"'\n")
     elif "config.JobType.pyCfgParams" in sk_line:
-      out.write("config.JobType.pyCfgParams = ['sampletype="+str_sample+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"','year="+year+"']\n")
+      #FIXME
+      out.write("config.JobType.pyCfgParams = "+ArgsListString+"\n")
     elif "config.Data.inputDataset" in sk_line:
       out.write("config.Data.inputDataset = '"+line+"'\n")
     elif 'config.Data.splitting' in sk_line:
@@ -95,7 +115,7 @@ for line in lines:
         out.write("config.Data.splitting = 'FileBased'\n")
     elif 'config.Data.unitsPerJob' in sk_line:
       if isData:
-        out.write("config.Data.unitsPerJob = 100\n")
+        out.write("config.Data.unitsPerJob = 50\n")
       else:
         out.write("config.Data.unitsPerJob = 1\n")
     elif 'config.Data.outputDatasetTag' in sk_line:
@@ -145,7 +165,6 @@ for line in lines:
   if isPrivateMC:
     out.write("config.Data.inputDBS = 'phys03'\n")
 
-  cmd = 'crab submit -c SubmitCrab__'+sample+'__'+confs+'.py'
   print cmd
 
   out.close()

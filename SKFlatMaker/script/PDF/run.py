@@ -1,16 +1,20 @@
 import os
 
-filename = 'samplelist.txt'
+filename = 'samplelist_2016.txt'
+#filename = 'samplelist_2017.txt'
 #filename = 'samplelist_Private.txt'
 
 IsPrivate = ("Private" in filename)
 
 lines = open(filename).readlines()
-pdfidshifts = open('PDFIDShift.txt').readlines()
+Year = "2016"
+if "2017" in filename:
+  Year = "2017"
 
 hostname = os.environ['HOSTNAME']
+SKFlatWD = os.environ['SKFlatWD']
 
-os.system('mkdir -p logs')
+os.system('mkdir -p logs_'+Year)
 
 for line in lines:
 
@@ -43,24 +47,40 @@ for line in lines:
   cmd = 'cmsRun RunSKFlatMaker.py inputFiles='+filepath
 
   InShiftTxt = False
-  for shiftsamples in pdfidshifts:
-    words = shiftsamples.split()
-    if words[0]==sample:
-      InShiftTxt = True
-      this_shift = words[1]
-      if "?" in this_shift:
-        this_shift = "0"
-      cmd = cmd+' PDFIDShift='+this_shift
-      break
-  if not InShiftTxt:
-    cmd = cmd+' PDFIDShift=0'
+
+  ## I think it is better to save non-shifted info in the spreadsheet
+
+  HasFile = os.path.isfile(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+Year+'/'+sample+'.txt')
+
+  if HasFile:
+
+    MCInfoLines = open(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+Year+'/'+sample+'.txt').readlines()
+    words = MCInfoLines[0].split()
+    # 1001,1009 gaussian  2001,2100 2101,2102 1.5,1.5
+    ScaleIDRange = words[0]
+    PDFErrorType = words[1]
+    PDFErrorIDRange = words[2]
+    PDFAlphaSIDRange = words[3]
+    PDFAlphaSScaleValue = words[4]
+
+    cmd += ' PDFErrorType='+PDFErrorType
+    cmd += ' ScaleIDRange='+ScaleIDRange
+    cmd += ' PDFErrorIDRange='+PDFErrorIDRange
+    cmd += ' PDFAlphaSIDRange='+PDFAlphaSIDRange
+    cmd += ' PDFAlphaSScaleValue='+PDFAlphaSScaleValue
+
+  else:
+    ### to avoid exit()
+    cmd += ' PDFErrorType=hessian'
 
   if IsPrivate:
     cmd = cmd+' sampletype=PrivateMC'
   else:
     cmd = cmd+' sampletype=MC'
 
-  final_cmd = cmd+' > logs/'+sample+'.log'
+  cmd = cmd+' year='+Year
+
+  final_cmd = cmd+' > logs_'+Year+'/'+sample+'.log'
   print final_cmd
   os.system(final_cmd)
 
