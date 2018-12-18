@@ -518,6 +518,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_smearedRes.clear();
   fatjet_smearedResUp.clear();
   fatjet_smearedResDown.clear();
+  fatjet_LSF.clear();
+  fatjet_LSFlep_PID.clear();
+  fatjet_LSFlep_Pt.clear();
+  fatjet_LSFlep_Eta.clear();
+  fatjet_LSFlep_Phi.clear();
 
   //==== Photon
   photon_pt.clear();
@@ -832,6 +837,11 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_smearedRes", "vector<double>", &fatjet_smearedRes);
     DYTree->Branch("fatjet_smearedResUp", "vector<double>", &fatjet_smearedResUp);
     DYTree->Branch("fatjet_smearedResDown", "vector<double>", &fatjet_smearedResDown);
+    DYTree->Branch("fatjet_LSF", "vector<double>", &fatjet_LSF);
+    DYTree->Branch("fatjet_LSFlep_PID", "vector<double>", &fatjet_LSFlep_PID);
+    DYTree->Branch("fatjet_LSFlep_Pt", "vector<double>", &fatjet_LSFlep_Pt);
+    DYTree->Branch("fatjet_LSFlep_Eta", "vector<double>", &fatjet_LSFlep_Eta);
+    DYTree->Branch("fatjet_LSFlep_Phi", "vector<double>", &fatjet_LSFlep_Phi);
   }
 
   // Electron
@@ -3029,6 +3039,36 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 
     }
 
+    //==== LSF variables
+
+    std::vector<reco::CandidatePtr> pfConstituents = jets_iter->getJetConstituents();
+    std::vector<fastjet::PseudoJet> lClusterParticles;
+    for(unsigned int ic=0; ic<pfConstituents.size(); ic++) {
+      reco::CandidatePtr pfcand = pfConstituents[ic];
+      fastjet::PseudoJet   pPart(pfcand->px(),pfcand->py(),pfcand->pz(),pfcand->energy());
+      lClusterParticles.emplace_back(pPart);
+    }
+    std::sort(lClusterParticles.begin(),lClusterParticles.end(),JetTools::orderPseudoJet);
+
+    float lepCPt(-100), lepCEta(-100), lepCPhi(-100);
+    float lepCId(0);
+    float this_lsf(0);
+
+    if(JetTools::leptons((*jets_iter),3)> 0 && JetTools::leptons(*jets_iter,7)<0.8){
+      lepCPt = JetTools::leptons(*jets_iter,3);
+      lepCEta = JetTools::leptons(*jets_iter,5);
+      lepCPhi = JetTools::leptons(*jets_iter,6);
+      lepCId = JetTools::leptons(*jets_iter,4);
+      std::vector<fastjet::PseudoJet> vSubC_3;
+      this_lsf = JetTools::lsf(lClusterParticles, vSubC_3, lepCPt, lepCEta, lepCPhi, lepCId, 2.0, 3);
+
+    }
+
+    fatjet_LSF.push_back(this_lsf);
+    fatjet_LSFlep_PID.push_back( lepCId );
+    fatjet_LSFlep_Pt.push_back( lepCPt );
+    fatjet_LSFlep_Eta.push_back( lepCEta );
+    fatjet_LSFlep_Phi.push_back( lepCPhi );
 
   }
 

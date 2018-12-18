@@ -30,6 +30,8 @@
 <use name="CondFormats/JetMETObjects"/>
 <use name="JetMETCorrections/Objects"/>
 <use name="JetMETCorrections/Modules"/>
+<use name="fastjet"/>
+<use name="fastjet-contrib"/>
 <!-- <use name="SHarper/HEEPAnalyzer"/> -->
 <use name="root"/>
 <use name="boost"/>
