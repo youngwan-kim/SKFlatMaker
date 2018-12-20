@@ -130,13 +130,11 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   //==== PDF
 
   ScaleIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("ScaleIDRange");
-  PDFErrorType_ = iConfig.getUntrackedParameter< std::string >("PDFErrorType");
   PDFErrorIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("PDFErrorIDRange");
   PDFAlphaSIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("PDFAlphaSIDRange");
   PDFAlphaSScaleValue_ = iConfig.getUntrackedParameter< std::vector<double> >("PDFAlphaSScaleValue");
 
   cout << "[SKFlatMaker::SKFlatMaker] ScaleIDRange_ = " << ScaleIDRange_.at(0)<<" - "<<ScaleIDRange_.at(1) << endl;
-  cout << "[SKFlatMaker::SKFlatMaker] PDFErrorType_ = " << PDFErrorType_ << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = " << PDFErrorIDRange_.at(0)<<" - "<<PDFErrorIDRange_.at(1) << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = " << PDFAlphaSIDRange_.at(0)<<" - "<<PDFAlphaSIDRange_.at(1) << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSScaleValue_ = " << PDFAlphaSScaleValue_.at(0)<<" - "<<PDFAlphaSScaleValue_.at(1) << endl;
@@ -2260,6 +2258,12 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
     if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight["<<this_id<<"] = " << map_id_to_weight[this_id] << endl;
   }
 
+  int central = ScaleIDRange_.at(0);
+  if(theDebugLevel){
+    cout << "[SKFlatMaker::fillLHEInfo] central = " << central << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight[central] = " << map_id_to_weight[central] << endl;
+  }
+
   //=============================
   //==== 1) QCD Scale variation
   //=============================
@@ -2273,47 +2277,13 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   //==== 2) PDF Error and AlphaS
   //==============================
 
-  int central = ScaleIDRange_.at(0);
   int N_ErrorSet = PDFErrorIDRange_.at(1)-PDFErrorIDRange_.at(0)+1;
-  double pdferr = 0.;
 
-  if(PDFErrorType_=="hessian"){
-
-    for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
-      double this_diff =  map_id_to_weight[i]-map_id_to_weight[central];
-      if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << ", diff = " << this_diff << endl;
-      pdferr += this_diff*this_diff;
-    }
-    pdferr = sqrt(pdferr);
-    if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; --> pdferr = " << pdferr << endl;
-
+  for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
+    double this_reweight = map_id_to_weight[i] / map_id_to_weight[central];
+    PDFWeights_Error.push_back( this_reweight );
+    if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << ", reweight = " << this_reweight << endl;
   }
-  else if(PDFErrorType_=="gaussian"){
-
-    double pdf_sum(0.), pdf_squraesum(0.);
-    for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
-      if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << endl;
-      pdf_sum       += map_id_to_weight[i];
-      pdf_squraesum += map_id_to_weight[i]*map_id_to_weight[i];
-    }
-
-    pdferr = (pdf_squraesum - pdf_sum*pdf_sum/N_ErrorSet)/(N_ErrorSet-1);
-    pdferr = sqrt(pdferr);
-
-  }
-  else{
-    cout << "[SKFlatMaker::fillLHEInfo] Wrong PDFErrorType_ = " << PDFErrorType_ << endl;
-    std::exit(EXIT_FAILURE);
-  }
-
-  if(theDebugLevel){
-    cout << "[SKFlatMaker::fillLHEInfo] central = " << central << endl;
-    cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight[central] = " << map_id_to_weight[central] << endl;
-  }
-  double this_replica_up = 1.+pdferr/map_id_to_weight[central];
-  double this_replica_dn = 1.-pdferr/map_id_to_weight[central];
-  PDFWeights_Error.push_back(this_replica_up);
-  PDFWeights_Error.push_back(this_replica_dn);
 
   //==== AlphaS
 

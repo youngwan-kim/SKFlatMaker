@@ -5,7 +5,6 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarParsing.varType.string, "sampletype: DATA/MC/PrivateMC")
 options.register('ScaleIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Scale ID range: 1,9")
-options.register('PDFErrorType', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error type: gaussian,hessian")
 options.register('PDFErrorIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error ID range: 1001,1100")
 options.register('PDFAlphaSIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS ID range: 1101,1102")
 options.register('PDFAlphaSScaleValue', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS Scale values: 1.5,1.5")
@@ -60,7 +59,6 @@ print 'isMC = '+str(isMC)
 print 'isPrivateSample = '+str(isPrivateSample)
 print 'ScaleIDRange = ',
 print ScaleIDRange
-print 'PDFErrorType = '+options.PDFErrorType
 print 'PDFErrorIDRange = ',
 print PDFErrorIDRange
 print 'PDFAlphaSIDRange = ',
@@ -139,7 +137,6 @@ process.recoTree.MET = cms.InputTag("slimmedMETs")
 process.recoTree.GenParticle = cms.untracked.InputTag("prunedGenParticles") # -- miniAOD -- #
 
 process.recoTree.ScaleIDRange = cms.untracked.vint32(ScaleIDRange)
-process.recoTree.PDFErrorType = cms.untracked.string(options.PDFErrorType)
 process.recoTree.PDFErrorIDRange = cms.untracked.vint32(PDFErrorIDRange)
 process.recoTree.PDFAlphaSIDRange = cms.untracked.vint32(PDFAlphaSIDRange)
 process.recoTree.PDFAlphaSScaleValue = cms.untracked.vdouble(PDFAlphaSScaleValue)
