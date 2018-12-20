@@ -489,17 +489,11 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<std::string> electron_IDtoSave;
   vector<double> electron_MVAIso;
   vector<double> electron_MVANoIso;
-  vector<double> electron_et;
   vector<double> electron_Energy;
   vector<double> electron_Energy_Scale_Up;
   vector<double> electron_Energy_Scale_Down;
   vector<double> electron_Energy_Smear_Up;
   vector<double> electron_Energy_Smear_Down;
-  vector<double> electron_pt;
-  vector<double> electron_pt_Scale_Up;
-  vector<double> electron_pt_Scale_Down;
-  vector<double> electron_pt_Smear_Up;
-  vector<double> electron_pt_Smear_Down;
   vector<double> electron_eta;
   vector<double> electron_phi;
   vector<int> electron_charge;
@@ -690,7 +684,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   double genWeight_alphaQED;
   
   //==== Photon information
-  vector<double> photon_pt;
+  vector<double> photon_Energy;
+  vector<double> photon_EnergyUnCorr;
   vector<double> photon_eta;
   vector<double> photon_phi;
   vector<double> photon_scEta;
@@ -709,7 +704,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<bool> photon_passLooseID;
   vector<bool> photon_passMediumID;
   vector<bool> photon_passTightID;
-  vector<double> photon_ptUnCorr;
 
   // Effective area constants for all isolation types
   // EffectiveAreas effAreaChHadrons_;
