@@ -490,7 +490,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<std::string> electron_IDtoSave;
   vector<double> electron_MVAIso;
   vector<double> electron_MVANoIso;
-  vector<double> electron_et;
   vector<double> electron_Energy;
   vector<double> electron_Energy_Scale_Up;
   vector<double> electron_Energy_Scale_Down;
@@ -664,6 +663,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> gen_eta;
   vector<double> gen_pt;
   vector<double> gen_mass;
+  vector<double> gen_charge;
   vector<int> gen_mother_index;
   vector<int> gen_status;
   vector<int> gen_PID;

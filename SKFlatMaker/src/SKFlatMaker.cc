@@ -242,6 +242,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   gen_eta.clear();
   gen_pt.clear();
   gen_mass.clear();
+  gen_charge.clear();
   gen_mother_index.clear();
   gen_status.clear();
   gen_PID.clear();
@@ -278,7 +279,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   //==== Electron
   electron_MVAIso.clear();
   electron_MVANoIso.clear();
-  electron_et.clear();
   electron_Energy.clear();
   electron_Energy_Scale_Up.clear();
   electron_Energy_Scale_Down.clear();
@@ -848,7 +848,6 @@ void SKFlatMaker::beginJob()
   if( theStoreElectronFlag ){
     DYTree->Branch("electron_MVAIso", "vector<double>", &electron_MVAIso);
     DYTree->Branch("electron_MVANoIso", "vector<double>", &electron_MVANoIso);
-    DYTree->Branch("electron_et", "vector<double>", &electron_et);
     DYTree->Branch("electron_Energy", "vector<double>", &electron_Energy);
     DYTree->Branch("electron_Energy_Scale_Up", "vector<double>", &electron_Energy_Scale_Up);
     DYTree->Branch("electron_Energy_Scale_Down", "vector<double>", &electron_Energy_Scale_Down);
@@ -1021,6 +1020,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("gen_eta", "vector<double>", &gen_eta);
     DYTree->Branch("gen_pt", "vector<double>", &gen_pt);
     DYTree->Branch("gen_mass", "vector<double>", &gen_mass);
+    DYTree->Branch("gen_charge", "vector<double>", &gen_charge);
     DYTree->Branch("gen_mother_index", "vector<int>", &gen_mother_index);
     DYTree->Branch("gen_status", "vector<int>", &gen_status);
     DYTree->Branch("gen_PID", "vector<int>", &gen_PID);
@@ -2370,6 +2370,7 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     gen_PID.push_back( it->pdgId() );
     gen_pt.push_back( it->pt() );
     gen_mass.push_back( it->mass() );
+    gen_charge.push_back( it->charge() );
     gen_eta.push_back( it->eta() );
     gen_phi.push_back( it->phi() );
     gen_status.push_back( it->status() );

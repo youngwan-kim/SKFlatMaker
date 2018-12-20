@@ -1,6 +1,5 @@
 double	electron_MVAIso	1
 double	electron_MVANoIso	1
-double	electron_et	1
 double	electron_Energy	1
 double	electron_Energy_Scale_Up	1
 double	electron_Energy_Scale_Down	1

@@ -2,6 +2,7 @@ double	gen_phi	1
 double	gen_eta	1
 double	gen_pt	1
 double	gen_mass	1
+double	gen_charge	1
 int	gen_mother_index	1
 int	gen_status	1
 int	gen_PID	1
