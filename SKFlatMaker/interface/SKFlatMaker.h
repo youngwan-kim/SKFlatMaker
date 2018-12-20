@@ -33,7 +33,7 @@
 #include "DataFormats/MuonReco/interface/MuonTimeExtraMap.h"
 #include "DataFormats/MuonReco/interface/MuonCocktails.h"
 #include "DataFormats/MuonReco/interface/MuonCosmicCompatibility.h" // -- Variables shows how muon is cosmic-like
-#include "SKFlatMaker/SKFlatMaker/src/RoccoR.h"
+#include "SKFlatMaker/SKFlatMaker/interface/RoccoR.h"
 
 /////////////////////////
 // -- For Electrons -- //
@@ -64,6 +64,7 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
 #include "JetMETCorrections/Modules/interface/JetResolution.h"
+#include "SKFlatMaker/SKFlatMaker/interface/JetTools.h"
 
 ////////////////////////////
 // -- For GenParticles -- //
@@ -200,11 +201,6 @@ class SKFlatMaker : public edm::EDAnalyzer
                                  float ptthresh, float deadcone_ch, float deadcone_pu,
                                  float deadcone_ph, float deadcone_nh, float dZ_cut);
 
-  bool reorder(double &a, double &b)
-  {
-    return a > b;
-  }
-  
   int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
   std::string processName;
   std::string theElectronID;
@@ -483,6 +479,11 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> fatjet_smearedRes;
   vector<double> fatjet_smearedResUp;
   vector<double> fatjet_smearedResDown;
+  vector<double> fatjet_LSF;
+  vector<double> fatjet_LSFlep_PID;
+  vector<double> fatjet_LSFlep_Pt;
+  vector<double> fatjet_LSFlep_Eta;
+  vector<double> fatjet_LSFlep_Phi;
 
   //==== Electron
 
@@ -657,6 +658,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> gen_eta;
   vector<double> gen_pt;
   vector<double> gen_mass;
+  vector<double> gen_charge;
   vector<int> gen_mother_index;
   vector<int> gen_status;
   vector<int> gen_PID;
