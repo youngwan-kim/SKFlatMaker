@@ -103,7 +103,6 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
 
   #### PDF ID's to be save
   ScaleIDRange = cms.untracked.vint32(-999,-999),
-  PDFErrorType = cms.untracked.string(""),
   PDFErrorIDRange = cms.untracked.vint32(-999,-999),
   PDFAlphaSIDRange = cms.untracked.vint32(-999,-999),
   PDFAlphaSScaleValue = cms.untracked.vdouble(-999.,-999.),

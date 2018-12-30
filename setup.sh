@@ -1,3 +1,3 @@
 #!/bin/bash
-export SKFlatTag=v949cand2_2_MCPDFFIX
+export SKFlatTag=Run2Legacy_v1
 export SKFlatWD=$CMSSW_BASE/src/SKFlatMaker/

@@ -72,7 +72,7 @@ for line in lines:
       PDFAlphaSIDRange = words[3]
       PDFAlphaSScaleValue = words[4]
 
-      ArgsListString += ",'PDFErrorType="+PDFErrorType+"'"
+      #ArgsListString += ",'PDFErrorType="+PDFErrorType+"'"
       ArgsListString += ",'ScaleIDRange="+ScaleIDRange+"'"
       ArgsListString += ",'PDFErrorIDRange="+PDFErrorIDRange+"'"
       ArgsListString += ",'PDFAlphaSIDRange="+PDFAlphaSIDRange+"'"
@@ -86,7 +86,7 @@ for line in lines:
     else:
       ### to avoid exit()
       print '#### No MCPDFInfo : '+sample
-      ArgsListString += ",'PDFErrorType="+"hessian"+"'"
+      #ArgsListString += ",'PDFErrorType="+"hessian"+"'"
       continue
 
   ArgsListString += "]"

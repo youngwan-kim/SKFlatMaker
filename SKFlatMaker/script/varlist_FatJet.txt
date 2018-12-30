@@ -40,3 +40,8 @@ double	fatjet_shiftedEnDown	1
 double	fatjet_smearedRes	1
 double	fatjet_smearedResUp	1
 double	fatjet_smearedResDown	1
+double	fatjet_LSF	1
+double	fatjet_LSFlep_PID	1
+double	fatjet_LSFlep_Pt	1
+double	fatjet_LSFlep_Eta	1
+double	fatjet_LSFlep_Phi	1

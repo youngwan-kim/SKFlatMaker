@@ -5,7 +5,6 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarParsing.varType.string, "sampletype: DATA/MC/PrivateMC")
 options.register('ScaleIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Scale ID range: 1,9")
-options.register('PDFErrorType', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error type: gaussian,hessian")
 options.register('PDFErrorIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error ID range: 1001,1100")
 options.register('PDFAlphaSIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS ID range: 1101,1102")
 options.register('PDFAlphaSScaleValue', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS Scale values: 1.5,1.5")
@@ -60,7 +59,6 @@ print 'isMC = '+str(isMC)
 print 'isPrivateSample = '+str(isPrivateSample)
 print 'ScaleIDRange = ',
 print ScaleIDRange
-print 'PDFErrorType = '+options.PDFErrorType
 print 'PDFErrorIDRange = ',
 print PDFErrorIDRange
 print 'PDFAlphaSIDRange = ',
@@ -73,8 +71,9 @@ print 'year = '+str(options.year)
 #### Global Tag
 #### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#2017_and_2016_re_miniAOD_94X_ver
 
-GT_MC = '94X_mc2017_realistic_v14'
-GT_DATA = '94X_dataRun2_v6'
+GT_MC = '94X_mc2017_realistic_v14_fixJECJER'
+GT_DATA = '94X_dataRun2_v6_fixJECJER'
+
 if Is2016:
   GT_DATA = '94X_dataRun2_v10'
   GT_MC = '94X_mcRun2_asymptotic_v3'
@@ -99,7 +98,7 @@ process.source = cms.Source("PoolSource",
   #skipEvents=cms.untracked.uint32(5),
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 # -- Geometry and Detector Conditions (needed for a few patTuple production steps) -- #
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
@@ -126,7 +125,7 @@ process.TFileService = cms.Service("TFileService",
 from SKFlatMaker.SKFlatMaker.SKFlatMaker_cfi import *
 
 process.recoTree = SKFlatMaker.clone()
-process.recoTree.DebugLevel = cms.untracked.int32(1)
+process.recoTree.DebugLevel = cms.untracked.int32(0)
 process.recoTree.StoreHLTObjectFlag = False ##FIXME
 
 # -- Objects without Corrections -- # 
@@ -139,7 +138,6 @@ process.recoTree.MET = cms.InputTag("slimmedMETs")
 process.recoTree.GenParticle = cms.untracked.InputTag("prunedGenParticles") # -- miniAOD -- #
 
 process.recoTree.ScaleIDRange = cms.untracked.vint32(ScaleIDRange)
-process.recoTree.PDFErrorType = cms.untracked.string(options.PDFErrorType)
 process.recoTree.PDFErrorIDRange = cms.untracked.vint32(PDFErrorIDRange)
 process.recoTree.PDFAlphaSIDRange = cms.untracked.vint32(PDFAlphaSIDRange)
 process.recoTree.PDFAlphaSScaleValue = cms.untracked.vdouble(PDFAlphaSScaleValue)
@@ -219,8 +217,48 @@ if Is2017:
   )
   process.recoTree.MET = cms.InputTag("slimmedMETsModifiedMET")
 
+  #################
+  ### Reapply JEC
+  #################
+
+  from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+
+  #### AK4
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJets'),
+     labelName = 'UpdatedJECslimmedJets',
+     jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.Jet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJets")
+
+  #### AK8
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJetsAK8'),
+     labelName = 'UpdatedJECslimmedJetsAK8',
+     jetCorrections = ('AK8PFPuppi', cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.FatJet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJetsAK8")
+
+  #### JEC Sequence
+
+  process.jecSequence = cms.Sequence(
+    process.patJetCorrFactorsUpdatedJECslimmedJets *
+    process.updatedPatJetsUpdatedJECslimmedJets *
+    process.patJetCorrFactorsUpdatedJECslimmedJetsAK8 *
+    process.updatedPatJetsUpdatedJECslimmedJetsAK8
+  )
+
+  ###########
+  #### Path
+  ###########
+
   process.p = cms.Path(
     process.egammaPostRecoSeq *
+    process.jecSequence *
     process.fullPatMetSequenceModifiedMET *
     process.recoTree
   )

@@ -138,6 +138,6 @@ for obj in objects:
     if not HasMissingVariable:
       print "====> "+BashColor_Green+"All okay"+BashColor_NC
     else:
-      print "====> "+BashColor_Green+"Missing "+BashColor_NC
+      print "====> "+BashColor_Red+"Missing "+BashColor_NC
 
     print ""

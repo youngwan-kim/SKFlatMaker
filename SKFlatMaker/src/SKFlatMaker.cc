@@ -130,13 +130,11 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   //==== PDF
 
   ScaleIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("ScaleIDRange");
-  PDFErrorType_ = iConfig.getUntrackedParameter< std::string >("PDFErrorType");
   PDFErrorIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("PDFErrorIDRange");
   PDFAlphaSIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("PDFAlphaSIDRange");
   PDFAlphaSScaleValue_ = iConfig.getUntrackedParameter< std::vector<double> >("PDFAlphaSScaleValue");
 
   cout << "[SKFlatMaker::SKFlatMaker] ScaleIDRange_ = " << ScaleIDRange_.at(0)<<" - "<<ScaleIDRange_.at(1) << endl;
-  cout << "[SKFlatMaker::SKFlatMaker] PDFErrorType_ = " << PDFErrorType_ << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = " << PDFErrorIDRange_.at(0)<<" - "<<PDFErrorIDRange_.at(1) << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = " << PDFAlphaSIDRange_.at(0)<<" - "<<PDFAlphaSIDRange_.at(1) << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSScaleValue_ = " << PDFAlphaSScaleValue_.at(0)<<" - "<<PDFAlphaSScaleValue_.at(1) << endl;
@@ -242,6 +240,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   gen_eta.clear();
   gen_pt.clear();
   gen_mass.clear();
+  gen_charge.clear();
   gen_mother_index.clear();
   gen_status.clear();
   gen_PID.clear();
@@ -278,7 +277,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   //==== Electron
   electron_MVAIso.clear();
   electron_MVANoIso.clear();
-  electron_et.clear();
   electron_Energy.clear();
   electron_Energy_Scale_Up.clear();
   electron_Energy_Scale_Down.clear();
@@ -518,6 +516,11 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_smearedRes.clear();
   fatjet_smearedResUp.clear();
   fatjet_smearedResDown.clear();
+  fatjet_LSF.clear();
+  fatjet_LSFlep_PID.clear();
+  fatjet_LSFlep_Pt.clear();
+  fatjet_LSFlep_Eta.clear();
+  fatjet_LSFlep_Phi.clear();
 
   //==== Photon
   photon_pt.clear();
@@ -832,13 +835,17 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_smearedRes", "vector<double>", &fatjet_smearedRes);
     DYTree->Branch("fatjet_smearedResUp", "vector<double>", &fatjet_smearedResUp);
     DYTree->Branch("fatjet_smearedResDown", "vector<double>", &fatjet_smearedResDown);
+    DYTree->Branch("fatjet_LSF", "vector<double>", &fatjet_LSF);
+    DYTree->Branch("fatjet_LSFlep_PID", "vector<double>", &fatjet_LSFlep_PID);
+    DYTree->Branch("fatjet_LSFlep_Pt", "vector<double>", &fatjet_LSFlep_Pt);
+    DYTree->Branch("fatjet_LSFlep_Eta", "vector<double>", &fatjet_LSFlep_Eta);
+    DYTree->Branch("fatjet_LSFlep_Phi", "vector<double>", &fatjet_LSFlep_Phi);
   }
 
   // Electron
   if( theStoreElectronFlag ){
     DYTree->Branch("electron_MVAIso", "vector<double>", &electron_MVAIso);
     DYTree->Branch("electron_MVANoIso", "vector<double>", &electron_MVANoIso);
-    DYTree->Branch("electron_et", "vector<double>", &electron_et);
     DYTree->Branch("electron_Energy", "vector<double>", &electron_Energy);
     DYTree->Branch("electron_Energy_Scale_Up", "vector<double>", &electron_Energy_Scale_Up);
     DYTree->Branch("electron_Energy_Scale_Down", "vector<double>", &electron_Energy_Scale_Down);
@@ -1011,6 +1018,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("gen_eta", "vector<double>", &gen_eta);
     DYTree->Branch("gen_pt", "vector<double>", &gen_pt);
     DYTree->Branch("gen_mass", "vector<double>", &gen_mass);
+    DYTree->Branch("gen_charge", "vector<double>", &gen_charge);
     DYTree->Branch("gen_mother_index", "vector<int>", &gen_mother_index);
     DYTree->Branch("gen_status", "vector<int>", &gen_status);
     DYTree->Branch("gen_PID", "vector<int>", &gen_PID);
@@ -2250,6 +2258,12 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
     if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight["<<this_id<<"] = " << map_id_to_weight[this_id] << endl;
   }
 
+  int central = ScaleIDRange_.at(0);
+  if(theDebugLevel){
+    cout << "[SKFlatMaker::fillLHEInfo] central = " << central << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight[central] = " << map_id_to_weight[central] << endl;
+  }
+
   //=============================
   //==== 1) QCD Scale variation
   //=============================
@@ -2263,47 +2277,13 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   //==== 2) PDF Error and AlphaS
   //==============================
 
-  int central = ScaleIDRange_.at(0);
   int N_ErrorSet = PDFErrorIDRange_.at(1)-PDFErrorIDRange_.at(0)+1;
-  double pdferr = 0.;
 
-  if(PDFErrorType_=="hessian"){
-
-    for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
-      double this_diff =  map_id_to_weight[i]-map_id_to_weight[central];
-      if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << ", diff = " << this_diff << endl;
-      pdferr += this_diff*this_diff;
-    }
-    pdferr = sqrt(pdferr);
-    if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; --> pdferr = " << pdferr << endl;
-
+  for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
+    double this_reweight = map_id_to_weight[i] / map_id_to_weight[central];
+    PDFWeights_Error.push_back( this_reweight );
+    if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << ", reweight = " << this_reweight << endl;
   }
-  else if(PDFErrorType_=="gaussian"){
-
-    double pdf_sum(0.), pdf_squraesum(0.);
-    for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
-      if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << endl;
-      pdf_sum       += map_id_to_weight[i];
-      pdf_squraesum += map_id_to_weight[i]*map_id_to_weight[i];
-    }
-
-    pdferr = (pdf_squraesum - pdf_sum*pdf_sum/N_ErrorSet)/(N_ErrorSet-1);
-    pdferr = sqrt(pdferr);
-
-  }
-  else{
-    cout << "[SKFlatMaker::fillLHEInfo] Wrong PDFErrorType_ = " << PDFErrorType_ << endl;
-    std::exit(EXIT_FAILURE);
-  }
-
-  if(theDebugLevel){
-    cout << "[SKFlatMaker::fillLHEInfo] central = " << central << endl;
-    cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight[central] = " << map_id_to_weight[central] << endl;
-  }
-  double this_replica_up = 1.+pdferr/map_id_to_weight[central];
-  double this_replica_dn = 1.-pdferr/map_id_to_weight[central];
-  PDFWeights_Error.push_back(this_replica_up);
-  PDFWeights_Error.push_back(this_replica_dn);
 
   //==== AlphaS
 
@@ -2360,6 +2340,7 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
     gen_PID.push_back( it->pdgId() );
     gen_pt.push_back( it->pt() );
     gen_mass.push_back( it->mass() );
+    gen_charge.push_back( it->charge() );
     gen_eta.push_back( it->eta() );
     gen_phi.push_back( it->phi() );
     gen_status.push_back( it->status() );
@@ -2667,6 +2648,18 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //==== JEC
     //==========
 
+/*
+    //==== Printing JEC levels
+    cout << "[AK4]" << endl;
+    cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
+    cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
+    cout << "availableJECLevels() : " << endl;
+    const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
+    for(unsigned int z=0; z< aaa.size(); z++){
+      cout << "  " << aaa.at(z) << endl;
+    }
+*/
+
     //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
     jet_jecUnc->setJetEta( jets_iter->eta() );
     jet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
@@ -2703,6 +2696,18 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //cout << "uncorjet.pt()/jets_iter->pt() = " << uncorjet.pt()/jets_iter->pt() << endl;
     //cout << ( jets_iter->jecFactor("Uncorrected") ) / ( uncorjet.pt()/jets_iter->pt() ) << endl;
     jet_JECFull.push_back( jets_iter->pt()/uncorjet.pt() );
+
+/*
+    //==== debug for JEC updator
+    cout << "[AK4]" << endl;
+    cout << "jets_iter->pt() = " << jets_iter->pt() << endl;
+    cout << "uncorjet.pt() = " << uncorjet.pt() << endl;
+    cout << "ratio = " << jets_iter->pt()/uncorjet.pt() << endl;
+    cout << "1/ratio = " << uncorjet.pt()/jets_iter->pt() << endl;
+    cout << "unc = " << unc << endl;
+    cout << "jet_JECL1FastJet = " << jets_iter->jecFactor("L1FastJet")/jets_iter->jecFactor("Uncorrected") << endl;
+    cout << "jet_JECFull = " << jets_iter->pt()/uncorjet.pt() << endl;
+*/
 
     if(!IsData){
 
@@ -2942,11 +2947,29 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_softdropmass.push_back( jets_iter->userFloat("ak8PFJetsPuppiSoftDropMass") );
 
     //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+
+/*
+    //==== Printing JEC levels
+    cout << "[AK8]" << endl;
+    cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
+    cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
+    cout << "availableJECLevels() : " << endl;
+    const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
+    for(unsigned int z=0; z< aaa.size(); z++){
+      cout << "  " << aaa.at(z) << endl;
+    }
+*/
+
     fatjet_jecUnc->setJetEta( jets_iter->eta() );
     fatjet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
     double unc = fatjet_jecUnc->getUncertainty(true);
     fatjet_shiftedEnUp.push_back( 1.+unc );
     fatjet_shiftedEnDown.push_back( 1.-unc ); // I found fatjet_jecUnc->getUncertainty(true) = fatjet_jecUnc->getUncertainty(false)
+
+/*
+    cout << "[AK8]" << endl;
+    cout << "jets_iter->pt() = " << jets_iter->pt() << endl;
+*/
 
     if(!IsData){
 
@@ -3029,6 +3052,36 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 
     }
 
+    //==== LSF variables
+
+    std::vector<reco::CandidatePtr> pfConstituents = jets_iter->getJetConstituents();
+    std::vector<fastjet::PseudoJet> lClusterParticles;
+    for(unsigned int ic=0; ic<pfConstituents.size(); ic++) {
+      reco::CandidatePtr pfcand = pfConstituents[ic];
+      fastjet::PseudoJet   pPart(pfcand->px(),pfcand->py(),pfcand->pz(),pfcand->energy());
+      lClusterParticles.emplace_back(pPart);
+    }
+    std::sort(lClusterParticles.begin(),lClusterParticles.end(),JetTools::orderPseudoJet);
+
+    float lepCPt(-100), lepCEta(-100), lepCPhi(-100);
+    float lepCId(0);
+    float this_lsf(0);
+
+    if(JetTools::leptons((*jets_iter),3)> 0 && JetTools::leptons(*jets_iter,7)<0.8){
+      lepCPt = JetTools::leptons(*jets_iter,3);
+      lepCEta = JetTools::leptons(*jets_iter,5);
+      lepCPhi = JetTools::leptons(*jets_iter,6);
+      lepCId = JetTools::leptons(*jets_iter,4);
+      std::vector<fastjet::PseudoJet> vSubC_3;
+      this_lsf = JetTools::lsf(lClusterParticles, vSubC_3, lepCPt, lepCEta, lepCPhi, lepCId, 2.0, 3);
+
+    }
+
+    fatjet_LSF.push_back(this_lsf);
+    fatjet_LSFlep_PID.push_back( lepCId );
+    fatjet_LSFlep_Pt.push_back( lepCPt );
+    fatjet_LSFlep_Eta.push_back( lepCEta );
+    fatjet_LSFlep_Phi.push_back( lepCPhi );
 
   }
 
