@@ -2648,6 +2648,18 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //==== JEC
     //==========
 
+/*
+    //==== Printing JEC levels
+    cout << "[AK4]" << endl;
+    cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
+    cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
+    cout << "availableJECLevels() : " << endl;
+    const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
+    for(unsigned int z=0; z< aaa.size(); z++){
+      cout << "  " << aaa.at(z) << endl;
+    }
+*/
+
     //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
     jet_jecUnc->setJetEta( jets_iter->eta() );
     jet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
@@ -2684,6 +2696,18 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //cout << "uncorjet.pt()/jets_iter->pt() = " << uncorjet.pt()/jets_iter->pt() << endl;
     //cout << ( jets_iter->jecFactor("Uncorrected") ) / ( uncorjet.pt()/jets_iter->pt() ) << endl;
     jet_JECFull.push_back( jets_iter->pt()/uncorjet.pt() );
+
+/*
+    //==== debug for JEC updator
+    cout << "[AK4]" << endl;
+    cout << "jets_iter->pt() = " << jets_iter->pt() << endl;
+    cout << "uncorjet.pt() = " << uncorjet.pt() << endl;
+    cout << "ratio = " << jets_iter->pt()/uncorjet.pt() << endl;
+    cout << "1/ratio = " << uncorjet.pt()/jets_iter->pt() << endl;
+    cout << "unc = " << unc << endl;
+    cout << "jet_JECL1FastJet = " << jets_iter->jecFactor("L1FastJet")/jets_iter->jecFactor("Uncorrected") << endl;
+    cout << "jet_JECFull = " << jets_iter->pt()/uncorjet.pt() << endl;
+*/
 
     if(!IsData){
 
@@ -2923,11 +2947,29 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_softdropmass.push_back( jets_iter->userFloat("ak8PFJetsPuppiSoftDropMass") );
 
     //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+
+/*
+    //==== Printing JEC levels
+    cout << "[AK8]" << endl;
+    cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
+    cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
+    cout << "availableJECLevels() : " << endl;
+    const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
+    for(unsigned int z=0; z< aaa.size(); z++){
+      cout << "  " << aaa.at(z) << endl;
+    }
+*/
+
     fatjet_jecUnc->setJetEta( jets_iter->eta() );
     fatjet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
     double unc = fatjet_jecUnc->getUncertainty(true);
     fatjet_shiftedEnUp.push_back( 1.+unc );
     fatjet_shiftedEnDown.push_back( 1.-unc ); // I found fatjet_jecUnc->getUncertainty(true) = fatjet_jecUnc->getUncertainty(false)
+
+/*
+    cout << "[AK8]" << endl;
+    cout << "jets_iter->pt() = " << jets_iter->pt() << endl;
+*/
 
     if(!IsData){
 
