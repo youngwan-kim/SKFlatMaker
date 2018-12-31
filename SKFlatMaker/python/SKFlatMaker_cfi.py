@@ -3,7 +3,6 @@ import FWCore.ParameterSet.Config as cms
 SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
 
   DataYear = cms.untracked.int32(-1),
-  DoPileUp = cms.untracked.bool(True),
   processName = cms.untracked.string("HLT"),
   DebugLevel = cms.untracked.int32(0),
 

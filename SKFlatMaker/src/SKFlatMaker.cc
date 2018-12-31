@@ -150,15 +150,6 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = " << PDFAlphaSIDRange_.at(0)<<" - "<<PDFAlphaSIDRange_.at(1) << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSScaleValue_ = " << PDFAlphaSScaleValue_.at(0)<<" - "<<PDFAlphaSScaleValue_.at(1) << endl;
 
-  // -- Filters -- //
-  DoPileUp = iConfig.getUntrackedParameter<bool>("DoPileUp");
-  // if( DoPileUp )
-  // {
-  //   PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
-  //   PileUpRDMuonPhys_ = iConfig.getParameter< std::vector<double> >("PileUpRDMuonPhys");
-  //   PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC");
-  // }
-  
   if(theDebugLevel) cout << "[SKFlatMaker::SKFlatMaker] Constructor finished" << endl;
 
 }
@@ -278,13 +269,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   genWeight_alphaQCD=-999;
   genWeight_alphaQED=-999;
 
-  // -- PU reweight -- //
-  PUweight = -1;
-  pileUpReweightIn = pileUpReweight = 1.0;
-  pileUpReweightPlus = pileUpReweightMinus = 0.0;
-  pileUpReweightInMuonPhys = pileUpReweightMuonPhys = 1.0;
-  pileUpReweightPlusMuonPhys = pileUpReweightMinusMuonPhys = 0.0;
-  
   //==== Electron
   electron_MVAIso.clear();
   electron_MVANoIso.clear();
@@ -563,21 +547,13 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   evtNum = iEvent.id().event();
   lumiBlock = iEvent.id().luminosityBlock();
   
-  // edm::Handle<double> weight_;
-  // iEvent.getByLabel("PUweight", weight_);
-  
-  // if(weight_.isValid())
-  //   PUweight = *weight_;
-  // else
-  //   PUweight = 1.0;
-  
   //get the geometry
   edm::ESHandle<GlobalTrackingGeometry> glbTrackingGeometry;
   iSetup.get<GlobalTrackingGeometryRecord>().get(glbTrackingGeometry);
   
   // -- PileUp Reweighting -- //
   IsData = iEvent.isRealData();
-  if( !IsData && DoPileUp ){
+  if( !IsData ){
     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
     iEvent.getByToken(PileUpInfoToken, PupInfo);
     std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -679,28 +655,6 @@ void SKFlatMaker::beginJob()
 {
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginJob] called" << endl;
-  // if( DoPileUp )
-  // {
-  // // Pileup Reweight: 2012, Summer12_S10
-  // std::vector< float > _PUreweightRun2012 ;
-  // std::vector< float > _PUreweightRun2012MuonPhys ;
-  // std::vector< float > _MC2012;
-
-  // for( int i = 0; i < 100; ++i)
-  // {
-  // _PUreweightRun2012.push_back((float)PileUpRD_[i]);
-  // _PUreweightRun2012MuonPhys.push_back((float)PileUpRDMuonPhys_[i]);
-  // _MC2012.push_back((float)PileUpMC_[i]);
-  // }
-
-  // LumiWeights_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012);
-  // PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
-  // PShiftUp_ = reweight::PoissonMeanShifter(0.5);
-
-  // LumiWeightsMuonPhys_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012MuonPhys);
-  // PShiftDownMuonPhys_ = reweight::PoissonMeanShifter(-0.5);
-  // PShiftUpMuonPhys_ = reweight::PoissonMeanShifter(0.5);
-  // }
 
   edm::Service<TFileService> fs;
   DYTree = fs->make<TTree>("SKFlat","SKFlat");
@@ -711,11 +665,6 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("run",&runNum,"runNum/I");
   DYTree->Branch("event",&evtNum,"evtNum/l");
   DYTree->Branch("lumi",&lumiBlock,"lumiBlock/I");
-  DYTree->Branch("PUweight",&PUweight,"PUweight/D");
-  // DYTree->Branch("sumEt",&sumEt,"sumEt/D");
-  // DYTree->Branch("photonEt",&photonEt,"photonEt/D");
-  // DYTree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/D");
-  // DYTree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/D");
   DYTree->Branch("Rho",&Rho,"Rho/D");
   DYTree->Branch("nPV",&nPV,"nPV/I");
   
@@ -1084,14 +1033,6 @@ void SKFlatMaker::beginJob()
   
   // Pile-up Reweight
   DYTree->Branch("nPileUp",&nPileUp,"nPileUp/I");
-  DYTree->Branch("pileUpReweightIn",&pileUpReweightIn,"pileUpReweightIn/D");
-  DYTree->Branch("pileUpReweight",&pileUpReweight,"pileUpReweight/D");
-  DYTree->Branch("pileUpReweightPlus",&pileUpReweightPlus,"pileUpReweightPlus/D");
-  DYTree->Branch("pileUpReweightMinus",&pileUpReweightMinus,"pileUpReweightMinus/D");
-  DYTree->Branch("pileUpReweightInMuonPhys",&pileUpReweightInMuonPhys,"pileUpReweightInMuonPhys/D");
-  DYTree->Branch("pileUpReweightMuonPhys",&pileUpReweightMuonPhys,"pileUpReweightMuonPhys/D");
-  DYTree->Branch("pileUpReweightPlusMuonPhys",&pileUpReweightPlusMuonPhys,"pileUpReweightPlusMuonPhys/D");
-  DYTree->Branch("pileUpReweightMinusMuonPhys",&pileUpReweightMinusMuonPhys,"pileUpReweightMinusMuonPhys/D");
   
   if( theStoreMETFlag ){
     DYTree->Branch("pfMET_pt", &pfMET_pt, "pfMET_pt/D");

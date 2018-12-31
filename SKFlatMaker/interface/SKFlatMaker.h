@@ -246,24 +246,14 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< reco::VertexCollection >             PrimaryVertexToken;
   edm::EDGetTokenT< edm::View<reco::Track> >             TrackToken;
   edm::EDGetTokenT< std::vector< PileupSummaryInfo > >   PileUpInfoToken;
-  
-  
-  //edm::Handle<bool> ifilterbadChCand;
-  //edm::Handle<bool> ifilterbadPFMuon;
+
   edm::Handle<edm::TriggerResults> METFilterResults;
   
-  // // -- Photon information -- //
-  // edm::InputTag thePhotonLabel;
-  // edm::InputTag full5x5SigmaIEtaIEtaMapLabel; 
-  // edm::InputTag phoChargedIsolationLabel; 
-  // edm::InputTag phoNeutralHadronIsolationLabel; 
-  // edm::InputTag phoPhotonIsolationLabel;     
   edm::FileInPath electron_EA_NHandPh_file;
   edm::FileInPath photon_EA_CH_file;
   edm::FileInPath photon_EA_HN_file;
   edm::FileInPath photon_EA_Ph_file;
   
-    
   // -- Store flags -- // 
   bool theStorePriVtxFlag;                // Yes or No to store primary vertex
   bool theStoreJetFlag;                // Yes or No to store Jet
@@ -278,8 +268,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStorePhotonFlag;
   bool theKeepAllGen;
   bool IsData;
-  bool DoPileUp;
-  
+
   // double theCrossSection;
   // double theFilterEfficiency;
   // double theTotalNevents;
@@ -304,30 +293,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool Flag_BadChargedCandidateFilter;
   bool Flag_eeBadScFilter;
   bool Flag_ecalBadCalibReducedMINIAODFilter;
-
-  // Pile-up Reweight
-  // edm::LumiReWeighting LumiWeights_;
-  // reweight::PoissonMeanShifter PShiftUp_;
-  // reweight::PoissonMeanShifter PShiftDown_;
-  // edm::LumiReWeighting LumiWeightsMuonPhys_;
-  // reweight::PoissonMeanShifter PShiftUpMuonPhys_;
-  // reweight::PoissonMeanShifter PShiftDownMuonPhys_;
-  
-  // std::vector<double> PileUpRD_;
-  // std::vector<double> PileUpRDMuonPhys_;
-  // std::vector<double> PileUpMC_;
   
   unsigned int nPileUp;
-  double pileUpReweightIn;
-  double pileUpReweight;
-  double pileUpReweightPlus;
-  double pileUpReweightMinus;
   
-  double pileUpReweightInMuonPhys;
-  double pileUpReweightMuonPhys;
-  double pileUpReweightPlusMuonPhys;
-  double pileUpReweightMinusMuonPhys;
-
   std::vector< int > ScaleIDRange_, PDFErrorIDRange_, PDFAlphaSIDRange_;
   std::string PDFErrorType_;
   std::vector< double > PDFAlphaSScaleValue_;
@@ -344,7 +312,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   int runNum;
   unsigned long long evtNum;
   int lumiBlock;
-  double PUweight;
   double sumEt;
   double photonEt;
   double chargedHadronEt;
