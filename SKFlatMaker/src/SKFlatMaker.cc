@@ -40,7 +40,6 @@ genJetToken                         ( consumes< reco::GenJetCollection >        
 FatJetToken                         ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("FatJet")) ),
 genFatJetToken                      ( consumes< reco::GenJetCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("GenFatJet")) ),
 MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
-//MetToken                            ( consumes< pat::METCollection>                               (iConfig.getParameter<edm::InputTag>("MET")) ),
 
 LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
 LHERunInfoProductToken              ( consumes< LHERunInfoProduct,edm::InRun >              (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
@@ -67,6 +66,18 @@ PrimaryVertexToken                  ( consumes< reco::VertexCollection >        
 TrackToken                          ( consumes< edm::View<reco::Track> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
 PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
 {
+
+  DataYear                          = iConfig.getUntrackedParameter<int>("DataYear");
+  if(DataYear<0){
+    cout << "DataYear is not set : DataYear = " << DataYear << endl;
+    exit(EXIT_FAILURE);
+  }
+  else{
+    cout << "[SKFlatMaker::SKFlatMaker] DataYear = " << DataYear << endl;
+  }
+  if(DataYear>=2017){
+    ecalBadCalibFilterUpdate_token= consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"));
+  }
 
   theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
 
@@ -178,7 +189,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Flag_BadPFMuonFilter = false;
   Flag_BadChargedCandidateFilter = false;
   Flag_eeBadScFilter = false;
-  Flag_ecalBadCalibFilter = false;
+  Flag_ecalBadCalibReducedMINIAODFilter = false;
 
   nPV = -1;
   PVtrackSize = -1;
@@ -718,7 +729,7 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("Flag_BadPFMuonFilter",&Flag_BadPFMuonFilter,"Flag_BadPFMuonFilter/O");
   DYTree->Branch("Flag_BadChargedCandidateFilter",&Flag_BadChargedCandidateFilter,"Flag_BadChargedCandidateFilter/O");
   DYTree->Branch("Flag_eeBadScFilter",&Flag_eeBadScFilter,"Flag_eeBadScFilter/O");
-  DYTree->Branch("Flag_ecalBadCalibFilter",&Flag_ecalBadCalibFilter,"Flag_ecalBadCalibFilter/O");
+  DYTree->Branch("Flag_ecalBadCalibReducedMINIAODFilter",&Flag_ecalBadCalibReducedMINIAODFilter,"Flag_ecalBadCalibReducedMINIAODFilter/O");
 
   
   
@@ -1312,14 +1323,15 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     }
 
   } // -- end of if( !trigResult.failedToGet() ) -- //
-  
+
+/*
   if( IsData ){
     Handle<TriggerResults> trigResultPAT;
     iEvent.getByToken(TriggerTokenPAT, trigResultPAT);
       
     if( !trigResultPAT.failedToGet() ){
       const edm::TriggerNames trigName = iEvent.triggerNames(*trigResultPAT);
-    
+
       // cout << "trigger names in trigger result (PAT)" << endl;
       // for(int itrig=0; itrig<(int)trigName.size(); itrig++)
       //   cout << "trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
@@ -1333,11 +1345,11 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_BadPFMuonFilter")) ) Flag_BadPFMuonFilter = true;
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_BadChargedCandidateFilter")) ) Flag_BadChargedCandidateFilter = true;
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_eeBadScFilter")) ) Flag_eeBadScFilter = true;
-      if( trigResultPAT->accept(trigName.triggerIndex("Flag_ecalBadCalibFilter")) ) Flag_ecalBadCalibFilter = true;
+      //if( trigResultPAT->accept(trigName.triggerIndex("Flag_ecalBadCalibReducedMINIAODFilter")) ) Flag_ecalBadCalibReducedMINIAODFilter = true;
  
     }
   }
-  
+*/
   
   //==============
   //==== MiniAOD
@@ -1359,6 +1371,7 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   //}
     
   for(unsigned int i = 0, n = METFilterResults->size(); i < n; ++i){
+
     if(strcmp(metNames.triggerName(i).c_str(), "Flag_goodVertices") == 0) Flag_goodVertices = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalTightHalo2016Filter") == 0) Flag_globalTightHalo2016Filter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalSuperTightHalo2016Filter") == 0) Flag_globalSuperTightHalo2016Filter = METFilterResults -> accept(i);
@@ -1368,7 +1381,13 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0) Flag_BadPFMuonFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0) Flag_BadChargedCandidateFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0) Flag_eeBadScFilter = METFilterResults-> accept(i);
-    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0) Flag_ecalBadCalibFilter = METFilterResults -> accept(i);
+    //else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibReducedMINIAODFilter") == 0) Flag_ecalBadCalibReducedMINIAODFilter = METFilterResults -> accept(i);
+  }
+
+  if(DataYear>=2017){
+    edm::Handle< bool > passecalBadCalibFilterUpdate ;
+    iEvent.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
+    Flag_ecalBadCalibReducedMINIAODFilter =  (*passecalBadCalibFilterUpdate );
   }
 
 }
@@ -2807,7 +2826,6 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 {
 
-  // edm::Handle<edm::View<pat::Jet> > jetHandle;
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(FatJetToken,jetHandle);
 
@@ -2831,7 +2849,8 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     //==== FatJet with pt 30~170 GeV are only for SM jet analysis
     //==== We can apply pt cut here
 
-    if(jets_iter->pt()<=170.) continue;
+    //if(jets_iter->pt()<=170.) continue;
+    if(! (jets_iter->hasPFSpecific()) ) continue; // With the new JEC, new pt > 170 is not safe anymore
 
     //==== https://hypernews.cern.ch/HyperNews/CMS/get/jet-algorithms/443/2.html
     fatjet_pt.push_back( jets_iter->pt() );

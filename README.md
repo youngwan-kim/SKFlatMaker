@@ -14,7 +14,10 @@ cmsrel CMSSW_9_4_9_cand2
 cd CMSSW_9_4_9_cand2/src
 cmsenv
 
-# EGamma smearing
+######################
+#### EGamma smearing
+######################
+
 # https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
 git cms-init
 git cms-merge-topic cms-egamma:EgammaPostRecoTools_940 #just adds in an extra file to have a setup function to make things easier
@@ -24,10 +27,17 @@ git cms-merge-topic cms-egamma:EgammaPostRecoTools_940 #just adds in an extra fi
 # Both CutBased and MVA
 git cms-merge-topic guitargeek:EgammaID_9_4_X
 
-# MET EE Noise filter
+##########################
+#### MET EE Noise filter
+##########################
+
 # https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/1865.html
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
 git cms-merge-topic cms-met:METFixEE2017_949_v2
+
+#### Rerun ecalBadCalibfilter
+#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#How_to_run_ecal_BadCalibReducedM
+git cms-addpkg RecoMET/METFilters
 
 # Copy this code
 git clone git@github.com:CMSSNU/SKFlatMaker.git
