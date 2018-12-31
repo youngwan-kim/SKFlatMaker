@@ -201,6 +201,7 @@ class SKFlatMaker : public edm::EDAnalyzer
                                  float ptthresh, float deadcone_ch, float deadcone_pu,
                                  float deadcone_ph, float deadcone_nh, float dZ_cut);
 
+  int DataYear;
   int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
   std::string processName;
   std::string theElectronID;
@@ -208,6 +209,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   HLTConfigProvider hltConfig_;
   
   // -- Tokens (for 76X) -- //
+
+  edm::EDGetTokenT< bool >ecalBadCalibFilterUpdate_token ;
+
   edm::EDGetTokenT< std::vector<pat::Muon> >            MuonToken;
   edm::EDGetTokenT< edm::View<pat::Electron> >          ElectronToken;
   edm::EDGetTokenT< edm::View<pat::Photon> >            PhotonToken;
@@ -299,8 +303,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool Flag_BadPFMuonFilter;
   bool Flag_BadChargedCandidateFilter;
   bool Flag_eeBadScFilter;
-  bool Flag_ecalBadCalibFilter;
-  
+  bool Flag_ecalBadCalibReducedMINIAODFilter;
+
   // Pile-up Reweight
   // edm::LumiReWeighting LumiWeights_;
   // reweight::PoissonMeanShifter PShiftUp_;
