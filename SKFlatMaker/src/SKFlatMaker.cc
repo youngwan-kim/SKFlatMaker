@@ -285,11 +285,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_Energy_Scale_Down.clear();
   electron_Energy_Smear_Up.clear();
   electron_Energy_Smear_Down.clear();
-  electron_pt.clear();
-  electron_pt_Scale_Up.clear();
-  electron_pt_Scale_Down.clear();
-  electron_pt_Smear_Up.clear();
-  electron_pt_Smear_Down.clear();
   electron_eta.clear();
   electron_phi.clear();
   electron_charge.clear();
@@ -526,7 +521,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_LSFlep_Phi.clear();
 
   //==== Photon
-  photon_pt.clear();
+  photon_Energy.clear();
+  photon_EnergyUnCorr.clear();
   photon_eta.clear();
   photon_phi.clear();
   photon_scEta.clear();
@@ -545,7 +541,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   photon_passLooseID.clear();
   photon_passMediumID.clear();
   photon_passTightID.clear();
-  photon_ptUnCorr.clear();
 
   // cout << "[SKFlatMaker::analyze] Varialbe intilization done" << endl;
   
@@ -848,11 +843,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_Energy_Scale_Down", "vector<double>", &electron_Energy_Scale_Down);
     DYTree->Branch("electron_Energy_Smear_Up", "vector<double>", &electron_Energy_Smear_Up);
     DYTree->Branch("electron_Energy_Smear_Down", "vector<double>", &electron_Energy_Smear_Down);
-    DYTree->Branch("electron_pt", "vector<double>", &electron_pt);
-    DYTree->Branch("electron_pt_Scale_Up", "vector<double>", &electron_pt_Scale_Up);
-    DYTree->Branch("electron_pt_Scale_Down", "vector<double>", &electron_pt_Scale_Down);
-    DYTree->Branch("electron_pt_Smear_Up", "vector<double>", &electron_pt_Smear_Up);
-    DYTree->Branch("electron_pt_Smear_Down", "vector<double>", &electron_pt_Smear_Down);
     DYTree->Branch("electron_eta", "vector<double>", &electron_eta);
     DYTree->Branch("electron_phi", "vector<double>", &electron_phi);
     DYTree->Branch("electron_charge", "vector<int>", &electron_charge);
@@ -1044,7 +1034,8 @@ void SKFlatMaker::beginJob()
   }
   
   if( theStorePhotonFlag ){
-    DYTree->Branch("photon_pt", "vector<double>", &photon_pt);
+    DYTree->Branch("photon_Energy", "vector<double>", &photon_Energy);
+    DYTree->Branch("photon_EnergyUnCorr", "vector<double>", &photon_EnergyUnCorr);
     DYTree->Branch("photon_eta", "vector<double>", &photon_eta);
     DYTree->Branch("photon_phi", "vector<double>", &photon_phi);
     DYTree->Branch("photon_scEta", "vector<double>", &photon_scEta);
@@ -1063,7 +1054,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("photon_passLooseID", "vector<bool>", &photon_passLooseID);
     DYTree->Branch("photon_passMediumID", "vector<bool>", &photon_passMediumID);
     DYTree->Branch("photon_passTightID", "vector<bool>", &photon_passTightID);
-    DYTree->Branch("photon_ptUnCorr", "vector<double>", &photon_ptUnCorr);
   }
   
   
@@ -1926,14 +1916,31 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     
     electron_MVAIso.push_back( el -> userFloat("ElectronMVAEstimatorRun2Fall17IsoV1Values") );
     electron_MVANoIso.push_back( el -> userFloat("ElectronMVAEstimatorRun2Fall17NoIsoV1Values") );
-    double elec_theta = el -> theta();
-    double sin_theta = sin(elec_theta);
 
-    electron_pt.push_back( el->userFloat("ecalTrkEnergyPostCorr") * sin_theta );
-    electron_pt_Scale_Up.push_back( el->userFloat("energyScaleUp") * sin_theta );
-    electron_pt_Scale_Down.push_back( el->userFloat("energyScaleDown") * sin_theta );
-    electron_pt_Smear_Up.push_back( el->userFloat("energySigmaUp") * sin_theta );
-    electron_pt_Smear_Down.push_back( el->userFloat("energySigmaDown") * sin_theta );
+    if(el->hasUserFloat("ecalTrkEnergyPostCorr")){
+
+      //==== UnCorrected
+      electron_EnergyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") );
+
+      electron_Energy.push_back( el->userFloat("ecalTrkEnergyPostCorr") );
+      electron_Energy_Scale_Up.push_back( el->userFloat("energyScaleUp") );
+      electron_Energy_Scale_Down.push_back( el->userFloat("energyScaleDown") );
+      electron_Energy_Smear_Up.push_back( el->userFloat("energySigmaUp") );
+      electron_Energy_Smear_Down.push_back( el->userFloat("energySigmaDown") );
+
+    }
+    else{
+
+      //==== UnCorrected
+      electron_EnergyUnCorr.push_back( el->energy() );
+
+      electron_Energy.push_back( el->energy() );
+      electron_Energy_Scale_Up.push_back( el->energy() );
+      electron_Energy_Scale_Down.push_back( el->energy() );
+      electron_Energy_Smear_Up.push_back( el->energy() );
+      electron_Energy_Smear_Down.push_back( el->energy() );
+
+    }
     electron_eta.push_back( el->eta() );
     electron_phi.push_back( el->phi() );
 
@@ -1945,15 +1952,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     cout << "el->userFloat(\"ecalTrkEnergyPostCorr\") = " << el->userFloat("ecalTrkEnergyPostCorr") << endl;
 */
 
-    //==== UnCorrected
-    electron_EnergyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") );
-
-    electron_Energy.push_back( el->userFloat("ecalTrkEnergyPostCorr") );
-    electron_Energy_Scale_Up.push_back( el->userFloat("energyScaleUp") );
-    electron_Energy_Scale_Down.push_back( el->userFloat("energyScaleDown") );
-    electron_Energy_Smear_Up.push_back( el->userFloat("energySigmaUp") );
-    electron_Energy_Smear_Down.push_back( el->userFloat("energySigmaDown") );
-    
     electron_charge.push_back( el->charge() );
     electron_fbrem.push_back( el->fbrem() );
     electron_eOverP.push_back( el->eSuperClusterOverP() );
@@ -2082,7 +2080,8 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_nhMiniIso.push_back( el->miniPFIsolation().neutralHadronIso() );
     electron_phMiniIso.push_back( el->miniPFIsolation().photonIso() );
     electron_puChMiniIso.push_back( el->miniPFIsolation().puChargedHadronIso() );
-    electron_trackIso.push_back( el->trackIso() );
+
+    electron_trackIso.push_back( el->userFloat("heepTrkPtIso") );
 
     electron_dr03EcalRecHitSumEt.push_back( el->dr03EcalRecHitSumEt() );
     electron_dr03HcalDepth1TowerSumEt.push_back( el->dr03HcalDepth1TowerSumEt() );
@@ -2405,13 +2404,15 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
 
   for(size_t i=0; i< PhotonHandle->size(); ++i){
     const auto pho = PhotonHandle->ptrAt(i);
-    
-    double sin_theta = sin(pho->theta());
-    photon_ptUnCorr.push_back( pho -> userFloat("ecalEnergyPreCorr") * sin_theta );
-    photon_pt.push_back( pho -> userFloat("ecalEnergyPostCorr") * sin_theta );
-    //double pho_pt_noncor = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
-    //cout << "pho->pt() : " << pho->pt() << ", pho_pt_noncor : " << pho_pt_noncor << ", Pt(cor) : " << photon_pt.at(i) << endl;
-    //photon_pt.push_back( pho->pt() * ratio_E );
+
+    if( pho -> hasUserFloat( "ecalEnergyPostCorr" ) ){
+      photon_Energy.push_back( pho -> userFloat("ecalEnergyPostCorr") );
+      photon_EnergyUnCorr.push_back( pho -> userFloat("ecalEnergyPreCorr") );
+    }
+    else{
+      photon_Energy.push_back( pho -> energy() );
+      photon_EnergyUnCorr.push_back( pho -> energy() );
+    }
     photon_eta.push_back( pho->eta() );
     photon_phi.push_back( pho->phi() );
     
@@ -2437,11 +2438,11 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
     photon_NhIsoWithEA.push_back( std::max( 0.0, nhIso - Rho*photon_EA_HN.getEffectiveArea(abseta) ) );
     photon_PhIsoWithEA.push_back( std::max( 0.0, phIso - Rho*photon_EA_Ph.getEffectiveArea(abseta) ) );
     
-    bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
-    bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
-    bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V1-tight");
-    bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp80");
-    bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp90");
+    bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V2-loose");
+    bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V2-medium");
+    bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V2-tight");
+    bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v2-wp80");
+    bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v2-wp90");
   
     photon_passMVAID_WP80.push_back( isPassMVA_WP80 );
     photon_passMVAID_WP90.push_back( isPassMVA_WP90 );
