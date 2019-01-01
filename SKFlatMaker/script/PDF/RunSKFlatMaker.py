@@ -15,21 +15,24 @@ import sys
 
 Is2016 = False
 Is2017 = False
+Is2018 = False
 if options.year==2016:
   Is2016 = True
 elif options.year==2017:
   Is2017 = True
+elif options.year==2018:
+  Is2018 = True
 else:
   ErrorMgs = "year is not correct; "+str(options.year)
   sys.exit(ErrorMgs)
 
 isMC = True
-if ("DATA" in options.sampletype) or ("data" in options.sampletype) or ("Data" in options.sampletype):
+if "data" in options.sampletype.lower():
   isMC = False
-if ("MC" in options.sampletype) or ("mc" in options.sampletype):
+if "mc" in options.sampletype.lower():
   isMC = True
 isPrivateSample = False
-if ("Private" in options.sampletype) or ("private" in options.sampletype):
+if "private" in options.sampletype.lower():
   isPrivateSample = True
 
 options.outputFile = "SKFlatNtuple.root"
@@ -41,14 +44,20 @@ if len(options.inputFiles)==0:
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016B/SingleMuon/MINIAOD/17Jul2018_ver1-v1/80000/306DAB6C-068C-E811-9E30-0242AC1C0501.root')
       options.outputFile = "SKFlatNtuple_2016_DATA.root"
-  if Is2017:
+  elif Is2017:
     if isMC:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/40000/D87C6B2A-5C42-E811-8FD7-001E677926A8.root')
       options.outputFile = "SKFlatNtuple_2017_MC.root"
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2017B/SingleMuon/MINIAOD/31Mar2018-v1/80000/54F30BE9-423C-E811-A315-0CC47A7C3410.root')
       options.outputFile = "SKFlatNtuple_2017_DATA.root"
-
+  elif Is2018:
+    if isMC:
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/120000/B3F93EA2-04C6-E04E-96AF-CB8FAF67E6BA.root')
+      options.outputFile = "SKFlatNtuple_2018_MC.root"
+    else:
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/11697BCC-C4AB-204B-91A9-87F952F9F2C6.root')
+      options.outputFile = "SKFlatNtuple_2018_DATA.root"
 
 ScaleIDRange = [int(options.ScaleIDRange.split(',')[0]), int(options.ScaleIDRange.split(',')[1])]
 PDFErrorIDRange = [int(options.PDFErrorIDRange.split(',')[0]), int(options.PDFErrorIDRange.split(',')[1])]
@@ -77,6 +86,14 @@ GT_DATA = '94X_dataRun2_v6_fixJECJER'
 if Is2016:
   GT_DATA = '94X_dataRun2_v10'
   GT_MC = '94X_mcRun2_asymptotic_v3'
+elif Is2017:
+  GT_MC = '94X_mc2017_realistic_v14'
+  GT_DATA = '94X_dataRun2_v6'
+elif Is2018:
+  GT_MC = '102X_upgrade2018_realistic_v12'
+  GT_DATA = '102X_dataRun2_Sep2018Rereco_v1'
+  if (not isMC) and '2018Prompt' in options.sampletype:
+    GT_DATA = '102X_dataRun2_Prompt_v11'
 
 
 ####################################################################################################################
@@ -98,7 +115,7 @@ process.source = cms.Source("PoolSource",
   #skipEvents=cms.untracked.uint32(5),
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 # -- Geometry and Detector Conditions (needed for a few patTuple production steps) -- #
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
@@ -180,26 +197,28 @@ myEleID =  [
 
 if Is2016:
 
-  process.recoTree.electron_IDtoSave = cms.untracked.vstring(
-'cutBasedElectronID-Summer16-80X-V1-veto',
-'cutBasedElectronID-Summer16-80X-V1-loose',
-'cutBasedElectronID-Summer16-80X-V1-medium',
-'cutBasedElectronID-Summer16-80X-V1-tight',
-'mvaEleID-Spring16-GeneralPurpose-V1-wp80',
-'mvaEleID-Spring16-GeneralPurpose-V1-wp90',
-'mvaEleID-Spring16-HZZ-V1-wpLoose',
-'mvaEleID-Spring16-HZZ-V1-wpLoose', ### DUMMY
-'mvaEleID-Spring16-GeneralPurpose-V1-wp80',  ### DUMMY
-'mvaEleID-Spring16-GeneralPurpose-V1-wp90', ### DUMMY
-'mvaEleID-Spring16-HZZ-V1-wpLoose', ### DUMMY
-"heepElectronID-HEEPV70",
-  )
+  print "################"
+  print "Running 2016"
+  print "################"
+
+  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  setupEgammaPostRecoSeq(process,
+                         runVID=True,
+                         era='2016-Legacy',
+                         eleIDModules=myEleID,
+                         runEnergyCorrections=False)
 
   process.p = cms.Path(
+    process.egammaPostRecoSeq *
     process.recoTree
   )
 
-if Is2017:
+elif Is2017:
+
+  print "################"
+  print "Running 2017"
+  print "################"
+
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True, #saves CPU time by not needlessly re-running VID
@@ -299,5 +318,15 @@ if Is2017:
     process.jecSequence *
     process.fullPatMetSequenceModifiedMET *
     process.ecalBadCalibReducedMINIAODFilter *
+    process.recoTree
+  )
+
+elif Is2018:
+
+  print "################"
+  print "Running 2018"
+  print "################"
+
+  process.p = cms.Path(
     process.recoTree
   )
