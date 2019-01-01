@@ -248,6 +248,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< std::vector< PileupSummaryInfo > >   PileUpInfoToken;
 
   edm::Handle<edm::TriggerResults> METFilterResults;
+
+  edm::EDGetTokenT< double > prefweight_token;
+  edm::EDGetTokenT< double > prefweightup_token;
+  edm::EDGetTokenT< double > prefweightdown_token;
   
   edm::FileInPath electron_EA_NHandPh_file;
   edm::FileInPath photon_EA_CH_file;
@@ -266,6 +270,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   bool theStoreLHEFlag;
   bool theStoreGENFlag;
   bool theStorePhotonFlag;
+  bool theStoreL1PrefireFlag;
   bool theKeepAllGen;
   bool IsData;
 
@@ -330,7 +335,13 @@ class SKFlatMaker : public edm::EDAnalyzer
   double PVy;
   double PVz;
   double PVprob;
-  
+
+  //==== L1 Prefire reweights
+
+  double L1PrefireReweight_Central;
+  double L1PrefireReweight_Up;
+  double L1PrefireReweight_Down;
+
   //==== trigger object
 
   vector<string> HLT_TriggerName;

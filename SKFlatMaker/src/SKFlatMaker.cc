@@ -75,8 +75,15 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   else{
     cout << "[SKFlatMaker::SKFlatMaker] DataYear = " << DataYear << endl;
   }
+  //==== Flag_ecalBadCalibReducedMINIAODFilter
   if(DataYear>=2017){
     ecalBadCalibFilterUpdate_token= consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"));
+  }
+  //==== L1 Prefireing for 2016 and 2017
+  if(DataYear<=2017){
+    prefweight_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProb"));
+    prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProbUp"));
+    prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProbDown"));
   }
 
   theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
@@ -122,6 +129,7 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStoreGENFlag                   = iConfig.getUntrackedParameter<bool>("StoreGENFlag", true);
   theKeepAllGen                     = iConfig.getUntrackedParameter<bool>("KeepAllGen", true);
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
+  theStoreL1PrefireFlag             = iConfig.getUntrackedParameter<bool>("StoreL1PrefireFlag",true);
 
   rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
 
@@ -576,6 +584,29 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       
   }
 
+  //====================
+  //==== L1 Prefireing
+  //====================
+
+  L1PrefireReweight_Central = -999;
+  L1PrefireReweight_Up = -999;
+  L1PrefireReweight_Down = -999;
+  if(theStoreL1PrefireFlag){
+
+    edm::Handle< double > theprefweight;
+    iEvent.getByToken(prefweight_token, theprefweight ) ;
+    L1PrefireReweight_Central =(*theprefweight);
+
+    edm::Handle< double > theprefweightup;
+    iEvent.getByToken(prefweightup_token, theprefweightup ) ;
+    L1PrefireReweight_Up =(*theprefweightup);
+
+    edm::Handle< double > theprefweightdown;
+    iEvent.getByToken(prefweightdown_token, theprefweightdown ) ;
+    L1PrefireReweight_Down =(*theprefweightdown);
+
+  }
+
   //==================
   //==== Prepare JEC
   //==================
@@ -667,7 +698,13 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("lumi",&lumiBlock,"lumiBlock/I");
   DYTree->Branch("Rho",&Rho,"Rho/D");
   DYTree->Branch("nPV",&nPV,"nPV/I");
-  
+
+  if(theStoreL1PrefireFlag){
+    DYTree->Branch("L1PrefireReweight_Central",& L1PrefireReweight_Central,"L1PrefireReweight_Central/D");
+    DYTree->Branch("L1PrefireReweight_Up",& L1PrefireReweight_Up,"L1PrefireReweight_Up/D");
+    DYTree->Branch("L1PrefireReweight_Down",& L1PrefireReweight_Down,"L1PrefireReweight_Down/D");
+  }
+
   //MET Filters 2017
   DYTree->Branch("Flag_goodVertices",&Flag_goodVertices,"Flag_goodVertices/O");
   DYTree->Branch("Flag_globalTightHalo2016Filter",&Flag_globalTightHalo2016Filter,"Flag_globalTightHalo2016Filter/O");
