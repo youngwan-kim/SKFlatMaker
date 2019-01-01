@@ -87,8 +87,8 @@ if Is2016:
   GT_DATA = '94X_dataRun2_v10'
   GT_MC = '94X_mcRun2_asymptotic_v3'
 elif Is2017:
-  GT_MC = '94X_mc2017_realistic_v14'
-  GT_DATA = '94X_dataRun2_v6'
+  GT_MC = '94X_mc2017_realistic_v14_fixJECJER'
+  GT_DATA = '94X_dataRun2_v6_fixJECJER'
 elif Is2018:
   GT_MC = '102X_upgrade2018_realistic_v12'
   GT_DATA = '102X_dataRun2_Sep2018Rereco_v1'
@@ -194,6 +194,10 @@ myEleID =  [
 'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V2_cff',
 'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff',
 ]
+myPhoID =  [
+'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V2_cff',
+'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff',
+]
 
 if Is2016:
 
@@ -201,12 +205,18 @@ if Is2016:
   print "Running 2016"
   print "################"
 
+  ###########################
+  #### Rerun EGammaPostReco
+  ###########################
+
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True,
                          era='2016-Legacy',
                          eleIDModules=myEleID,
-                         runEnergyCorrections=False)
+                         phoIDModules=myPhoID,
+                         #runEnergyCorrections=False ## when False, VID not reran.. I dunno why..
+  )
 
   process.p = cms.Path(
     process.egammaPostRecoSeq *
@@ -219,12 +229,22 @@ elif Is2017:
   print "Running 2017"
   print "################"
 
+  ###########################
+  #### Rerun EGammaPostReco
+  ###########################
+
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True, #saves CPU time by not needlessly re-running VID
                          era='2017-Nov17ReReco',
-                         eleIDModules=myEleID)
+                         eleIDModules=myEleID,
+                         phoIDModules=myPhoID,
+  )
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
+
+  ###########################
+  #### MET EE Noise
+  ###########################
 
   from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
