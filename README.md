@@ -29,7 +29,7 @@ git cms-merge-topic cms-egamma:EgammaPostRecoTools_940 #just adds in an extra fi
 #### Both CutBased and MVA
 #############
 
-git cms-merge-topic guitargeek:EgammaID_9_4_X
+git cms-merge-topic cms-egamma:EgammaID_949
 
 ##########################
 #### MET EE Noise filter
@@ -51,7 +51,8 @@ git cms-addpkg RecoMET/METFilters
 #### https://twiki.cern.ch/twiki/bin/view/CMS/L1ECALPrefiringWeightRecipe
 #########################
 
-git cms-merge-topic lathomas:L1Prefiring_9_4_9
+#git cms-merge-topic lathomas:L1Prefiring_9_4_9
+git cms-merge-topic jedori0228:L1Prefiring_9_4_9__UseFileFileInPath
 
 
 
