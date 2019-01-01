@@ -75,8 +75,15 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   else{
     cout << "[SKFlatMaker::SKFlatMaker] DataYear = " << DataYear << endl;
   }
+  //==== Flag_ecalBadCalibReducedMINIAODFilter
   if(DataYear>=2017){
     ecalBadCalibFilterUpdate_token= consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"));
+  }
+  //==== L1 Prefireing for 2016 and 2017
+  if(DataYear<=2017){
+    prefweight_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProb"));
+    prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProbUp"));
+    prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProbDown"));
   }
 
   theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
@@ -122,6 +129,7 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStoreGENFlag                   = iConfig.getUntrackedParameter<bool>("StoreGENFlag", true);
   theKeepAllGen                     = iConfig.getUntrackedParameter<bool>("KeepAllGen", true);
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
+  theStoreL1PrefireFlag             = iConfig.getUntrackedParameter<bool>("StoreL1PrefireFlag",true);
 
   rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
 
@@ -150,15 +158,6 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = " << PDFAlphaSIDRange_.at(0)<<" - "<<PDFAlphaSIDRange_.at(1) << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSScaleValue_ = " << PDFAlphaSScaleValue_.at(0)<<" - "<<PDFAlphaSScaleValue_.at(1) << endl;
 
-  // -- Filters -- //
-  DoPileUp = iConfig.getUntrackedParameter<bool>("DoPileUp");
-  // if( DoPileUp )
-  // {
-  //   PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
-  //   PileUpRDMuonPhys_ = iConfig.getParameter< std::vector<double> >("PileUpRDMuonPhys");
-  //   PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC");
-  // }
-  
   if(theDebugLevel) cout << "[SKFlatMaker::SKFlatMaker] Constructor finished" << endl;
 
 }
@@ -278,13 +277,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   genWeight_alphaQCD=-999;
   genWeight_alphaQED=-999;
 
-  // -- PU reweight -- //
-  PUweight = -1;
-  pileUpReweightIn = pileUpReweight = 1.0;
-  pileUpReweightPlus = pileUpReweightMinus = 0.0;
-  pileUpReweightInMuonPhys = pileUpReweightMuonPhys = 1.0;
-  pileUpReweightPlusMuonPhys = pileUpReweightMinusMuonPhys = 0.0;
-  
   //==== Electron
   electron_MVAIso.clear();
   electron_MVANoIso.clear();
@@ -293,11 +285,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_Energy_Scale_Down.clear();
   electron_Energy_Smear_Up.clear();
   electron_Energy_Smear_Down.clear();
-  electron_pt.clear();
-  electron_pt_Scale_Up.clear();
-  electron_pt_Scale_Down.clear();
-  electron_pt_Smear_Up.clear();
-  electron_pt_Smear_Down.clear();
   electron_eta.clear();
   electron_phi.clear();
   electron_charge.clear();
@@ -534,7 +521,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_LSFlep_Phi.clear();
 
   //==== Photon
-  photon_pt.clear();
+  photon_Energy.clear();
+  photon_EnergyUnCorr.clear();
   photon_eta.clear();
   photon_phi.clear();
   photon_scEta.clear();
@@ -553,7 +541,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   photon_passLooseID.clear();
   photon_passMediumID.clear();
   photon_passTightID.clear();
-  photon_ptUnCorr.clear();
 
   // cout << "[SKFlatMaker::analyze] Varialbe intilization done" << endl;
   
@@ -563,21 +550,13 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   evtNum = iEvent.id().event();
   lumiBlock = iEvent.id().luminosityBlock();
   
-  // edm::Handle<double> weight_;
-  // iEvent.getByLabel("PUweight", weight_);
-  
-  // if(weight_.isValid())
-  //   PUweight = *weight_;
-  // else
-  //   PUweight = 1.0;
-  
   //get the geometry
   edm::ESHandle<GlobalTrackingGeometry> glbTrackingGeometry;
   iSetup.get<GlobalTrackingGeometryRecord>().get(glbTrackingGeometry);
   
   // -- PileUp Reweighting -- //
   IsData = iEvent.isRealData();
-  if( !IsData && DoPileUp ){
+  if( !IsData ){
     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
     iEvent.getByToken(PileUpInfoToken, PupInfo);
     std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -598,6 +577,29 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       
     nPileUp = npv;
       
+  }
+
+  //====================
+  //==== L1 Prefireing
+  //====================
+
+  L1PrefireReweight_Central = -999;
+  L1PrefireReweight_Up = -999;
+  L1PrefireReweight_Down = -999;
+  if(theStoreL1PrefireFlag){
+
+    edm::Handle< double > theprefweight;
+    iEvent.getByToken(prefweight_token, theprefweight ) ;
+    L1PrefireReweight_Central =(*theprefweight);
+
+    edm::Handle< double > theprefweightup;
+    iEvent.getByToken(prefweightup_token, theprefweightup ) ;
+    L1PrefireReweight_Up =(*theprefweightup);
+
+    edm::Handle< double > theprefweightdown;
+    iEvent.getByToken(prefweightdown_token, theprefweightdown ) ;
+    L1PrefireReweight_Down =(*theprefweightdown);
+
   }
 
   //==================
@@ -679,28 +681,6 @@ void SKFlatMaker::beginJob()
 {
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginJob] called" << endl;
-  // if( DoPileUp )
-  // {
-  // // Pileup Reweight: 2012, Summer12_S10
-  // std::vector< float > _PUreweightRun2012 ;
-  // std::vector< float > _PUreweightRun2012MuonPhys ;
-  // std::vector< float > _MC2012;
-
-  // for( int i = 0; i < 100; ++i)
-  // {
-  // _PUreweightRun2012.push_back((float)PileUpRD_[i]);
-  // _PUreweightRun2012MuonPhys.push_back((float)PileUpRDMuonPhys_[i]);
-  // _MC2012.push_back((float)PileUpMC_[i]);
-  // }
-
-  // LumiWeights_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012);
-  // PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
-  // PShiftUp_ = reweight::PoissonMeanShifter(0.5);
-
-  // LumiWeightsMuonPhys_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012MuonPhys);
-  // PShiftDownMuonPhys_ = reweight::PoissonMeanShifter(-0.5);
-  // PShiftUpMuonPhys_ = reweight::PoissonMeanShifter(0.5);
-  // }
 
   edm::Service<TFileService> fs;
   DYTree = fs->make<TTree>("SKFlat","SKFlat");
@@ -711,14 +691,15 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("run",&runNum,"runNum/I");
   DYTree->Branch("event",&evtNum,"evtNum/l");
   DYTree->Branch("lumi",&lumiBlock,"lumiBlock/I");
-  DYTree->Branch("PUweight",&PUweight,"PUweight/D");
-  // DYTree->Branch("sumEt",&sumEt,"sumEt/D");
-  // DYTree->Branch("photonEt",&photonEt,"photonEt/D");
-  // DYTree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/D");
-  // DYTree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/D");
   DYTree->Branch("Rho",&Rho,"Rho/D");
   DYTree->Branch("nPV",&nPV,"nPV/I");
-  
+
+  if(theStoreL1PrefireFlag){
+    DYTree->Branch("L1PrefireReweight_Central",& L1PrefireReweight_Central,"L1PrefireReweight_Central/D");
+    DYTree->Branch("L1PrefireReweight_Up",& L1PrefireReweight_Up,"L1PrefireReweight_Up/D");
+    DYTree->Branch("L1PrefireReweight_Down",& L1PrefireReweight_Down,"L1PrefireReweight_Down/D");
+  }
+
   //MET Filters 2017
   DYTree->Branch("Flag_goodVertices",&Flag_goodVertices,"Flag_goodVertices/O");
   DYTree->Branch("Flag_globalTightHalo2016Filter",&Flag_globalTightHalo2016Filter,"Flag_globalTightHalo2016Filter/O");
@@ -862,11 +843,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_Energy_Scale_Down", "vector<double>", &electron_Energy_Scale_Down);
     DYTree->Branch("electron_Energy_Smear_Up", "vector<double>", &electron_Energy_Smear_Up);
     DYTree->Branch("electron_Energy_Smear_Down", "vector<double>", &electron_Energy_Smear_Down);
-    DYTree->Branch("electron_pt", "vector<double>", &electron_pt);
-    DYTree->Branch("electron_pt_Scale_Up", "vector<double>", &electron_pt_Scale_Up);
-    DYTree->Branch("electron_pt_Scale_Down", "vector<double>", &electron_pt_Scale_Down);
-    DYTree->Branch("electron_pt_Smear_Up", "vector<double>", &electron_pt_Smear_Up);
-    DYTree->Branch("electron_pt_Smear_Down", "vector<double>", &electron_pt_Smear_Down);
     DYTree->Branch("electron_eta", "vector<double>", &electron_eta);
     DYTree->Branch("electron_phi", "vector<double>", &electron_phi);
     DYTree->Branch("electron_charge", "vector<int>", &electron_charge);
@@ -1058,7 +1034,8 @@ void SKFlatMaker::beginJob()
   }
   
   if( theStorePhotonFlag ){
-    DYTree->Branch("photon_pt", "vector<double>", &photon_pt);
+    DYTree->Branch("photon_Energy", "vector<double>", &photon_Energy);
+    DYTree->Branch("photon_EnergyUnCorr", "vector<double>", &photon_EnergyUnCorr);
     DYTree->Branch("photon_eta", "vector<double>", &photon_eta);
     DYTree->Branch("photon_phi", "vector<double>", &photon_phi);
     DYTree->Branch("photon_scEta", "vector<double>", &photon_scEta);
@@ -1077,21 +1054,12 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("photon_passLooseID", "vector<bool>", &photon_passLooseID);
     DYTree->Branch("photon_passMediumID", "vector<bool>", &photon_passMediumID);
     DYTree->Branch("photon_passTightID", "vector<bool>", &photon_passTightID);
-    DYTree->Branch("photon_ptUnCorr", "vector<double>", &photon_ptUnCorr);
   }
   
   
   
   // Pile-up Reweight
   DYTree->Branch("nPileUp",&nPileUp,"nPileUp/I");
-  DYTree->Branch("pileUpReweightIn",&pileUpReweightIn,"pileUpReweightIn/D");
-  DYTree->Branch("pileUpReweight",&pileUpReweight,"pileUpReweight/D");
-  DYTree->Branch("pileUpReweightPlus",&pileUpReweightPlus,"pileUpReweightPlus/D");
-  DYTree->Branch("pileUpReweightMinus",&pileUpReweightMinus,"pileUpReweightMinus/D");
-  DYTree->Branch("pileUpReweightInMuonPhys",&pileUpReweightInMuonPhys,"pileUpReweightInMuonPhys/D");
-  DYTree->Branch("pileUpReweightMuonPhys",&pileUpReweightMuonPhys,"pileUpReweightMuonPhys/D");
-  DYTree->Branch("pileUpReweightPlusMuonPhys",&pileUpReweightPlusMuonPhys,"pileUpReweightPlusMuonPhys/D");
-  DYTree->Branch("pileUpReweightMinusMuonPhys",&pileUpReweightMinusMuonPhys,"pileUpReweightMinusMuonPhys/D");
   
   if( theStoreMETFlag ){
     DYTree->Branch("pfMET_pt", &pfMET_pt, "pfMET_pt/D");
@@ -1948,14 +1916,31 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     
     electron_MVAIso.push_back( el -> userFloat("ElectronMVAEstimatorRun2Fall17IsoV1Values") );
     electron_MVANoIso.push_back( el -> userFloat("ElectronMVAEstimatorRun2Fall17NoIsoV1Values") );
-    double elec_theta = el -> theta();
-    double sin_theta = sin(elec_theta);
 
-    electron_pt.push_back( el->userFloat("ecalTrkEnergyPostCorr") * sin_theta );
-    electron_pt_Scale_Up.push_back( el->userFloat("energyScaleUp") * sin_theta );
-    electron_pt_Scale_Down.push_back( el->userFloat("energyScaleDown") * sin_theta );
-    electron_pt_Smear_Up.push_back( el->userFloat("energySigmaUp") * sin_theta );
-    electron_pt_Smear_Down.push_back( el->userFloat("energySigmaDown") * sin_theta );
+    if(el->hasUserFloat("ecalTrkEnergyPostCorr")){
+
+      //==== UnCorrected
+      electron_EnergyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") );
+
+      electron_Energy.push_back( el->userFloat("ecalTrkEnergyPostCorr") );
+      electron_Energy_Scale_Up.push_back( el->userFloat("energyScaleUp") );
+      electron_Energy_Scale_Down.push_back( el->userFloat("energyScaleDown") );
+      electron_Energy_Smear_Up.push_back( el->userFloat("energySigmaUp") );
+      electron_Energy_Smear_Down.push_back( el->userFloat("energySigmaDown") );
+
+    }
+    else{
+
+      //==== UnCorrected
+      electron_EnergyUnCorr.push_back( el->energy() );
+
+      electron_Energy.push_back( el->energy() );
+      electron_Energy_Scale_Up.push_back( el->energy() );
+      electron_Energy_Scale_Down.push_back( el->energy() );
+      electron_Energy_Smear_Up.push_back( el->energy() );
+      electron_Energy_Smear_Down.push_back( el->energy() );
+
+    }
     electron_eta.push_back( el->eta() );
     electron_phi.push_back( el->phi() );
 
@@ -1967,15 +1952,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
     cout << "el->userFloat(\"ecalTrkEnergyPostCorr\") = " << el->userFloat("ecalTrkEnergyPostCorr") << endl;
 */
 
-    //==== UnCorrected
-    electron_EnergyUnCorr.push_back( el->userFloat("ecalTrkEnergyPreCorr") );
-
-    electron_Energy.push_back( el->userFloat("ecalTrkEnergyPostCorr") );
-    electron_Energy_Scale_Up.push_back( el->userFloat("energyScaleUp") );
-    electron_Energy_Scale_Down.push_back( el->userFloat("energyScaleDown") );
-    electron_Energy_Smear_Up.push_back( el->userFloat("energySigmaUp") );
-    electron_Energy_Smear_Down.push_back( el->userFloat("energySigmaDown") );
-    
     electron_charge.push_back( el->charge() );
     electron_fbrem.push_back( el->fbrem() );
     electron_eOverP.push_back( el->eSuperClusterOverP() );
@@ -2104,7 +2080,8 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_nhMiniIso.push_back( el->miniPFIsolation().neutralHadronIso() );
     electron_phMiniIso.push_back( el->miniPFIsolation().photonIso() );
     electron_puChMiniIso.push_back( el->miniPFIsolation().puChargedHadronIso() );
-    electron_trackIso.push_back( el->trackIso() );
+
+    electron_trackIso.push_back( el->userFloat("heepTrkPtIso") );
 
     electron_dr03EcalRecHitSumEt.push_back( el->dr03EcalRecHitSumEt() );
     electron_dr03HcalDepth1TowerSumEt.push_back( el->dr03HcalDepth1TowerSumEt() );
@@ -2427,13 +2404,15 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
 
   for(size_t i=0; i< PhotonHandle->size(); ++i){
     const auto pho = PhotonHandle->ptrAt(i);
-    
-    double sin_theta = sin(pho->theta());
-    photon_ptUnCorr.push_back( pho -> userFloat("ecalEnergyPreCorr") * sin_theta );
-    photon_pt.push_back( pho -> userFloat("ecalEnergyPostCorr") * sin_theta );
-    //double pho_pt_noncor = pho -> userFloat("ecalEnergyPreCorr") * sin_theta;
-    //cout << "pho->pt() : " << pho->pt() << ", pho_pt_noncor : " << pho_pt_noncor << ", Pt(cor) : " << photon_pt.at(i) << endl;
-    //photon_pt.push_back( pho->pt() * ratio_E );
+
+    if( pho -> hasUserFloat( "ecalEnergyPostCorr" ) ){
+      photon_Energy.push_back( pho -> userFloat("ecalEnergyPostCorr") );
+      photon_EnergyUnCorr.push_back( pho -> userFloat("ecalEnergyPreCorr") );
+    }
+    else{
+      photon_Energy.push_back( pho -> energy() );
+      photon_EnergyUnCorr.push_back( pho -> energy() );
+    }
     photon_eta.push_back( pho->eta() );
     photon_phi.push_back( pho->phi() );
     
@@ -2459,11 +2438,11 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
     photon_NhIsoWithEA.push_back( std::max( 0.0, nhIso - Rho*photon_EA_HN.getEffectiveArea(abseta) ) );
     photon_PhIsoWithEA.push_back( std::max( 0.0, phIso - Rho*photon_EA_Ph.getEffectiveArea(abseta) ) );
     
-    bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
-    bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
-    bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V1-tight");
-    bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp80");
-    bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp90");
+    bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V2-loose");
+    bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V2-medium");
+    bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V2-tight");
+    bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v2-wp80");
+    bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v2-wp90");
   
     photon_passMVAID_WP80.push_back( isPassMVA_WP80 );
     photon_passMVAID_WP90.push_back( isPassMVA_WP90 );

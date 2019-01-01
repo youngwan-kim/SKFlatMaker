@@ -1,4 +1,5 @@
-double	photon_pt	1
+double	photon_Energy	1
+double	photon_EnergyUnCorr	1
 double	photon_eta	1
 double	photon_phi	1
 double	photon_scEta	1
@@ -17,4 +18,3 @@ bool	photon_passMVAID_WP90	1
 bool	photon_passLooseID	1
 bool	photon_passMediumID	1
 bool	photon_passTightID	1
-double	photon_ptUnCorr	1

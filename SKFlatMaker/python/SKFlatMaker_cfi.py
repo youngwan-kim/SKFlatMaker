@@ -3,7 +3,6 @@ import FWCore.ParameterSet.Config as cms
 SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
 
   DataYear = cms.untracked.int32(-1),
-  DoPileUp = cms.untracked.bool(True),
   processName = cms.untracked.string("HLT"),
   DebugLevel = cms.untracked.int32(0),
 
@@ -98,6 +97,7 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   StorePriVtxFlag = cms.untracked.bool(True),
   StoreHLTReportFlag = cms.untracked.bool(True),
   StoreHLTObjectFlag = cms.untracked.bool(False),
+  StoreL1PrefireFlag = cms.untracked.bool(False),
 
   # -- Filters -- #
   ApplyFilter = cms.untracked.bool(False),

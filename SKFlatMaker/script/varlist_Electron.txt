@@ -5,11 +5,6 @@ double	electron_Energy_Scale_Up	1
 double	electron_Energy_Scale_Down	1
 double	electron_Energy_Smear_Up	1
 double	electron_Energy_Smear_Down	1
-double	electron_pt	1
-double	electron_pt_Scale_Up	1
-double	electron_pt_Scale_Down	1
-double	electron_pt_Smear_Up	1
-double	electron_pt_Smear_Down	1
 double	electron_eta	1
 double	electron_phi	1
 int	electron_charge	1
