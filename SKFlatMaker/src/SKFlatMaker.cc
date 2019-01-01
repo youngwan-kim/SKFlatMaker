@@ -40,7 +40,6 @@ genJetToken                         ( consumes< reco::GenJetCollection >        
 FatJetToken                         ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("FatJet")) ),
 genFatJetToken                      ( consumes< reco::GenJetCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("GenFatJet")) ),
 MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
-//MetToken                            ( consumes< pat::METCollection>                               (iConfig.getParameter<edm::InputTag>("MET")) ),
 
 LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
 LHERunInfoProductToken              ( consumes< LHERunInfoProduct,edm::InRun >              (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
@@ -67,6 +66,18 @@ PrimaryVertexToken                  ( consumes< reco::VertexCollection >        
 TrackToken                          ( consumes< edm::View<reco::Track> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
 PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
 {
+
+  DataYear                          = iConfig.getUntrackedParameter<int>("DataYear");
+  if(DataYear<0){
+    cout << "DataYear is not set : DataYear = " << DataYear << endl;
+    exit(EXIT_FAILURE);
+  }
+  else{
+    cout << "[SKFlatMaker::SKFlatMaker] DataYear = " << DataYear << endl;
+  }
+  if(DataYear>=2017){
+    ecalBadCalibFilterUpdate_token= consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"));
+  }
 
   theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
 
@@ -130,26 +141,15 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   //==== PDF
 
   ScaleIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("ScaleIDRange");
-  PDFErrorType_ = iConfig.getUntrackedParameter< std::string >("PDFErrorType");
   PDFErrorIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("PDFErrorIDRange");
   PDFAlphaSIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("PDFAlphaSIDRange");
   PDFAlphaSScaleValue_ = iConfig.getUntrackedParameter< std::vector<double> >("PDFAlphaSScaleValue");
 
   cout << "[SKFlatMaker::SKFlatMaker] ScaleIDRange_ = " << ScaleIDRange_.at(0)<<" - "<<ScaleIDRange_.at(1) << endl;
-  cout << "[SKFlatMaker::SKFlatMaker] PDFErrorType_ = " << PDFErrorType_ << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = " << PDFErrorIDRange_.at(0)<<" - "<<PDFErrorIDRange_.at(1) << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = " << PDFAlphaSIDRange_.at(0)<<" - "<<PDFAlphaSIDRange_.at(1) << endl;
   cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSScaleValue_ = " << PDFAlphaSScaleValue_.at(0)<<" - "<<PDFAlphaSScaleValue_.at(1) << endl;
 
-  // -- Filters -- //
-  DoPileUp = iConfig.getUntrackedParameter<bool>("DoPileUp");
-  // if( DoPileUp )
-  // {
-  //   PileUpRD_ = iConfig.getParameter< std::vector<double> >("PileUpRD");
-  //   PileUpRDMuonPhys_ = iConfig.getParameter< std::vector<double> >("PileUpRDMuonPhys");
-  //   PileUpMC_ = iConfig.getParameter< std::vector<double> >("PileUpMC");
-  // }
-  
   if(theDebugLevel) cout << "[SKFlatMaker::SKFlatMaker] Constructor finished" << endl;
 
 }
@@ -180,7 +180,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Flag_BadPFMuonFilter = false;
   Flag_BadChargedCandidateFilter = false;
   Flag_eeBadScFilter = false;
-  Flag_ecalBadCalibFilter = false;
+  Flag_ecalBadCalibReducedMINIAODFilter = false;
 
   nPV = -1;
   PVtrackSize = -1;
@@ -269,13 +269,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   genWeight_alphaQCD=-999;
   genWeight_alphaQED=-999;
 
-  // -- PU reweight -- //
-  PUweight = -1;
-  pileUpReweightIn = pileUpReweight = 1.0;
-  pileUpReweightPlus = pileUpReweightMinus = 0.0;
-  pileUpReweightInMuonPhys = pileUpReweightMuonPhys = 1.0;
-  pileUpReweightPlusMuonPhys = pileUpReweightMinusMuonPhys = 0.0;
-  
   //==== Electron
   electron_MVAIso.clear();
   electron_MVANoIso.clear();
@@ -549,21 +542,13 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   evtNum = iEvent.id().event();
   lumiBlock = iEvent.id().luminosityBlock();
   
-  // edm::Handle<double> weight_;
-  // iEvent.getByLabel("PUweight", weight_);
-  
-  // if(weight_.isValid())
-  //   PUweight = *weight_;
-  // else
-  //   PUweight = 1.0;
-  
   //get the geometry
   edm::ESHandle<GlobalTrackingGeometry> glbTrackingGeometry;
   iSetup.get<GlobalTrackingGeometryRecord>().get(glbTrackingGeometry);
   
   // -- PileUp Reweighting -- //
   IsData = iEvent.isRealData();
-  if( !IsData && DoPileUp ){
+  if( !IsData ){
     edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
     iEvent.getByToken(PileUpInfoToken, PupInfo);
     std::vector<PileupSummaryInfo>::const_iterator PVI;
@@ -665,28 +650,6 @@ void SKFlatMaker::beginJob()
 {
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginJob] called" << endl;
-  // if( DoPileUp )
-  // {
-  // // Pileup Reweight: 2012, Summer12_S10
-  // std::vector< float > _PUreweightRun2012 ;
-  // std::vector< float > _PUreweightRun2012MuonPhys ;
-  // std::vector< float > _MC2012;
-
-  // for( int i = 0; i < 100; ++i)
-  // {
-  // _PUreweightRun2012.push_back((float)PileUpRD_[i]);
-  // _PUreweightRun2012MuonPhys.push_back((float)PileUpRDMuonPhys_[i]);
-  // _MC2012.push_back((float)PileUpMC_[i]);
-  // }
-
-  // LumiWeights_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012);
-  // PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
-  // PShiftUp_ = reweight::PoissonMeanShifter(0.5);
-
-  // LumiWeightsMuonPhys_ = edm::LumiReWeighting(_MC2012, _PUreweightRun2012MuonPhys);
-  // PShiftDownMuonPhys_ = reweight::PoissonMeanShifter(-0.5);
-  // PShiftUpMuonPhys_ = reweight::PoissonMeanShifter(0.5);
-  // }
 
   edm::Service<TFileService> fs;
   DYTree = fs->make<TTree>("SKFlat","SKFlat");
@@ -697,11 +660,6 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("run",&runNum,"runNum/I");
   DYTree->Branch("event",&evtNum,"evtNum/l");
   DYTree->Branch("lumi",&lumiBlock,"lumiBlock/I");
-  DYTree->Branch("PUweight",&PUweight,"PUweight/D");
-  // DYTree->Branch("sumEt",&sumEt,"sumEt/D");
-  // DYTree->Branch("photonEt",&photonEt,"photonEt/D");
-  // DYTree->Branch("chargedHadronEt",&chargedHadronEt,"chargedHadronEt/D");
-  // DYTree->Branch("neutralHadronEt",&neutralHadronEt,"neutralHadronEt/D");
   DYTree->Branch("Rho",&Rho,"Rho/D");
   DYTree->Branch("nPV",&nPV,"nPV/I");
   
@@ -715,7 +673,7 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("Flag_BadPFMuonFilter",&Flag_BadPFMuonFilter,"Flag_BadPFMuonFilter/O");
   DYTree->Branch("Flag_BadChargedCandidateFilter",&Flag_BadChargedCandidateFilter,"Flag_BadChargedCandidateFilter/O");
   DYTree->Branch("Flag_eeBadScFilter",&Flag_eeBadScFilter,"Flag_eeBadScFilter/O");
-  DYTree->Branch("Flag_ecalBadCalibFilter",&Flag_ecalBadCalibFilter,"Flag_ecalBadCalibFilter/O");
+  DYTree->Branch("Flag_ecalBadCalibReducedMINIAODFilter",&Flag_ecalBadCalibReducedMINIAODFilter,"Flag_ecalBadCalibReducedMINIAODFilter/O");
 
   
   
@@ -1065,14 +1023,6 @@ void SKFlatMaker::beginJob()
   
   // Pile-up Reweight
   DYTree->Branch("nPileUp",&nPileUp,"nPileUp/I");
-  DYTree->Branch("pileUpReweightIn",&pileUpReweightIn,"pileUpReweightIn/D");
-  DYTree->Branch("pileUpReweight",&pileUpReweight,"pileUpReweight/D");
-  DYTree->Branch("pileUpReweightPlus",&pileUpReweightPlus,"pileUpReweightPlus/D");
-  DYTree->Branch("pileUpReweightMinus",&pileUpReweightMinus,"pileUpReweightMinus/D");
-  DYTree->Branch("pileUpReweightInMuonPhys",&pileUpReweightInMuonPhys,"pileUpReweightInMuonPhys/D");
-  DYTree->Branch("pileUpReweightMuonPhys",&pileUpReweightMuonPhys,"pileUpReweightMuonPhys/D");
-  DYTree->Branch("pileUpReweightPlusMuonPhys",&pileUpReweightPlusMuonPhys,"pileUpReweightPlusMuonPhys/D");
-  DYTree->Branch("pileUpReweightMinusMuonPhys",&pileUpReweightMinusMuonPhys,"pileUpReweightMinusMuonPhys/D");
   
   if( theStoreMETFlag ){
     DYTree->Branch("pfMET_pt", &pfMET_pt, "pfMET_pt/D");
@@ -1304,14 +1254,15 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     }
 
   } // -- end of if( !trigResult.failedToGet() ) -- //
-  
+
+/*
   if( IsData ){
     Handle<TriggerResults> trigResultPAT;
     iEvent.getByToken(TriggerTokenPAT, trigResultPAT);
       
     if( !trigResultPAT.failedToGet() ){
       const edm::TriggerNames trigName = iEvent.triggerNames(*trigResultPAT);
-    
+
       // cout << "trigger names in trigger result (PAT)" << endl;
       // for(int itrig=0; itrig<(int)trigName.size(); itrig++)
       //   cout << "trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
@@ -1325,11 +1276,11 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_BadPFMuonFilter")) ) Flag_BadPFMuonFilter = true;
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_BadChargedCandidateFilter")) ) Flag_BadChargedCandidateFilter = true;
       if( trigResultPAT->accept(trigName.triggerIndex("Flag_eeBadScFilter")) ) Flag_eeBadScFilter = true;
-      if( trigResultPAT->accept(trigName.triggerIndex("Flag_ecalBadCalibFilter")) ) Flag_ecalBadCalibFilter = true;
+      //if( trigResultPAT->accept(trigName.triggerIndex("Flag_ecalBadCalibReducedMINIAODFilter")) ) Flag_ecalBadCalibReducedMINIAODFilter = true;
  
     }
   }
-  
+*/
   
   //==============
   //==== MiniAOD
@@ -1351,6 +1302,7 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   //}
     
   for(unsigned int i = 0, n = METFilterResults->size(); i < n; ++i){
+
     if(strcmp(metNames.triggerName(i).c_str(), "Flag_goodVertices") == 0) Flag_goodVertices = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalTightHalo2016Filter") == 0) Flag_globalTightHalo2016Filter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalSuperTightHalo2016Filter") == 0) Flag_globalSuperTightHalo2016Filter = METFilterResults -> accept(i);
@@ -1360,7 +1312,13 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0) Flag_BadPFMuonFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0) Flag_BadChargedCandidateFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0) Flag_eeBadScFilter = METFilterResults-> accept(i);
-    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0) Flag_ecalBadCalibFilter = METFilterResults -> accept(i);
+    //else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibReducedMINIAODFilter") == 0) Flag_ecalBadCalibReducedMINIAODFilter = METFilterResults -> accept(i);
+  }
+
+  if(DataYear>=2017){
+    edm::Handle< bool > passecalBadCalibFilterUpdate ;
+    iEvent.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
+    Flag_ecalBadCalibReducedMINIAODFilter =  (*passecalBadCalibFilterUpdate );
   }
 
 }
@@ -2259,6 +2217,12 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
     if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight["<<this_id<<"] = " << map_id_to_weight[this_id] << endl;
   }
 
+  int central = ScaleIDRange_.at(0);
+  if(theDebugLevel){
+    cout << "[SKFlatMaker::fillLHEInfo] central = " << central << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight[central] = " << map_id_to_weight[central] << endl;
+  }
+
   //=============================
   //==== 1) QCD Scale variation
   //=============================
@@ -2272,47 +2236,13 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   //==== 2) PDF Error and AlphaS
   //==============================
 
-  int central = ScaleIDRange_.at(0);
   int N_ErrorSet = PDFErrorIDRange_.at(1)-PDFErrorIDRange_.at(0)+1;
-  double pdferr = 0.;
 
-  if(PDFErrorType_=="hessian"){
-
-    for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
-      double this_diff =  map_id_to_weight[i]-map_id_to_weight[central];
-      if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << ", diff = " << this_diff << endl;
-      pdferr += this_diff*this_diff;
-    }
-    pdferr = sqrt(pdferr);
-    if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; --> pdferr = " << pdferr << endl;
-
+  for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
+    double this_reweight = map_id_to_weight[i] / map_id_to_weight[central];
+    PDFWeights_Error.push_back( this_reweight );
+    if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << ", reweight = " << this_reweight << endl;
   }
-  else if(PDFErrorType_=="gaussian"){
-
-    double pdf_sum(0.), pdf_squraesum(0.);
-    for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
-      if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << endl;
-      pdf_sum       += map_id_to_weight[i];
-      pdf_squraesum += map_id_to_weight[i]*map_id_to_weight[i];
-    }
-
-    pdferr = (pdf_squraesum - pdf_sum*pdf_sum/N_ErrorSet)/(N_ErrorSet-1);
-    pdferr = sqrt(pdferr);
-
-  }
-  else{
-    cout << "[SKFlatMaker::fillLHEInfo] Wrong PDFErrorType_ = " << PDFErrorType_ << endl;
-    std::exit(EXIT_FAILURE);
-  }
-
-  if(theDebugLevel){
-    cout << "[SKFlatMaker::fillLHEInfo] central = " << central << endl;
-    cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight[central] = " << map_id_to_weight[central] << endl;
-  }
-  double this_replica_up = 1.+pdferr/map_id_to_weight[central];
-  double this_replica_dn = 1.-pdferr/map_id_to_weight[central];
-  PDFWeights_Error.push_back(this_replica_up);
-  PDFWeights_Error.push_back(this_replica_dn);
 
   //==== AlphaS
 
@@ -2679,6 +2609,18 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //==== JEC
     //==========
 
+/*
+    //==== Printing JEC levels
+    cout << "[AK4]" << endl;
+    cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
+    cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
+    cout << "availableJECLevels() : " << endl;
+    const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
+    for(unsigned int z=0; z< aaa.size(); z++){
+      cout << "  " << aaa.at(z) << endl;
+    }
+*/
+
     //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
     jet_jecUnc->setJetEta( jets_iter->eta() );
     jet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
@@ -2715,6 +2657,18 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //cout << "uncorjet.pt()/jets_iter->pt() = " << uncorjet.pt()/jets_iter->pt() << endl;
     //cout << ( jets_iter->jecFactor("Uncorrected") ) / ( uncorjet.pt()/jets_iter->pt() ) << endl;
     jet_JECFull.push_back( jets_iter->pt()/uncorjet.pt() );
+
+/*
+    //==== debug for JEC updator
+    cout << "[AK4]" << endl;
+    cout << "jets_iter->pt() = " << jets_iter->pt() << endl;
+    cout << "uncorjet.pt() = " << uncorjet.pt() << endl;
+    cout << "ratio = " << jets_iter->pt()/uncorjet.pt() << endl;
+    cout << "1/ratio = " << uncorjet.pt()/jets_iter->pt() << endl;
+    cout << "unc = " << unc << endl;
+    cout << "jet_JECL1FastJet = " << jets_iter->jecFactor("L1FastJet")/jets_iter->jecFactor("Uncorrected") << endl;
+    cout << "jet_JECFull = " << jets_iter->pt()/uncorjet.pt() << endl;
+*/
 
     if(!IsData){
 
@@ -2814,7 +2768,6 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 {
 
-  // edm::Handle<edm::View<pat::Jet> > jetHandle;
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(FatJetToken,jetHandle);
 
@@ -2838,7 +2791,8 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     //==== FatJet with pt 30~170 GeV are only for SM jet analysis
     //==== We can apply pt cut here
 
-    if(jets_iter->pt()<=170.) continue;
+    //if(jets_iter->pt()<=170.) continue;
+    if(! (jets_iter->hasPFSpecific()) ) continue; // With the new JEC, new pt > 170 is not safe anymore
 
     //==== https://hypernews.cern.ch/HyperNews/CMS/get/jet-algorithms/443/2.html
     fatjet_pt.push_back( jets_iter->pt() );
@@ -2954,11 +2908,29 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_softdropmass.push_back( jets_iter->userFloat("ak8PFJetsPuppiSoftDropMass") );
 
     //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+
+/*
+    //==== Printing JEC levels
+    cout << "[AK8]" << endl;
+    cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
+    cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
+    cout << "availableJECLevels() : " << endl;
+    const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
+    for(unsigned int z=0; z< aaa.size(); z++){
+      cout << "  " << aaa.at(z) << endl;
+    }
+*/
+
     fatjet_jecUnc->setJetEta( jets_iter->eta() );
     fatjet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
     double unc = fatjet_jecUnc->getUncertainty(true);
     fatjet_shiftedEnUp.push_back( 1.+unc );
     fatjet_shiftedEnDown.push_back( 1.-unc ); // I found fatjet_jecUnc->getUncertainty(true) = fatjet_jecUnc->getUncertainty(false)
+
+/*
+    cout << "[AK8]" << endl;
+    cout << "jets_iter->pt() = " << jets_iter->pt() << endl;
+*/
 
     if(!IsData){
 

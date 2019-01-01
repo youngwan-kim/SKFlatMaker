@@ -5,7 +5,6 @@ from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarParsing.varType.string, "sampletype: DATA/MC/PrivateMC")
 options.register('ScaleIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Scale ID range: 1,9")
-options.register('PDFErrorType', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error type: gaussian,hessian")
 options.register('PDFErrorIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error ID range: 1001,1100")
 options.register('PDFAlphaSIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS ID range: 1101,1102")
 options.register('PDFAlphaSScaleValue', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS Scale values: 1.5,1.5")
@@ -69,7 +68,6 @@ print 'isMC = '+str(isMC)
 print 'isPrivateSample = '+str(isPrivateSample)
 print 'ScaleIDRange = ',
 print ScaleIDRange
-print 'PDFErrorType = '+options.PDFErrorType
 print 'PDFErrorIDRange = ',
 print PDFErrorIDRange
 print 'PDFAlphaSIDRange = ',
@@ -82,8 +80,9 @@ print 'year = '+str(options.year)
 #### Global Tag
 #### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#2017_and_2016_re_miniAOD_94X_ver
 
-GT_MC = '94X_mc2017_realistic_v14'
-GT_DATA = '94X_dataRun2_v6'
+GT_MC = '94X_mc2017_realistic_v14_fixJECJER'
+GT_DATA = '94X_dataRun2_v6_fixJECJER'
+
 if Is2016:
   GT_DATA = '94X_dataRun2_v10'
   GT_MC = '94X_mcRun2_asymptotic_v3'
@@ -143,6 +142,7 @@ process.TFileService = cms.Service("TFileService",
 from SKFlatMaker.SKFlatMaker.SKFlatMaker_cfi import *
 
 process.recoTree = SKFlatMaker.clone()
+process.recoTree.DataYear = cms.untracked.int32(options.year)
 process.recoTree.DebugLevel = cms.untracked.int32(0)
 process.recoTree.StoreHLTObjectFlag = False ##FIXME
 
@@ -156,7 +156,6 @@ process.recoTree.MET = cms.InputTag("slimmedMETs")
 process.recoTree.GenParticle = cms.untracked.InputTag("prunedGenParticles") # -- miniAOD -- #
 
 process.recoTree.ScaleIDRange = cms.untracked.vint32(ScaleIDRange)
-process.recoTree.PDFErrorType = cms.untracked.string(options.PDFErrorType)
 process.recoTree.PDFErrorIDRange = cms.untracked.vint32(PDFErrorIDRange)
 process.recoTree.PDFAlphaSIDRange = cms.untracked.vint32(PDFAlphaSIDRange)
 process.recoTree.PDFAlphaSScaleValue = cms.untracked.vdouble(PDFAlphaSScaleValue)
@@ -238,9 +237,87 @@ elif Is2017:
   )
   process.recoTree.MET = cms.InputTag("slimmedMETsModifiedMET")
 
+  #################
+  ### Reapply JEC
+  #################
+
+  from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+
+  #### AK4
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJets'),
+     labelName = 'UpdatedJECslimmedJets',
+     jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.Jet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJets")
+
+  #### AK8
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJetsAK8'),
+     labelName = 'UpdatedJECslimmedJetsAK8',
+     jetCorrections = ('AK8PFPuppi', cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.FatJet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJetsAK8")
+
+  #### JEC Sequence
+
+  process.jecSequence = cms.Sequence(
+    process.patJetCorrFactorsUpdatedJECslimmedJets *
+    process.updatedPatJetsUpdatedJECslimmedJets *
+    process.patJetCorrFactorsUpdatedJECslimmedJetsAK8 *
+    process.updatedPatJetsUpdatedJECslimmedJetsAK8
+  )
+
+  ##########
+  #### JER 
+  ##########
+
+  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK4PFchs.txt')
+  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_SF_AK4PFchs.txt')
+  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_SF_AK8PFPuppi.txt')
+
+  #######################################
+  #### ecalBadCalibReducedMINIAODFilter
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#How_to_run_ecal_BadCalibReducedM
+  ########################################
+
+  process.load('RecoMET.METFilters.ecalBadCalibFilter_cfi')
+
+  baddetEcallist = cms.vuint32(
+    [872439604,872422825,872420274,872423218,
+     872423215,872416066,872435036,872439336,
+     872420273,872436907,872420147,872439731,
+     872436657,872420397,872439732,872439339,
+     872439603,872422436,872439861,872437051,
+     872437052,872420649,872422436,872421950,
+     872437185,872422564,872421566,872421695,
+     872421955,872421567,872437184,872421951,
+     872421694,872437056,872437057,872437313]
+  )
+
+  process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
+    "EcalBadCalibFilter",
+    EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
+    ecalMinEt        = cms.double(50.),
+    baddetEcal    = baddetEcallist, 
+    taggingMode = cms.bool(True),
+    debug = cms.bool(False)
+  )
+
+  ###########
+  #### Path
+  ###########
+
   process.p = cms.Path(
     process.egammaPostRecoSeq *
+    process.jecSequence *
     process.fullPatMetSequenceModifiedMET *
+    process.ecalBadCalibReducedMINIAODFilter *
     process.recoTree
   )
 
