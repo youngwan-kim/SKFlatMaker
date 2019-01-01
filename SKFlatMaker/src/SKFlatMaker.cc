@@ -2400,11 +2400,11 @@ void SKFlatMaker::fillPhotons(const edm::Event &iEvent)
     photon_NhIsoWithEA.push_back( std::max( 0.0, nhIso - Rho*photon_EA_HN.getEffectiveArea(abseta) ) );
     photon_PhIsoWithEA.push_back( std::max( 0.0, phIso - Rho*photon_EA_Ph.getEffectiveArea(abseta) ) );
     
-    bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-loose");
-    bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V1-medium");
-    bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V1-tight");
-    bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp80");
-    bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v1-wp90");
+    bool isPassLoose  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V2-loose");
+    bool isPassMedium  = pho -> photonID("cutBasedPhotonID-Fall17-94X-V2-medium");
+    bool isPassTight  = pho  -> photonID("cutBasedPhotonID-Fall17-94X-V2-tight");
+    bool isPassMVA_WP80 = pho -> photonID("mvaPhoID-RunIIFall17-v2-wp80");
+    bool isPassMVA_WP90 = pho -> photonID("mvaPhoID-RunIIFall17-v2-wp90");
   
     photon_passMVAID_WP80.push_back( isPassMVA_WP80 );
     photon_passMVAID_WP90.push_back( isPassMVA_WP90 );
