@@ -5,6 +5,8 @@ txtfilename = '2016_DATA.txt'
 #txtfilename = '2016_MC.txt'
 #txtfilename = '2017_DATA.txt'
 #txtfilename = '2017_MC.txt'
+#txtfilename = '2018_DATA.txt'
+#txtfilename = '2018_MC.txt'
 
 SKFlatTag = os.environ['SKFlatTag']
 SKFlatWD = os.environ['SKFlatWD']
@@ -12,8 +14,13 @@ SKFlatWD = os.environ['SKFlatWD']
 year = "-1"
 if "2016" in txtfilename:
   year = "2016"
-if "2017" in txtfilename:
+elif "2017" in txtfilename:
   year = "2017"
+elif "2018" in txtfilename:
+  year = "2018"
+else:
+  print "Wrong year from txtfilename : "+txtfilename
+  sys.exit()
 
 lines = open(txtfilename).readlines()
 
@@ -55,6 +62,11 @@ for line in lines:
   sample = samplePDs[1]
   confs = samplePDs[2]
   cmd = 'crab submit -c SubmitCrab__'+sample+'__'+confs+'.py'
+
+  #### AD-HOC for 2018 periodD, which has different GT
+  if isData and year=="2018" and "Run2018D" in confs and "PromptReco" in confs:
+    print "#### 2018 DATA periodD :"+sample+"/"+confs+"/MINIAOD"
+    str_sample = "DATA2018Prompt"
 
   ArgsListString = "['sampletype="+str_sample+"','year="+year+"'"
   # ['sampletype="+str_sample+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"','year="+year+"']

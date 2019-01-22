@@ -115,7 +115,7 @@ process.source = cms.Source("PoolSource",
   #skipEvents=cms.untracked.uint32(5),
 )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 # -- Geometry and Detector Conditions (needed for a few patTuple production steps) -- #
 process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
@@ -387,6 +387,47 @@ elif Is2018:
   print "Running 2018"
   print "################"
 
+  ###########################
+  #### Rerun EGammaPostReco
+  ###########################
+
+  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  setupEgammaPostRecoSeq(process,
+                         runEnergyCorrections=False, #as energy corrections are not yet availible for 2018
+                         era='2018-Prompt')  
+  #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
+
+  #######################################
+  #### ecalBadCalibReducedMINIAODFilter
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#How_to_run_ecal_BadCalibReducedM
+  ########################################
+
+  process.load('RecoMET.METFilters.ecalBadCalibFilter_cfi')
+
+  baddetEcallist = cms.vuint32(
+    [872439604,872422825,872420274,872423218,
+     872423215,872416066,872435036,872439336,
+     872420273,872436907,872420147,872439731,
+     872436657,872420397,872439732,872439339,
+     872439603,872422436,872439861,872437051,
+     872437052,872420649,872422436,872421950,
+     872437185,872422564,872421566,872421695,
+     872421955,872421567,872437184,872421951,
+     872421694,872437056,872437057,872437313]
+  )
+
+  process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
+    "EcalBadCalibFilter",
+    EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
+    ecalMinEt        = cms.double(50.),
+    baddetEcal    = baddetEcallist,
+    taggingMode = cms.bool(True),
+    debug = cms.bool(False)
+  )
+
+
   process.p = cms.Path(
+    process.egammaPostRecoSeq *
+    process.ecalBadCalibReducedMINIAODFilter *
     process.recoTree
   )
