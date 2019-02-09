@@ -1,7 +1,7 @@
-import os
-import sys
+import os, sys
 
-txtfilename = '2016_DATA.txt'
+txtfilename = sys.argv[1]
+#txtfilename = '2016_DATA.txt'
 #txtfilename = '2016_MC.txt'
 #txtfilename = '2017_DATA.txt'
 #txtfilename = '2017_MC.txt'
@@ -87,7 +87,6 @@ for line in lines:
       ### to avoid exit()
       print '#### No MCPDFInfo : '+sample
       #ArgsListString += ",'PDFErrorType="+"hessian"+"'"
-      continue
 
   ArgsListString += "]"
 
