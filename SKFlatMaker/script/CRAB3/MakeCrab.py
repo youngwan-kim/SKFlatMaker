@@ -28,7 +28,7 @@ else:
   str_sample = "MC"
   isData = False
   isPrivateMC = False
-if ("Private" in txtfilename) or ("private" in txtfilename) or ("USER" in sys.argv[3]):
+if ("Private" in txtfilename) or ("private" in txtfilename):
   str_sample = "PrivateMC"
   isData = False
   isPrivateMC = True
