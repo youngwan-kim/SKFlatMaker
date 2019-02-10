@@ -1,7 +1,8 @@
 import os
 
-filename = 'samplelist_2016.txt'
+#filename = 'samplelist_2016.txt'
 #filename = 'samplelist_2017.txt'
+filename = 'samplelist_2018.txt'
 #filename = 'samplelist_Private.txt'
 
 IsPrivate = ("Private" in filename)
@@ -10,6 +11,8 @@ lines = open(filename).readlines()
 Year = "2016"
 if "2017" in filename:
   Year = "2017"
+elif "2018" in filename:
+  Year = "2018"
 
 hostname = os.environ['HOSTNAME']
 SKFlatWD = os.environ['SKFlatWD']
@@ -52,6 +55,7 @@ for line in lines:
 
   HasFile = os.path.isfile(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+Year+'/'+sample+'.txt')
 
+  '''
   if HasFile:
 
     MCInfoLines = open(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+Year+'/'+sample+'.txt').readlines()
@@ -72,6 +76,7 @@ for line in lines:
   else:
     ### to avoid exit()
     cmd += ' PDFErrorType=hessian'
+  '''
 
   if IsPrivate:
     cmd = cmd+' sampletype=PrivateMC'
