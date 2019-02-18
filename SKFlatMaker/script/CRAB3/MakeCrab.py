@@ -5,6 +5,9 @@ txtfilename = sys.argv[1]
 #txtfilename = '2016_MC.txt'
 #txtfilename = '2017_DATA.txt'
 #txtfilename = '2017_MC.txt'
+#txtfilename = '2018_DATA.txt'
+#txtfilename = '2018_MC.txt'
+#txtfilename = '2018_MC_temp.txt'
 
 SKFlatTag = os.environ['SKFlatTag']
 SKFlatWD = os.environ['SKFlatWD']
@@ -12,8 +15,13 @@ SKFlatWD = os.environ['SKFlatWD']
 year = "-1"
 if "2016" in txtfilename:
   year = "2016"
-if "2017" in txtfilename:
+elif "2017" in txtfilename:
   year = "2017"
+elif "2018" in txtfilename:
+  year = "2018"
+else:
+  print "Wrong year from txtfilename : "+txtfilename
+  sys.exit()
 
 lines = open(txtfilename).readlines()
 
@@ -55,6 +63,11 @@ for line in lines:
   sample = samplePDs[1]
   confs = samplePDs[2]
   cmd = 'crab submit -c SubmitCrab__'+sample+'__'+confs+'.py'
+
+  #### AD-HOC for 2018 periodD, which has different GT
+  if isData and year=="2018" and "Run2018D" in confs and "PromptReco" in confs:
+    print "#### 2018 DATA periodD :"+sample+"/"+confs+"/MINIAOD"
+    str_sample = "DATA2018Prompt"
 
   ArgsListString = "['sampletype="+str_sample+"','year="+year+"'"
   # ['sampletype="+str_sample+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"','year="+year+"']
@@ -120,7 +133,9 @@ for line in lines:
     elif 'config.Data.outputDatasetTag' in sk_line:
       if isData:
         period = ""
-        if year+"B" in confs:
+        if year+"A" in confs:
+          period = "A"
+        elif year+"B" in confs:
           period = "B"
           if year=="2016":
             if "ver1" in confs:
@@ -158,8 +173,12 @@ for line in lines:
   if isData:
     if year=="2016":
       out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'\n")
-    if year=="2017":
+    elif year=="2017":
       out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'\n")
+    elif year=="2018":
+      out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt'\n")
+    else:
+      print "Wrong year : "+year
 
   if isPrivateMC:
     out.write("config.Data.inputDBS = 'phys03'\n")
