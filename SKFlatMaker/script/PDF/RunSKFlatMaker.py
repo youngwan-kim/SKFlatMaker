@@ -281,6 +281,7 @@ elif Is2017:
 
   #################
   ### Reapply JEC
+  ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
   #################
 
   from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
