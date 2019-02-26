@@ -359,6 +359,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_PFSumPUIsoR03.clear();
   muon_TypeBit.clear();
   muon_IDBit.clear();
+  muon_ishighptnew.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -920,6 +921,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
     DYTree->Branch("muon_TypeBit", "vector<unsigned int>", &muon_TypeBit);
     DYTree->Branch("muon_IDBit", "vector<unsigned int>", &muon_IDBit);
+    DYTree->Branch("muon_ishighptnew", "vector<unsigned bool>", &muon_ishighptnew);
     DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
@@ -1744,6 +1746,37 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_nChambers.push_back( imuon.numberOfChambers() ); // -- # of chambers -- //
     muon_matchedstations.push_back( imuon.numberOfMatchedStations() ); // -- # of chambers with matched segments -- //
     muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
+
+
+    //=== Get new ishighpt  id 
+    //=== https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#HighPt_Muon 
+
+    bool newishighpt=false;
+    if (imuon.isGlobalMuon()){
+      if( glbTrack.isNonnull() && imuon.tunePMuonBestTrack().isNonnull() ){
+	const reco::HitPattern & glbhit = glbTrack->hitPattern();
+	if( (glbhit.numberOfValidMuonHits()  + imuon.tunePMuonBestTrack()->numberOfValidMuonHits() ) > 0){
+	  if( imuon.numberOfMatchedStations() > 1 || ( (imuon.numberOfMatchedStations() == 1 && imuon.isTrackerMuon()) && (imuon.expectedNnumberOfMatchedStations()<2 || (imuon.stationMask()!=1 && imuon.stationMask()!=16 ) || imuon.numberOfMatchedRPCLayers()>2))){
+	    
+	    if( (imuon.tunePMuonBestTrack()->ptError() / imuon.tunePMuonBestTrack()->pt()) < 0.3){
+	      if( !pvHandle->empty() && !pvHandle->front().isFake() ){
+		if(fabs(imuon.innerTrack()->dxy(vtx->position())) < 0.2){
+		  if(fabs(imuon.innerTrack()->dz(vtx->position())) < 0.5){
+		    if(imuon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0){
+		      if(imuon.innerTrack()->trackerLayersWithMeasurement() > 5){
+			newishighpt=true;
+		      }
+		    }
+		  }
+		}		  
+	      }
+	    }
+	  }
+	}
+      }
+    }
+    muon_ishighptnew.push_back(newishighpt);
+    
 
     //==== Rochestor
 
@@ -2622,15 +2655,68 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 
     bool tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
     bool tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
-    if(fabs(eta)>3.0){
-      tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10) && fabs(eta)>3.0;
-      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
-    }
-    else if(fabs(eta)>2.7){
-      tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2) && abs(eta)>2.7 && abs(eta)<=3.0;
-      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+
+    if(DataYear==2016){
+      //=== 2016 jet IDs
+      //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
+      
+      if(fabs(eta)>3.0){
+	tightJetID = (NEMF<0.90 && NumNeutralParticle>10 );
+	tightLepVetoJetID = (NEMF<0.90 && NumNeutralParticle>10 );
+      }
+      else if(fabs(eta)>2.7){
+	tightJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticle>2);
+	tightLepVetoJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticle>2);
+      }
+      else {
+	tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+	tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+
+      }
     }
 
+    else   if(DataYear<=2017){
+      //=== 2017 jet IDs                                                                                                                                                                               
+      //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017                                                                                                                                     
+
+      if(fabs(eta)>3.0){
+        tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10);                                                                                                                                   
+        tightLepVetoJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10);
+      }
+      else if(fabs(eta)>2.7){
+        tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2);                                                                                                                                 
+        tightLepVetoJetID =  (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2);
+      }
+      else{
+	tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
+	tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+	
+      }
+    }
+    else{
+      //=== 2018 jet ID
+      //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018
+      if(fabs(eta)>3.0){
+	tightJetID = (NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
+	tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
+	  
+      }
+      else if(fabs(eta)>2.7){
+	tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticle>2);
+	tightLepVetoJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticle>2);
+      }
+      else if(fabs(eta)>2.6){
+	tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
+	
+	tightLepVetoJetID = ( CEMF<0.8 && CHM>0 && NEMF<0.99 && MUF <0.8 && NHF < 0.9 );
+	
+      }
+      else{
+	tightJetID = (abs(eta)<=2.6 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 );
+	tightLepVetoJetID = (abs(eta)<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && MUF <0.8 && NHF < 0.9 );	  
+      }
+    }
+      
     jet_tightJetID.push_back(tightJetID);
     jet_tightLepVetoJetID.push_back(tightLepVetoJetID);
 
