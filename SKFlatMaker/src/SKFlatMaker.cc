@@ -1748,7 +1748,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
 
 
-    //=== Get new ishighpt  id 
+    //=== Calculate on the fly new ishighpt id 
     //=== https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#HighPt_Muon 
 
     bool newishighpt=false;
