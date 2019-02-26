@@ -552,6 +552,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_PFSumPUIsoR03;
   vector<unsigned int> muon_TypeBit;
   vector<unsigned int> muon_IDBit;
+  vector<bool> muon_ishighptnew;
   vector<double> muon_dB;
   vector<double> muon_phi;
   vector<double> muon_eta;
