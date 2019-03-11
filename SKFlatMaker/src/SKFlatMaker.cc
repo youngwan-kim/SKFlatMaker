@@ -2976,13 +2976,11 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     if(DataYear==2016){
       //=== 2016 jet IDs                                                                                                                                                                                    
       //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016                                                                                                                                     
-      if(fabs(eta)>3.0){
-        tightJetID = (NEMF<0.90 && NumNeutralParticle>10 );
-        tightLepVetoJetID = (NEMF<0.90 && NumNeutralParticle>10 );
-      }
-      else if(fabs(eta)>2.7){
-        tightJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticle>2);
-        tightLepVetoJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticle>2);
+      if(fabs(eta)>2.7){
+	//Note that the jet ID requirements for |eta|>2.7 are not recommended for PUPPI jets (see e.g. https://indico.cern.ch/event/578287/contributions/2347317/).
+
+        tightJetID = false;
+        tightLepVetoJetID = false;
       }
       else {
         tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || fabs(eta)>2.4) && fabs(eta)<=2.7;
@@ -2993,12 +2991,12 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
       //=== 2017 jet IDs                                                                                                                                                                                    
       //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017                                                                                                                                    
       if(fabs(eta)>3.0){
-        tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10);
-        tightLepVetoJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10);
+        tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles> 2 && NumNeutralParticles < 15);
+        tightLepVetoJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>2 && NumNeutralParticles < 15);
       }
       else if(fabs(eta)>2.7){
-        tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2);
-        tightLepVetoJetID =  (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2);
+        tightJetID = (NEMF<0.99);
+        tightLepVetoJetID =  (NEMF<0.99);
       }
       else{
         tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
