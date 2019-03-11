@@ -1748,34 +1748,8 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
 
 
-    //=== Get new ishighpt  id 
-    //=== https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#HighPt_Muon 
-
-    bool newishighpt=false;
-    if (imuon.isGlobalMuon()){
-      if( glbTrack.isNonnull() && imuon.tunePMuonBestTrack().isNonnull() ){
-	const reco::HitPattern & glbhit = glbTrack->hitPattern();
-	if( (glbhit.numberOfValidMuonHits()  + imuon.tunePMuonBestTrack()->numberOfValidMuonHits() ) > 0){
-	  if( imuon.numberOfMatchedStations() > 1 || ( (imuon.numberOfMatchedStations() == 1 && imuon.isTrackerMuon()) && (imuon.expectedNnumberOfMatchedStations()<2 || (imuon.stationMask()!=1 && imuon.stationMask()!=16 ) || imuon.numberOfMatchedRPCLayers()>2))){
-	    
-	    if( (imuon.tunePMuonBestTrack()->ptError() / imuon.tunePMuonBestTrack()->pt()) < 0.3){
-	      if( !pvHandle->empty() && !pvHandle->front().isFake() ){
-		if(fabs(imuon.innerTrack()->dxy(vtx->position())) < 0.2){
-		  if(fabs(imuon.innerTrack()->dz(vtx->position())) < 0.5){
-		    if(imuon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0){
-		      if(imuon.innerTrack()->trackerLayersWithMeasurement() > 5){
-			newishighpt=true;
-		      }
-		    }
-		  }
-		}		  
-	      }
-	    }
-	  }
-	}
-      }
-    }
-    muon_ishighptnew.push_back(newishighpt);
+    //=== store ishighpt to get new ID for 10_4_X
+    muon_ishighptnew.push_back(imuon.isHighPtMuon(vtx));
     
 
     //==== Rochestor
@@ -2660,12 +2634,12 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
       //=== 2016 jet IDs
       //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
       if(fabs(eta)>3.0){
-	tightJetID = (NEMF<0.90 && NumNeutralParticle>10 );
-	tightLepVetoJetID = (NEMF<0.90 && NumNeutralParticle>10 );
+	tightJetID = (NEMF<0.90 && NumNeutralParticles>10 );
+	tightLepVetoJetID = (NEMF<0.90 && NumNeutralParticles>10 );
       }
       else if(fabs(eta)>2.7){
-	tightJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticle>2);
-	tightLepVetoJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticle>2);
+	tightJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2);
+	tightLepVetoJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2);
       }
       else {
 	tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || fabs(eta)>2.4) && fabs(eta)<=2.7;
@@ -2696,8 +2670,8 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 	tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
       }
       else if(fabs(eta)>2.7){
-	tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticle>2);
-	tightLepVetoJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticle>2);
+	tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
+	tightLepVetoJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
       }
       else if(fabs(eta)>2.6){
 	tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
