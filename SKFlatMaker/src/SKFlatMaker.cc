@@ -2666,8 +2666,8 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
       //=== 2018 jet ID
       //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018
       if(fabs(eta)>3.0){
-	tightJetID = (NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
-	tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
+	tightJetID = (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
+	tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
       }
       else if(fabs(eta)>2.7){
 	tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
@@ -3007,12 +3007,12 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
       //=== 2018 jet ID                                                                                                                                                                                     
       //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018                                                                                                                                 
       if(fabs(eta)>3.0){
-        tightJetID = (NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
-        tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
+        tightJetID = (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
+        tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
       }
       else if(fabs(eta)>2.7){
-        tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticle>2);
-        tightLepVetoJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticle>2);
+        tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
+        tightLepVetoJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
       }
       else if(fabs(eta)>2.6){
         tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
