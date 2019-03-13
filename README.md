@@ -174,8 +174,8 @@ export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
 
 # Make CMSSW directory
-cmsrel CMSSW_10_2_5
-cd CMSSW_10_2_5/src
+cmsrel CMSSW_10_4_0_patch1
+cd CMSSW_10_4_0_patch1/src
 cmsenv
 git cms-init
 
@@ -223,10 +223,10 @@ Also, I recommend using lxplus
 
 ```bash
 # scram p -n <directory name> CMSSW <cmssw release>
-# below, assuming we are using tag:Run2Legacy_v1, in cmssw:CMSSW_10_2_5
+# below, assuming we are using tag:Run2Legacy_v1, in cmssw:CMSSW_10_4_0_patch1
 export SCRAM_ARCH=slc6_amd64_gcc700
-scram p -n Run2Legacy_v1__CMSSW_10_2_5 CMSSW CMSSW_10_2_5
-cd Run2Legacy_v1__CMSSW_10_2_5/src
+scram p -n Run2Legacy_v1__CMSSW_10_4_0_patch1 CMSSW CMSSW_10_4_0_patch1
+cd Run2Legacy_v1__CMSSW_10_4_0_patch1/src
 cmsenv
 # crab setup
 source /cvmfs/cms.cern.ch/crab3/crab.sh
