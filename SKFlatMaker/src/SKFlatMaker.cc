@@ -2646,7 +2646,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 	tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || fabs(eta)>2.4) && fabs(eta)<=2.7;
       }
     }
-    else   if(DataYear<=2017){
+    else   if(DataYear==2017){
       //=== 2017 jet IDs                                                                                                                                                                               
       //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017                                                                                                                                    
       if(fabs(eta)>3.0){
@@ -2662,7 +2662,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 	tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;	
       }
     }
-    else{
+    else   if(DataYear==2018){
       //=== 2018 jet ID
       //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018
       if(fabs(eta)>3.0){
@@ -2681,6 +2681,10 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 	tightJetID = (abs(eta)<=2.6 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 );
 	tightLepVetoJetID = (abs(eta)<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && MUF <0.8 && NHF < 0.9 );	  
       }
+    }
+    else{
+      cout << "DataYear is not set : DataYear = " << DataYear << endl;
+      exit(EXIT_FAILURE);
     }
       
     jet_tightJetID.push_back(tightJetID);
@@ -2987,7 +2991,7 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
         tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || fabs(eta)>2.4) && fabs(eta)<=2.7;
       }
     }
-    else   if(DataYear<=2017){
+    else   if(DataYear==2017){
       //=== 2017 jet IDs                                                                                                                                                                                    
       //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017                                                                                                                                    
       if(fabs(eta)>3.0){
@@ -2995,15 +2999,15 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
         tightLepVetoJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>2 && NumNeutralParticles < 15);
       }
       else if(fabs(eta)>2.7){
-        tightJetID = (NEMF<0.99);
-        tightLepVetoJetID =  (NEMF<0.99);
+        tightJetID = (NHF<0.99);
+        tightLepVetoJetID =  (NHF<0.99);
       }
       else{
         tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
         tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
       }
     }
-    else{
+    else  if(DataYear==2018){
       //=== 2018 jet ID                                                                                                                                                                                     
       //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018                                                                                                                                 
       if(fabs(eta)>3.0){
@@ -3022,6 +3026,10 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
         tightJetID = (abs(eta)<=2.6 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 );
         tightLepVetoJetID = (abs(eta)<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && MUF <0.8 && NHF < 0.9 );
       }
+    }
+    else{
+      cout << "DataYear is not set : DataYear = " << DataYear << endl;
+      exit(EXIT_FAILURE);
     }
 
     fatjet_tightJetID.push_back(tightJetID);
