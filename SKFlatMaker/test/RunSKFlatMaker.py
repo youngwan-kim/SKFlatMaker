@@ -398,7 +398,6 @@ elif Is2018:
 
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
-                         runEnergyCorrections=False, #as energy corrections are not yet availible for 2018
                          era='2018-Prompt')  
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 

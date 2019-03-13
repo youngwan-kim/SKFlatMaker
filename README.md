@@ -182,15 +182,17 @@ git cms-init
 ######################
 #### EGamma smearing
 #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2018_MiniAOD
+#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 ######################
 
 git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
-
-#############
-#### v2 VID
-#############
-
-git cms-merge-topic cms-egamma:EgammaID_1023 #if you want the V2 IDs, otherwise skip
+git cms-addpkg EgammaAnalysis/ElectronTools  #check out the package otherwise code accessing it will crash
+rm EgammaAnalysis/ElectronTools/data -rf   #delete the data directory so we can populate it ourselves
+git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
+cd EgammaAnalysis/ElectronTools/data
+git checkout ScalesSmearing2018_Dev
+cd -
+git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev
 
 ###############################
 #### Rerun ecalBadCalibfilter
@@ -242,15 +244,17 @@ git cms-init
 ######################
 #### EGamma smearing
 #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2018_MiniAOD
+#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 ######################
 
 git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
-
-#############
-#### v2 VID
-#############
-
-git cms-merge-topic cms-egamma:EgammaID_1023 #if you want the V2 IDs, otherwise skip
+git cms-addpkg EgammaAnalysis/ElectronTools  #check out the package otherwise code accessing it will crash
+rm EgammaAnalysis/ElectronTools/data -rf   #delete the data directory so we can populate it ourselves
+git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
+cd EgammaAnalysis/ElectronTools/data
+git checkout ScalesSmearing2018_Dev
+cd -
+git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev
 
 ###############################
 #### Rerun ecalBadCalibfilter
