@@ -359,6 +359,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_PFSumPUIsoR03.clear();
   muon_TypeBit.clear();
   muon_IDBit.clear();
+  muon_ishighptnew.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -920,6 +921,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
     DYTree->Branch("muon_TypeBit", "vector<unsigned int>", &muon_TypeBit);
     DYTree->Branch("muon_IDBit", "vector<unsigned int>", &muon_IDBit);
+    DYTree->Branch("muon_ishighptnew", "vector<unsigned bool>", &muon_ishighptnew);
     DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
@@ -1744,6 +1746,11 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_nChambers.push_back( imuon.numberOfChambers() ); // -- # of chambers -- //
     muon_matchedstations.push_back( imuon.numberOfMatchedStations() ); // -- # of chambers with matched segments -- //
     muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
+
+
+    //=== store ishighpt to get new ID for 10_4_X
+    muon_ishighptnew.push_back(imuon.isHighPtMuon(vtx));
+    
 
     //==== Rochestor
 
@@ -2622,15 +2629,64 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 
     bool tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
     bool tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
-    if(fabs(eta)>3.0){
-      tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10) && fabs(eta)>3.0;
-      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
-    }
-    else if(fabs(eta)>2.7){
-      tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2) && abs(eta)>2.7 && abs(eta)<=3.0;
-      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
-    }
 
+    if(DataYear==2016){
+      //=== 2016 jet IDs
+      //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
+      if(fabs(eta)>3.0){
+	tightJetID = (NEMF<0.90 && NumNeutralParticles>10 );
+	tightLepVetoJetID = (NEMF<0.90 && NumNeutralParticles>10 );
+      }
+      else if(fabs(eta)>2.7){
+	tightJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2);
+	tightLepVetoJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2);
+      }
+      else {
+	tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+	tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+      }
+    }
+    else   if(DataYear==2017){
+      //=== 2017 jet IDs                                                                                                                                                                               
+      //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017                                                                                                                                    
+      if(fabs(eta)>3.0){
+        tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10);                                                                                                                                   
+        tightLepVetoJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10);
+      }
+      else if(fabs(eta)>2.7){
+        tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2);                                                                                                                                 
+        tightLepVetoJetID =  (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2);
+      }
+      else{
+	tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
+	tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;	
+      }
+    }
+    else   if(DataYear==2018){
+      //=== 2018 jet ID
+      //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018
+      if(fabs(eta)>3.0){
+	tightJetID = (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
+	tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
+      }
+      else if(fabs(eta)>2.7){
+	tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
+	tightLepVetoJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
+      }
+      else if(fabs(eta)>2.6){
+	tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
+	tightLepVetoJetID = ( CEMF<0.8 && CHM>0 && NEMF<0.99 && MUF <0.8 && NHF < 0.9 );
+      }
+      else{
+	tightJetID = (abs(eta)<=2.6 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 );
+	tightLepVetoJetID = (abs(eta)<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && MUF <0.8 && NHF < 0.9 );	  
+      }
+    }
+    else{
+      cout << "DataYear is not set : DataYear = " << DataYear << endl;
+      exit(EXIT_FAILURE);
+    }
+      
     jet_tightJetID.push_back(tightJetID);
     jet_tightLepVetoJetID.push_back(tightLepVetoJetID);
 
@@ -2917,15 +2973,63 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     double CHM      = jets_iter->chargedMultiplicity();
     double eta = jets_iter->eta();
 
+
     bool tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
     bool tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
-    if(fabs(eta)>3.0){
-      tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>10) && fabs(eta)>3.0;
-      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+
+    if(DataYear==2016){
+      //=== 2016 jet IDs                                                                                                                                                                                    
+      //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016                                                                                                                                     
+      if(fabs(eta)>2.7){
+	//Note that the jet ID requirements for |eta|>2.7 are not recommended for PUPPI jets (see e.g. https://indico.cern.ch/event/578287/contributions/2347317/).
+
+        tightJetID = false;
+        tightLepVetoJetID = false;
+      }
+      else {
+        tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+        tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+      }
     }
-    else if(fabs(eta)>2.7){
-      tightJetID = (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2) && abs(eta)>2.7 && abs(eta)<=3.0;
-      tightLepVetoJetID = false; //FIXME default is false or true? following CAT2016
+    else   if(DataYear==2017){
+      //=== 2017 jet IDs                                                                                                                                                                                    
+      //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017                                                                                                                                    
+      if(fabs(eta)>3.0){
+        tightJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles> 2 && NumNeutralParticles < 15);
+        tightLepVetoJetID = (NEMF<0.90 && NHF>0.02 && NumNeutralParticles>2 && NumNeutralParticles < 15);
+      }
+      else if(fabs(eta)>2.7){
+        tightJetID = (NHF<0.99);
+        tightLepVetoJetID =  (NHF<0.99);
+      }
+      else{
+        tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
+        tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+      }
+    }
+    else  if(DataYear==2018){
+      //=== 2018 jet ID                                                                                                                                                                                     
+      //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018                                                                                                                                 
+      if(fabs(eta)>3.0){
+        tightJetID = (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
+        tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
+      }
+      else if(fabs(eta)>2.7){
+        tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
+        tightLepVetoJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
+      }
+      else if(fabs(eta)>2.6){
+        tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
+        tightLepVetoJetID = ( CEMF<0.8 && CHM>0 && NEMF<0.99 && MUF <0.8 && NHF < 0.9 );
+      } 
+      else{
+        tightJetID = (abs(eta)<=2.6 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 );
+        tightLepVetoJetID = (abs(eta)<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && MUF <0.8 && NHF < 0.9 );
+      }
+    }
+    else{
+      cout << "DataYear is not set : DataYear = " << DataYear << endl;
+      exit(EXIT_FAILURE);
     }
 
     fatjet_tightJetID.push_back(tightJetID);
