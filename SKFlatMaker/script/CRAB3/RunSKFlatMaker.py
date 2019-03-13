@@ -316,7 +316,7 @@ elif Is2017:
   )
 
   ##########
-  #### JER 
+  #### JER
   ##########
 
   process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK4PFchs.txt')
@@ -340,7 +340,11 @@ elif Is2017:
      872437052,872420649,872422436,872421950,
      872437185,872422564,872421566,872421695,
      872421955,872421567,872437184,872421951,
-     872421694,872437056,872437057,872437313]
+     872421694,872437056,872437057,872437313,
+     872438182,872438951,872439990,872439864,
+     872439609,872437181,872437182,872437053,
+     872436794,872436667,872436536,872421541,
+     872421413,872421414,872421031,872423083,872421439]
   )
 
   process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
@@ -394,9 +398,17 @@ elif Is2018:
 
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
-                         runEnergyCorrections=False, #as energy corrections are not yet availible for 2018
                          era='2018-Prompt')  
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
+
+  ##########
+  #### JER
+  ##########
+
+  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V1_MC/Autumn18_V1_MC_PtResolution_AK4PFchs.txt')
+  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V1_MC/Autumn18_V1_MC_SF_AK4PFchs.txt')
+  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V1_MC/Autumn18_V1_MC_PtResolution_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V1_MC/Autumn18_V1_MC_SF_AK8PFPuppi.txt')
 
   #######################################
   #### ecalBadCalibReducedMINIAODFilter
@@ -414,7 +426,11 @@ elif Is2018:
      872437052,872420649,872422436,872421950,
      872437185,872422564,872421566,872421695,
      872421955,872421567,872437184,872421951,
-     872421694,872437056,872437057,872437313]
+     872421694,872437056,872437057,872437313,
+     872438182,872438951,872439990,872439864,
+     872439609,872437181,872437182,872437053,
+     872436794,872436667,872436536,872421541,
+     872421413,872421414,872421031,872423083,872421439]
   )
 
   process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(

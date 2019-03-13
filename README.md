@@ -174,23 +174,25 @@ export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
 
 # Make CMSSW directory
-cmsrel CMSSW_10_2_5
-cd CMSSW_10_2_5/src
+cmsrel CMSSW_10_4_0_patch1
+cd CMSSW_10_4_0_patch1/src
 cmsenv
 git cms-init
 
 ######################
 #### EGamma smearing
 #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2018_MiniAOD
+#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 ######################
 
 git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
-
-#############
-#### v2 VID
-#############
-
-git cms-merge-topic cms-egamma:EgammaID_1023 #if you want the V2 IDs, otherwise skip
+git cms-addpkg EgammaAnalysis/ElectronTools  #check out the package otherwise code accessing it will crash
+rm EgammaAnalysis/ElectronTools/data -rf   #delete the data directory so we can populate it ourselves
+git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
+cd EgammaAnalysis/ElectronTools/data
+git checkout ScalesSmearing2018_Dev
+cd -
+git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev
 
 ###############################
 #### Rerun ecalBadCalibfilter
@@ -223,10 +225,10 @@ Also, I recommend using lxplus
 
 ```bash
 # scram p -n <directory name> CMSSW <cmssw release>
-# below, assuming we are using tag:Run2Legacy_v1, in cmssw:CMSSW_10_2_5
+# below, assuming we are using tag:Run2Legacy_v1, in cmssw:CMSSW_10_4_0_patch1
 export SCRAM_ARCH=slc6_amd64_gcc700
-scram p -n Run2Legacy_v1__CMSSW_10_2_5 CMSSW CMSSW_10_2_5
-cd Run2Legacy_v1__CMSSW_10_2_5/src
+scram p -n Run2Legacy_v1__CMSSW_10_4_0_patch1 CMSSW CMSSW_10_4_0_patch1
+cd Run2Legacy_v1__CMSSW_10_4_0_patch1/src
 cmsenv
 # crab setup
 source /cvmfs/cms.cern.ch/crab3/crab.sh
@@ -242,15 +244,17 @@ git cms-init
 ######################
 #### EGamma smearing
 #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2018_MiniAOD
+#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
 ######################
 
 git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
-
-#############
-#### v2 VID
-#############
-
-git cms-merge-topic cms-egamma:EgammaID_1023 #if you want the V2 IDs, otherwise skip
+git cms-addpkg EgammaAnalysis/ElectronTools  #check out the package otherwise code accessing it will crash
+rm EgammaAnalysis/ElectronTools/data -rf   #delete the data directory so we can populate it ourselves
+git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
+cd EgammaAnalysis/ElectronTools/data
+git checkout ScalesSmearing2018_Dev
+cd -
+git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev
 
 ###############################
 #### Rerun ecalBadCalibfilter

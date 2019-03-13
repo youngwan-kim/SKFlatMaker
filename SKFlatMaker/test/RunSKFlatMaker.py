@@ -316,7 +316,7 @@ elif Is2017:
   )
 
   ##########
-  #### JER 
+  #### JER
   ##########
 
   process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK4PFchs.txt')
@@ -398,9 +398,17 @@ elif Is2018:
 
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
-                         runEnergyCorrections=False, #as energy corrections are not yet availible for 2018
                          era='2018-Prompt')  
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
+
+  ##########
+  #### JER
+  ##########
+
+  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V1_MC/Autumn18_V1_MC_PtResolution_AK4PFchs.txt')
+  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V1_MC/Autumn18_V1_MC_SF_AK4PFchs.txt')
+  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V1_MC/Autumn18_V1_MC_PtResolution_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V1_MC/Autumn18_V1_MC_SF_AK8PFPuppi.txt')
 
   #######################################
   #### ecalBadCalibReducedMINIAODFilter
