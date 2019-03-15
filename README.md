@@ -82,10 +82,10 @@ Also, I recommend using lxplus
 
 ```bash
 # scram p -n <directory name> CMSSW <cmssw release>
-# below, assuming we are using tag:Run2Legacy_v1, in cmssw:CMSSW_9_4_10
+# below, assuming we are using tag:Run2Legacy_v2, in cmssw:CMSSW_9_4_10
 export SCRAM_ARCH=slc6_amd64_gcc630
-scram p -n Run2Legacy_v1__CMSSW_9_4_10 CMSSW CMSSW_9_4_10
-cd Run2Legacy_v1__CMSSW_9_4_10/src
+scram p -n Run2Legacy_v2__CMSSW_9_4_10 CMSSW CMSSW_9_4_10
+cd Run2Legacy_v2__CMSSW_9_4_10/src
 cmsenv
 # crab setup
 source /cvmfs/cms.cern.ch/crab3/crab.sh
@@ -141,7 +141,7 @@ git cms-merge-topic jedori0228:L1Prefiring_9_4_9__UseFileFileInPath
 
 git clone git@github.com:CMSSNU/SKFlatMaker.git
 cd SKFlatMaker
-git checkout Run2Legacy_v1 ## This let us use exactly same tag without any modifications..
+git checkout Run2Legacy_v2 ## This let us use exactly same tag without any modifications..
 source setup.sh
 cd $CMSSW_BASE/src
 scram b -j 8
@@ -225,10 +225,10 @@ Also, I recommend using lxplus
 
 ```bash
 # scram p -n <directory name> CMSSW <cmssw release>
-# below, assuming we are using tag:Run2Legacy_v1, in cmssw:CMSSW_10_4_0_patch1
+# below, assuming we are using tag:Run2Legacy_v2, in cmssw:CMSSW_10_4_0_patch1
 export SCRAM_ARCH=slc6_amd64_gcc700
-scram p -n Run2Legacy_v1__CMSSW_10_4_0_patch1 CMSSW CMSSW_10_4_0_patch1
-cd Run2Legacy_v1__CMSSW_10_4_0_patch1/src
+scram p -n Run2Legacy_v2__CMSSW_10_4_0_patch1 CMSSW CMSSW_10_4_0_patch1
+cd Run2Legacy_v2__CMSSW_10_4_0_patch1/src
 cmsenv
 # crab setup
 source /cvmfs/cms.cern.ch/crab3/crab.sh
@@ -267,7 +267,7 @@ git cms-addpkg RecoMET/METFilters
 
 git clone git@github.com:CMSSNU/SKFlatMaker.git
 cd SKFlatMaker
-git checkout Run2Legacy_v1 ## This let us use exactly same tag without any modifications..
+git checkout Run2Legacy_v2 ## This let us use exactly same tag without any modifications..
 source setup.sh
 cd $CMSSW_BASE/src
 scram b -j 8
