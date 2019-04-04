@@ -203,7 +203,6 @@ bool SKFlatMaker::isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx){
 
   return muID && hits && momQuality && ip;
 
-  return true;
 }
 
 
