@@ -168,6 +168,45 @@ SKFlatMaker::~SKFlatMaker() { }
 // member functions
 //
 
+
+// === New function for is High pt muon
+// === https://github.com/cms-sw/cmssw/blob/CMSSW_10_4_X/DataFormats/MuonReco/src/MuonSelectors.cc#L910
+
+bool SKFlatMaker::isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx){
+ 
+  
+
+  if(!muon.isGlobalMuon()) return false;
+
+  bool muValHits = ( muon.globalTrack()->hitPattern().numberOfValidMuonHits()>0 ||
+                     muon.tunePMuonBestTrack()->hitPattern().numberOfValidMuonHits()>0 );
+
+  bool muMatchedSt = muon.numberOfMatchedStations()>1;
+  if(!muMatchedSt) {
+    if( muon.isTrackerMuon() && muon.numberOfMatchedStations()==1 ) {
+      if( muon.expectedNnumberOfMatchedStations()<2 ||
+          !(muon.stationMask()==1 || muon.stationMask()==16) ||
+          muon.numberOfMatchedRPCLayers()>2
+	  )
+        muMatchedSt = true;
+    }
+  }
+
+  bool muID = muValHits && muMatchedSt;
+
+  bool hits = muon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 &&
+    muon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0;
+
+  bool momQuality = muon.tunePMuonBestTrack()->ptError()/muon.tunePMuonBestTrack()->pt() < 0.3;
+
+  bool ip = fabs(muon.innerTrack()->dxy(vtx.position())) < 0.2 && fabs(muon.innerTrack()->dz(vtx.position())) < 0.5;
+
+  return muID && hits && momQuality && ip;
+
+  return true;
+}
+
+
 // ------------ method called to for each event  ------------ //
 void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
@@ -359,7 +398,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_PFSumPUIsoR03.clear();
   muon_TypeBit.clear();
   muon_IDBit.clear();
-  muon_ishighptnew.clear();
+  muon_ishighpt.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -627,6 +666,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   JetCorrectorParameters const & FatJetCorPar = (*FatJetCorParColl)["Uncertainty"];
   if(fatjet_jecUnc) delete fatjet_jecUnc;
   fatjet_jecUnc = new JetCorrectionUncertainty(FatJetCorPar);
+
+
 
   //==== For JER, get genJets
   iEvent.getByToken(genJetToken, m_genJets);
@@ -921,7 +962,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
     DYTree->Branch("muon_TypeBit", "vector<unsigned int>", &muon_TypeBit);
     DYTree->Branch("muon_IDBit", "vector<unsigned int>", &muon_IDBit);
-    DYTree->Branch("muon_ishighptnew", "vector<unsigned bool>", &muon_ishighptnew);
+    DYTree->Branch("muon_ishighpt", "vector<unsigned bool>", &muon_ishighpt);
     DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
@@ -1748,10 +1789,10 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
 
 
-    //=== store ishighpt to get new ID for 10_4_X
-    muon_ishighptnew.push_back(imuon.isHighPtMuon(vtx));
-    
+    //=== store ishighpt to get new ID for 10_4_X : use function copied from https://github.com/cms-sw/cmssw/blob/CMSSW_10_4_X/DataFormats/MuonReco/src/MuonSelectors.cc#L910
 
+    muon_ishighpt.push_back(isHighPtMuon(imuon, vtx));
+    
     //==== Rochestor
 
     double this_roccor = 1.;
@@ -3046,21 +3087,29 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     fatjet_puppi_tau2.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau2") );
     fatjet_puppi_tau3.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau3") );
     fatjet_puppi_tau4.push_back( jets_iter->userFloat("NjettinessAK8Puppi:tau4") );
-    fatjet_softdropmass.push_back( jets_iter->userFloat("ak8PFJetsPuppiSoftDropMass") );
 
     //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
 
-/*
-    //==== Printing JEC levels
-    cout << "[AK8]" << endl;
-    cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
-    cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
-    cout << "availableJECLevels() : " << endl;
-    const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
-    for(unsigned int z=0; z< aaa.size(); z++){
-      cout << "  " << aaa.at(z) << endl;
+    //==== This was checked by jalmond and jskim. This uncorrected softdrop mass gives same result as using userfloat.
+    TLorentzVector puppi_softdrop, puppi_softdrop_subjet;
+    auto const & sdSubjetsPuppi = jets_iter->subjets("SoftDropPuppi");
+    for ( auto const & it : sdSubjetsPuppi ) {
+      puppi_softdrop_subjet.SetPtEtaPhiM(it->correctedP4("Uncorrected").pt(),it->correctedP4("Uncorrected").eta(),it->correctedP4("Uncorrected").phi(),it->correctedP4("Uncorrected").mass());
+      puppi_softdrop+=puppi_softdrop_subjet;
     }
-*/
+
+    fatjet_softdropmass.push_back( puppi_softdrop.M() );
+    
+    //==== Printing JEC levels
+    //cout << "[AK8]" << endl;
+    //cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
+    //cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
+    //cout << "availableJECLevels() : " << endl;
+    //const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
+    //for(unsigned int z=0; z< aaa.size(); z++){
+    //  cout << "  " << aaa.at(z) << endl;
+    // }
+
 
     fatjet_jecUnc->setJetEta( jets_iter->eta() );
     fatjet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
