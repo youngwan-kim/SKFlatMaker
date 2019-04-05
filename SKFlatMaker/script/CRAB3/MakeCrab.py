@@ -43,7 +43,7 @@ if ("Private" in txtfilename) or ("private" in txtfilename):
 base_dir = SKFlatTag+'/'+year+'/crab_submission_'+str_sample+'/'
 
 os.system('mkdir -p '+base_dir)
-os.system('cp RunSKFlatMaker.py '+base_dir)
+os.system('cp '+SKFlatWD+'/SKFlatMaker/test/RunSKFlatMaker.py '+base_dir)
 
 hostname = os.environ['HOSTNAME']
 
