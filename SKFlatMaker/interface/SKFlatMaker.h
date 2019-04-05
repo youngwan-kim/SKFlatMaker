@@ -194,6 +194,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
 
+
+  
+  virtual bool isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx);
   virtual float miniIsoDr(const math::XYZTLorentzVector &p4, float mindr, float maxdr, float kt_scale);
   virtual PFIsolation GetMiniIso(edm::Handle<pat::PackedCandidateCollection> pfcands,
                                  const math::XYZTLorentzVector &p4,
@@ -552,7 +555,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_PFSumPUIsoR03;
   vector<unsigned int> muon_TypeBit;
   vector<unsigned int> muon_IDBit;
-  vector<bool> muon_ishighptnew;
+  vector<bool> muon_ishighpt;
   vector<double> muon_dB;
   vector<double> muon_phi;
   vector<double> muon_eta;
