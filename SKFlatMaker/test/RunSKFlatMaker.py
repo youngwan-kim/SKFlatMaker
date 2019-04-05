@@ -78,17 +78,17 @@ print 'year = '+str(options.year)
 
 
 #### Global Tag
-#### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD#2017_and_2016_re_miniAOD_94X_ver
+#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVAnalysisSummaryTable
 
-GT_MC = '94X_mc2017_realistic_v14_fixJECJER'
-GT_DATA = '94X_dataRun2_v6_fixJECJER'
+GT_MC = ''
+GT_DATA = ''
 
 if Is2016:
-  GT_DATA = '94X_dataRun2_v10'
   GT_MC = '94X_mcRun2_asymptotic_v3'
+  GT_DATA = '94X_dataRun2_v10'
 elif Is2017:
-  GT_MC = '94X_mc2017_realistic_v14_fixJECJER'
-  GT_DATA = '94X_dataRun2_v6_fixJECJER'
+  GT_MC = '94X_mc2017_realistic_v17'
+  GT_DATA = '94X_dataRun2_v11'
 elif Is2018:
   GT_MC = '102X_upgrade2018_realistic_v18'
   GT_DATA = '102X_dataRun2_Sep2018ABC_v2'
