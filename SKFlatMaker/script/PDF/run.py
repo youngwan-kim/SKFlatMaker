@@ -47,7 +47,7 @@ for line in lines:
   #if 'lxplus' not in hostname:
   filepath = 'root://cms-xrd-global.cern.ch/'+filepath
 
-  cmd = 'cmsRun RunSKFlatMaker.py inputFiles='+filepath
+  cmd = 'cmsRun '+SKFlatWD+'/SKFlatMaker/test/RunSKFlatMaker.py maxEvents=1 inputFiles='+filepath
 
   InShiftTxt = False
 
