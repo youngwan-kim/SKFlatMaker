@@ -162,10 +162,11 @@ for line in lines:
       out.write("config.Data.outLFNDirBase = '/store/user/%s/SKFlat/"+year+"/' % (getUsernameFromSiteDB())\n")
 
     elif 'config.Site.storageSite' in sk_line:
-      if isPrivateMC:
-        out.write("config.Site.storageSite = 'T2_KR_KNU'\n")
-      else:
-        out.write("config.Site.storageSite = 'T3_KR_KISTI'\n")
+      #if isPrivateMC:
+      #  out.write("config.Site.storageSite = 'T2_KR_KNU'\n")
+      #else:
+      #  out.write("config.Site.storageSite = 'T3_KR_KISTI'\n")
+      out.write("config.Site.storageSite = 'T2_KR_KNU'\n")
     else:
       out.write(sk_line)
 
