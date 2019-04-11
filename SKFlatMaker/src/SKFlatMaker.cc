@@ -184,7 +184,7 @@ bool SKFlatMaker::isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx){
   bool muMatchedSt = muon.numberOfMatchedStations()>1;
   if(!muMatchedSt) {
     if( muon.isTrackerMuon() && muon.numberOfMatchedStations()==1 ) {
-      if( muon.expectedNnumberOfMatchedStations()<2 ||
+      if( expectedNnumberOfMatchedStations(muon) <2 ||
           !(muon.stationMask()==1 || muon.stationMask()==16) ||
           muon.numberOfMatchedRPCLayers()>2
 	  )
@@ -205,6 +205,24 @@ bool SKFlatMaker::isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx){
 
 }
 
+int  SKFlatMaker::expectedNnumberOfMatchedStations(reco::Muon muon, float minDistanceFromEdge){
+  unsigned int stationMask = 0;
+  for( auto& chamberMatch : muon.matches()  )
+    {
+      if (chamberMatch.detector()!=MuonSubdetId::DT && chamberMatch.detector()!=MuonSubdetId::CSC) continue;
+      float edgeX = chamberMatch.edgeX;
+      float edgeY = chamberMatch.edgeY;
+      // check we if the trajectory is well within the acceptance
+      if(edgeX<0 && fabs(edgeX)>fabs(minDistanceFromEdge) &&
+	 edgeY<0 && fabs(edgeY)>fabs(minDistanceFromEdge))
+	stationMask |= 1<<( (chamberMatch.station()-1)+4*(chamberMatch.detector()-1) );
+    }
+  unsigned int n = 0;
+  for(unsigned int i=0; i<8; ++i)
+    if (stationMask&(1<<i)) n++;
+  return n;
+  
+}
 
 // ------------ method called to for each event  ------------ //
 void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)

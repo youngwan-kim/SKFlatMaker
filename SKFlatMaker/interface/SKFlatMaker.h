@@ -197,6 +197,8 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   
   virtual bool isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx);
+  virtual int expectedNnumberOfMatchedStations(reco::Muon muon, float minDistanceFromEdge= 10.0);
+
   virtual float miniIsoDr(const math::XYZTLorentzVector &p4, float mindr, float maxdr, float kt_scale);
   virtual PFIsolation GetMiniIso(edm::Handle<pat::PackedCandidateCollection> pfcands,
                                  const math::XYZTLorentzVector &p4,
