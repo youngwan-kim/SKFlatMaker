@@ -31,8 +31,8 @@ git cms-init
 #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
 ######################
 
-git cms-merge-topic cms-egamma:EgammaPostRecoTools_940 #just adds in an extra file to have a setup function to make things easier
-scram b -j4
+git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
+scram b
 
 #############
 #### v2 VID
@@ -42,7 +42,7 @@ scram b -j4
 #############
 
 git cms-merge-topic cms-egamma:EgammaID_949
-scram b -j4
+scram b
 
 ##########################
 #### MET EE Noise filter
@@ -51,7 +51,7 @@ scram b -j4
 ##########################
 
 git cms-merge-topic cms-met:METFixEE2017_949_v2
-scram b -j4
+scram b
 
 ###############################
 #### Rerun ecalBadCalibfilter
@@ -59,7 +59,7 @@ scram b -j4
 ###############################
 
 git cms-addpkg RecoMET/METFilters
-scram b -j4
+scram b
 
 #########################
 #### L1Prefire reweight
