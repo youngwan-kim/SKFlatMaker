@@ -77,7 +77,14 @@ git cms-merge-topic jedori0228:L1Prefiring_9_4_9__UseFileFileInPath
 # Copy this code
 git clone git@github.com:CMSSNU/SKFlatMaker.git
 cd SKFlatMaker
-git checkout <branch or tag>
+
+#### 1) For a test job or development 
+git checkout master
+git checkout -b <testbranch>
+
+#### 2) For production
+git checkout Run2Legacy_v3 #### use the tag
+
 cd $CMSSW_BASE/src
 
 # Compile
@@ -154,7 +161,14 @@ git cms-addpkg RecoMET/METFilters
 # Copy this code
 git clone git@github.com:CMSSNU/SKFlatMaker.git
 cd SKFlatMaker
-git checkout <branch or tag>
+
+#### 1) For a test job or development 
+git checkout master
+git checkout -b <testbranch>
+
+#### 2) For production
+git checkout Run2Legacy_v3 #### use the tag
+
 cd $CMSSW_BASE/src
 
 # Compile
