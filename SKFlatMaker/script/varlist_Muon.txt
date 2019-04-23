@@ -8,6 +8,7 @@ double	muon_PfGammaIsoR03	1
 double	muon_PFSumPUIsoR03	1
 unsigned int	muon_TypeBit	1
 unsigned int	muon_IDBit	1
+bool	muon_ishighpt	1
 double	muon_dB	1
 double	muon_phi	1
 double	muon_eta	1

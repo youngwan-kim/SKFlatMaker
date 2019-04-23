@@ -979,7 +979,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_PFSumPUIsoR03", "vector<double>", &muon_PFSumPUIsoR03);
     DYTree->Branch("muon_TypeBit", "vector<unsigned int>", &muon_TypeBit);
     DYTree->Branch("muon_IDBit", "vector<unsigned int>", &muon_IDBit);
-    DYTree->Branch("muon_ishighpt", "vector<unsigned bool>", &muon_ishighpt);
+    DYTree->Branch("muon_ishighpt", "vector<bool>", &muon_ishighpt);
     DYTree->Branch("muon_dB", "vector<double>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<double>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<double>", &muon_eta);
