@@ -12,13 +12,13 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 # Make CMSSW directory
 
 #### 1) For a test job or developement
-cmsrel CMSSW_10_4_0_patch1
-cd CMSSW_10_4_0_patch1/src
+cmsrel CMSSW_10_2_10
+cd CMSSW_10_2_10/src
 
 #### 2) For production, let's not use the working directory but use new and clean directory
 #### Also, I recommend using lxplus
-scram p -n Run2Legacy_v3__CMSSW_10_4_0_patch1 CMSSW CMSSW_10_4_0_patch1
-cd Run2Legacy_v3__CMSSW_10_4_0_patch1/src
+scram p -n Run2Legacy_v3__CMSSW_10_2_10 CMSSW CMSSW_10_2_10
+cd Run2Legacy_v3__CMSSW_10_2_10/src
 
 #### Then,
 cmsenv
@@ -30,25 +30,14 @@ git cms-init
 ######################
 
 git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier 
-
-#### Below gives conflict
-#git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things fun faster
-#### Below gives conflict
-#git cms-merge-topic cms-egamma:slava77-btvDictFix_10210 #fixes the Run2018D dictionary issue, see https://github.com/cms-sw/cmssw/issues/26182, may not be necessary for later releases, try it first and see if it works
-
+git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things fun faster
+git cms-merge-topic cms-egamma:slava77-btvDictFix_10210 #fixes the Run2018D dictionary issue, see https://github.com/cms-sw/cmssw/issues/26182, may not be necessary for later releases, try it first and see if it works
 #now to add the scale and smearing for 2018 (eventually this will not be necessary in later releases but is harmless to do regardless)
 git cms-addpkg EgammaAnalysis/ElectronTools
 rm EgammaAnalysis/ElectronTools/data -rf
 git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
 #now build everything
 scram b -j 8
-
-###############################
-#### Rerun ecalBadCalibfilter
-#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#How_to_run_ecal_BadCalibReducedM
-###############################
-
-git cms-addpkg RecoMET/METFilters
 
 #########################
 #### L1Prefire reweight
