@@ -90,11 +90,13 @@ elif Is2017:
   GT_MC = '94X_mc2017_realistic_v17'
   GT_DATA = '94X_dataRun2_v11'
 elif Is2018:
-  GT_MC = '102X_upgrade2018_realistic_v18'
-  GT_DATA = '102X_dataRun2_Sep2018ABC_v2'
+  GT_MC = '102X_upgrade2018_realistic_v20'
+  GT_DATA = '102X_dataRun2_v12'
   if (not isMC) and '2018Prompt' in options.sampletype:
-    GT_DATA = '102X_dataRun2_Prompt_v13'
+    GT_DATA = '102X_dataRun2_Prompt_v15'
 
+print 'GT_MC = '+GT_MC
+print 'GT_DATA = '+GT_DATA
 
 ####################################################################################################################
 
