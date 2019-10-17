@@ -5,7 +5,7 @@
 ### Environment
 ```bash
 # Setup for >= CMSSW_9_4_10
-export SCRAM_ARCH=slc6_amd64_gcc630
+export SCRAM_ARCH=slc7_amd64_gcc630
 
 # For machines with CVMFS
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
@@ -110,7 +110,7 @@ cd $SKFlatTag/2017/crab_submission_DATA/
 ### Environment
 ```bash
 # Setup for >= CMSSW_10_2_5
-export SCRAM_ARCH=slc6_amd64_gcc700
+export SCRAM_ARCH=slc7_amd64_gcc700
 
 # For machines with CVMFS
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
