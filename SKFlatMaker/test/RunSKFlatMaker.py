@@ -232,6 +232,11 @@ if Is2016:
     PrefiringRateSystematicUncty = cms.double(0.2) #Minimum relative prefiring uncty per object
   )
 
+  ###########################
+  #### Rochester correction
+  ###########################
+  process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v3/RoccoR2016.txt')
+
   ###########
   #### Path
   ###########
@@ -370,6 +375,11 @@ elif Is2017:
     PrefiringRateSystematicUncty = cms.double(0.2) #Minimum relative prefiring uncty per object
   )
 
+  ###########################
+  #### Rochester correction
+  ###########################
+  process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v3/RoccoR2017.txt')
+
   ###########
   #### Path
   ###########
@@ -442,6 +452,14 @@ elif Is2018:
     debug = cms.bool(False)
   )
 
+  ###########################
+  #### Rochester correction
+  ###########################
+  process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v3/RoccoR2018.txt')
+
+  ###########
+  #### Path
+  ###########
 
   process.p = cms.Path(
     process.egammaPostRecoSeq *

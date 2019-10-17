@@ -131,7 +131,8 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
   theStoreL1PrefireFlag             = iConfig.getUntrackedParameter<bool>("StoreL1PrefireFlag",true);
 
-  rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") + Form("/RoccoR%d.txt",DataYear) ).fullPath());
+  cout << "[SKFlatMaker::SKFlatMaker] Rochester correction file from : " << edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath() << endl;
+  rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
 
   //==================
   //==== Prepare JER
