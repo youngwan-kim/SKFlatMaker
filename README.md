@@ -133,18 +133,21 @@ git cms-init
 
 ######################
 #### EGamma smearing
-#### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2018_MiniAOD
-#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaPostRecoRecipes#2018_Preliminary_Energy_Correcti
+#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaPostRecoRecipes#2018_Data_MC
 ######################
 
-git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
-scram b -j 8
+git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier 
 
-git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
-cd EgammaAnalysis/ElectronTools/data
-git checkout ScalesSmearing2018_Dev
-cd -
-git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev
+#### Below gives conflict
+#git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things fun faster
+#### Below gives conflict
+#git cms-merge-topic cms-egamma:slava77-btvDictFix_10210 #fixes the Run2018D dictionary issue, see https://github.com/cms-sw/cmssw/issues/26182, may not be necessary for later releases, try it first and see if it works
+
+#now to add the scale and smearing for 2018 (eventually this will not be necessary in later releases but is harmless to do regardless)
+git cms-addpkg EgammaAnalysis/ElectronTools
+rm EgammaAnalysis/ElectronTools/data -rf
+git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
+#now build everything
 scram b -j 8
 
 ###############################
