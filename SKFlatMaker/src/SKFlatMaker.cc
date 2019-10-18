@@ -2833,9 +2833,9 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
       //==========
 
       double jer = jet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
-      double jer_sf = jet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
-      double jer_sf_UP = jet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
-      double jer_sf_DOWN = jet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
+      double jer_sf = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
+      double jer_sf_UP = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
+      double jer_sf_DOWN = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
 
       if(theDebugLevel){
 
@@ -3147,9 +3147,9 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
       //==========
 
       double jer = fatjet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
-      double jer_sf = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
-      double jer_sf_UP = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
-      double jer_sf_DOWN = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
+      double jer_sf = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
+      double jer_sf_UP = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
+      double jer_sf_DOWN = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
 
       if(theDebugLevel){
 
