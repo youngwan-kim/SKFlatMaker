@@ -39,14 +39,6 @@ git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysi
 #now build everything
 scram b -j 8
 
-#########################
-#### L1Prefire reweight
-#### https://twiki.cern.ch/twiki/bin/view/CMS/L1ECALPrefiringWeightRecipe
-#########################
-
-git clone git@github.com:jedori0228/L1Prefiring.git
-#### Do not compile here, we need SKFlatMaker cloned
-
 ######################
 #### Now SKFlatMaker
 ######################
