@@ -81,9 +81,11 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   }
   //==== L1 Prefireing for 2016 and 2017
   if(DataYear<=2017){
-    prefweight_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProb"));
-    prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProbUp"));
-    prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProbDown"));
+
+    prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
+    prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
+    prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
+
   }
 
   theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
@@ -131,7 +133,8 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   theStorePhotonFlag                = iConfig.getUntrackedParameter<bool>("StorePhotonFlag", true);
   theStoreL1PrefireFlag             = iConfig.getUntrackedParameter<bool>("StoreL1PrefireFlag",true);
 
-  rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") + Form("/RoccoR%d.txt",DataYear) ).fullPath());
+  cout << "[SKFlatMaker::SKFlatMaker] Rochester correction file from : " << edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath() << endl;
+  rc.init(edm::FileInPath( iConfig.getParameter<std::string>("roccorPath") ).fullPath());
 
   //==================
   //==== Prepare JER
@@ -2832,9 +2835,9 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
       //==========
 
       double jer = jet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
-      double jer_sf = jet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
-      double jer_sf_UP = jet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
-      double jer_sf_DOWN = jet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
+      double jer_sf = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
+      double jer_sf_UP = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
+      double jer_sf_DOWN = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
 
       if(theDebugLevel){
 
@@ -3146,9 +3149,9 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
       //==========
 
       double jer = fatjet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
-      double jer_sf = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
-      double jer_sf_UP = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
-      double jer_sf_DOWN = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
+      double jer_sf = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
+      double jer_sf_UP = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
+      double jer_sf_DOWN = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
 
       if(theDebugLevel){
 

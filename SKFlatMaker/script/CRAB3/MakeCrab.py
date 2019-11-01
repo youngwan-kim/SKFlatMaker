@@ -92,8 +92,14 @@ for line in lines:
 
       if "999" in MCInfoLines[0]:
         print '#### Has Issue : '+sample
-        continue
+        #continue
 
+    #### If WR sample
+    elif 'WRtoNLtoLLJJ' in sample:
+      ArgsListString += ",'ScaleIDRange=1001,1045'"
+      ArgsListString += ",'PDFErrorIDRange=1046,1146'"
+      ArgsListString += ",'PDFAlphaSIDRange=1147,1148'"
+      ArgsListString += ",'PDFAlphaSScaleValue=0.75,0.75'"
 
     else:
       ### to avoid exit()
@@ -115,10 +121,14 @@ for line in lines:
       else:
         out.write("config.General.requestName = '"+sample+"'\n")
     elif "config.JobType.pyCfgParams" in sk_line:
-      #FIXME
       out.write("config.JobType.pyCfgParams = "+ArgsListString+"\n")
     elif "config.Data.inputDataset" in sk_line:
       out.write("config.Data.inputDataset = '"+line+"'\n")
+      if isPrivateMC:
+        out.write("config.Data.inputDBS = 'phys03'\n")
+        out.write("config.Data.ignoreLocality = True\n")
+        out.write("config.Site.whitelist = ['T2*']\n")
+
     elif 'config.Data.splitting' in sk_line:
       if isData:
         out.write("config.Data.splitting = 'LumiBased'\n")
@@ -172,16 +182,13 @@ for line in lines:
 
   if isData:
     if year=="2016":
-      out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'\n")
+      out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt'\n")
     elif year=="2017":
       out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'\n")
     elif year=="2018":
       out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'\n")
     else:
       print "Wrong year : "+year
-
-  if isPrivateMC:
-    out.write("config.Data.inputDBS = 'phys03'\n")
 
   print cmd
 
