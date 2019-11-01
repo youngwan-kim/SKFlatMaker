@@ -67,3 +67,7 @@ double	electron_puChMiniIso	1
 double	electron_trackIso	1
 double	electron_dr03EcalRecHitSumEt	1
 double	electron_dr03HcalDepth1TowerSumEt	1
+double  electron_dr03HcalTowerSumEt       1
+double  electron_dr03TkSumPt       1
+double  electron_ecalPFClusterIso       1
+double  electron_hcalPFClusterIso       1

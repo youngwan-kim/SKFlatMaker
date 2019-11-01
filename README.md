@@ -32,6 +32,7 @@ git cms-init
 git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier 
 git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things fun faster
 git cms-merge-topic cms-egamma:slava77-btvDictFix_10210 #fixes the Run2018D dictionary issue, see https://github.com/cms-sw/cmssw/issues/26182, may not be necessary for later releases, try it first and see if it works
+git cms-merge-topic Sam-Harper:IORulesForPFClusIso_1025 #needs for electron PFClusterIso variables, see https://github.com/cms-sw/cmssw/issues/25573
 #now to add the scale and smearing for 2018 (eventually this will not be necessary in later releases but is harmless to do regardless)
 git cms-addpkg EgammaAnalysis/ElectronTools
 rm EgammaAnalysis/ElectronTools/data -rf

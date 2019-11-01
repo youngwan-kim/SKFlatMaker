@@ -544,6 +544,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_trackIso;
   vector<double> electron_dr03EcalRecHitSumEt;
   vector<double> electron_dr03HcalDepth1TowerSumEt;
+  vector<double> electron_dr03HcalTowerSumEt;
+  vector<double> electron_dr03TkSumPt;
+  vector<double> electron_ecalPFClusterIso;
+  vector<double> electron_hcalPFClusterIso;
 
   //==== Muon
 
