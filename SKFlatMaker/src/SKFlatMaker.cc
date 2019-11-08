@@ -406,6 +406,10 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_trackIso.clear();
   electron_dr03EcalRecHitSumEt.clear();
   electron_dr03HcalDepth1TowerSumEt.clear();
+  electron_dr03HcalTowerSumEt.clear();
+  electron_dr03TkSumPt.clear();
+  electron_ecalPFClusterIso.clear();
+  electron_hcalPFClusterIso.clear();
 
   //==== Muon
   muon_PfChargedHadronIsoR04.clear();
@@ -967,6 +971,10 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_trackIso", "vector<double>", &electron_trackIso);
     DYTree->Branch("electron_dr03EcalRecHitSumEt", "vector<double>", &electron_dr03EcalRecHitSumEt);
     DYTree->Branch("electron_dr03HcalDepth1TowerSumEt", "vector<double>", &electron_dr03HcalDepth1TowerSumEt);
+    DYTree->Branch("electron_dr03HcalTowerSumEt", "vector<double>", &electron_dr03HcalTowerSumEt);
+    DYTree->Branch("electron_dr03TkSumPt", "vector<double>", &electron_dr03TkSumPt);
+    DYTree->Branch("electron_ecalPFClusterIso", "vector<double>", &electron_ecalPFClusterIso);
+    DYTree->Branch("electron_hcalPFClusterIso", "vector<double>", &electron_hcalPFClusterIso);
   }
   
   // -- muon variables -- //
@@ -2153,6 +2161,10 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
 
     electron_dr03EcalRecHitSumEt.push_back( el->dr03EcalRecHitSumEt() );
     electron_dr03HcalDepth1TowerSumEt.push_back( el->dr03HcalDepth1TowerSumEt() );
+    electron_dr03HcalTowerSumEt.push_back( el->dr03HcalTowerSumEt() );
+    electron_dr03TkSumPt.push_back( el->dr03TkSumPt() );
+    electron_ecalPFClusterIso.push_back( el->ecalPFClusterIso() );
+    electron_hcalPFClusterIso.push_back( el->hcalPFClusterIso() );
 
     // cout << "##### fillElectrons: Before elecTrk #####" << endl;
     
