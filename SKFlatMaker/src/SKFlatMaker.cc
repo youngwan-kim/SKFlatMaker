@@ -190,7 +190,7 @@ bool SKFlatMaker::isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx){
       if( expectedNnumberOfMatchedStations(muon) <2 ||
           !(muon.stationMask()==1 || muon.stationMask()==16) ||
           muon.numberOfMatchedRPCLayers()>2
-	  )
+    )
         muMatchedSt = true;
     }
   }
@@ -217,8 +217,8 @@ int  SKFlatMaker::expectedNnumberOfMatchedStations(reco::Muon muon, float minDis
       float edgeY = chamberMatch.edgeY;
       // check we if the trajectory is well within the acceptance
       if(edgeX<0 && fabs(edgeX)>fabs(minDistanceFromEdge) &&
-	 edgeY<0 && fabs(edgeY)>fabs(minDistanceFromEdge))
-	stationMask |= 1<<( (chamberMatch.station()-1)+4*(chamberMatch.detector()-1) );
+   edgeY<0 && fabs(edgeY)>fabs(minDistanceFromEdge))
+  stationMask |= 1<<( (chamberMatch.station()-1)+4*(chamberMatch.detector()-1) );
     }
   unsigned int n = 0;
   for(unsigned int i=0; i<8; ++i)
@@ -299,6 +299,12 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   //==== LHE
 
+  LHE_Px.clear();
+  LHE_Py.clear();
+  LHE_Pz.clear();
+  LHE_E.clear();
+  LHE_Status.clear();
+  LHE_ID.clear();
   PDFWeights_Scale.clear();
   PDFWeights_Error.clear();
   PDFWeights_AlphaS.clear();
@@ -1089,6 +1095,13 @@ void SKFlatMaker::beginJob()
   
   // -- LHE info -- //
   if( theStoreLHEFlag ){
+
+    DYTree->Branch("LHE_Px", "vector<double>", &LHE_Px);
+    DYTree->Branch("LHE_Py", "vector<double>", &LHE_Py);
+    DYTree->Branch("LHE_Pz", "vector<double>", &LHE_Pz);
+    DYTree->Branch("LHE_E", "vector<double>", &LHE_E);
+    DYTree->Branch("LHE_Status", "vector<double>", &LHE_Status);
+    DYTree->Branch("LHE_ID", "vector<double>", &LHE_ID);
     DYTree->Branch("PDFWeights_Scale", "vector<double>", &PDFWeights_Scale);
     DYTree->Branch("PDFWeights_Error", "vector<double>", &PDFWeights_Error);
     DYTree->Branch("PDFWeights_AlphaS", "vector<double>", &PDFWeights_AlphaS);
@@ -2361,7 +2374,22 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   Handle<LHEEventProduct> LHEInfo;
   iEvent.getByToken(LHEEventProductToken, LHEInfo);
   if(!LHEInfo.isValid()) return;
-  
+
+  //==== LHE object
+  const lhef::HEPEUP& lheEvent = LHEInfo->hepeup();
+  std::vector<lhef::HEPEUP::FiveVector> lheParticles = lheEvent.PUP;
+  for(size_t idxParticle = 0; idxParticle<lheParticles.size(); ++idxParticle){
+
+    LHE_Px.push_back( lheParticles[idxParticle][0] );
+    LHE_Py.push_back( lheParticles[idxParticle][1] );
+    LHE_Pz.push_back( lheParticles[idxParticle][2] );
+    LHE_E.push_back( lheParticles[idxParticle][3] );
+
+    LHE_Status.push_back( lheEvent.ISTUP[idxParticle] );
+    LHE_ID.push_back( lheEvent.IDUP[idxParticle] );
+
+  }
+
   // -- PDf weights for theoretical uncertainties: scale, PDF replica and alphaS variation -- //
   // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW -- //
   int nWeight = (int)LHEInfo->weights().size();
@@ -2750,16 +2778,16 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
       //=== 2016 jet IDs
       //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016
       if(fabs(eta)>3.0){
-	tightJetID = (NEMF<0.90 && NumNeutralParticles>10 );
-	tightLepVetoJetID = (NEMF<0.90 && NumNeutralParticles>10 );
+  tightJetID = (NEMF<0.90 && NumNeutralParticles>10 );
+  tightLepVetoJetID = (NEMF<0.90 && NumNeutralParticles>10 );
       }
       else if(fabs(eta)>2.7){
-	tightJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2);
-	tightLepVetoJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2);
+  tightJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2);
+  tightLepVetoJetID = (NHF<0.98 && NEMF>0.01 && NumNeutralParticles>2);
       }
       else {
-	tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || fabs(eta)>2.4) && fabs(eta)<=2.7;
-	tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+  tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.99) || fabs(eta)>2.4) && fabs(eta)<=2.7;
+  tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.90) || fabs(eta)>2.4) && fabs(eta)<=2.7;
       }
     }
     else   if(DataYear==2017){
@@ -2774,28 +2802,28 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
         tightLepVetoJetID =  (NEMF>0.02 && NEMF<0.99) && (NumNeutralParticles>2);
       }
       else{
-	tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
-	tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;	
+  tightJetID        = (NHF<0.90 && NEMF<0.90 && NumConst>1) &&            ((fabs(eta)<=2.4 && CHF>0 && CHM>0)              || fabs(eta)>2.4) && fabs(eta)<=2.7;
+  tightLepVetoJetID = (NHF<0.90 && NEMF<0.90 && NumConst>1 && MUF<0.8) && ((fabs(eta)<=2.4 && CHF>0 && CHM>0 && CEMF<0.80) || fabs(eta)>2.4) && fabs(eta)<=2.7;  
       }
     }
     else   if(DataYear==2018){
       //=== 2018 jet ID
       //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID13TeVRun2018
       if(fabs(eta)>3.0){
-	tightJetID = (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
-	tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
+  tightJetID = (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
+  tightLepVetoJetID =  (NEMF<0.90 && NHF>0.2 && NumNeutralParticles>10 );
       }
       else if(fabs(eta)>2.7){
-	tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
-	tightLepVetoJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
+  tightJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
+  tightLepVetoJetID = ( NEMF>0.02 && NEMF<0.99 && NumNeutralParticles>2);
       }
       else if(fabs(eta)>2.6){
-	tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
-	tightLepVetoJetID = ( CEMF<0.8 && CHM>0 && NEMF<0.99 && MUF <0.8 && NHF < 0.9 );
+  tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
+  tightLepVetoJetID = ( CEMF<0.8 && CHM>0 && NEMF<0.99 && MUF <0.8 && NHF < 0.9 );
       }
       else{
-	tightJetID = (abs(eta)<=2.6 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 );
-	tightLepVetoJetID = (abs(eta)<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && MUF <0.8 && NHF < 0.9 );	  
+  tightJetID = (abs(eta)<=2.6 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 );
+  tightLepVetoJetID = (abs(eta)<=2.6 && CEMF<0.8 && CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && MUF <0.8 && NHF < 0.9 );    
       }
     }
     else{
@@ -3097,7 +3125,7 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
       //=== 2016 jet IDs                                                                                                                                                                                    
       //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016                                                                                                                                     
       if(fabs(eta)>2.7){
-	//Note that the jet ID requirements for |eta|>2.7 are not recommended for PUPPI jets (see e.g. https://indico.cern.ch/event/578287/contributions/2347317/).
+  //Note that the jet ID requirements for |eta|>2.7 are not recommended for PUPPI jets (see e.g. https://indico.cern.ch/event/578287/contributions/2347317/).
 
         tightJetID = false;
         tightLepVetoJetID = false;
