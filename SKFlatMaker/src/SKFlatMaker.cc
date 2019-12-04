@@ -492,6 +492,18 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_PfNeutralHadronMiniIso.clear();
   muon_PfGammaMiniIso.clear();
   muon_PFSumPUMiniIso.clear();
+  muon_MVA.clear();
+  muon_lowptMVA.clear();
+  muon_softMVA.clear();
+  muon_jetPtRatio.clear();
+  muon_jetPtRel.clear();
+  muon_simType.clear();
+  muon_simExtType.clear();
+  muon_simFlavour.clear();
+  muon_simHeaviestMotherFlavour.clear();
+  muon_simPdgId.clear();
+  muon_simMotherPdgId.clear();
+  muon_simMatchQuality.clear();
 
   //==== Jet
   jet_pt.clear();
@@ -1060,6 +1072,18 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_PfNeutralHadronMiniIso", "vector<double>", &muon_PfNeutralHadronMiniIso);
     DYTree->Branch("muon_PfGammaMiniIso", "vector<double>", &muon_PfGammaMiniIso);
     DYTree->Branch("muon_PFSumPUMiniIso", "vector<double>", &muon_PFSumPUMiniIso);
+    DYTree->Branch("muon_MVA", "vector<double>", &muon_MVA);
+    DYTree->Branch("muon_lowptMVA", "vector<double>", &muon_lowptMVA);
+    DYTree->Branch("muon_softMVA", "vector<double>", &muon_softMVA);
+    DYTree->Branch("muon_jetPtRatio", "vector<double>", &muon_jetPtRatio);
+    DYTree->Branch("muon_jetPtRel", "vector<double>", &muon_jetPtRel);
+    DYTree->Branch("muon_simType", "vector<int>", &muon_simType);
+    DYTree->Branch("muon_simExtType", "vector<int>", &muon_simExtType);
+    DYTree->Branch("muon_simFlavour", "vector<int>", &muon_simFlavour);
+    DYTree->Branch("muon_simHeaviestMotherFlavour", "vector<int>", &muon_simHeaviestMotherFlavour);
+    DYTree->Branch("muon_simPdgId", "vector<int>", &muon_simPdgId);
+    DYTree->Branch("muon_simMotherPdgId", "vector<int>", &muon_simMotherPdgId);
+    DYTree->Branch("muon_simMatchQuality", "vector<double>", &muon_simMatchQuality);
 
   }
   
@@ -1816,6 +1840,25 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_matchedstations.push_back( imuon.numberOfMatchedStations() ); // -- # of chambers with matched segments -- //
     muon_stationMask.push_back( imuon.stationMask() ); // -- bit map of stations with matched segments -- //
 
+    //==== Muon mva
+    //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#Lepton_MVA
+    muon_MVA.push_back( imuon.mvaValue() );
+    //muon_lowptMVA.push_back( imuon.lowptMvaValue() ); // TODO not supported in CMSSW_10_2_10
+    muon_softMVA.push_back( imuon.softMvaValue() );
+
+    //==== Muon miniiso variable
+    muon_jetPtRatio.push_back( imuon.jetPtRatio() );
+    muon_jetPtRel.push_back( imuon.jetPtRel() );
+
+    //==== Muon sim-matching variable
+    //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideMuonIdRun2#SimHit_Muon_matching_since_CMSSW
+    muon_simType.push_back( imuon.simType() );
+    muon_simExtType.push_back( imuon.simExtType() );
+    muon_simFlavour.push_back( imuon.simFlavour() );
+    muon_simHeaviestMotherFlavour.push_back( imuon.simHeaviestMotherFlavour() );
+    muon_simPdgId.push_back( imuon.simPdgId() );
+    muon_simMotherPdgId.push_back( imuon.simMotherPdgId() );
+    //muon_simMatchQuality.push_back( imuon.simMatchQuality() );  // TODO not supported in CMSSW_10_2_10
 
     //=== store ishighpt to get new ID for 10_4_X : use function copied from https://github.com/cms-sw/cmssw/blob/CMSSW_10_4_X/DataFormats/MuonReco/src/MuonSelectors.cc#L910
 

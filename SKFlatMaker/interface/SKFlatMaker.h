@@ -634,6 +634,18 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_PfNeutralHadronMiniIso;
   vector<double> muon_PfGammaMiniIso;
   vector<double> muon_PFSumPUMiniIso;
+  vector<double> muon_MVA;
+  vector<double> muon_lowptMVA;
+  vector<double> muon_softMVA;
+  vector<double> muon_jetPtRatio;
+  vector<double> muon_jetPtRel;
+  vector<int> muon_simType;
+  vector<int> muon_simExtType;
+  vector<int> muon_simFlavour;
+  vector<int> muon_simHeaviestMotherFlavour;
+  vector<int> muon_simPdgId;
+  vector<int> muon_simMotherPdgId;
+  vector<double> muon_simMatchQuality;
 
   //==== Rochestor correction
   RoccoR rc;
