@@ -404,6 +404,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_RelPFIso_dBeta.clear();
   electron_RelPFIso_Rho.clear();
   electron_IDBit.clear();
+  electron_IDCutBit.clear();
   electron_EnergyUnCorr.clear();
   electron_chMiniIso.clear();
   electron_nhMiniIso.clear();
@@ -981,6 +982,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_RelPFIso_dBeta", "vector<double>", &electron_RelPFIso_dBeta);
     DYTree->Branch("electron_RelPFIso_Rho", "vector<double>", &electron_RelPFIso_Rho);
     DYTree->Branch("electron_IDBit", "vector<unsigned int>", &electron_IDBit);
+    DYTree->Branch("electron_IDCutBit", "vector<int>", &electron_IDCutBit);
     DYTree->Branch("electron_EnergyUnCorr", "vector<double>", &electron_EnergyUnCorr);
     DYTree->Branch("electron_chMiniIso", "vector<double>", &electron_chMiniIso);
     DYTree->Branch("electron_nhMiniIso", "vector<double>", &electron_nhMiniIso);
@@ -2301,6 +2303,14 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
       else{
         IDBit &= ~(1 << it_ID);
       }
+
+      //==== bits for each cuts
+      //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideCMSPhysicsObjectSchoolAACHEN2019EGamma, Exercise 2
+      int this_idcutbid = 0;
+      if( el->hasUserInt(electron_IDtoSave.at(it_ID)) ){
+        this_idcutbid = el->userInt(electron_IDtoSave.at(it_ID));
+      }
+      electron_IDCutBit.push_back( this_idcutbid );
     }
     electron_IDBit.push_back( IDBit );
 /*
