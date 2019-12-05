@@ -51,8 +51,14 @@ for line in lines:
 
   if "#" in line:
     continue
+  if line.count('/')!=3:
+    continue
 
   line = line.strip('\n')
+
+  #### incase the line contains # of event,
+  line = line.split()[0]
+
   samplePDs = line.split("/")
 
   #continue if blank line or invalid format
@@ -116,10 +122,7 @@ for line in lines:
 
   for sk_line in sk_lines:
     if "config.General.requestName" in sk_line:
-      if isData:
-        out.write("config.General.requestName = '"+sample+"__"+confs+"'\n")
-      else:
-        out.write("config.General.requestName = '"+sample+"'\n")
+      out.write("config.General.requestName = '"+sample+"__"+confs+"'\n")
     elif "config.JobType.pyCfgParams" in sk_line:
       out.write("config.JobType.pyCfgParams = "+ArgsListString+"\n")
     elif "config.Data.inputDataset" in sk_line:
@@ -182,6 +185,7 @@ for line in lines:
 
   if isData:
     if year=="2016":
+      #### https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/3358.html
       out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt'\n")
     elif year=="2017":
       out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'\n")
