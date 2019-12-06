@@ -54,48 +54,78 @@ W
 /WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 7633949
 /WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM  3273980
 ----------------------------------------------------------------------------------------------------------------------------------------
-WW
+VV
 ----------------------------------------------------------------------------------------------------------------------------------------
 #### WW inclusive
-/WW_TuneCP5_PSweights_13TeV-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM	7958000
-#### WW->(ln)(qq), amcatnlo
-/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 4683136
-#### WW->(ln)(ln), powheg
-/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 7758900
-#### WW->(qq)(qq), powheg
-/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM  3808800
-#### WW->(ln)(qq), powheg
-/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 19199100
-----------------------------------------------------------------------------------------------------------------------------------------
-WZ
-----------------------------------------------------------------------------------------------------------------------------------------
+/WW_TuneCP5_PSweights_13TeV-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 7958000
 #### WZ inclusive
 /WZ_TuneCP5_PSweights_13TeV-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 3893000
-#### WZ->(ln)(qq), amcatnlo
-/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 18901469
-#### WZ->(ln)(nn), amcatnlo
-/WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 1690064
+#### ZZ inclusive
+/ZZ_TuneCP5_13TeV-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM 1979000
+----------------------------------------------------------------------------------------------------------------------------------------
+WW->(qq)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WW->(qq)(qq), powheg
+/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM  3808800
+----------------------------------------------------------------------------------------------------------------------------------------
+WW->(ln)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WW->(ln)(qq), powheg
+/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 19199100
+#### WW->(ln)(qq), amcatnlo
+/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 4683136
+----------------------------------------------------------------------------------------------------------------------------------------
+WW->(ln)(ln)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WW->(ln)(ln), powheg
+/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 7758900
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(qq)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(qq)(ll)
+----------------------------------------------------------------------------------------------------------------------------------------
 #### WZ->(qq)(ll), amcatnlo
 /WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM  28193648
-#### WZ->(ln)(ll), amcatnlo
-/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM  10749269
-/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM 11248318
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(qq)(nn)
+----------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(ln)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WZ->(ln)(qq), amcatnlo
+/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 18901469
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(ln)(ll)
+----------------------------------------------------------------------------------------------------------------------------------------
 #### WZ->(ln)(ll), powheg
 /WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM 1976600
 #### WZ->(ln)(ll), mll>0.1, powheg
 /WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 89479400
+#### WZ->(ln)(ll), amcatnlo
+/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM  10749269
+/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM 11248318
 ----------------------------------------------------------------------------------------------------------------------------------------
-ZZ
+WZ->(ln)(nn)
 ----------------------------------------------------------------------------------------------------------------------------------------
-#### ZZ inclusive
-/ZZ_TuneCP5_13TeV-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM 1979000
-#### ZZ->(ll)(nn), powheg
-/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM  8382600
-/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/MINIAODSIM  48046000
-#### ZZ->(ll)(qq), amcatnlo
+#### WZ->(ln)(nn), amcatnlo
+/WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 1690064
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(qq)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(qq)(ll)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### ZZ->(qq)(ll), amcatnlo
 /ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM  27900469
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(qq)(nn)
+----------------------------------------------------------------------------------------------------------------------------------------
 #### ZZ->(qq)(nn), amcatnlo
 /ZZTo2Q2Nu_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 57728992
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(ll)(ll)
+----------------------------------------------------------------------------------------------------------------------------------------
 #### ZZ->(ll)(ll), powheg
 /ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM 6689900
 /ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/MINIAODSIM 99009000
@@ -103,6 +133,15 @@ ZZ
 /ZZTo4L_M-1toInf_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM 70315000
 #### ZZ->(ll)(ll), amcatnlo
 /ZZTo4L_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM  26371225
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(ll)(nn)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### ZZ->(ll)(nn), powheg
+/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM  8382600
+/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/MINIAODSIM  48046000
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(nn)(nn)
+----------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------
 VGamma
 ----------------------------------------------------------------------------------------------------------------------------------------
