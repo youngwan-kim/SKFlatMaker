@@ -94,68 +94,107 @@ W
 /WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 253561
 /WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM  2384260
 ----------------------------------------------------------------------------------------------------------------------------------------
-WW
+VV inclusive
 ----------------------------------------------------------------------------------------------------------------------------------------
 #### WW inclusive
 /WW_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  994012
 /WW_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM 6988168
-#### WW->(ln)(qq), amcatnlo
-/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	5246469
-#### WW->(ln)(ln), powheg
-/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	1999000
-#### WW->(qq)(qq), powheg
-/WWTo4Q_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	1998400
-#### WW->(qq)(qq), 4f, amcatnlo
-/WWTo4Q_4f_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	30324343
-#### WW->(ln)(qq)
-/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	1999200
-/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM	6655400
-----------------------------------------------------------------------------------------------------------------------------------------
-WZ
-----------------------------------------------------------------------------------------------------------------------------------------
 #### WZ inclusive
 /WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  1000000
 /WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM 2997571
-#### WZ->(ln)(qq), amcatnlo
-/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	24311445
-#### WZ->(ln)(nn), amcatnlo
-/WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	1703772
-#### WZ->(qq)(ll), amcatnlo
-/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	26517272
-#### WZ->(qq)(nn), amcatnlo
-/WZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	17725159
-#### WZ->(ln)(ll), amcatnlo
-/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	11928707
-#### WZ->(ln)(ll), powheg
-/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM	1993200
-/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM	18000000
-#### WZ->(ln)(ll), mll>0.1, powheg
-/WZTo3LNu_mllmin01_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	990980
-/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM	87598784
-#### WZ->(ln)(qq), powheg
-/WZToLNu2Q_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM	497702
-----------------------------------------------------------------------------------------------------------------------------------------
-ZZ
-----------------------------------------------------------------------------------------------------------------------------------------
 #### ZZ inclusive
 /ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  990064
 /ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM 998034
-#### ZZ->(ll)(nn), powheg
-/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  48655100
-#### ZZ->(ll)(qq), amcatnlo
-/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM  15462693
-#### ZZ->(ll)(qq), powheg
-/ZZTo2L2Q_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  496436
-#### ZZ->(qq)(nn), amcatnlo
-/ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 30493038
-#### ZZ->(qq)(nn), powheg
-/ZZTo2Q2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 489955
-#### ZZ->(ll)(ll), amcatnlo
-/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM 10711278  
-#### ZZ->(ll)(ll), powheg
-/ZZTo4L_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 96451124
+----------------------------------------------------------------------------------------------------------------------------------------
+WW->(qq)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WW->(qq)(qq), powheg
+/WWTo4Q_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  1998400
+#### WW->(qq)(qq), 4f, amcatnlo
+/WWTo4Q_4f_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 30324343
+----------------------------------------------------------------------------------------------------------------------------------------
+WW->(ln)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WW->(ln)(qq), powheg
+/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 1999200
+/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM  6655400
+#### WW->(ln)(qq), amcatnlo
+/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 5246469
+----------------------------------------------------------------------------------------------------------------------------------------
+WW->(ln)(ln)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WW->(ln)(ln), powheg
+/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 1999000
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(qq)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(qq)(ll)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WZ->(qq)(ll), amcatnlo
+/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  26517272
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(qq)(nn)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WZ->(qq)(nn), amcatnlo
+/WZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 17725159
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(ln)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WZ->(ln)(qq), powheg
+/WZToLNu2Q_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 497702
+#### WZ->(ln)(qq), amcatnlo
+/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 24311445
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(ln)(ll)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WZ->(ln)(ll), powheg
+/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM 1993200
+/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM  18000000
+#### WZ->(ln)(ll), mll>0.1, powheg
+/WZTo3LNu_mllmin01_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 990980
+/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM 87598784
+#### WZ->(ln)(ll), amcatnlo
+/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 11928707
+----------------------------------------------------------------------------------------------------------------------------------------
+WZ->(ln)(nn)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### WZ->(ln)(nn), amcatnlo
+/WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 1703772
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(qq)(qq)
+----------------------------------------------------------------------------------------------------------------------------------------
 #### ZZ->(qq)(qq), amcatnlo
 /ZZTo4Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  30636849
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(qq)(ll)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### ZZ->(qq)(ll), powheg
+/ZZTo2L2Q_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  496436
+#### ZZ->(qq)(ll), amcatnlo
+/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM  15462693
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(qq)(nn)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### ZZ->(qq)(nn), powheg
+/ZZTo2Q2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 489955
+#### ZZ->(qq)(nn), amcatnlo
+/ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 30493038
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(ll)(ll)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### ZZ->(ll)(ll), powheg
+/ZZTo4L_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM 96451124
+#### ZZ->(ll)(ll), amcatnlo
+/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM 10711278
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(ll)(nn)
+----------------------------------------------------------------------------------------------------------------------------------------
+#### ZZ->(ll)(nn), powheg
+/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM  48655100
+----------------------------------------------------------------------------------------------------------------------------------------
+ZZ->(nn)(nn)
+----------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------
 VGamma
 ----------------------------------------------------------------------------------------------------------------------------------------
