@@ -180,6 +180,8 @@ TTV
 /ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM 12816567
 #### ttZ, inclusive
 /ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM 22646257
+#### ttG
+/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM	4691915
 ----------------------------------------------------------------------------------------------------------------------------------------
 QCD MuEnrichedPt5
 ----------------------------------------------------------------------------------------------------------------------------------------
