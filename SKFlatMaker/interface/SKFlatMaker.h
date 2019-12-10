@@ -314,9 +314,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   int nEvt;
   
-  //FILL a tree
-  static const int MPSIZE = 2000;
-  
   // Invariant Mass distribution of SS(OS) di-muon events GG (2 global)
   // GlbTree
   int runNum;
