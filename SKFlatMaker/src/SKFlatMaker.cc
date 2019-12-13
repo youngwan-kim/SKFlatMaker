@@ -1102,8 +1102,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("LHE_Py", "vector<double>", &LHE_Py);
     DYTree->Branch("LHE_Pz", "vector<double>", &LHE_Pz);
     DYTree->Branch("LHE_E", "vector<double>", &LHE_E);
-    DYTree->Branch("LHE_Status", "vector<double>", &LHE_Status);
-    DYTree->Branch("LHE_ID", "vector<double>", &LHE_ID);
+    DYTree->Branch("LHE_Status", "vector<int>", &LHE_Status);
+    DYTree->Branch("LHE_ID", "vector<int>", &LHE_ID);
     DYTree->Branch("PDFWeights_Scale", "vector<double>", &PDFWeights_Scale);
     DYTree->Branch("PDFWeights_Error", "vector<double>", &PDFWeights_Error);
     DYTree->Branch("PDFWeights_AlphaS", "vector<double>", &PDFWeights_AlphaS);

@@ -5,5 +5,5 @@ double	LHE_Px	1
 double	LHE_Py	1
 double	LHE_Pz	1
 double	LHE_E	1
-double	LHE_Status	1
-double	LHE_ID	1
+int	LHE_Status	1
+int	LHE_ID	1
