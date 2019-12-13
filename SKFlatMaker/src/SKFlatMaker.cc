@@ -2306,7 +2306,7 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
 
       //==== bits for each cuts
       //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideCMSPhysicsObjectSchoolAACHEN2019EGamma, Exercise 2
-      int this_idcutbid = 0;
+      int this_idcutbid = -1;
       if( el->hasUserInt(electron_IDtoSave.at(it_ID)) ){
         this_idcutbid = el->userInt(electron_IDtoSave.at(it_ID));
       }
