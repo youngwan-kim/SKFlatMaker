@@ -220,6 +220,42 @@ if Is2016:
                          #runEnergyCorrections=False ## when False, VID not reran.. I dunno why..
   )
 
+  #################
+  ### Reapply JEC
+  ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
+  #################
+
+  from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+
+  #### AK4
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJets'),
+     labelName = 'UpdatedJECslimmedJets',
+     jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.Jet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJets")
+
+  #### AK8
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJetsAK8'),
+     labelName = 'UpdatedJECslimmedJetsAK8',
+     jetCorrections = ('AK8PFPuppi', cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.FatJet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJetsAK8")
+
+  #### JEC Sequence
+
+  process.jecSequence = cms.Sequence(
+    process.patJetCorrFactorsUpdatedJECslimmedJets *
+    process.updatedPatJetsUpdatedJECslimmedJets *
+    process.patJetCorrFactorsUpdatedJECslimmedJetsAK8 *
+    process.updatedPatJetsUpdatedJECslimmedJetsAK8
+  )
+
   #########################
   #### L1Prefire reweight
   #########################
@@ -243,7 +279,8 @@ if Is2016:
   ###########
 
   process.p = cms.Path(
-    process.egammaPostRecoSeq
+    process.egammaPostRecoSeq *
+    process.jecSequence
   )
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
@@ -411,6 +448,42 @@ elif Is2018:
                          era='2018-Prompt')  
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
+  #################
+  ### Reapply JEC
+  ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
+  #################
+
+  from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+
+  #### AK4
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJets'),
+     labelName = 'UpdatedJECslimmedJets',
+     jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.Jet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJets")
+
+  #### AK8
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJetsAK8'),
+     labelName = 'UpdatedJECslimmedJetsAK8',
+     jetCorrections = ('AK8PFPuppi', cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.FatJet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJetsAK8")
+
+  #### JEC Sequence
+
+  process.jecSequence = cms.Sequence(
+    process.patJetCorrFactorsUpdatedJECslimmedJets *
+    process.updatedPatJetsUpdatedJECslimmedJets *
+    process.patJetCorrFactorsUpdatedJECslimmedJetsAK8 *
+    process.updatedPatJetsUpdatedJECslimmedJetsAK8
+  )
+
   ##########
   #### JER
   ##########
@@ -463,6 +536,7 @@ elif Is2018:
 
   process.p = cms.Path(
     process.egammaPostRecoSeq *
+    process.jecSequence *
     process.ecalBadCalibReducedMINIAODFilter *
     process.recoTree
   )
