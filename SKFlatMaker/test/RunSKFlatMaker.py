@@ -256,6 +256,18 @@ if Is2016:
     process.updatedPatJetsUpdatedJECslimmedJetsAK8
   )
 
+  #################
+  #### Update MET
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
+  #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
+  #################
+
+  from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+  runMetCorAndUncFromMiniAOD(process,
+                           isData=(not isMC),
+                           )
+
+
   #########################
   #### L1Prefire reweight
   #########################
@@ -280,7 +292,8 @@ if Is2016:
 
   process.p = cms.Path(
     process.egammaPostRecoSeq *
-    process.jecSequence
+    process.jecSequence *
+    process.fullPatMetSequence
   )
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
@@ -493,6 +506,17 @@ elif Is2018:
   process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V7b_MC/Autumn18_V7b_MC_PtResolution_AK8PFPuppi.txt')
   process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V7b_MC/Autumn18_V7b_MC_SF_AK8PFPuppi.txt')
 
+  #################
+  #### Update MET
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
+  #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
+  #################
+
+  from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+  runMetCorAndUncFromMiniAOD(process,
+                           isData=(not isMC),
+                           )
+
   #######################################
   #### ecalBadCalibReducedMINIAODFilter
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#How_to_run_ecal_BadCalibReducedM
@@ -537,6 +561,7 @@ elif Is2018:
   process.p = cms.Path(
     process.egammaPostRecoSeq *
     process.jecSequence *
+    process.fullPatMetSequence *
     process.ecalBadCalibReducedMINIAODFilter *
     process.recoTree
   )
