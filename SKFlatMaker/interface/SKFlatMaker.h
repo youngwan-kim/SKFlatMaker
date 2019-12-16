@@ -536,6 +536,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> electron_RelPFIso_dBeta;
   vector<double> electron_RelPFIso_Rho;
   vector<unsigned int> electron_IDBit;
+  vector<int> electron_IDCutBit;
   vector<double> electron_EnergyUnCorr;
   vector<double> electron_chMiniIso;
   vector<double> electron_nhMiniIso;
@@ -634,12 +635,30 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> muon_PfNeutralHadronMiniIso;
   vector<double> muon_PfGammaMiniIso;
   vector<double> muon_PFSumPUMiniIso;
+  vector<double> muon_MVA;
+  vector<double> muon_lowptMVA;
+  vector<double> muon_softMVA;
+  vector<double> muon_jetPtRatio;
+  vector<double> muon_jetPtRel;
+  vector<int> muon_simType;
+  vector<int> muon_simExtType;
+  vector<int> muon_simFlavour;
+  vector<int> muon_simHeaviestMotherFlavour;
+  vector<int> muon_simPdgId;
+  vector<int> muon_simMotherPdgId;
+  vector<double> muon_simMatchQuality;
 
   //==== Rochestor correction
   RoccoR rc;
 
   //==== LHE
 
+  vector<double> LHE_Px;
+  vector<double> LHE_Py;
+  vector<double> LHE_Pz;
+  vector<double> LHE_E;
+  vector<int> LHE_Status;
+  vector<int> LHE_ID;
   vector<double> PDFWeights_Scale;
   vector<double> PDFWeights_Error;
   vector<double> PDFWeights_AlphaS;
