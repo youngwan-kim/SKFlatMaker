@@ -84,11 +84,11 @@ GT_MC = ''
 GT_DATA = ''
 
 if Is2016:
-  GT_MC = '94X_mcRun2_asymptotic_v3'
-  GT_DATA = '94X_dataRun2_v10'
+  GT_MC = '102X_mcRun2_asymptotic_v7'
+  GT_DATA = '102X_dataRun2_v12'
 elif Is2017:
-  GT_MC = '94X_mc2017_realistic_v17'
-  GT_DATA = '94X_dataRun2_v11'
+  GT_MC = '102X_mc2017_realistic_v7'
+  GT_DATA = '102X_dataRun2_v12'
 elif Is2018:
   GT_MC = '102X_upgrade2018_realistic_v20'
   GT_DATA = '102X_dataRun2_v12'
