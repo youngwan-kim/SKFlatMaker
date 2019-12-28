@@ -67,6 +67,15 @@ for line in lines:
   
   sample = samplePDs[1]
   confs = samplePDs[2]
+
+  #### get extension info
+  #### _ext1-v2
+  extension = ''
+  for w in range(0,len(confs)):
+    if confs[w:w+4]=='_ext':
+      extension = confs[w:]
+      break
+
   cmd = 'crab submit -c SubmitCrab__'+sample+'__'+confs+'.py'
 
   #### AD-HOC for 2018 periodD, which has different GT
@@ -122,7 +131,10 @@ for line in lines:
 
   for sk_line in sk_lines:
     if "config.General.requestName" in sk_line:
-      out.write("config.General.requestName = '"+sample+"__"+confs+"'\n")
+      if isData:
+        out.write("config.General.requestName = '"+sample+"__"+confs+"'\n")
+      else:
+        out.write("config.General.requestName = '"+sample+extension+"'\n")
     elif "config.JobType.pyCfgParams" in sk_line:
       out.write("config.JobType.pyCfgParams = "+ArgsListString+"\n")
     elif "config.Data.inputDataset" in sk_line:
