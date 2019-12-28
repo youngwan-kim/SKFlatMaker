@@ -654,8 +654,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<double> LHE_Py;
   vector<double> LHE_Pz;
   vector<double> LHE_E;
-  vector<double> LHE_Status;
-  vector<double> LHE_ID;
+  vector<int> LHE_Status;
+  vector<int> LHE_ID;
   vector<double> PDFWeights_Scale;
   vector<double> PDFWeights_Error;
   vector<double> PDFWeights_AlphaS;
