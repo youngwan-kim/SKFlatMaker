@@ -211,7 +211,7 @@ if Is2016:
   #### Rerun EGammaPostReco
   ###########################
 
-  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  from EgammaUser.EgammaPostRecoTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True,
                          era='2016-Legacy',
@@ -311,7 +311,7 @@ elif Is2017:
   #### Rerun EGammaPostReco
   ###########################
 
-  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  from EgammaUser.EgammaPostRecoTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True, #saves CPU time by not needlessly re-running VID
                          era='2017-Nov17ReReco',
@@ -456,7 +456,7 @@ elif Is2018:
   #### Rerun EGammaPostReco
   ###########################
 
-  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  from EgammaUser.EgammaPostRecoTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          era='2018-Prompt')  
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
