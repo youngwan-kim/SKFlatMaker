@@ -1,4 +1,5 @@
 from CRABClient.UserUtilities import config, getUsernameFromSiteDB
+import os
 
 config = config()
 
