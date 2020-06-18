@@ -1,5 +1,4 @@
-from CRABClient.UserUtilities import config, getUsernameFromSiteDB
-import os
+from CRABClient.UserUtilities import config, getUsername
 
 config = config()
 
@@ -20,7 +19,7 @@ config.Data.inputDataset = '/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythi
 
 config.Data.splitting = 'FileBased' ## EDIT
 config.Data.unitsPerJob = 1
-config.Data.outLFNDirBase = '/store/user/%s/SKFlat/' % (os.environ['SiteUserName'])
+config.Data.outLFNDirBase = '/store/user/%s/SKFlat/' % (getUsername())
 config.Data.publication = False
 config.Data.outputDatasetTag = 'SKFlatMaker_2017_v1'
 

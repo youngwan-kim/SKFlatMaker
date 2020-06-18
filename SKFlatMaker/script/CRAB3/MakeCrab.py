@@ -184,7 +184,7 @@ for line in lines:
         out.write("config.Data.outputDatasetTag = 'SKFlat_"+SKFlatTag+"'\n")
 
     elif 'config.Data.outLFNDirBase' in sk_line:
-      out.write("config.Data.outLFNDirBase = '/store/user/%s/SKFlat/"+year+"/' % (os.environ['SiteUserName'])\n")
+      out.write("config.Data.outLFNDirBase = '/store/user/%s/SKFlat/"+year+"/' % (getUsername())\n")
 
     elif 'config.Site.storageSite' in sk_line:
       #if isPrivateMC:
