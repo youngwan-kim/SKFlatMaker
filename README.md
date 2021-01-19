@@ -44,7 +44,7 @@ git-cms-addpkg PhysicsTools/PatUtils
 cd PhysicsTools/PatUtils/data/
 wget --no-check-certificate https://lathomas.web.cern.ch/lathomas/TSGStuff/L1Prefiring/PrefiringMaps_2016and2017/files/L1PrefiringMaps_WithUL17.root 
 cd ../../../
-scram b
+scram b -j 4
 
 
 ######################
@@ -52,7 +52,7 @@ scram b
 ######################
 
 # Copy this code
-git clone https://ithub.com:CMSSNU/SKFlatMaker.git
+git clone https://github.com/CMSSNU/SKFlatMaker.git
 #Or git clone git@github.com:CMSSNU/SKFlatMaker.git
 cd SKFlatMaker
 
