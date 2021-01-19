@@ -1459,14 +1459,14 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0) Flag_BadPFMuonFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0) Flag_BadChargedCandidateFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0) Flag_eeBadScFilter = METFilterResults-> accept(i);
-    //else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibReducedMINIAODFilter") == 0) Flag_ecalBadCalibReducedMINIAODFilter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibReducedMINIAODFilter") == 0) Flag_ecalBadCalibReducedMINIAODFilter = METFilterResults -> accept(i);
   }
-
-  if(DataYear>=2017){
-    edm::Handle< bool > passecalBadCalibFilterUpdate ;
-    iEvent.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
-    Flag_ecalBadCalibReducedMINIAODFilter =  (*passecalBadCalibFilterUpdate );
-  }
+  // ecalBadCalibReducedMINIAODFilter WIP for UL 
+  //  if(DataYear>=2017){
+  //    edm::Handle< bool > passecalBadCalibFilterUpdate ;
+  //    iEvent.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
+  //    Flag_ecalBadCalibReducedMINIAODFilter =  (*passecalBadCalibFilterUpdate );
+  //  }
 
 }
 

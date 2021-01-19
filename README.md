@@ -11,13 +11,13 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 # Make CMSSW directory
 
 #### 1) For a test job or developement
-cmsrel CMSSW_10_2_18
-cd CMSSW_10_2_18/src
+cmsrel CMSSW_10_6_20
+cd CMSSW_10_6_20/src
 
 #### 2) For production, let's not use the working directory but use new and clean directory
 #### Also, I recommend using lxplus
-scram p -n Run2Legacy_v4__CMSSW_10_2_18 CMSSW CMSSW_10_2_18
-cd Run2Legacy_v4__CMSSW_10_2_18/src
+scram p -n Run2UltraLegacy_v1__CMSSW_10_6_20 CMSSW CMSSW_10_6_20
+cd Run2UltraLegacy_v1__CMSSW_10_6_20/src
 
 #### Then,
 cmsenv
@@ -25,20 +25,26 @@ git cms-init
 
 ######################
 #### EGamma smearing
-#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaPostRecoRecipes#102X
+#### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018
 ######################
 
-git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things run faster
-#now build everything
-scram b -j 8
-#now add in E/gamma Post reco tools
-git clone git@github.com:cms-egamma/EgammaPostRecoTools.git  EgammaUser/EgammaPostRecoTools
-cd  EgammaUser/EgammaPostRecoTools
-git checkout master
-cd -
-echo $CMSSW_BASE
-cd $CMSSW_BASE/src
-scram b -j 8
+git cms-addpkg RecoEgamma/EgammaTools  ### essentially just checkout the package from CMSSW
+git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
+mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
+git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b UL2018 EgammaAnalysis/ElectronTools/data/
+git cms-addpkg EgammaAnalysis/ElectronTools
+scram b -j 4
+
+
+######################
+#### L1Prefire for UL17
+#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe
+######################
+git-cms-addpkg PhysicsTools/PatUtils 
+cd PhysicsTools/PatUtils/data/
+wget --no-check-certificate https://lathomas.web.cern.ch/lathomas/TSGStuff/L1Prefiring/PrefiringMaps_2016and2017/files/L1PrefiringMaps_WithUL17.root 
+cd ../../../
+scram b
 
 
 ######################
@@ -46,7 +52,8 @@ scram b -j 8
 ######################
 
 # Copy this code
-git clone git@github.com:CMSSNU/SKFlatMaker.git
+git clone https://ithub.com:CMSSNU/SKFlatMaker.git
+#Or git clone git@github.com:CMSSNU/SKFlatMaker.git
 cd SKFlatMaker
 
 #### 1) For a test job or development 
@@ -54,12 +61,12 @@ git checkout master
 git checkout -b <testbranch>
 
 #### 2) For production
-git checkout Run2Legacy_v4 #### use the tag
+git checkout Run2UltraLegacy_v1 #### use the tag
 
 cd $CMSSW_BASE/src
 
 # Compile
-scram b -j 8
+scram b -j 4
 
 # Setup
 cd $CMSSW_BASE/src/SKFlatMaker
