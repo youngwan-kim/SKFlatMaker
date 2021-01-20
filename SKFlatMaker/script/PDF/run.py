@@ -1,8 +1,9 @@
-import os
+import os,sys
 
+filename = sys.argv[1]
 #filename = 'samplelist_2016.txt'
 #filename = 'samplelist_2017.txt'
-filename = 'samplelist_2018.txt'
+#filename = 'samplelist_2018.txt'
 #filename = 'samplelist_Private.txt'
 
 IsPrivate = ("Private" in filename)
@@ -23,8 +24,11 @@ for line in lines:
 
   if "#" in line:
     continue
+  if line.count('/')!=3:
+    continue
 
   line = line.strip('\n')
+  line = line.split()[0]
   samplePDs = line.split("/")
 
   sample = samplePDs[1]

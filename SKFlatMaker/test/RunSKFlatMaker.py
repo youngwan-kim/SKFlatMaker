@@ -324,12 +324,12 @@ elif Is2017:
   # Not needed for Summer20MiniAODv2 since it have already scale and smearing corrections
   # But, for Summer19MiniAOD.
   # https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018
-  from EgammaUser.EgammaPostRecoTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
-                         runVID=False, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
+                         runVID=True, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
                          era='2017-UL',
-#                         eleIDModules=myEleID,
-#                         phoIDModules=myPhoID,
+                         eleIDModules=myEleID,
+                         phoIDModules=myPhoID,
   )
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
@@ -392,6 +392,17 @@ elif Is2017:
   process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK8PFPuppi.txt')
   process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_SF_AK8PFPuppi.txt')
 
+  #################
+  #### Update MET
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
+  #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
+  #################
+
+  from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+  runMetCorAndUncFromMiniAOD(process,
+                           isData=(not isMC),
+                           )
+
   #######################################
   #### ecalBadCalibReducedMINIAODFilter
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#How_to_run_ecal_BadCalibReducedM
@@ -452,7 +463,7 @@ elif Is2017:
   process.p = cms.Path(
     process.egammaPostRecoSeq *
     process.jecSequence *
-    process.fullPatMetSequenceModifiedMET 
+    process.fullPatMetSequence
 #   * process.ecalBadCalibReducedMINIAODFilter
   )
   if isMC:

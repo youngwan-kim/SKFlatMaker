@@ -41,9 +41,11 @@ scram b -j 4
 #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe
 ######################
 git-cms-addpkg PhysicsTools/PatUtils 
-cd PhysicsTools/PatUtils/data/
-wget --no-check-certificate https://lathomas.web.cern.ch/lathomas/TSGStuff/L1Prefiring/PrefiringMaps_2016and2017/files/L1PrefiringMaps_WithUL17.root 
-cd ../../../
+#cd PhysicsTools/PatUtils/data/
+#wget --no-check-certificate https://lathomas.web.cern.ch/lathomas/TSGStuff/L1Prefiring/PrefiringMaps_2016and2017/files/L1PrefiringMaps_WithUL17.root 
+#cd ../../../
+#wget is not working due cern SSO, instead do 
+cp SKFlatMaker/SKFlatMaker/data/L1Prefire/L1PrefiringMaps_WithUL17.root PhysicsTools/PatUtils/data/
 scram b -j 4
 
 

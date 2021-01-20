@@ -2215,7 +2215,11 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_phMiniIso.push_back( el->miniPFIsolation().photonIso() );
     electron_puChMiniIso.push_back( el->miniPFIsolation().puChargedHadronIso() );
 
-    electron_trackIso.push_back( el->userFloat("heepTrkPtIso") );
+    // For UL heepTrkPtIso is not saved as userFloat. (not sure)
+    // https://github.com/cms-egamma/EgammaPostRecoTools/blob/3257bda882e7b34be4adbe2cd1e83dac8b533897/python/EgammaPostRecoTools.py#L452
+    // https://hypernews.cern.ch/HyperNews/CMS/get/egamma/2268.html
+    //electron_trackIso.push_back( el->userFloat("heepTrkPtIso") );
+    electron_trackIso.push_back( el->dr03TkSumPtHEEP() );
 
     electron_dr03EcalRecHitSumEt.push_back( el->dr03EcalRecHitSumEt() );
     electron_dr03HcalDepth1TowerSumEt.push_back( el->dr03HcalDepth1TowerSumEt() );
