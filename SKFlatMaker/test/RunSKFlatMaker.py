@@ -8,25 +8,29 @@ options.register('ScaleIDRange', "-999,-999", VarParsing.multiplicity.singleton,
 options.register('PDFErrorIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error ID range: 1001,1100")
 options.register('PDFAlphaSIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS ID range: 1101,1102")
 options.register('PDFAlphaSScaleValue', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS Scale values: 1.5,1.5")
-options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "year: Which year? 2016preVFP, 2016postVFP, 2017, 2018")
+options.register('era',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "era: Which era? 2016preVFP, 2016postVFP, 2017, 2018")
+options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "Deprecated. Use 'era'")
 options.parseArguments()
 
 import sys
+
+if options.year!=-1:
+  sys.exit("Option 'year' is deprecated. Use 'era'")  
 
 Is2016preVFP = False
 Is2016postVFP = False
 Is2017 = False
 Is2018 = False
-if options.year=='2016preVFP':
+if options.era=='2016preVFP':
   Is2016preVFP = True
-if options.year=='2016postVFP':
+elif options.era=='2016postVFP':
   Is2016postVFP = True
-elif options.year=='2017':
+elif options.era=='2017':
   Is2017 = True
-elif options.year=='2018':
+elif options.era=='2018':
   Is2018 = True
 else:
-  ErrorMgs = "year is not correct; "+str(options.year)
+  ErrorMgs = "era is not correct; "+str(options.era)
   sys.exit(ErrorMgs)
 
 isMC = True
@@ -42,18 +46,18 @@ options.outputFile = "SKFlatNtuple.root"
 if len(options.inputFiles)==0:
   if Is2016preVFP:
     if isMC:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/120000/80DBA5F3-16BE-E811-854E-A0369FC5E530.root')
-      options.outputFile = "SKFlatNtuple_2016_MC.root"
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL16MiniAODAPV/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v8-v1/270000/19589E57-61A2-7049-9343-788B6D00A07D.root')
+      options.outputFile = "SKFlatNtuple_2016preVFP_MC.root"
     else:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016B/SingleMuon/MINIAOD/17Jul2018_ver1-v1/80000/306DAB6C-068C-E811-9E30-0242AC1C0501.root')
-      options.outputFile = "SKFlatNtuple_2016_DATA.root"
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016B/SingleMuon/MINIAOD/21Feb2020_ver2_UL2016_HIPM-v1/70000/6805D8D5-79EB-0346-9E07-B267BE5BD848.root')
+      options.outputFile = "SKFlatNtuple_2016preVFP_DATA.root"
   if Is2016postVFP:
     if isMC:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/120000/80DBA5F3-16BE-E811-854E-A0369FC5E530.root')
-      options.outputFile = "SKFlatNtuple_2016_MC.root"
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL16MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/110000/F0A9DC9B-B0D6-804A-BD80-57F7FA06FACB.root')
+      options.outputFile = "SKFlatNtuple_2016postVFP_MC.root"
     else:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016B/SingleMuon/MINIAOD/17Jul2018_ver1-v1/80000/306DAB6C-068C-E811-9E30-0242AC1C0501.root')
-      options.outputFile = "SKFlatNtuple_2016_DATA.root"
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016H/SingleMuon/MINIAOD/21Feb2020_UL2016-v1/250000/D6CA5522-DB00-CE45-BF90-06176D4DBC86.root')
+      options.outputFile = "SKFlatNtuple_2016postVFP_DATA.root"
   elif Is2017:
     if isMC:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL17MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mc2017_realistic_v6-v2/260000/04B074CC-43FC-6045-ACD2-D49AC762E5A6.root')
@@ -63,10 +67,10 @@ if len(options.inputFiles)==0:
       options.outputFile = "SKFlatNtuple_2017_DATA.root"
   elif Is2018:
     if isMC:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIIAutumn18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/120000/B3F93EA2-04C6-E04E-96AF-CB8FAF67E6BA.root')
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_upgrade2018_realistic_v11_L1v1-v2/70000/EA2F219D-8534-7B4D-AF83-5D91AF448EC6.root')
       options.outputFile = "SKFlatNtuple_2018_MC.root"
     else:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/MINIAOD/17Sep2018-v2/00000/11697BCC-C4AB-204B-91A9-87F952F9F2C6.root')
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/MINIAOD/12Nov2019_UL2018_rsb-v1/240000/FE143ADE-E9E4-3143-8754-C9ECA89F3541.root')
       options.outputFile = "SKFlatNtuple_2018_DATA.root"
 
 ScaleIDRange = [int(options.ScaleIDRange.split(',')[0]), int(options.ScaleIDRange.split(',')[1])]
@@ -84,7 +88,7 @@ print 'PDFAlphaSIDRange = ',
 print PDFAlphaSIDRange
 print 'PDFAlphaSScaleValue = ',
 print PDFAlphaSScaleValue
-print 'year = '+str(options.year)
+print 'era = '+str(options.era)
 
 
 #### Global Tag
@@ -142,7 +146,7 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 if isMC == True:
   process.GlobalTag.globaltag = cms.string(GT_MC)
 else:
-  process.GlobalTag.globaltag = cms.string(GT_DATA) #prompt-reco global tag
+  process.GlobalTag.globaltag = cms.string(GT_DATA)
 
 
 process.TFileService = cms.Service("TFileService",
@@ -155,7 +159,7 @@ process.TFileService = cms.Service("TFileService",
 from SKFlatMaker.SKFlatMaker.SKFlatMaker_cfi import *
 
 process.recoTree = SKFlatMaker.clone()
-process.recoTree.DataYear = cms.untracked.int32(int(options.year[0:4]))
+process.recoTree.DataYear = cms.untracked.int32(int(options.era[0:4]))
 process.recoTree.DebugLevel = cms.untracked.int32(0)
 process.recoTree.StoreHLTObjectFlag = False ##FIXME
 
@@ -222,13 +226,13 @@ if Is2016preVFP:
   #### Rerun EGammaPostReco
   ###########################
 
-  from EgammaUser.EgammaPostRecoTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True,
-                         era='2016-Legacy',
+                         era='2016-UL',
                          eleIDModules=myEleID,
                          phoIDModules=myPhoID,
-                         #runEnergyCorrections=False ## when False, VID not reran.. I dunno why..
+                         runEnergyCorrections=False  ## not yet available
   )
 
   #################
@@ -267,6 +271,16 @@ if Is2016preVFP:
     process.updatedPatJetsUpdatedJECslimmedJetsAK8
   )
 
+  ##########
+  #### JER
+  #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2016_data
+  ##########
+  # no JER for UL2016 yet. use old one
+  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_PtResolution_AK4PFchs.txt')
+  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_SF_AK4PFchs.txt')
+  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_PtResolution_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_SF_AK8PFPuppi.txt')
+
   #################
   #### Update MET
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
@@ -282,7 +296,7 @@ if Is2016preVFP:
   #########################
   #### L1Prefire reweight
   #########################
-
+  ## not yet availalble for UL yet
   from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
   process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
     DataEra = cms.string("2016BtoH"), #Use 2016BtoH for 2016
@@ -295,7 +309,117 @@ if Is2016preVFP:
   ###########################
   #### Rochester correction
   ###########################
-  process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v3/RoccoR2016.txt')
+  process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016aUL.txt')
+
+  ###########
+  #### Path
+  ###########
+
+  process.p = cms.Path(
+    process.egammaPostRecoSeq *
+    process.jecSequence *
+    process.fullPatMetSequence
+  )
+  if isMC:
+    process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
+    process.p *= process.prefiringweight
+
+  process.p *= process.recoTree
+
+if Is2016postVFP:
+
+  print "################"
+  print "Running 2016postVFP"
+  print "################"
+
+  ###########################
+  #### Rerun EGammaPostReco
+  ###########################
+
+  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  setupEgammaPostRecoSeq(process,
+                         runVID=True,
+                         era='2016-UL',
+                         eleIDModules=myEleID,
+                         phoIDModules=myPhoID,
+                         runEnergyCorrections=False  ## not yet available
+  )
+
+  #################
+  ### Reapply JEC
+  ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
+  #################
+
+  from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+
+  #### AK4
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJets'),
+     labelName = 'UpdatedJECslimmedJets',
+     jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.Jet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJets")
+
+  #### AK8
+
+  updateJetCollection(
+     process,
+     jetSource = cms.InputTag('slimmedJetsAK8'),
+     labelName = 'UpdatedJECslimmedJetsAK8',
+     jetCorrections = ('AK8PFPuppi', cms.vstring(['L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+  )
+  process.recoTree.FatJet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJetsAK8")
+
+  #### JEC Sequence
+
+  process.jecSequence = cms.Sequence(
+    process.patJetCorrFactorsUpdatedJECslimmedJets *
+    process.updatedPatJetsUpdatedJECslimmedJets *
+    process.patJetCorrFactorsUpdatedJECslimmedJetsAK8 *
+    process.updatedPatJetsUpdatedJECslimmedJetsAK8
+  )
+
+  ##########
+  #### JER
+  #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2016_data
+  ##########
+  # no JER for UL2016 yet. use old one
+  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_PtResolution_AK4PFchs.txt')
+  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_SF_AK4PFchs.txt')
+  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_PtResolution_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_SF_AK8PFPuppi.txt')
+
+  #################
+  #### Update MET
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
+  #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
+  #################
+
+  from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+  runMetCorAndUncFromMiniAOD(process,
+                           isData=(not isMC),
+                           )
+
+
+  #########################
+  #### L1Prefire reweight
+  #########################
+  ## not yet availalble for UL yet
+  from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
+  process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
+    DataEra = cms.string("2016BtoH"), #Use 2016BtoH for 2016
+    ThePhotons = cms.InputTag("slimmedPhotons"),
+    TheJets = cms.InputTag("slimmedJets"),
+    UseJetEMPt = cms.bool(True),
+    PrefiringRateSystematicUncty = cms.double(0.2),
+    SkipWarnings = False)
+
+  ###########################
+  #### Rochester correction
+  ###########################
+  process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016bUL.txt')
 
   ###########
   #### Path
@@ -343,13 +467,12 @@ elif Is2017:
   ### Reapply JEC
   ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
   #################
-  # JEC loaded by global tag. For UL17, global tag including JEC is not yet announced.
+  # Recommended way to load JEC is using a global tag. 106X_mc2017_realistic_v8 includes Summer19UL17_V5 JEC.
   # https://twiki.cern.ch/twiki/bin/view/CMS/JECDataMC#2017_Data
 
+  #### Update jets
   from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-
   #### AK4
-
   updateJetCollection(
      process,
      jetSource = cms.InputTag('slimmedJets'),
@@ -359,7 +482,6 @@ elif Is2017:
   process.recoTree.Jet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJets")
 
   #### AK8
-
   updateJetCollection(
      process,
      jetSource = cms.InputTag('slimmedJetsAK8'),
@@ -482,9 +604,13 @@ elif Is2018:
   #### Rerun EGammaPostReco
   ###########################
 
-  from EgammaUser.EgammaPostRecoTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+  from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
-                         era='2018-Prompt')  
+                         runVID=True, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
+                         era='2018-UL',
+                         eleIDModules=myEleID,
+                         phoIDModules=myPhoID,
+  )  
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
   #################
@@ -526,11 +652,12 @@ elif Is2018:
   ##########
   #### JER
   ##########
-
-  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V7b_MC/Autumn18_V7b_MC_PtResolution_AK4PFchs.txt')
-  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V7b_MC/Autumn18_V7b_MC_SF_AK4PFchs.txt')
-  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V7b_MC/Autumn18_V7b_MC_PtResolution_AK8PFPuppi.txt')
-  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Autumn18_V7b_MC/Autumn18_V7b_MC_SF_AK8PFPuppi.txt')
+  #The JER-SF in UL18_JRV2 are not evaluated separately for each data-taking period, and they are not in a pT-dependent format. The previously strong pT dependency at high eta is however observed to be reduced in UL
+  #https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2018_data
+  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt')
+  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt')
+  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK8PFPuppi.txt')
 
   #################
   #### Update MET
@@ -547,38 +674,40 @@ elif Is2018:
   #### ecalBadCalibReducedMINIAODFilter
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#How_to_run_ecal_BadCalibReducedM
   ########################################
-
-  process.load('RecoMET.METFilters.ecalBadCalibFilter_cfi')
-
-  baddetEcallist = cms.vuint32(
-    [872439604,872422825,872420274,872423218,
-     872423215,872416066,872435036,872439336,
-     872420273,872436907,872420147,872439731,
-     872436657,872420397,872439732,872439339,
-     872439603,872422436,872439861,872437051,
-     872437052,872420649,872421950,872437185,
-     872422564,872421566,872421695,872421955,
-     872421567,872437184,872421951,872421694,
-     872437056,872437057,872437313,872438182,
-     872438951,872439990,872439864,872439609,
-     872437181,872437182,872437053,872436794,
-     872436667,872436536,872421541,872421413,
-     872421414,872421031,872423083,872421439]
-  )
-
-  process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
-    "EcalBadCalibFilter",
-    EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
-    ecalMinEt        = cms.double(50.),
-    baddetEcal    = baddetEcallist,
-    taggingMode = cms.bool(True),
-    debug = cms.bool(False)
-  )
+  # WIP for UL. comment out for now. check process.p and SKFlatMaker.cc when updating
+  # https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
+#
+#  process.load('RecoMET.METFilters.ecalBadCalibFilter_cfi')
+#
+#  baddetEcallist = cms.vuint32(
+#    [872439604,872422825,872420274,872423218,
+#     872423215,872416066,872435036,872439336,
+#     872420273,872436907,872420147,872439731,
+#     872436657,872420397,872439732,872439339,
+#     872439603,872422436,872439861,872437051,
+#     872437052,872420649,872421950,872437185,
+#     872422564,872421566,872421695,872421955,
+#     872421567,872437184,872421951,872421694,
+#     872437056,872437057,872437313,872438182,
+#     872438951,872439990,872439864,872439609,
+#     872437181,872437182,872437053,872436794,
+#     872436667,872436536,872421541,872421413,
+#     872421414,872421031,872423083,872421439]
+#  )
+#
+#  process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
+#    "EcalBadCalibFilter",
+#    EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
+#    ecalMinEt        = cms.double(50.),
+#    baddetEcal    = baddetEcallist,
+#    taggingMode = cms.bool(True),
+#    debug = cms.bool(False)
+#  )
 
   ###########################
   #### Rochester correction
   ###########################
-  process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v3/RoccoR2018.txt')
+  process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2018UL.txt')
 
   ###########
   #### Path
@@ -588,6 +717,6 @@ elif Is2018:
     process.egammaPostRecoSeq *
     process.jecSequence *
     process.fullPatMetSequence *
-    process.ecalBadCalibReducedMINIAODFilter *
+    #process.ecalBadCalibReducedMINIAODFilter *
     process.recoTree
   )

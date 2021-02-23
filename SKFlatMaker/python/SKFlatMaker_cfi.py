@@ -50,7 +50,7 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   ),
 
   #### Rochestor
-  roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v3/RoccoR2016.txt'),
+  roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2017UL.txt'),
 
   # -- photon information -- #
   photon_EA_CH_file = cms.untracked.FileInPath("RecoEgamma/PhotonIdentification/data/Fall17/effAreaPhotons_cone03_pfChargedHadrons_90percentBased_TrueVtx.txt"),
@@ -60,10 +60,10 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   # -- Jet information -- #
   AK4Jet_payloadName = cms.string('AK4PFchs'),
   AK8Jet_payloadName = cms.string('AK8PFPuppi'),
-  AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt'),
-  AK4Jet_JER_SF_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_SF_AK4PFchs.txt'),
-  AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_PtResolution_AK8PFPuppi.txt'),
-  AK8Jet_JER_SF_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1_MC/Summer16_25nsV1_MC_SF_AK8PFPuppi.txt'),
+  AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt'),
+  AK4Jet_JER_SF_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt'),
+  AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_PtResolution_AK8PFPuppi.txt'),
+  AK8Jet_JER_SF_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_SF_AK8PFPuppi.txt'),
 
   # -- MET information -- #
   METFilterResults_PAT = cms.InputTag("TriggerResults", "", "PAT"),

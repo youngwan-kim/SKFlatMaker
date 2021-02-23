@@ -11,16 +11,19 @@ txtfilename = sys.argv[1]
 SKFlatTag = os.environ['SKFlatTag']
 SKFlatWD = os.environ['SKFlatWD']
 
-year = "-1"
-if "2016" in txtfilename:
-  year = "2016"
+era = "-1"
+if "2016preVFP" in txtfilename:
+  era = "2016preVFP"
+elif "2016postVFP" in txtfilename:
+  era = "2016postVFP"
 elif "2017" in txtfilename:
-  year = "2017"
+  era = "2017"
 elif "2018" in txtfilename:
-  year = "2018"
+  era = "2018"
 else:
-  print "Wrong year from txtfilename : "+txtfilename
+  print "Wrong era from txtfilename : "+txtfilename
   sys.exit()
+year=era[0:4]
 
 lines = open(txtfilename).readlines()
 
@@ -40,7 +43,7 @@ if ("Private" in txtfilename) or ("private" in txtfilename):
   isData = False
   isPrivateMC = True
 
-base_dir = SKFlatTag+'/'+year+'/crab_submission_'+str_sample+'/'
+base_dir = SKFlatTag+'/'+era+'/crab_submission_'+str_sample+'/'
 
 os.system('mkdir -p '+base_dir)
 os.system('cp '+SKFlatWD+'/SKFlatMaker/test/RunSKFlatMaker.py '+base_dir)
@@ -78,19 +81,14 @@ for line in lines:
 
   cmd = 'crab submit -c SubmitCrab__'+sample+'__'+confs+'.py'
 
-  #### AD-HOC for 2018 periodD, which has different GT
-  if isData and (year=="2018") and ("Run2018D" in confs):
-    print "#### 2018 DATA periodD :"+sample+"/"+confs+"/MINIAOD"
-    str_sample = "DATA2018Prompt"
-
-  ArgsListString = "['sampletype="+str_sample+"','year="+year+"'"
-  # ['sampletype="+str_sample+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"','year="+year+"']
+  ArgsListString = "['sampletype="+str_sample+"','era="+era+"'"
+  # ['sampletype="+str_sample+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"','era="+era+"']
   if not isData:
-    HasFile = os.path.isfile(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+year+'/'+sample+'.txt')
+    HasFile = os.path.isfile(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+era+'/'+sample+'.txt')
 
     if HasFile:
 
-      MCInfoLines = open(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+year+'/'+sample+'.txt').readlines()
+      MCInfoLines = open(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+era+'/'+sample+'.txt').readlines()
       words = MCInfoLines[0].split()
       # 1001,1009 gaussian  2001,2100 2101,2102 1.5,1.5
       ScaleIDRange = words[0]
@@ -184,7 +182,7 @@ for line in lines:
         out.write("config.Data.outputDatasetTag = 'SKFlat_"+SKFlatTag+"'\n")
 
     elif 'config.Data.outLFNDirBase' in sk_line:
-      out.write("config.Data.outLFNDirBase = '/store/user/%s/SKFlat/"+year+"/' % (getUsername())\n")
+      out.write("config.Data.outLFNDirBase = '/store/user/%s/SKFlat/"+era+"/' % (getUsername())\n")
 
     elif 'config.Site.storageSite' in sk_line:
       #if isPrivateMC:
@@ -196,17 +194,18 @@ for line in lines:
       out.write(sk_line)
 
   if isData:
-    if year=="2016":
-      #### https://hypernews.cern.ch/HyperNews/CMS/get/physics-validation/3358.html
-      out.write("config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt'\n")
-    elif year=="2017":
+    if era=="2016preVFP":
+      out.write("config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Legacy_2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'\n")
+    elif era=="2016postVFP":
+      out.write("config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Legacy_2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'\n")
+    elif era=="2017":
       #### https://twiki.cern.ch/twiki/bin/view/CMS/PdmVLegacy2017Analysis
       out.write("config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions17/13TeV/Legacy_2017/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt'\n")
-    elif year=="2018":
+    elif era=="2018":
       #### https://twiki.cern.ch/twiki/bin/view/CMS/PdmVLegacy2018Analysis
       out.write("config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions18/13TeV/Legacy_2018/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt'\n")
     else:
-      print "Wrong year : "+year
+      print "Wrong era : "+era
 
   print cmd
 

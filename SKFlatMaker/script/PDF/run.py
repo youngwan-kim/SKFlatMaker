@@ -9,16 +9,17 @@ filename = sys.argv[1]
 IsPrivate = ("Private" in filename)
 
 lines = open(filename).readlines()
-Year = "2016"
-if "2017" in filename:
-  Year = "2017"
-elif "2018" in filename:
-  Year = "2018"
+era = ""
+if "2016preVFP" in filename: era = "2016preVFP"
+elif "2016postVFP" in filename: era = "2016postVFP"
+elif "2017" in filename: era = "2017"
+elif "2018" in filename: era = "2018"
+else: sys.exit("Unknown era "+era)
 
 hostname = os.environ['HOSTNAME']
 SKFlatWD = os.environ['SKFlatWD']
 
-os.system('mkdir -p logs_'+Year)
+os.system('mkdir -p logs_'+era)
 
 for line in lines:
 
@@ -57,12 +58,12 @@ for line in lines:
 
   ## I think it is better to save non-shifted info in the spreadsheet
 
-  HasFile = os.path.isfile(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+Year+'/'+sample+'.txt')
+  HasFile = os.path.isfile(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+era+'/'+sample+'.txt')
 
   '''
   if HasFile:
 
-    MCInfoLines = open(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+Year+'/'+sample+'.txt').readlines()
+    MCInfoLines = open(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+era+'/'+sample+'.txt').readlines()
     words = MCInfoLines[0].split()
     # 1001,1009 gaussian  2001,2100 2101,2102 1.5,1.5
     ScaleIDRange = words[0]
@@ -87,9 +88,9 @@ for line in lines:
   else:
     cmd = cmd+' sampletype=MC'
 
-  cmd = cmd+' year='+Year
+  cmd = cmd+' era='+era
 
-  final_cmd = cmd+' > logs_'+Year+'/'+sample+'.log'
+  final_cmd = cmd+' > logs_'+era+'/'+sample+'.log'
   print final_cmd
   os.system(final_cmd)
 

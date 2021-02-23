@@ -89,4 +89,7 @@ echo $asScaleA $asScaleB
 echo "####AUTO####"
 printf "echo \"%d,%d\t%s\t%d,%d\t%d,%d\t%s,%s\" > ../MCPDFInfo/%s.txt\n" "$scaleA" "$scaleB" "$combine" "$pdfA" "$pdfB" "$asA" "$asB" "$asScaleA" "$asScaleB" $(echo $filename|sed 's/logs_//'|sed 's/.log$//')
 read -p "exec?(y/n): " YES
-[ "$YES" = "y" ] || [ "$YES" = "Y" ] && printf "echo \"%d,%d\t%s\t%d,%d\t%d,%d\t%s,%s\" > ../MCPDFInfo/%s.txt\n" "$scaleA" "$scaleB" "$combine" "$pdfA" "$pdfB" "$asA" "$asB" "$asScaleA" "$asScaleB" $(echo $filename|sed 's/logs_//'|sed 's/.log$//')|xargs -i sh -c '{}'
+if [ "$YES" = "y" ] || [ "$YES" = "Y" ];then
+    mkdir -p ../MCPDFInfo/$(echo $filename|sed 's/logs_//'|sed 's/.log$//'|xargs -i dirname {})
+    printf "echo \"%d,%d\t%s\t%d,%d\t%d,%d\t%s,%s\" > ../MCPDFInfo/%s.txt\n" "$scaleA" "$scaleB" "$combine" "$pdfA" "$pdfB" "$asA" "$asB" "$asScaleA" "$asScaleB" $(echo $filename|sed 's/logs_//'|sed 's/.log$//')|xargs -i sh -c '{}'
+fi
