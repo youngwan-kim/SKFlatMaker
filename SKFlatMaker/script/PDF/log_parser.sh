@@ -68,6 +68,7 @@ do
     fi
 done
 lhaid=$(cat $filename|grep "=[ ]*lhaid"|awk '{print $2}'|sort|uniq)
+[ -z "$lhaid" ] && lhaid=$(cat $filename|grep -o "lhans1[ ]+[0-9]*"|awk '{print $2}'|sort|uniq)
 [ -z "$lhaid" ] && { echo "WARNING cannot find default lhapdf id. use lhaid=306000";lhaid=306000; }
 echo lhaid=$lhaid
 lhapdf=$(grep $lhaid $LHAPDF_DATA_PATH/pdfsets.index|awk '{print $2}')
@@ -75,17 +76,21 @@ echo lhapdf=$lhapdf
 pdfinfo=$(head -n1 $LHAPDF_DATA_PATH/$lhapdf/${lhapdf}.info)
 echo $pdfinfo|grep --color replica && combine=gaussian
 echo $pdfinfo|grep -i --color hessian && combine=hessian
-test $((($pdfB-$pdfA)%2)) -eq 0 && pdfA=$(($pdfA+1))
+[ "$((($pdfB-$pdfA)%2))" -eq 0 ] && [ "$pdfB" -gt "$pdfA" ] && pdfA=$(($pdfA+1)) ## exclude nominal weight [0,100] -> [1,100]
 echo $pdfinfo|grep --color=always 0\.117|grep --color 0\.119 && asScaleA=1.5 && asScaleB=1.5
 echo $pdfinfo|grep --color=always 0\.116|grep --color 0\.120 && asScaleA=0.75 && asScaleB=0.75
 
+[ "$scaleA" -eq 0 ] && [ "$scaleB" -eq 0 ] && { scaleA=-999; scaleB=-999; }
+[ "$pdfA" -eq 0 ] && [ "$pdfB" -eq 0 ] && { pdfA=-999; pdfB=-999; }
+[ "$asA" -eq 0 ] && [ "$asB" -eq 0 ] && { asA=-999; asB=-999; asScaleA="-999."; asScaleB="-999."; }
+
 echo "#####DEBUG#####"
 echo $pdfinfo
-echo $scaleA $scaleB
-echo $combine
-echo $pdfA $pdfB
-echo $asA $asB
-echo $asScaleA $asScaleB
+echo Scale=[$scaleA,$scaleB]
+echo Method=$combine
+echo PDFMember=[$pdfA,$pdfB]
+echo AlphaS=[$asA,$asB]
+echo AlphaSScale=[$asScaleA,$asScaleB]
 echo "####AUTO####"
 printf "echo \"%d,%d\t%s\t%d,%d\t%d,%d\t%s,%s\" > ../MCPDFInfo/%s.txt\n" "$scaleA" "$scaleB" "$combine" "$pdfA" "$pdfB" "$asA" "$asB" "$asScaleA" "$asScaleB" $(echo $filename|sed 's/logs_//'|sed 's/.log$//')
 read -p "exec?(y/n): " YES

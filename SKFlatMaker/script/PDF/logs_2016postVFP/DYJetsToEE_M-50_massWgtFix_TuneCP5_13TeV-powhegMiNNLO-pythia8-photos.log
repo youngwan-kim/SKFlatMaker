@@ -1,0 +1,1268 @@
+isMC = True
+isPrivateSample = False
+ScaleIDRange =  [-999, -999]
+PDFErrorIDRange =  [-999, -999]
+PDFAlphaSIDRange =  [-999, -999]
+PDFAlphaSScaleValue =  [-999.0, -999.0]
+era = 2016postVFP
+GT_MC = 106X_mcRun2_asymptotic_v15
+GT_DATA = 106X_dataRun2_v32
+################
+Running 2016postVFP
+################
+[SKFlatMaker::SKFlatMaker] DataYear = 2016
+[SKFlatMaker::SKFlatMaker]
+############# electron_IDtoSave #############
+cutBasedElectronID-Fall17-94X-V2-veto
+cutBasedElectronID-Fall17-94X-V2-loose
+cutBasedElectronID-Fall17-94X-V2-medium
+cutBasedElectronID-Fall17-94X-V2-tight
+mvaEleID-Fall17-iso-V2-wp80
+mvaEleID-Fall17-iso-V2-wp90
+mvaEleID-Fall17-iso-V2-wpHZZ
+mvaEleID-Fall17-iso-V2-wpLoose
+mvaEleID-Fall17-noIso-V2-wp80
+mvaEleID-Fall17-noIso-V2-wp90
+mvaEleID-Fall17-noIso-V2-wpLoose
+heepElectronID-HEEPV70
+#############################################
+[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v1__CMSSW_10_6_20/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016bUL.txt
+[SKFlatMaker::SKFlatMaker] ScaleIDRange_ = -999 - -999
+[SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = -999 - -999
+[SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = -999 - -999
+[SKFlatMaker::SKFlatMaker] PDFAlphaSScaleValue_ = -999 - -999
+[SKFlatMaker::endRun] ##### Information about PDF weights #####
+[SKFlatMaker::endRun,tag] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] file generated with POWHEG-BOX-V2
+[SKFlatMaker::endRun,lines] SVN status Begin
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/m/mseidel/generator/CMSSW_10_2_23/src/ZJToMuMu-suggested-nnpdf31-ncalls-doublefsr-q139-powheg-MiNNLO31-svn3756-ew-rwl6-j200-st2fix-ana-hoppetweights-ymax20/POWHEG-BOX/Zj/ZjMiNNLO
+[SKFlatMaker::endRun,lines] URL: svn://powhegbox.mib.infn.it/trunk/User-Processes-V2/Zj/ZjMiNNLO
+[SKFlatMaker::endRun,lines] Rev.3756
+[SKFlatMaker::endRun,lines] Warning: not a clean version:
+[SKFlatMaker::endRun,lines] M       Makefile
+[SKFlatMaker::endRun,lines] M       init_couplings.f
+[SKFlatMaker::endRun,lines] M       process_dependent_minnlo.f
+[SKFlatMaker::endRun,lines] M       pwhg_analysis-minnlo.f
+[SKFlatMaker::endRun,lines] M       rwl_setup_param_weights.f
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/m/mseidel/generator/CMSSW_10_2_23/src/ZJToMuMu-suggested-nnpdf31-ncalls-doublefsr-q139-powheg-MiNNLO31-svn3756-ew-rwl6-j200-st2fix-ana-hoppetweights-ymax20/POWHEG-BOX/Zj
+[SKFlatMaker::endRun,lines] URL: svn://powhegbox.mib.infn.it/trunk/User-Processes-V2/Zj
+[SKFlatMaker::endRun,lines] Rev.3756
+[SKFlatMaker::endRun,lines] Warning: not a clean version:
+[SKFlatMaker::endRun,lines] M       Born_phsp.f
+[SKFlatMaker::endRun,lines] M       PhysPars.h
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/Makefile
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/init_couplings.f
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/process_dependent_minnlo.f
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/pwhg_analysis-minnlo.f
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/rwl_setup_param_weights.f
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/m/mseidel/generator/CMSSW_10_2_23/src/ZJToMuMu-suggested-nnpdf31-ncalls-doublefsr-q139-powheg-MiNNLO31-svn3756-ew-rwl6-j200-st2fix-ana-hoppetweights-ymax20/POWHEG-BOX
+[SKFlatMaker::endRun,lines] URL: svn://powhegbox.mib.infn.it/trunk/POWHEG-BOX-V2
+[SKFlatMaker::endRun,lines] Rev.3756
+[SKFlatMaker::endRun,lines] Warning: not a clean version:
+[SKFlatMaker::endRun,lines] M       MiNNLOStuff/hoppet/pdf_tabulate.f90
+[SKFlatMaker::endRun,lines] M       MiNNLOStuff/hoppetif.f
+[SKFlatMaker::endRun,lines] M       MiNNLOStuff/pdfs_tools.f90
+[SKFlatMaker::endRun,lines] M       MiNNLOStuff/setlocalscales.f
+[SKFlatMaker::endRun,lines] M       bbinit.f
+[SKFlatMaker::endRun,lines] M       include/pwhg_lhrwgt.h
+[SKFlatMaker::endRun,lines] M       include/pwhg_rwl.h
+[SKFlatMaker::endRun,lines] M       lhefwrite.f
+[SKFlatMaker::endRun,lines] M       rwl_weightlists.f
+[SKFlatMaker::endRun,lines] SVN status End
+[SKFlatMaker::endRun,lines] Process: Zj
+[SKFlatMaker::endRun,lines] Input file powheg.input contained:
+[SKFlatMaker::endRun,lines] vdecaymode 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] bornktmin 0.26
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] numevts 62
+[SKFlatMaker::endRun,lines] ih1   1           ! hadron 1 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ih2   1           ! hadron 2 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
+[SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! ALPHAS AND PDF EVOLUTION
+[SKFlatMaker::endRun,lines] alphas_from_pdf 1 ! (default 0) if 1, uses alphas from PDF evolution tool (e.g. lhapdf or hoppet)
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! MINLO SETTINGS
+[SKFlatMaker::endRun,lines] minlo 1        ! (default 0) if 1, activate minlo
+[SKFlatMaker::endRun,lines] minnlo 1       ! (default 0) if 1, activate miNNlo
+[SKFlatMaker::endRun,lines] modlog_p 6     ! (optional, only works if minnlo is set to 1)
+[SKFlatMaker::endRun,lines]                ! if present, activate modified logs and set the exponent
+[SKFlatMaker::endRun,lines] inc_delta_terms 0 ! (default 1) if 0, as^3 NNLO delta terms are not included
+[SKFlatMaker::endRun,lines] sudscalevar 1   ! (default 1) scale variation also in Sudakov form factors in minlo
+[SKFlatMaker::endRun,lines] distribute_by_ub 1 ! (default 0) if 1 distribute d3 terms according to kinematics of ub
+[SKFlatMaker::endRun,lines] distribute_by_ub_AP 1 ! (default 0) if 1 distribute d3 terms according to kinematics of ub
+[SKFlatMaker::endRun,lines] alphas_cutoff_fact 0.0 ! ! (Higgs: 2.5, DY: 1.8) see setlocalscales.f
+[SKFlatMaker::endRun,lines] pdf_cutoff_fact 1.1 ! (Higgs: 2.5, DY: 1.8) see setlocalscales.f
+[SKFlatMaker::endRun,lines] use_NNLOPS_pdfs 1 ! (default 0)
+[SKFlatMaker::endRun,lines] negative_pdfs_zero 0 ! setting negative PDFs zero
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] profiledscales 1 ! (default 0) if 1, use the profiled scales with cutoff Q0 and power npow
+[SKFlatMaker::endRun,lines] largeptscales 0  ! (default 0) if 0, at large pt, use muR=muF~Q in fixed order part
+[SKFlatMaker::endRun,lines]                  !             if 1, at large pt, use muR=muF=pt in the fixed-order part
+[SKFlatMaker::endRun,lines] Q0 1.390985      ! (default 2.) Q0 value used in profiled scales (see 2006.04133 for more details)
+[SKFlatMaker::endRun,lines]                  !              smaller values can be used too.
+[SKFlatMaker::endRun,lines] npow 1           ! (default 1) power in profiled scales
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] withdamp 1
+[SKFlatMaker::endRun,lines] doublefsr 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! PROCESS PARAMETERS
+[SKFlatMaker::endRun,lines] # EW input
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] min_Z_mass 50d0  ! Lower mass cut-off for Z boson production
+[SKFlatMaker::endRun,lines] max_Z_mass 13000d0 ! Upper mass cut-off for Z boson production
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
+[SKFlatMaker::endRun,lines] lhans1   306000     ! pdf set for hadron 1 (LHA numbering)
+[SKFlatMaker::endRun,lines] lhans2   306000    ! pdf set for hadron 2 (LHA numbering)
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! Parameters to allow or not the use of stored data
+[SKFlatMaker::endRun,lines] use-old-grid    1 ! if 1 use old grid if file pwggrids.dat is present (<> 1 regenerate)
+[SKFlatMaker::endRun,lines] use-old-ubound  1 ! if 1 use norm of upper bounding function stored in pwgubound.dat, if present; <>
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ncall1   200000     ! number of calls for initializing the integration grid
+[SKFlatMaker::endRun,lines] itmx1    1        ! number of iterations for initializing the integration grid
+[SKFlatMaker::endRun,lines] ncall2   200000     ! number of calls for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] itmx2    1        ! number of iterations for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] foldcsi   5       ! number of folds on csi integration
+[SKFlatMaker::endRun,lines] foldy     2       ! number of folds on  y  integration
+[SKFlatMaker::endRun,lines] foldphi   2       ! number of folds on phi integration
+[SKFlatMaker::endRun,lines] nubound 200000 ! number of bbarra calls to setup norm of upper bounding function
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] check_bad_st1 1
+[SKFlatMaker::endRun,lines] check_bad_st2 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ubexcess_correct 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! OPTIONAL PARAMETERS
+[SKFlatMaker::endRun,lines] #testplots  1       ! (default 0, do not) do NLO and PWHG distributions
+[SKFlatMaker::endRun,lines] flg_debug  0       ! store extra event info for debugging
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] iseed 775628274        ! initialize random number sequence
+[SKFlatMaker::endRun,lines] #maxseeds 2000
+[SKFlatMaker::endRun,lines] #manyseeds 1
+[SKFlatMaker::endRun,lines] #parallelstage 1
+[SKFlatMaker::endRun,lines] #xgriditeration 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #storeinfo_rwgt 0
+[SKFlatMaker::endRun,lines] #compute_rwgt 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #pdfreweight 0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #withnegweights 1 1
+[SKFlatMaker::endRun,lines] rwl_group_events 2000
+[SKFlatMaker::endRun,lines] lhapdf6maxsets 50
+[SKFlatMaker::endRun,lines] rwl_file 'pwg-rwl.dat'
+[SKFlatMaker::endRun,lines] rwl_format_rwgt 1
+[SKFlatMaker::endRun,lines] End of powheg.input content
+[SKFlatMaker::endRun,lines] PDF package: lha
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    775628274             0             0
+[SKFlatMaker::endRun,tag] initrwgt
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] <weightgroup combine="envelope" name="scale_variation">
+[SKFlatMaker::endRun,lines] <weight id="1001"> lhapdf=306000 renscfact=1d0 facscfact=1d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1002"> lhapdf=306000 renscfact=1d0 facscfact=2d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1003"> lhapdf=306000 renscfact=1d0 facscfact=0.5d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1004"> lhapdf=306000 renscfact=2d0 facscfact=1d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1005"> lhapdf=306000 renscfact=2d0 facscfact=2d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1006"> lhapdf=306000 renscfact=2d0 facscfact=0.5d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1007"> lhapdf=306000 renscfact=0.5d0 facscfact=1d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1008"> lhapdf=306000 renscfact=0.5d0 facscfact=2d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1009"> lhapdf=306000 renscfact=0.5d0 facscfact=0.5d0 </weight>
+[SKFlatMaker::endRun,lines] </weightgroup>
+[SKFlatMaker::endRun,lines] <weightgroup combine="envelope" name="scale_variation_nnpdf30">
+[SKFlatMaker::endRun,lines] <weight id="1010"> lhapdf=303200 renscfact=1d0 facscfact=1d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1011"> lhapdf=303200 renscfact=1d0 facscfact=2d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1012"> lhapdf=303200 renscfact=1d0 facscfact=0.5d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1013"> lhapdf=303200 renscfact=2d0 facscfact=1d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1014"> lhapdf=303200 renscfact=2d0 facscfact=2d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1015"> lhapdf=303200 renscfact=2d0 facscfact=0.5d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1016"> lhapdf=303200 renscfact=0.5d0 facscfact=1d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1017"> lhapdf=303200 renscfact=0.5d0 facscfact=2d0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1018"> lhapdf=303200 renscfact=0.5d0 facscfact=0.5d0 </weight>
+[SKFlatMaker::endRun,lines] </weightgroup>
+[SKFlatMaker::endRun,lines] <weightgroup combine="hessian" name="PDF_variation1">
+[SKFlatMaker::endRun,lines] <weight id="2000"> lhapdf=306000 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2001"> lhapdf=306001 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2002"> lhapdf=306002 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2003"> lhapdf=306003 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2004"> lhapdf=306004 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2005"> lhapdf=306005 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2006"> lhapdf=306006 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2007"> lhapdf=306007 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2008"> lhapdf=306008 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2009"> lhapdf=306009 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2010"> lhapdf=306010 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2011"> lhapdf=306011 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2012"> lhapdf=306012 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2013"> lhapdf=306013 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2014"> lhapdf=306014 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2015"> lhapdf=306015 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2016"> lhapdf=306016 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2017"> lhapdf=306017 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2018"> lhapdf=306018 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2019"> lhapdf=306019 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2020"> lhapdf=306020 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2021"> lhapdf=306021 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2022"> lhapdf=306022 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2023"> lhapdf=306023 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2024"> lhapdf=306024 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2025"> lhapdf=306025 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2026"> lhapdf=306026 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2027"> lhapdf=306027 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2028"> lhapdf=306028 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2029"> lhapdf=306029 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2030"> lhapdf=306030 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2031"> lhapdf=306031 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2032"> lhapdf=306032 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2033"> lhapdf=306033 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2034"> lhapdf=306034 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2035"> lhapdf=306035 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2036"> lhapdf=306036 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2037"> lhapdf=306037 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2038"> lhapdf=306038 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2039"> lhapdf=306039 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2040"> lhapdf=306040 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2041"> lhapdf=306041 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2042"> lhapdf=306042 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2043"> lhapdf=306043 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2044"> lhapdf=306044 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2045"> lhapdf=306045 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2046"> lhapdf=306046 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2047"> lhapdf=306047 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2048"> lhapdf=306048 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2049"> lhapdf=306049 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2050"> lhapdf=306050 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2051"> lhapdf=306051 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2052"> lhapdf=306052 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2053"> lhapdf=306053 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2054"> lhapdf=306054 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2055"> lhapdf=306055 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2056"> lhapdf=306056 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2057"> lhapdf=306057 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2058"> lhapdf=306058 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2059"> lhapdf=306059 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2060"> lhapdf=306060 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2061"> lhapdf=306061 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2062"> lhapdf=306062 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2063"> lhapdf=306063 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2064"> lhapdf=306064 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2065"> lhapdf=306065 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2066"> lhapdf=306066 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2067"> lhapdf=306067 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2068"> lhapdf=306068 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2069"> lhapdf=306069 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2070"> lhapdf=306070 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2071"> lhapdf=306071 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2072"> lhapdf=306072 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2073"> lhapdf=306073 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2074"> lhapdf=306074 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2075"> lhapdf=306075 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2076"> lhapdf=306076 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2077"> lhapdf=306077 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2078"> lhapdf=306078 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2079"> lhapdf=306079 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2080"> lhapdf=306080 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2081"> lhapdf=306081 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2082"> lhapdf=306082 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2083"> lhapdf=306083 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2084"> lhapdf=306084 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2085"> lhapdf=306085 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2086"> lhapdf=306086 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2087"> lhapdf=306087 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2088"> lhapdf=306088 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2089"> lhapdf=306089 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2090"> lhapdf=306090 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2091"> lhapdf=306091 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2092"> lhapdf=306092 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2093"> lhapdf=306093 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2094"> lhapdf=306094 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2095"> lhapdf=306095 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2096"> lhapdf=306096 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2097"> lhapdf=306097 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2098"> lhapdf=306098 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2099"> lhapdf=306099 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2100"> lhapdf=306100 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2101"> lhapdf=306101 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2102"> lhapdf=306102 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2104"> lhapdf=322500 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2105"> lhapdf=322700 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2106"> lhapdf=322900 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2107"> lhapdf=323100 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2108"> lhapdf=323300 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2109"> lhapdf=323500 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2110"> lhapdf=323700 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2111"> lhapdf=323900 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2200"> lhapdf=325700 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2201"> lhapdf=325701 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2202"> lhapdf=325702 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2203"> lhapdf=325703 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2204"> lhapdf=325704 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2205"> lhapdf=325705 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2206"> lhapdf=325706 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2207"> lhapdf=325707 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2208"> lhapdf=325708 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2209"> lhapdf=325709 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2210"> lhapdf=325710 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2211"> lhapdf=325711 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2212"> lhapdf=325712 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2213"> lhapdf=325713 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2214"> lhapdf=325714 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2215"> lhapdf=325715 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2216"> lhapdf=325716 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2217"> lhapdf=325717 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2218"> lhapdf=325718 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2219"> lhapdf=325719 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2220"> lhapdf=325720 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2221"> lhapdf=325721 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2222"> lhapdf=325722 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2223"> lhapdf=325723 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2224"> lhapdf=325724 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2225"> lhapdf=325725 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2226"> lhapdf=325726 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2227"> lhapdf=325727 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2228"> lhapdf=325728 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2229"> lhapdf=325729 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2230"> lhapdf=325730 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2231"> lhapdf=325731 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2232"> lhapdf=325732 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2233"> lhapdf=325733 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2234"> lhapdf=325734 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2235"> lhapdf=325735 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2236"> lhapdf=325736 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2237"> lhapdf=325737 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2238"> lhapdf=325738 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2239"> lhapdf=325739 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2240"> lhapdf=325740 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2241"> lhapdf=325741 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2242"> lhapdf=325742 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2243"> lhapdf=325743 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2244"> lhapdf=325744 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2245"> lhapdf=325745 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2246"> lhapdf=325746 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2247"> lhapdf=325747 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2248"> lhapdf=325748 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2249"> lhapdf=325749 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2250"> lhapdf=325750 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2251"> lhapdf=325751 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2252"> lhapdf=325752 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2253"> lhapdf=325753 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2254"> lhapdf=325754 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2255"> lhapdf=325755 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2256"> lhapdf=325756 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2257"> lhapdf=325757 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2258"> lhapdf=325758 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2259"> lhapdf=325759 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2260"> lhapdf=325760 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2261"> lhapdf=325761 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2262"> lhapdf=325762 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2263"> lhapdf=325763 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2264"> lhapdf=325764 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2265"> lhapdf=325765 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2266"> lhapdf=325766 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2267"> lhapdf=325767 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2268"> lhapdf=325768 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2269"> lhapdf=325769 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2270"> lhapdf=325770 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2271"> lhapdf=325771 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2272"> lhapdf=325772 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2273"> lhapdf=325773 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2274"> lhapdf=325774 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2275"> lhapdf=325775 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2276"> lhapdf=325776 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2277"> lhapdf=325777 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2278"> lhapdf=325778 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2279"> lhapdf=325779 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2280"> lhapdf=325780 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2281"> lhapdf=325781 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2282"> lhapdf=325782 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2283"> lhapdf=325783 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2284"> lhapdf=325784 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2285"> lhapdf=325785 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2286"> lhapdf=325786 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2287"> lhapdf=325787 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2288"> lhapdf=325788 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2289"> lhapdf=325789 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2290"> lhapdf=325790 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2291"> lhapdf=325791 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2292"> lhapdf=325792 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2293"> lhapdf=325793 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2294"> lhapdf=325794 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2295"> lhapdf=325795 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2296"> lhapdf=325796 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2297"> lhapdf=325797 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2298"> lhapdf=325798 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2299"> lhapdf=325799 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2300"> lhapdf=325800 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2400"> lhapdf=325900 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2401"> lhapdf=325901 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2402"> lhapdf=325902 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2403"> lhapdf=325903 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2404"> lhapdf=325904 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2405"> lhapdf=325905 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2406"> lhapdf=325906 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2407"> lhapdf=325907 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2408"> lhapdf=325908 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2409"> lhapdf=325909 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2410"> lhapdf=325910 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2411"> lhapdf=325911 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2412"> lhapdf=325912 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2413"> lhapdf=325913 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2414"> lhapdf=325914 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2415"> lhapdf=325915 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2416"> lhapdf=325916 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2417"> lhapdf=325917 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2418"> lhapdf=325918 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2419"> lhapdf=325919 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2420"> lhapdf=325920 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2421"> lhapdf=325921 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2422"> lhapdf=325922 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2423"> lhapdf=325923 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2424"> lhapdf=325924 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2425"> lhapdf=325925 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2426"> lhapdf=325926 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2427"> lhapdf=325927 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2428"> lhapdf=325928 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2429"> lhapdf=325929 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2430"> lhapdf=325930 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2431"> lhapdf=325931 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2432"> lhapdf=325932 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2433"> lhapdf=325933 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2434"> lhapdf=325934 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2435"> lhapdf=325935 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2436"> lhapdf=325936 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2437"> lhapdf=325937 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2438"> lhapdf=325938 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2439"> lhapdf=325939 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2440"> lhapdf=325940 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2441"> lhapdf=325941 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2442"> lhapdf=325942 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2443"> lhapdf=325943 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2444"> lhapdf=325944 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2445"> lhapdf=325945 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2446"> lhapdf=325946 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2447"> lhapdf=325947 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2448"> lhapdf=325948 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2449"> lhapdf=325949 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2450"> lhapdf=325950 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2451"> lhapdf=325951 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2452"> lhapdf=325952 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2453"> lhapdf=325953 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2454"> lhapdf=325954 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2455"> lhapdf=325955 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2456"> lhapdf=325956 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2457"> lhapdf=325957 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2458"> lhapdf=325958 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2459"> lhapdf=325959 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2460"> lhapdf=325960 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2461"> lhapdf=325961 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2462"> lhapdf=325962 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2463"> lhapdf=325963 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2464"> lhapdf=325964 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2465"> lhapdf=325965 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2466"> lhapdf=325966 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2467"> lhapdf=325967 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2468"> lhapdf=325968 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2469"> lhapdf=325969 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2470"> lhapdf=325970 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2471"> lhapdf=325971 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2472"> lhapdf=325972 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2473"> lhapdf=325973 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2474"> lhapdf=325974 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2475"> lhapdf=325975 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2476"> lhapdf=325976 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2477"> lhapdf=325977 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2478"> lhapdf=325978 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2479"> lhapdf=325979 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2480"> lhapdf=325980 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2481"> lhapdf=325981 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2482"> lhapdf=325982 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2483"> lhapdf=325983 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2484"> lhapdf=325984 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2485"> lhapdf=325985 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2486"> lhapdf=325986 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2487"> lhapdf=325987 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2488"> lhapdf=325988 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2489"> lhapdf=325989 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2490"> lhapdf=325990 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2491"> lhapdf=325991 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2492"> lhapdf=325992 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2493"> lhapdf=325993 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2494"> lhapdf=325994 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2495"> lhapdf=325995 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2496"> lhapdf=325996 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2497"> lhapdf=325997 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2498"> lhapdf=325998 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2499"> lhapdf=325999 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2500"> lhapdf=326000 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2600"> lhapdf=326100 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2601"> lhapdf=326101 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2602"> lhapdf=326102 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2603"> lhapdf=326103 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2604"> lhapdf=326104 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2605"> lhapdf=326105 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2606"> lhapdf=326106 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2607"> lhapdf=326107 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2608"> lhapdf=326108 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2609"> lhapdf=326109 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2610"> lhapdf=326110 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2611"> lhapdf=326111 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2612"> lhapdf=326112 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2613"> lhapdf=326113 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2614"> lhapdf=326114 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2615"> lhapdf=326115 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2616"> lhapdf=326116 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2617"> lhapdf=326117 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2618"> lhapdf=326118 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2619"> lhapdf=326119 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2620"> lhapdf=326120 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2621"> lhapdf=326121 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2622"> lhapdf=326122 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2623"> lhapdf=326123 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2624"> lhapdf=326124 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2625"> lhapdf=326125 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2626"> lhapdf=326126 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2627"> lhapdf=326127 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2628"> lhapdf=326128 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2629"> lhapdf=326129 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2630"> lhapdf=326130 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2631"> lhapdf=326131 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2632"> lhapdf=326132 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2633"> lhapdf=326133 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2634"> lhapdf=326134 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2635"> lhapdf=326135 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2636"> lhapdf=326136 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2637"> lhapdf=326137 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2638"> lhapdf=326138 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2639"> lhapdf=326139 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2640"> lhapdf=326140 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2641"> lhapdf=326141 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2642"> lhapdf=326142 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2643"> lhapdf=326143 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2644"> lhapdf=326144 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2645"> lhapdf=326145 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2646"> lhapdf=326146 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2647"> lhapdf=326147 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2648"> lhapdf=326148 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2649"> lhapdf=326149 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2650"> lhapdf=326150 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2651"> lhapdf=326151 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2652"> lhapdf=326152 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2653"> lhapdf=326153 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2654"> lhapdf=326154 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2655"> lhapdf=326155 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2656"> lhapdf=326156 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2657"> lhapdf=326157 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2658"> lhapdf=326158 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2659"> lhapdf=326159 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2660"> lhapdf=326160 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2661"> lhapdf=326161 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2662"> lhapdf=326162 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2663"> lhapdf=326163 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2664"> lhapdf=326164 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2665"> lhapdf=326165 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2666"> lhapdf=326166 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2667"> lhapdf=326167 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2668"> lhapdf=326168 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2669"> lhapdf=326169 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2670"> lhapdf=326170 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2671"> lhapdf=326171 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2672"> lhapdf=326172 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2673"> lhapdf=326173 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2674"> lhapdf=326174 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2675"> lhapdf=326175 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2676"> lhapdf=326176 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2677"> lhapdf=326177 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2678"> lhapdf=326178 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2679"> lhapdf=326179 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2680"> lhapdf=326180 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2681"> lhapdf=326181 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2682"> lhapdf=326182 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2683"> lhapdf=326183 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2684"> lhapdf=326184 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2685"> lhapdf=326185 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2686"> lhapdf=326186 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2687"> lhapdf=326187 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2688"> lhapdf=326188 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2689"> lhapdf=326189 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2690"> lhapdf=326190 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2691"> lhapdf=326191 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2692"> lhapdf=326192 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2693"> lhapdf=326193 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2694"> lhapdf=326194 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2695"> lhapdf=326195 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2696"> lhapdf=326196 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2697"> lhapdf=326197 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2698"> lhapdf=326198 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2699"> lhapdf=326199 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2700"> lhapdf=326200 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2800"> lhapdf=326300 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2801"> lhapdf=326301 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2802"> lhapdf=326302 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2803"> lhapdf=326303 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2804"> lhapdf=326304 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2805"> lhapdf=326305 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2806"> lhapdf=326306 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2807"> lhapdf=326307 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2808"> lhapdf=326308 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2809"> lhapdf=326309 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2810"> lhapdf=326310 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2811"> lhapdf=326311 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2812"> lhapdf=326312 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2813"> lhapdf=326313 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2814"> lhapdf=326314 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2815"> lhapdf=326315 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2816"> lhapdf=326316 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2817"> lhapdf=326317 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2818"> lhapdf=326318 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2819"> lhapdf=326319 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2820"> lhapdf=326320 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2821"> lhapdf=326321 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2822"> lhapdf=326322 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2823"> lhapdf=326323 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2824"> lhapdf=326324 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2825"> lhapdf=326325 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2826"> lhapdf=326326 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2827"> lhapdf=326327 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2828"> lhapdf=326328 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2829"> lhapdf=326329 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2830"> lhapdf=326330 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2831"> lhapdf=326331 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2832"> lhapdf=326332 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2833"> lhapdf=326333 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2834"> lhapdf=326334 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2835"> lhapdf=326335 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2836"> lhapdf=326336 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2837"> lhapdf=326337 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2838"> lhapdf=326338 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2839"> lhapdf=326339 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2840"> lhapdf=326340 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2841"> lhapdf=326341 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2842"> lhapdf=326342 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2843"> lhapdf=326343 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2844"> lhapdf=326344 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2845"> lhapdf=326345 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2846"> lhapdf=326346 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2847"> lhapdf=326347 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2848"> lhapdf=326348 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2849"> lhapdf=326349 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2850"> lhapdf=326350 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2851"> lhapdf=326351 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2852"> lhapdf=326352 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2853"> lhapdf=326353 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2854"> lhapdf=326354 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2855"> lhapdf=326355 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2856"> lhapdf=326356 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2857"> lhapdf=326357 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2858"> lhapdf=326358 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2859"> lhapdf=326359 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2860"> lhapdf=326360 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2861"> lhapdf=326361 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2862"> lhapdf=326362 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2863"> lhapdf=326363 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2864"> lhapdf=326364 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2865"> lhapdf=326365 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2866"> lhapdf=326366 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2867"> lhapdf=326367 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2868"> lhapdf=326368 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2869"> lhapdf=326369 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2870"> lhapdf=326370 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2871"> lhapdf=326371 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2872"> lhapdf=326372 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2873"> lhapdf=326373 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2874"> lhapdf=326374 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2875"> lhapdf=326375 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2876"> lhapdf=326376 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2877"> lhapdf=326377 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2878"> lhapdf=326378 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2879"> lhapdf=326379 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2880"> lhapdf=326380 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2881"> lhapdf=326381 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2882"> lhapdf=326382 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2883"> lhapdf=326383 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2884"> lhapdf=326384 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2885"> lhapdf=326385 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2886"> lhapdf=326386 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2887"> lhapdf=326387 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2888"> lhapdf=326388 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2889"> lhapdf=326389 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2890"> lhapdf=326390 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2891"> lhapdf=326391 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2892"> lhapdf=326392 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2893"> lhapdf=326393 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2894"> lhapdf=326394 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2895"> lhapdf=326395 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2896"> lhapdf=326396 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2897"> lhapdf=326397 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2898"> lhapdf=326398 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2899"> lhapdf=326399 </weight>
+[SKFlatMaker::endRun,lines] <weight id="2900"> lhapdf=326400 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3000"> lhapdf=303200 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3001"> lhapdf=303201 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3002"> lhapdf=303202 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3003"> lhapdf=303203 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3004"> lhapdf=303204 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3005"> lhapdf=303205 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3006"> lhapdf=303206 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3007"> lhapdf=303207 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3008"> lhapdf=303208 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3009"> lhapdf=303209 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3010"> lhapdf=303210 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3011"> lhapdf=303211 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3012"> lhapdf=303212 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3013"> lhapdf=303213 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3014"> lhapdf=303214 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3015"> lhapdf=303215 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3016"> lhapdf=303216 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3017"> lhapdf=303217 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3018"> lhapdf=303218 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3019"> lhapdf=303219 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3020"> lhapdf=303220 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3021"> lhapdf=303221 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3022"> lhapdf=303222 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3023"> lhapdf=303223 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3024"> lhapdf=303224 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3025"> lhapdf=303225 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3026"> lhapdf=303226 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3027"> lhapdf=303227 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3028"> lhapdf=303228 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3029"> lhapdf=303229 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3030"> lhapdf=303230 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3031"> lhapdf=303231 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3032"> lhapdf=303232 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3033"> lhapdf=303233 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3034"> lhapdf=303234 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3035"> lhapdf=303235 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3036"> lhapdf=303236 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3037"> lhapdf=303237 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3038"> lhapdf=303238 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3039"> lhapdf=303239 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3040"> lhapdf=303240 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3041"> lhapdf=303241 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3042"> lhapdf=303242 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3043"> lhapdf=303243 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3044"> lhapdf=303244 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3045"> lhapdf=303245 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3046"> lhapdf=303246 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3047"> lhapdf=303247 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3048"> lhapdf=303248 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3049"> lhapdf=303249 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3050"> lhapdf=303250 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3051"> lhapdf=303251 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3052"> lhapdf=303252 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3053"> lhapdf=303253 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3054"> lhapdf=303254 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3055"> lhapdf=303255 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3056"> lhapdf=303256 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3057"> lhapdf=303257 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3058"> lhapdf=303258 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3059"> lhapdf=303259 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3060"> lhapdf=303260 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3061"> lhapdf=303261 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3062"> lhapdf=303262 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3063"> lhapdf=303263 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3064"> lhapdf=303264 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3065"> lhapdf=303265 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3066"> lhapdf=303266 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3067"> lhapdf=303267 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3068"> lhapdf=303268 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3069"> lhapdf=303269 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3070"> lhapdf=303270 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3071"> lhapdf=303271 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3072"> lhapdf=303272 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3073"> lhapdf=303273 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3074"> lhapdf=303274 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3075"> lhapdf=303275 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3076"> lhapdf=303276 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3077"> lhapdf=303277 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3078"> lhapdf=303278 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3079"> lhapdf=303279 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3080"> lhapdf=303280 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3081"> lhapdf=303281 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3082"> lhapdf=303282 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3083"> lhapdf=303283 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3084"> lhapdf=303284 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3085"> lhapdf=303285 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3086"> lhapdf=303286 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3087"> lhapdf=303287 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3088"> lhapdf=303288 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3089"> lhapdf=303289 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3090"> lhapdf=303290 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3091"> lhapdf=303291 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3092"> lhapdf=303292 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3093"> lhapdf=303293 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3094"> lhapdf=303294 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3095"> lhapdf=303295 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3096"> lhapdf=303296 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3097"> lhapdf=303297 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3098"> lhapdf=303298 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3099"> lhapdf=303299 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3100"> lhapdf=303300 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3102"> lhapdf=268000 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3103"> lhapdf=269000 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3104"> lhapdf=270000 </weight>
+[SKFlatMaker::endRun,lines] <weight id="3105"> lhapdf=271000 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5100"> lhapdf=14000 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5101"> lhapdf=14001 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5102"> lhapdf=14002 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5103"> lhapdf=14003 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5104"> lhapdf=14004 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5105"> lhapdf=14005 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5106"> lhapdf=14006 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5107"> lhapdf=14007 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5108"> lhapdf=14008 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5109"> lhapdf=14009 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5110"> lhapdf=14010 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5111"> lhapdf=14011 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5112"> lhapdf=14012 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5113"> lhapdf=14013 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5114"> lhapdf=14014 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5115"> lhapdf=14015 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5116"> lhapdf=14016 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5117"> lhapdf=14017 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5118"> lhapdf=14018 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5119"> lhapdf=14019 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5120"> lhapdf=14020 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5121"> lhapdf=14021 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5122"> lhapdf=14022 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5123"> lhapdf=14023 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5124"> lhapdf=14024 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5125"> lhapdf=14025 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5126"> lhapdf=14026 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5127"> lhapdf=14027 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5128"> lhapdf=14028 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5129"> lhapdf=14029 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5130"> lhapdf=14030 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5131"> lhapdf=14031 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5132"> lhapdf=14032 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5133"> lhapdf=14033 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5134"> lhapdf=14034 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5135"> lhapdf=14035 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5136"> lhapdf=14036 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5137"> lhapdf=14037 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5138"> lhapdf=14038 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5139"> lhapdf=14039 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5140"> lhapdf=14040 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5141"> lhapdf=14041 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5142"> lhapdf=14042 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5143"> lhapdf=14043 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5144"> lhapdf=14044 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5145"> lhapdf=14045 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5146"> lhapdf=14046 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5147"> lhapdf=14047 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5148"> lhapdf=14048 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5149"> lhapdf=14049 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5150"> lhapdf=14050 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5151"> lhapdf=14051 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5152"> lhapdf=14052 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5153"> lhapdf=14053 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5154"> lhapdf=14054 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5155"> lhapdf=14055 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5156"> lhapdf=14056 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5157"> lhapdf=14057 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5158"> lhapdf=14058 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5160"> lhapdf=14066 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5170"> lhapdf=14070 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5200"> lhapdf=14100 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5201"> lhapdf=14101 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5202"> lhapdf=14102 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5203"> lhapdf=14103 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5204"> lhapdf=14104 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5205"> lhapdf=14105 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5206"> lhapdf=14106 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5207"> lhapdf=14107 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5208"> lhapdf=14108 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5209"> lhapdf=14109 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5210"> lhapdf=14110 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5211"> lhapdf=14111 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5212"> lhapdf=14112 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5213"> lhapdf=14113 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5214"> lhapdf=14114 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5215"> lhapdf=14115 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5216"> lhapdf=14116 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5217"> lhapdf=14117 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5218"> lhapdf=14118 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5219"> lhapdf=14119 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5220"> lhapdf=14120 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5221"> lhapdf=14121 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5222"> lhapdf=14122 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5223"> lhapdf=14123 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5224"> lhapdf=14124 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5225"> lhapdf=14125 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5226"> lhapdf=14126 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5227"> lhapdf=14127 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5228"> lhapdf=14128 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5229"> lhapdf=14129 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5230"> lhapdf=14130 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5231"> lhapdf=14131 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5232"> lhapdf=14132 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5233"> lhapdf=14133 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5234"> lhapdf=14134 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5235"> lhapdf=14135 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5236"> lhapdf=14136 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5237"> lhapdf=14137 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5238"> lhapdf=14138 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5239"> lhapdf=14139 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5240"> lhapdf=14140 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5241"> lhapdf=14141 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5242"> lhapdf=14142 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5243"> lhapdf=14143 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5244"> lhapdf=14144 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5245"> lhapdf=14145 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5246"> lhapdf=14146 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5247"> lhapdf=14147 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5248"> lhapdf=14148 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5249"> lhapdf=14149 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5250"> lhapdf=14150 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5251"> lhapdf=14151 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5252"> lhapdf=14152 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5253"> lhapdf=14153 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5254"> lhapdf=14154 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5255"> lhapdf=14155 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5256"> lhapdf=14156 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5257"> lhapdf=14157 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5258"> lhapdf=14158 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5260"> lhapdf=14166 </weight>
+[SKFlatMaker::endRun,lines] <weight id="5270"> lhapdf=14170 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7000"> lhapdf=25300 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7001"> lhapdf=25301 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7002"> lhapdf=25302 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7003"> lhapdf=25303 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7004"> lhapdf=25304 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7005"> lhapdf=25305 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7006"> lhapdf=25306 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7007"> lhapdf=25307 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7008"> lhapdf=25308 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7009"> lhapdf=25309 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7010"> lhapdf=25310 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7011"> lhapdf=25311 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7012"> lhapdf=25312 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7013"> lhapdf=25313 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7014"> lhapdf=25314 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7015"> lhapdf=25315 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7016"> lhapdf=25316 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7017"> lhapdf=25317 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7018"> lhapdf=25318 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7019"> lhapdf=25319 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7020"> lhapdf=25320 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7021"> lhapdf=25321 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7022"> lhapdf=25322 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7023"> lhapdf=25323 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7024"> lhapdf=25324 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7025"> lhapdf=25325 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7026"> lhapdf=25326 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7027"> lhapdf=25327 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7028"> lhapdf=25328 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7029"> lhapdf=25329 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7030"> lhapdf=25330 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7031"> lhapdf=25331 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7032"> lhapdf=25332 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7033"> lhapdf=25333 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7034"> lhapdf=25334 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7035"> lhapdf=25335 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7036"> lhapdf=25336 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7037"> lhapdf=25337 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7038"> lhapdf=25338 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7039"> lhapdf=25339 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7040"> lhapdf=25340 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7041"> lhapdf=25341 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7042"> lhapdf=25342 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7043"> lhapdf=25343 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7044"> lhapdf=25344 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7045"> lhapdf=25345 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7046"> lhapdf=25346 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7047"> lhapdf=25347 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7048"> lhapdf=25348 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7049"> lhapdf=25349 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7050"> lhapdf=25350 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7060"> lhapdf=25360 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7061"> lhapdf=25361 </weight>
+[SKFlatMaker::endRun,lines] <weight id="7062"> lhapdf=25362 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8000"> lhapdf=42560 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8001"> lhapdf=42561 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8002"> lhapdf=42562 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8003"> lhapdf=42563 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8004"> lhapdf=42564 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8005"> lhapdf=42565 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8006"> lhapdf=42566 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8007"> lhapdf=42567 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8008"> lhapdf=42568 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8009"> lhapdf=42569 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8010"> lhapdf=42570 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8011"> lhapdf=42571 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8012"> lhapdf=42572 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8013"> lhapdf=42573 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8014"> lhapdf=42574 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8015"> lhapdf=42575 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8016"> lhapdf=42576 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8017"> lhapdf=42577 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8018"> lhapdf=42578 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8019"> lhapdf=42579 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8020"> lhapdf=42580 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8021"> lhapdf=42581 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8022"> lhapdf=42582 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8023"> lhapdf=42583 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8024"> lhapdf=42584 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8025"> lhapdf=42585 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8026"> lhapdf=42586 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8027"> lhapdf=42587 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8028"> lhapdf=42588 </weight>
+[SKFlatMaker::endRun,lines] <weight id="8029"> lhapdf=42589 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13000"> lhapdf=61200 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13001"> lhapdf=61201 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13002"> lhapdf=61202 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13003"> lhapdf=61203 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13004"> lhapdf=61204 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13005"> lhapdf=61205 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13006"> lhapdf=61206 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13007"> lhapdf=61207 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13008"> lhapdf=61208 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13009"> lhapdf=61209 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13010"> lhapdf=61210 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13011"> lhapdf=61211 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13012"> lhapdf=61212 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13013"> lhapdf=61213 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13014"> lhapdf=61214 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13015"> lhapdf=61215 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13016"> lhapdf=61216 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13017"> lhapdf=61217 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13018"> lhapdf=61218 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13019"> lhapdf=61219 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13020"> lhapdf=61220 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13021"> lhapdf=61221 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13022"> lhapdf=61222 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13023"> lhapdf=61223 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13024"> lhapdf=61224 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13025"> lhapdf=61225 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13026"> lhapdf=61226 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13027"> lhapdf=61227 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13028"> lhapdf=61228 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13050"> lhapdf=61230 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13051"> lhapdf=61231 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13052"> lhapdf=61232 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13053"> lhapdf=61233 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13054"> lhapdf=61234 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13055"> lhapdf=61235 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13056"> lhapdf=61236 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13057"> lhapdf=61237 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13058"> lhapdf=61238 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13059"> lhapdf=61239 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13060"> lhapdf=61240 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13061"> lhapdf=61241 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13062"> lhapdf=61242 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13063"> lhapdf=61243 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13100"> lhapdf=61740 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13101"> lhapdf=61741 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13102"> lhapdf=61742 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13103"> lhapdf=61743 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13104"> lhapdf=61744 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13105"> lhapdf=61745 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13106"> lhapdf=61746 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13107"> lhapdf=61747 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13108"> lhapdf=61748 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13109"> lhapdf=61749 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13110"> lhapdf=61750 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13111"> lhapdf=61751 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13112"> lhapdf=61752 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13113"> lhapdf=61753 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13114"> lhapdf=61754 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13115"> lhapdf=61755 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13116"> lhapdf=61756 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13117"> lhapdf=61757 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13118"> lhapdf=61758 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13119"> lhapdf=61759 </weight>
+[SKFlatMaker::endRun,lines] <weight id="13120"> lhapdf=61760 </weight>
+[SKFlatMaker::endRun,lines] </weightgroup>
+[SKFlatMaker::endRun,lines] <weightgroup combine=" " name="mass_variation">
+[SKFlatMaker::endRun,lines] <weight id="1100"> mass=91.0876 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1101"> mass=91.0976 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1102"> mass=91.1076 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1103"> mass=91.1176 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1104"> mass=91.1276 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1105"> mass=91.1376 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1106"> mass=91.1476 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1107"> mass=91.1576 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1108"> mass=91.1676 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1109"> mass=91.1776 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1110"> mass=91.1876 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1111"> mass=91.1976 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1112"> mass=91.2076 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1113"> mass=91.2176 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1114"> mass=91.2276 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1115"> mass=91.2376 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1116"> mass=91.2476 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1117"> mass=91.2576 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1118"> mass=91.2676 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1119"> mass=91.2776 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1120"> mass=91.2876 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1121"> mass=91.1855 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1122"> mass=91.1897 </weight>
+[SKFlatMaker::endRun,lines] </weightgroup>
+[SKFlatMaker::endRun,lines] <weightgroup combine=" " name="width_variation">
+[SKFlatMaker::endRun,lines] <weight id="1123"> width=2.49333 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1124"> width=2.49493 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1125"> width=2.4929 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1126"> width=2.4952 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1127"> width=2.4975 </weight>
+[SKFlatMaker::endRun,lines] </weightgroup>
+[SKFlatMaker::endRun,lines] <weightgroup combine=" " name="q0_variation">
+[SKFlatMaker::endRun,lines] <weight id="1128"> Q0=2.0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1129"> Q0=1.0 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1130"> Q0=0.5 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1131"> Q0=0.0 </weight>
+[SKFlatMaker::endRun,lines] </weightgroup>
+[SKFlatMaker::endRun,lines] <weightgroup combine=" " name="largeptscales_variation">
+[SKFlatMaker::endRun,lines] <weight id="1132"> largeptscales=1 </weight>
+[SKFlatMaker::endRun,lines] </weightgroup>
+[SKFlatMaker::endRun,lines] <weightgroup combine=" " name="sthw2_variation">
+[SKFlatMaker::endRun,lines] <weight id="1133"> sthw2=0.23151 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1134"> sthw2=0.23154 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1135"> sthw2=0.23157 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1136"> sthw2=0.2230 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1137"> sthw2=0.2300 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1138"> sthw2=0.2305 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1139"> sthw2=0.2310 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1140"> sthw2=0.2315 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1141"> sthw2=0.2320 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1142"> sthw2=0.2325 </weight>
+[SKFlatMaker::endRun,lines] <weight id="1143"> sthw2=0.2330 </weight>
+[SKFlatMaker::endRun,lines] </weightgroup>
+[SKFlatMaker::endRun,tag] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] file generated with POWHEG-BOX-V2
+[SKFlatMaker::endRun,lines] SVN status Begin
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/m/mseidel/generator/CMSSW_10_2_23/src/ZJToMuMu-suggested-nnpdf31-ncalls-doublefsr-q139-powheg-MiNNLO31-svn3756-ew-rwl6-j200-st2fix-ana-hoppetweights-ymax20/POWHEG-BOX/Zj/ZjMiNNLO
+[SKFlatMaker::endRun,lines] URL: svn://powhegbox.mib.infn.it/trunk/User-Processes-V2/Zj/ZjMiNNLO
+[SKFlatMaker::endRun,lines] Rev.3756
+[SKFlatMaker::endRun,lines] Warning: not a clean version:
+[SKFlatMaker::endRun,lines] M       Makefile
+[SKFlatMaker::endRun,lines] M       init_couplings.f
+[SKFlatMaker::endRun,lines] M       process_dependent_minnlo.f
+[SKFlatMaker::endRun,lines] M       pwhg_analysis-minnlo.f
+[SKFlatMaker::endRun,lines] M       rwl_setup_param_weights.f
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/m/mseidel/generator/CMSSW_10_2_23/src/ZJToMuMu-suggested-nnpdf31-ncalls-doublefsr-q139-powheg-MiNNLO31-svn3756-ew-rwl6-j200-st2fix-ana-hoppetweights-ymax20/POWHEG-BOX/Zj
+[SKFlatMaker::endRun,lines] URL: svn://powhegbox.mib.infn.it/trunk/User-Processes-V2/Zj
+[SKFlatMaker::endRun,lines] Rev.3756
+[SKFlatMaker::endRun,lines] Warning: not a clean version:
+[SKFlatMaker::endRun,lines] M       Born_phsp.f
+[SKFlatMaker::endRun,lines] M       PhysPars.h
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/Makefile
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/init_couplings.f
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/process_dependent_minnlo.f
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/pwhg_analysis-minnlo.f
+[SKFlatMaker::endRun,lines] M       ZjMiNNLO/rwl_setup_param_weights.f
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/m/mseidel/generator/CMSSW_10_2_23/src/ZJToMuMu-suggested-nnpdf31-ncalls-doublefsr-q139-powheg-MiNNLO31-svn3756-ew-rwl6-j200-st2fix-ana-hoppetweights-ymax20/POWHEG-BOX
+[SKFlatMaker::endRun,lines] URL: svn://powhegbox.mib.infn.it/trunk/POWHEG-BOX-V2
+[SKFlatMaker::endRun,lines] Rev.3756
+[SKFlatMaker::endRun,lines] Warning: not a clean version:
+[SKFlatMaker::endRun,lines] M       MiNNLOStuff/hoppet/pdf_tabulate.f90
+[SKFlatMaker::endRun,lines] M       MiNNLOStuff/hoppetif.f
+[SKFlatMaker::endRun,lines] M       MiNNLOStuff/pdfs_tools.f90
+[SKFlatMaker::endRun,lines] M       MiNNLOStuff/setlocalscales.f
+[SKFlatMaker::endRun,lines] M       bbinit.f
+[SKFlatMaker::endRun,lines] M       include/pwhg_lhrwgt.h
+[SKFlatMaker::endRun,lines] M       include/pwhg_rwl.h
+[SKFlatMaker::endRun,lines] M       lhefwrite.f
+[SKFlatMaker::endRun,lines] M       rwl_weightlists.f
+[SKFlatMaker::endRun,lines] SVN status End
+[SKFlatMaker::endRun,lines] Process: Zj
+[SKFlatMaker::endRun,lines] Input file powheg.input contained:
+[SKFlatMaker::endRun,lines] vdecaymode 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] bornktmin 0.26
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] numevts 63
+[SKFlatMaker::endRun,lines] ih1   1           ! hadron 1 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ih2   1           ! hadron 2 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
+[SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! ALPHAS AND PDF EVOLUTION
+[SKFlatMaker::endRun,lines] alphas_from_pdf 1 ! (default 0) if 1, uses alphas from PDF evolution tool (e.g. lhapdf or hoppet)
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! MINLO SETTINGS
+[SKFlatMaker::endRun,lines] minlo 1        ! (default 0) if 1, activate minlo
+[SKFlatMaker::endRun,lines] minnlo 1       ! (default 0) if 1, activate miNNlo
+[SKFlatMaker::endRun,lines] modlog_p 6     ! (optional, only works if minnlo is set to 1)
+[SKFlatMaker::endRun,lines]                ! if present, activate modified logs and set the exponent
+[SKFlatMaker::endRun,lines] inc_delta_terms 0 ! (default 1) if 0, as^3 NNLO delta terms are not included
+[SKFlatMaker::endRun,lines] sudscalevar 1   ! (default 1) scale variation also in Sudakov form factors in minlo
+[SKFlatMaker::endRun,lines] distribute_by_ub 1 ! (default 0) if 1 distribute d3 terms according to kinematics of ub
+[SKFlatMaker::endRun,lines] distribute_by_ub_AP 1 ! (default 0) if 1 distribute d3 terms according to kinematics of ub
+[SKFlatMaker::endRun,lines] alphas_cutoff_fact 0.0 ! ! (Higgs: 2.5, DY: 1.8) see setlocalscales.f
+[SKFlatMaker::endRun,lines] pdf_cutoff_fact 1.1 ! (Higgs: 2.5, DY: 1.8) see setlocalscales.f
+[SKFlatMaker::endRun,lines] use_NNLOPS_pdfs 1 ! (default 0)
+[SKFlatMaker::endRun,lines] negative_pdfs_zero 0 ! setting negative PDFs zero
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] profiledscales 1 ! (default 0) if 1, use the profiled scales with cutoff Q0 and power npow
+[SKFlatMaker::endRun,lines] largeptscales 0  ! (default 0) if 0, at large pt, use muR=muF~Q in fixed order part
+[SKFlatMaker::endRun,lines]                  !             if 1, at large pt, use muR=muF=pt in the fixed-order part
+[SKFlatMaker::endRun,lines] Q0 1.390985      ! (default 2.) Q0 value used in profiled scales (see 2006.04133 for more details)
+[SKFlatMaker::endRun,lines]                  !              smaller values can be used too.
+[SKFlatMaker::endRun,lines] npow 1           ! (default 1) power in profiled scales
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] withdamp 1
+[SKFlatMaker::endRun,lines] doublefsr 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! PROCESS PARAMETERS
+[SKFlatMaker::endRun,lines] # EW input
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] min_Z_mass 50d0  ! Lower mass cut-off for Z boson production
+[SKFlatMaker::endRun,lines] max_Z_mass 13000d0 ! Upper mass cut-off for Z boson production
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
+[SKFlatMaker::endRun,lines] lhans1   306000     ! pdf set for hadron 1 (LHA numbering)
+[SKFlatMaker::endRun,lines] lhans2   306000    ! pdf set for hadron 2 (LHA numbering)
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! Parameters to allow or not the use of stored data
+[SKFlatMaker::endRun,lines] use-old-grid    1 ! if 1 use old grid if file pwggrids.dat is present (<> 1 regenerate)
+[SKFlatMaker::endRun,lines] use-old-ubound  1 ! if 1 use norm of upper bounding function stored in pwgubound.dat, if present; <>
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ncall1   200000     ! number of calls for initializing the integration grid
+[SKFlatMaker::endRun,lines] itmx1    1        ! number of iterations for initializing the integration grid
+[SKFlatMaker::endRun,lines] ncall2   200000     ! number of calls for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] itmx2    1        ! number of iterations for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] foldcsi   5       ! number of folds on csi integration
+[SKFlatMaker::endRun,lines] foldy     2       ! number of folds on  y  integration
+[SKFlatMaker::endRun,lines] foldphi   2       ! number of folds on phi integration
+[SKFlatMaker::endRun,lines] nubound 200000 ! number of bbarra calls to setup norm of upper bounding function
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] check_bad_st1 1
+[SKFlatMaker::endRun,lines] check_bad_st2 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ubexcess_correct 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! OPTIONAL PARAMETERS
+[SKFlatMaker::endRun,lines] #testplots  1       ! (default 0, do not) do NLO and PWHG distributions
+[SKFlatMaker::endRun,lines] flg_debug  0       ! store extra event info for debugging
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] iseed 775628278        ! initialize random number sequence
+[SKFlatMaker::endRun,lines] #maxseeds 2000
+[SKFlatMaker::endRun,lines] #manyseeds 1
+[SKFlatMaker::endRun,lines] #parallelstage 1
+[SKFlatMaker::endRun,lines] #xgriditeration 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #storeinfo_rwgt 0
+[SKFlatMaker::endRun,lines] #compute_rwgt 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #pdfreweight 0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #withnegweights 1 1
+[SKFlatMaker::endRun,lines] rwl_group_events 2000
+[SKFlatMaker::endRun,lines] lhapdf6maxsets 50
+[SKFlatMaker::endRun,lines] rwl_file 'pwg-rwl.dat'
+[SKFlatMaker::endRun,lines] rwl_format_rwgt 1
+[SKFlatMaker::endRun,lines] End of powheg.input content
+[SKFlatMaker::endRun,lines] PDF package: lha
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    775628278             0             0
+[SKFlatMaker::endRun] ##### End of information about PDF weights #####
+[SKFlatMaker::endJob] ++++++++++++++++++++++++++++++++++++++
+[SKFlatMaker::endJob] analyzed 1 events: 
+[SKFlatMaker::endJob] ++++++++++++++++++++++++++++++++++++++
