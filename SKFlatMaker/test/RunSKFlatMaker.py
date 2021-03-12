@@ -8,6 +8,7 @@ options.register('ScaleIDRange', "-999,-999", VarParsing.multiplicity.singleton,
 options.register('PDFErrorIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error ID range: 1001,1100")
 options.register('PDFAlphaSIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS ID range: 1101,1102")
 options.register('PDFAlphaSScaleValue', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS Scale values: 1.5,1.5")
+options.register('AdditionalWeights', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "Additional weights: NAME1[1,4],NAME2[6,8,12,20]")
 options.register('era',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "era: Which era? 2016preVFP, 2016postVFP, 2017, 2018")
 options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "Deprecated. Use 'era'")
 options.parseArguments()
@@ -73,10 +74,18 @@ if len(options.inputFiles)==0:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/MINIAOD/12Nov2019_UL2018_rsb-v1/240000/FE143ADE-E9E4-3143-8754-C9ECA89F3541.root')
       options.outputFile = "SKFlatNtuple_2018_DATA.root"
 
-ScaleIDRange = [int(options.ScaleIDRange.split(',')[0]), int(options.ScaleIDRange.split(',')[1])]
-PDFErrorIDRange = [int(options.PDFErrorIDRange.split(',')[0]), int(options.PDFErrorIDRange.split(',')[1])]
-PDFAlphaSIDRange = [int(options.PDFAlphaSIDRange.split(',')[0]), int(options.PDFAlphaSIDRange.split(',')[1])]
-PDFAlphaSScaleValue = [float(options.PDFAlphaSScaleValue.split(',')[0]), float(options.PDFAlphaSScaleValue.split(',')[1])]
+ScaleIDRange = [int(i) for i in options.ScaleIDRange.split(",")]
+PDFErrorIDRange = [int(i) for i in options.PDFErrorIDRange.split(",")]
+PDFAlphaSIDRange = [int(i) for i in options.PDFAlphaSIDRange.split(",")]
+PDFAlphaSScaleValue = [float(i) for i in options.PDFAlphaSScaleValue.split(",")]
+AdditionalWeights={}
+if options.AdditionalWeights!="":
+  for line in options.AdditionalWeights.replace("],","@").rstrip("]").split("@"):
+    print(line)
+    words=line.replace("[","@").split("@")
+    print(words)
+    AdditionalWeights[words[0]]=[int(i) for i in words[1].split(",")]
+
 
 print 'isMC = '+str(isMC)
 print 'isPrivateSample = '+str(isPrivateSample)
@@ -88,6 +97,8 @@ print 'PDFAlphaSIDRange = ',
 print PDFAlphaSIDRange
 print 'PDFAlphaSScaleValue = ',
 print PDFAlphaSScaleValue
+print 'AdditionalWeights = ',
+print AdditionalWeights
 print 'era = '+str(options.era)
 
 
@@ -176,6 +187,8 @@ process.recoTree.ScaleIDRange = cms.untracked.vint32(ScaleIDRange)
 process.recoTree.PDFErrorIDRange = cms.untracked.vint32(PDFErrorIDRange)
 process.recoTree.PDFAlphaSIDRange = cms.untracked.vint32(PDFAlphaSIDRange)
 process.recoTree.PDFAlphaSScaleValue = cms.untracked.vdouble(PDFAlphaSScaleValue)
+for key in AdditionalWeights:
+  setattr(process.recoTree,"AdditionalWeights_"+key,cms.untracked.vint32(AdditionalWeights[key]))
 
 if isPrivateSample:
   process.recoTree.LHEEventProduct = cms.untracked.InputTag("source")

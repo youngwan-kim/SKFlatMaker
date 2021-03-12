@@ -38,7 +38,7 @@ class Weight:
         if (size==-1 or len(self)==size) and (PDF=="" or self.PDF==str(PDF)) and (muF==-1 or self.muF==muF) and (muR==-1 or self.muR==muR):
             out+=[self]
         for sub in self.subs:
-            out+=sub.Find(size=size,PDF=PDF)
+            out+=sub.Find(size=size,PDF=PDF,muF=muF,muR=muR)
         return out
 
     def HasSubgroup(self):
@@ -198,16 +198,15 @@ for log in logs:
         if PrintLevel>0:
             print("> No candidates for scale variation group.. use method 2")
         cand=Weight()
-        cand.subs+=w.Find(muF=1.0,muR=1.0,PDF=lhaid)
-        if len(cand.subs)>1: cand.subs=cand.subs[0:1]
-        cand.subs+=w.Find(muF=1.0,muR=2.0,PDF=lhaid)
-        cand.subs+=w.Find(muF=1.0,muR=0.5,PDF=lhaid)
-        cand.subs+=w.Find(muF=2.0,muR=1.0,PDF=lhaid)
-        cand.subs+=w.Find(muF=2.0,muR=2.0,PDF=lhaid)
-        cand.subs+=w.Find(muF=2.0,muR=0.5,PDF=lhaid)
-        cand.subs+=w.Find(muF=0.5,muR=1.0,PDF=lhaid)
-        cand.subs+=w.Find(muF=0.5,muR=2.0,PDF=lhaid)
-        cand.subs+=w.Find(muF=0.5,muR=0.5,PDF=lhaid)
+        cand.subs+=w.Find(muF=1.0,muR=1.0,PDF=lhaid)[:1]
+        cand.subs+=w.Find(muF=1.0,muR=2.0,PDF=lhaid)[:1]
+        cand.subs+=w.Find(muF=1.0,muR=0.5,PDF=lhaid)[:1]
+        cand.subs+=w.Find(muF=2.0,muR=1.0,PDF=lhaid)[:1]
+        cand.subs+=w.Find(muF=2.0,muR=2.0,PDF=lhaid)[:1]
+        cand.subs+=w.Find(muF=2.0,muR=0.5,PDF=lhaid)[:1]
+        cand.subs+=w.Find(muF=0.5,muR=1.0,PDF=lhaid)[:1]
+        cand.subs+=w.Find(muF=0.5,muR=2.0,PDF=lhaid)[:1]
+        cand.subs+=w.Find(muF=0.5,muR=0.5,PDF=lhaid)[:1]
         cand.Print(verbose=True)
         if len(cand)==9:
             cands+=[cand]

@@ -156,10 +156,19 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   PDFAlphaSIDRange_ = iConfig.getUntrackedParameter< std::vector<int> >("PDFAlphaSIDRange");
   PDFAlphaSScaleValue_ = iConfig.getUntrackedParameter< std::vector<double> >("PDFAlphaSScaleValue");
 
-  cout << "[SKFlatMaker::SKFlatMaker] ScaleIDRange_ = " << ScaleIDRange_.at(0)<<" - "<<ScaleIDRange_.at(1) << endl;
-  cout << "[SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = " << PDFErrorIDRange_.at(0)<<" - "<<PDFErrorIDRange_.at(1) << endl;
-  cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = " << PDFAlphaSIDRange_.at(0)<<" - "<<PDFAlphaSIDRange_.at(1) << endl;
-  cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSScaleValue_ = " << PDFAlphaSScaleValue_.at(0)<<" - "<<PDFAlphaSScaleValue_.at(1) << endl;
+  cout << "[SKFlatMaker::SKFlatMaker] ScaleIDRange_ = " << ScaleIDRange_.at(0)<<" - "<<ScaleIDRange_.at(ScaleIDRange_.size()-1) << endl;
+  cout << "[SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = " << PDFErrorIDRange_.at(0)<<" - "<<PDFErrorIDRange_.at(PDFErrorIDRange_.size()-1) << endl;
+  cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = " << PDFAlphaSIDRange_.at(0)<<" - "<<PDFAlphaSIDRange_.at(PDFAlphaSIDRange_.size()-1) << endl;
+  cout << "[SKFlatMaker::SKFlatMaker] PDFAlphaSScaleValue_ = " << PDFAlphaSScaleValue_.at(0)<<" - "<<PDFAlphaSScaleValue_.at(PDFAlphaSScaleValue_.size()-1) << endl;
+  for(auto pname:iConfig.getParameterNames()){
+    TString wname=pname;
+    if(wname.Contains("AdditionalWeights_")){
+      wname.ReplaceAll("AdditionalWeights_","");
+      AdditionalWeights_[wname]=iConfig.getUntrackedParameter<std::vector<int>>(pname);
+      cout << "[SKFlatMaker::SKFlatMaker] AdditionalWeights_["+wname+"] = " << AdditionalWeights_[wname].at(0)<<" - "<<AdditionalWeights_[wname].at(AdditionalWeights_[wname].size()-1) << endl;
+      PDFWeights_[wname]={};
+    }
+  }
 
   if(theDebugLevel) cout << "[SKFlatMaker::SKFlatMaker] Constructor finished" << endl;
 
@@ -308,6 +317,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   PDFWeights_Scale.clear();
   PDFWeights_Error.clear();
   PDFWeights_AlphaS.clear();
+  for(auto [wname,weights]:PDFWeights_){
+    PDFWeights_[wname].clear();
+  }
 
   //==== GEN
 
@@ -1107,6 +1119,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("PDFWeights_Scale", "vector<double>", &PDFWeights_Scale);
     DYTree->Branch("PDFWeights_Error", "vector<double>", &PDFWeights_Error);
     DYTree->Branch("PDFWeights_AlphaS", "vector<double>", &PDFWeights_AlphaS);
+    for(auto [wname,weights]:AdditionalWeights_){
+      DYTree->Branch("PDFWeights_"+wname,"vector<double>",&PDFWeights_[wname]);
+    }
   }
   
   // GEN info
@@ -2419,20 +2434,29 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
     if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight["<<this_id<<"] = " << map_id_to_weight[this_id] << endl;
   }
 
-  int central = ScaleIDRange_.at(0);
+  double nominalweight= LHEInfo->originalXWGTUP();
+  if(ScaleIDRange_.at(0)!=-999) nominalweight=map_id_to_weight[ScaleIDRange_.at(0)];
   if(theDebugLevel){
-    cout << "[SKFlatMaker::fillLHEInfo] central = " << central << endl;
-    cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight[central] = " << map_id_to_weight[central] << endl;
+    if(ScaleIDRange_.at(0)==-999) cout << "[SKFlatMaker::fillLHEInfo] central = LHEInfo->originalXWGTUP()" << endl;
+    else cout << "[SKFlatMaker::fillLHEInfo] central = " << ScaleIDRange_.at(0) << endl;
+    cout << "[SKFlatMaker::fillLHEInfo] nominalweight = " << nominalweight << endl;
   }
 
   //=============================
   //==== 1) QCD Scale variation
   //=============================
 
-  for(int i=ScaleIDRange_.at(0);i<=ScaleIDRange_.at(1);i++){
-    if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Scale Varation; adding id = " << i << endl;
-    PDFWeights_Scale.push_back( map_id_to_weight[i]/map_id_to_weight[ScaleIDRange_.at(0)] );
-  }
+  if(ScaleIDRange_.size()==2){
+    for(int i=ScaleIDRange_.at(0);i<=ScaleIDRange_.at(1);i++){
+      if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Scale Varation; adding id = " << i << endl;
+      PDFWeights_Scale.push_back( map_id_to_weight[i]/nominalweight );
+    }
+  }else{
+    for(int i:ScaleIDRange_){
+      if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Scale Varation; adding id = " << i << endl;
+      PDFWeights_Scale.push_back( map_id_to_weight[i]/nominalweight );
+    }
+  }    
 
   //==============================
   //==== 2) PDF Error and AlphaS
@@ -2441,15 +2465,17 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   int N_ErrorSet = PDFErrorIDRange_.at(1)-PDFErrorIDRange_.at(0)+1;
 
   for(int i=PDFErrorIDRange_.at(0);i<=PDFErrorIDRange_.at(1);i++){
-    double this_reweight = map_id_to_weight[i] / map_id_to_weight[central];
+    double this_reweight = map_id_to_weight[i] / nominalweight;
     PDFWeights_Error.push_back( this_reweight );
     if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Error set; adding id = " << i << ", reweight = " << this_reweight << endl;
   }
 
-  //==== AlphaS
+  //==============================
+  //==== 3) AlphaS
+  //==============================
 
-  double this_as_dn = (map_id_to_weight[PDFAlphaSIDRange_.at(0)] - map_id_to_weight[central]) / map_id_to_weight[central] * PDFAlphaSScaleValue_.at(0);
-  double this_as_up = (map_id_to_weight[PDFAlphaSIDRange_.at(1)] - map_id_to_weight[central]) / map_id_to_weight[central] * PDFAlphaSScaleValue_.at(1);
+  double this_as_dn = (map_id_to_weight[PDFAlphaSIDRange_.at(0)] - nominalweight) / nominalweight * PDFAlphaSScaleValue_.at(0);
+  double this_as_up = (map_id_to_weight[PDFAlphaSIDRange_.at(1)] - nominalweight) / nominalweight * PDFAlphaSScaleValue_.at(1);
 
   if(theDebugLevel){
     cout << "[SKFlatMaker::fillLHEInfo] AlphaS; dn id = " << PDFAlphaSIDRange_.at(0) << endl;
@@ -2459,6 +2485,24 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   PDFWeights_AlphaS.push_back(1.+this_as_dn);
   PDFWeights_AlphaS.push_back(1.+this_as_up);
 
+  //==============================
+  //==== 4) Additional weights
+  //==============================
+
+  for(auto [wname,range]:AdditionalWeights_){
+    if(range.size()==2){
+      for(int i=range.at(0);i<=range.at(1);i++){
+	if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Additional weights "+wname+"; adding id = " << i << endl;
+	PDFWeights_[wname].push_back( map_id_to_weight[i]/nominalweight );
+      }
+    }else{
+      for(int i:range){
+	if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] Additional weights "+wname+"; adding id = " << i << endl;
+	PDFWeights_[wname].push_back( map_id_to_weight[i]/nominalweight );
+      }
+    }
+  }
+
   if(theDebugLevel){
     cout << "[SKFlatMaker::fillLHEInfo] LHEInfo->originalXWGTUP() = " << LHEInfo->originalXWGTUP() << endl;
     cout << "[SKFlatMaker::fillLHEInfo] [PDFWeights_Scale]" << endl;
@@ -2467,6 +2511,10 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
     for(unsigned int i=0;i<PDFWeights_Error.size();i++) cout << "[SKFlatMaker::fillLHEInfo] " << PDFWeights_Error.at(i) << endl;
     cout << "[SKFlatMaker::fillLHEInfo] [PDFWeights_AlphaS]" << endl;
     for(unsigned int i=0;i<PDFWeights_AlphaS.size();i++) cout << "[SKFlatMaker::fillLHEInfo] " << PDFWeights_AlphaS.at(i) << endl;
+    for(auto [wname,weights]:PDFWeights_){
+      cout << "[SKFlatMaker::fillLHEInfo] [PDFWeights_["+wname+"]]" << endl;
+      for(unsigned int i=0;i<weights.size();i++) cout << "[SKFlatMaker::fillLHEInfo] " << weights.at(i) << endl;
+    }
   }
 
 

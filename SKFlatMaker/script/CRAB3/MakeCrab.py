@@ -103,6 +103,12 @@ for line in lines:
       ArgsListString += ",'PDFAlphaSIDRange="+PDFAlphaSIDRange+"'"
       ArgsListString += ",'PDFAlphaSScaleValue="+PDFAlphaSScaleValue+"'"
 
+      AdditionalWeightList=[]
+      for i in range(1,len(MCInfoLines)):
+        AdditionalWeightList += ["{}[{}]".format(MCInfoLines[i].split()[0],MCInfoLines[i].split()[1])]
+      if len(AdditionalWeightList):
+        ArgsListString += ",'AdditionalWeights="+",".join(AdditionalWeightList)+"'"
+
       if "999" in MCInfoLines[0]:
         print '#### Has Issue : '+sample
         #continue
