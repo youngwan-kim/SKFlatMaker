@@ -242,7 +242,7 @@ if Is2016preVFP:
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True,
-                         era='2016-UL',
+                         era='2016preVFP-UL',
                          eleIDModules=myEleID,
                          phoIDModules=myPhoID,
                          runEnergyCorrections=False  ## not yet available
@@ -352,7 +352,7 @@ if Is2016postVFP:
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True,
-                         era='2016-UL',
+                         era='2016postVFP-UL',
                          eleIDModules=myEleID,
                          phoIDModules=myPhoID,
                          runEnergyCorrections=False  ## not yet available

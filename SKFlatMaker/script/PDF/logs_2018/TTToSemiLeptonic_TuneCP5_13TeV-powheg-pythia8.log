@@ -5,13 +5,13 @@ PDFErrorIDRange =  [-999, -999]
 PDFAlphaSIDRange =  [-999, -999]
 PDFAlphaSScaleValue =  [-999.0, -999.0]
 AdditionalWeights =  {}
-era = 2016postVFP
-GT_MC = 106X_mcRun2_asymptotic_v15
+era = 2018
+GT_MC = 106X_upgrade2018_realistic_v15_L1v1
 GT_DATA = 106X_dataRun2_v32
 ################
-Running 2016postVFP
+Running 2018
 ################
-[SKFlatMaker::SKFlatMaker] DataYear = 2016
+[SKFlatMaker::SKFlatMaker] DataYear = 2018
 [SKFlatMaker::SKFlatMaker]
 ############# electron_IDtoSave #############
 cutBasedElectronID-Fall17-94X-V2-veto
@@ -27,7 +27,7 @@ mvaEleID-Fall17-noIso-V2-wp90
 mvaEleID-Fall17-noIso-V2-wpLoose
 heepElectronID-HEEPV70
 #############################################
-[SKFlatMaker::SKFlatMaker] Rochester correction file from : /afs/cern.ch/user/w/wjun/public/Run2UltraLegacy_v1__CMSSW_10_6_20/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016bUL.txt
+[SKFlatMaker::SKFlatMaker] Rochester correction file from : /afs/cern.ch/user/w/wjun/public/Run2UltraLegacy_v1__CMSSW_10_6_20/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2018UL.txt
 [SKFlatMaker::SKFlatMaker] ScaleIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = -999 - -999
@@ -37,14 +37,14 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] file generated with POWHEG-BOX-V2
 [SKFlatMaker::endRun,lines] SVN status Begin
-[SKFlatMaker::endRun,lines] /afs/cern.ch/user/j/jfernan/public/ttGenFall17/Powheg/CMSSW_9_3_0/src/genproductions/bin/Powheg/TT_hdamp_NNPDF31_NNLO_dilepton.input/POWHEG-BOX
+[SKFlatMaker::endRun,lines] /afs/cern.ch/user/j/jfernan/public/ttGenFall17/Powheg/CMSSW_9_3_0/src/genproductions/bin/Powheg/TT_hdamp_NNPDF31_NNLO_ljets.input/POWHEG-BOX
 [SKFlatMaker::endRun,lines] URL: svn://powhegbox.mib.infn.it/trunk/POWHEG-BOX-V2
 [SKFlatMaker::endRun,lines] Rev.3453
 [SKFlatMaker::endRun,lines] Warning: not a clean version:
 [SKFlatMaker::endRun,lines] M       include/pwhg_lhrwgt.h
 [SKFlatMaker::endRun,lines] M       include/pwhg_rwl.h
 [SKFlatMaker::endRun,lines] M       lhefwrite.f
-[SKFlatMaker::endRun,lines] /afs/cern.ch/user/j/jfernan/public/ttGenFall17/Powheg/CMSSW_9_3_0/src/genproductions/bin/Powheg/TT_hdamp_NNPDF31_NNLO_dilepton.input/POWHEG-BOX/hvq
+[SKFlatMaker::endRun,lines] /afs/cern.ch/user/j/jfernan/public/ttGenFall17/Powheg/CMSSW_9_3_0/src/genproductions/bin/Powheg/TT_hdamp_NNPDF31_NNLO_ljets.input/POWHEG-BOX/hvq
 [SKFlatMaker::endRun,lines] URL: svn://powhegbox.mib.infn.it/trunk/User-Processes-V2/hvq
 [SKFlatMaker::endRun,lines] Rev.3453
 [SKFlatMaker::endRun,lines] Warning: not a clean version:
@@ -62,8 +62,8 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] numevts 1000
-[SKFlatMaker::endRun,lines] iseed 477751673
+[SKFlatMaker::endRun,lines] numevts 2000
+[SKFlatMaker::endRun,lines] iseed 606613606
 [SKFlatMaker::endRun,lines] ih1   1        ! hadron 1
 [SKFlatMaker::endRun,lines] ih2   1        ! hadron 2
 [SKFlatMaker::endRun,lines] 
@@ -82,12 +82,12 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] #fixedscale 1    ! use ref. scale=qmass (default 0, use running scale)
 [SKFlatMaker::endRun,lines] hdamp 237.8775
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] topdecaymode 22200   ! an integer of 5 digits that are either 0, or 2, representing in
+[SKFlatMaker::endRun,lines] topdecaymode 11111   ! an integer of 5 digits that are either 0, or 2, representing in
 [SKFlatMaker::endRun,lines]                      ! the order the maximum number of the following particles(antiparticles)
 [SKFlatMaker::endRun,lines]                      ! in the final state: e  mu tau up charm
 [SKFlatMaker::endRun,lines]                      ! For example
 [SKFlatMaker::endRun,lines]                      ! 22222    All decays (up to 2 units of everything)
-[SKFlatMaker::endRun,lines]                      ! 20000    both top go into b e nu (with the appropriate signs)
+[SKFlatMaker::endRun,lines]                      ! 20000    both top go into b l nu (with the appropriate signs)
 [SKFlatMaker::endRun,lines]                      ! 10011    one top goes into electron (or positron), the other into (any) hadro
 [SKFlatMaker::endRun,lines]                      !          or one top goes into charm, the other into up
 [SKFlatMaker::endRun,lines]                      ! 00022    Fully hadronic
@@ -95,7 +95,7 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines]                      ! 00011    Fully hadronic with a single charm
 [SKFlatMaker::endRun,lines]                      ! 00012    Fully hadronic with at least one charm
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] !semileptonic 1      ! uncomment if you want to filter out only semileptonic events. For example,
+[SKFlatMaker::endRun,lines] semileptonic 1      ! uncomment if you want to filter out only semileptonic events. For example,
 [SKFlatMaker::endRun,lines]                      ! with topdecaymode 10011 and semileptonic 1 you get only events with one top g
 [SKFlatMaker::endRun,lines]                      ! to an electron or positron, and the other into any hadron.
 [SKFlatMaker::endRun,lines] 
@@ -157,7 +157,7 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] rwl_format_rwgt 1
 [SKFlatMaker::endRun,lines] End of powheg.input content
 [SKFlatMaker::endRun,lines] PDF package: lha
-[SKFlatMaker::endRun,lines]  Random number generator initialized with:    477751673             0             0
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    606613606             0             0
 [SKFlatMaker::endRun,tag] initrwgt
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] <weightgroup combine="envelope" name="scale_variation">
