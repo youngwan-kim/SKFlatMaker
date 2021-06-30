@@ -79,14 +79,10 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   if(DataYear>=2017){
     ecalBadCalibFilterUpdate_token= consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"));
   }
-  //==== L1 Prefireing for 2016 and 2017
-  if(DataYear<=2017){
-
-    prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
-    prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
-    prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
-
-  }
+  //==== L1 Prefireing
+  prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
+  prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
+  prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
 
   theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
 

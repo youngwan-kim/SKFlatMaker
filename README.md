@@ -11,13 +11,13 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 # Make CMSSW directory
 
 #### 1) For a test job or developement
-cmsrel CMSSW_10_6_20
-cd CMSSW_10_6_20/src
+cmsrel CMSSW_10_6_26
+cd CMSSW_10_6_26/src
 
 #### 2) For production, let's not use the working directory but use new and clean directory
 #### Also, I recommend using lxplus
-scram p -n Run2UltraLegacy_v1__CMSSW_10_6_20 CMSSW CMSSW_10_6_20
-cd Run2UltraLegacy_v1__CMSSW_10_6_20/src
+scram p -n Run2UltraLegacy_v1__CMSSW_10_6_26 CMSSW CMSSW_10_6_26
+cd Run2UltraLegacy_v1__CMSSW_10_6_26/src
 
 #### Then,
 cmsenv
@@ -34,20 +34,6 @@ mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/pyth
 git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b UL2018 EgammaAnalysis/ElectronTools/data/
 git cms-addpkg EgammaAnalysis/ElectronTools
 scram b -j 4
-
-
-######################
-#### L1Prefire for UL17
-#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe
-######################
-git-cms-addpkg PhysicsTools/PatUtils 
-#cd PhysicsTools/PatUtils/data/
-#wget --no-check-certificate https://lathomas.web.cern.ch/lathomas/TSGStuff/L1Prefiring/PrefiringMaps_2016and2017/files/L1PrefiringMaps_WithUL17.root 
-#cd ../../../
-#wget is not working due cern SSO, instead do 
-cp SKFlatMaker/SKFlatMaker/data/L1Prefire/L1PrefiringMaps_WithUL17.root PhysicsTools/PatUtils/data/
-scram b -j 4
-
 
 ######################
 #### Now SKFlatMaker
@@ -89,10 +75,12 @@ cd $SKFlatTag/2018/crab_submission_DATA/
 # test runs
 ```bash
 cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/test/
-cmsRun RunSKFlatMaker.py year=2016 sampletype=DATA maxEvents=1000 ## Run 2016 DATA
-cmsRun RunSKFlatMaker.py year=2016 sampletype=MC maxEvents=1000 ## Run 2016 MC
-cmsRun RunSKFlatMaker.py year=2017 sampletype=DATA maxEvents=1000 ## Run 2017 DATA
-cmsRun RunSKFlatMaker.py year=2017 sampletype=MC maxEvents=1000 ## Run 2017 MC
-cmsRun RunSKFlatMaker.py year=2018 sampletype=DATA maxEvents=1000 ## Run 2018 DATA
-cmsRun RunSKFlatMaker.py year=2018 sampletype=MC maxEvents=1000 ## Run 2018 MC
+cmsRun RunSKFlatMaker.py era=2016preVFP sampletype=DATA maxEvents=1000  ## Run 2016a DATA
+cmsRun RunSKFlatMaker.py era=2016preVFP sampletype=MC maxEvents=1000    ## Run 2016a MC
+cmsRun RunSKFlatMaker.py era=2016postVFP sampletype=DATA maxEvents=1000 ## Run 2016b DATA
+cmsRun RunSKFlatMaker.py era=2016postVFP sampletype=MC maxEvents=1000   ## Run 2016b MC
+cmsRun RunSKFlatMaker.py era=2017 sampletype=DATA maxEvents=1000        ## Run 2017 DATA
+cmsRun RunSKFlatMaker.py era=2017 sampletype=MC maxEvents=1000          ## Run 2017 MC
+cmsRun RunSKFlatMaker.py era=2018 sampletype=DATA maxEvents=1000        ## Run 2018 DATA
+cmsRun RunSKFlatMaker.py era=2018 sampletype=MC maxEvents=1000          ## Run 2018 MC
 ```
