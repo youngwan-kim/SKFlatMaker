@@ -308,16 +308,17 @@ if Is2016preVFP:
 
   #########################
   #### L1Prefire reweight
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
   #########################
-  ## not yet availalble for UL yet
-  from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
-  process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
-    DataEra = cms.string("2016BtoH"), #Use 2016BtoH for 2016
-    ThePhotons = cms.InputTag("slimmedPhotons"),
-    TheJets = cms.InputTag("slimmedJets"),
-    UseJetEMPt = cms.bool(True),
-    PrefiringRateSystematicUncty = cms.double(0.2),
-    SkipWarnings = False)
+  from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
+  process.prefiringweight = l1PrefiringWeightProducer.clone(
+    TheJets = cms.InputTag("updatedPatJetsUpdatedJECslimmedJets"), #this should be the slimmedJets collection with up to date JECs !
+    DataEraECAL = cms.string("UL2016preVFP"),
+    DataEraMuon = cms.string("2016preVFP"),
+    UseJetEMPt = cms.bool(False),
+    PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+    PrefiringRateSystematicUnctyMuon = cms.double(0.2)
+  )
 
   ###########################
   #### Rochester correction
@@ -418,16 +419,17 @@ if Is2016postVFP:
 
   #########################
   #### L1Prefire reweight
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
   #########################
-  ## not yet availalble for UL yet
-  from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
-  process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
-    DataEra = cms.string("2016BtoH"), #Use 2016BtoH for 2016
-    ThePhotons = cms.InputTag("slimmedPhotons"),
-    TheJets = cms.InputTag("slimmedJets"),
-    UseJetEMPt = cms.bool(True),
-    PrefiringRateSystematicUncty = cms.double(0.2),
-    SkipWarnings = False)
+  from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
+  process.prefiringweight = l1PrefiringWeightProducer.clone(
+    TheJets = cms.InputTag("updatedPatJetsUpdatedJECslimmedJets"), #this should be the slimmedJets collection with up to date JECs !
+    DataEraECAL = cms.string("UL2016postVFP"),
+    DataEraMuon = cms.string("2016postVFP"),
+    UseJetEMPt = cms.bool(False),
+    PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+    PrefiringRateSystematicUnctyMuon = cms.double(0.2)
+  )
 
   ###########################
   #### Rochester correction
@@ -573,18 +575,17 @@ elif Is2017:
 
   #########################
   #### L1Prefire reweight
-  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1ECALPrefiringWeightRecipe
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
   #########################
-
-  from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
-  process.prefiringweight= l1ECALPrefiringWeightProducer.clone(
+  from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
+  process.prefiringweight = l1PrefiringWeightProducer.clone(
     TheJets = cms.InputTag("updatedPatJetsUpdatedJECslimmedJets"), #this should be the slimmedJets collection with up to date JECs !
-    L1Maps = cms.string("L1PrefiringMaps_WithUL17.root"),
-    DataEra = cms.string('UL2017BtoF'),
+    DataEraECAL = cms.string("UL2017BtoF"),
+    DataEraMuon = cms.string("20172018"),
     UseJetEMPt = cms.bool(False),
-    PrefiringRateSystematicUncty = cms.double(0.2),
-    SkipWarnings = False
-    )
+    PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+    PrefiringRateSystematicUnctyMuon = cms.double(0.2)
+  )
 
   ###########################
   #### Rochester correction
@@ -599,7 +600,7 @@ elif Is2017:
     process.egammaPostRecoSeq *
     process.jecSequence *
     process.fullPatMetSequence
-#   * process.ecalBadCalibReducedMINIAODFilter
+    #process.ecalBadCalibReducedMINIAODFilter
   )
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
@@ -717,6 +718,20 @@ elif Is2018:
 #    debug = cms.bool(False)
 #  )
 
+  #########################
+  #### L1Prefire reweight
+  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
+  #########################
+  from PhysicsTools.PatUtils.l1PrefiringWeightProducer_cfi import l1PrefiringWeightProducer
+  process.prefiringweight = l1PrefiringWeightProducer.clone(
+    TheJets = cms.InputTag("updatedPatJetsUpdatedJECslimmedJets"), #this should be the slimmedJets collection with up to date JECs !
+    DataEraECAL = cms.string("None"),
+    DataEraMuon = cms.string("20172018"),
+    UseJetEMPt = cms.bool(False),
+    PrefiringRateSystematicUnctyECAL = cms.double(0.2),
+    PrefiringRateSystematicUnctyMuon = cms.double(0.2)
+  )
+
   ###########################
   #### Rochester correction
   ###########################
@@ -729,7 +744,11 @@ elif Is2018:
   process.p = cms.Path(
     process.egammaPostRecoSeq *
     process.jecSequence *
-    process.fullPatMetSequence *
-    #process.ecalBadCalibReducedMINIAODFilter *
-    process.recoTree
+    process.fullPatMetSequence
+    #process.ecalBadCalibReducedMINIAODFilter
   )
+  if isMC:
+    process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
+    process.p *= process.prefiringweight
+
+  process.p *= process.recoTree
