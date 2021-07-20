@@ -191,25 +191,21 @@ for line in lines:
       out.write("config.Data.outLFNDirBase = '/store/user/%s/SKFlat/"+era+"/' % (getUsername())\n")
 
     elif 'config.Site.storageSite' in sk_line:
-      #if isPrivateMC:
-      #  out.write("config.Site.storageSite = 'T3_KR_KNU'\n")
-      #else:
-      #  out.write("config.Site.storageSite = 'T3_KR_KISTI'\n")
       out.write("config.Site.storageSite = 'T3_KR_KNU'\n")
     else:
       out.write(sk_line)
 
   if isData:
     if era=="2016preVFP":
-      out.write("config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Legacy_2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'\n")
+      out.write("config.Data.lumiMask = 'https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions16/13TeV/Legacy_2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'\n")
     elif era=="2016postVFP":
-      out.write("config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Legacy_2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'\n")
+      out.write("config.Data.lumiMask = 'https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions16/13TeV/Legacy_2016/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'\n")
     elif era=="2017":
       #### https://twiki.cern.ch/twiki/bin/view/CMS/PdmVLegacy2017Analysis
-      out.write("config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions17/13TeV/Legacy_2017/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt'\n")
+      out.write("config.Data.lumiMask = 'https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions17/13TeV/Legacy_2017/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt'\n")
     elif era=="2018":
       #### https://twiki.cern.ch/twiki/bin/view/CMS/PdmVLegacy2018Analysis
-      out.write("config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions18/13TeV/Legacy_2018/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt'\n")
+      out.write("config.Data.lumiMask = 'https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions18/13TeV/Legacy_2018/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt'\n")
     else:
       print "Wrong era : "+era
 

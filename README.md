@@ -15,9 +15,8 @@ cmsrel CMSSW_10_6_26
 cd CMSSW_10_6_26/src
 
 #### 2) For production, let's not use the working directory but use new and clean directory
-#### Also, I recommend using lxplus
-scram p -n Run2UltraLegacy_v1__CMSSW_10_6_26 CMSSW CMSSW_10_6_26
-cd Run2UltraLegacy_v1__CMSSW_10_6_26/src
+scram p -n Run2UltraLegacy_v2__CMSSW_10_6_26 CMSSW CMSSW_10_6_26
+cd Run2UltraLegacy_v2__CMSSW_10_6_26/src
 
 #### Then,
 cmsenv
@@ -31,7 +30,7 @@ git cms-init
 git cms-addpkg RecoEgamma/EgammaTools  ### essentially just checkout the package from CMSSW
 git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
 mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
-git clone https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git -b UL2018 EgammaAnalysis/ElectronTools/data/
+git clone -b ULSSfiles_correctScaleSysMC https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data/
 git cms-addpkg EgammaAnalysis/ElectronTools
 scram b -j 4
 
@@ -49,7 +48,7 @@ git checkout master
 git checkout -b <testbranch>
 
 #### 2) For production
-git checkout Run2UltraLegacy_v1 #### use the tag
+git checkout Run2UltraLegacy_v2 #### use the tag
 
 cd $CMSSW_BASE/src
 
@@ -62,10 +61,7 @@ source setup.sh
 
 # Now, submitting crab jobs.
 cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/script/CRAB3
-# edit MakeCrab.py
-# txtfilename = "<txtfile which has list of samples you want to run>"
-# e.g., if txtfilename = "2018_DATA.txt"
-python MakeCrab.py
+python MakeCrab.py 2018_DATA.txt
 # then it will print crab submission commands
 # copy them somewhere
 cd $SKFlatTag/2018/crab_submission_DATA/
