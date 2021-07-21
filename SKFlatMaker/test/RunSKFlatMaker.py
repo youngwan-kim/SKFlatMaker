@@ -11,6 +11,7 @@ options.register('PDFAlphaSScaleValue', "-999,-999", VarParsing.multiplicity.sin
 options.register('AdditionalWeights', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "Additional weights: NAME1[1,4],NAME2[6,8,12,20]")
 options.register('era',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "era: Which era? 2016preVFP, 2016postVFP, 2017, 2018")
 options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "Deprecated. Use 'era'")
+options.setDefault('outputFile','SKFlatNtuple.root')
 options.parseArguments()
 
 import sys
@@ -43,36 +44,35 @@ isPrivateSample = False
 if "private" in options.sampletype.lower():
   isPrivateSample = True
 
-options.outputFile = "SKFlatNtuple.root"
 if len(options.inputFiles)==0:
   if Is2016preVFP:
     if isMC:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL16MiniAODAPV/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v8-v1/270000/19589E57-61A2-7049-9343-788B6D00A07D.root')
-      options.outputFile = "SKFlatNtuple_2016preVFP_MC.root"
+      options.outputFile = options.outputFile.replace(".root","_2016preVFP_MC.root")
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016B/SingleMuon/MINIAOD/21Feb2020_ver2_UL2016_HIPM-v1/70000/6805D8D5-79EB-0346-9E07-B267BE5BD848.root')
-      options.outputFile = "SKFlatNtuple_2016preVFP_DATA.root"
+      options.outputFile = options.outputFile.replace(".root","_2016preVFP_DATA.root")
   if Is2016postVFP:
     if isMC:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL16MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/110000/F0A9DC9B-B0D6-804A-BD80-57F7FA06FACB.root')
-      options.outputFile = "SKFlatNtuple_2016postVFP_MC.root"
+      options.outputFile = options.outputFile.replace(".root","_2016postVFP_MC.root")
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016H/SingleMuon/MINIAOD/21Feb2020_UL2016-v1/250000/D6CA5522-DB00-CE45-BF90-06176D4DBC86.root')
-      options.outputFile = "SKFlatNtuple_2016postVFP_DATA.root"
+      options.outputFile = options.outputFile.replace(".root","_2016postVFP_DATA.root")
   elif Is2017:
     if isMC:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL17MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mc2017_realistic_v6-v2/260000/04B074CC-43FC-6045-ACD2-D49AC762E5A6.root')
-      options.outputFile = "SKFlatNtuple_2017_MC.root"
+      options.outputFile = options.outputFile.replace(".root","_2017_MC.root")
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2017B/SingleMuon/MINIAOD/09Aug2019_UL2017-v1/210000/49E82EBF-E7AF-8645-B5C7-6F2B208F3F5F.root')
-      options.outputFile = "SKFlatNtuple_2017_DATA.root"
+      options.outputFile = options.outputFile.replace(".root","_2017_DATA.root")
   elif Is2018:
     if isMC:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_upgrade2018_realistic_v11_L1v1-v2/70000/EA2F219D-8534-7B4D-AF83-5D91AF448EC6.root')
-      options.outputFile = "SKFlatNtuple_2018_MC.root"
+      options.outputFile = options.outputFile.replace(".root","_2018_MC.root")
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/MINIAOD/12Nov2019_UL2018_rsb-v1/240000/FE143ADE-E9E4-3143-8754-C9ECA89F3541.root')
-      options.outputFile = "SKFlatNtuple_2018_DATA.root"
+      options.outputFile = options.outputFile.replace(".root","_2018_DATA.root")
 
 ScaleIDRange = [int(i) for i in options.ScaleIDRange.split(",")]
 PDFErrorIDRange = [int(i) for i in options.PDFErrorIDRange.split(",")]
@@ -103,23 +103,23 @@ print 'era = '+str(options.era)
 
 
 #### Global Tag
-#### https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVAnalysisSummaryTable
+#### https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis
 
 GT_MC = ''
 GT_DATA = ''
 
 if Is2016preVFP:
-  GT_MC = '106X_mcRun2_asymptotic_preVFP_v9'
-  GT_DATA = '106X_dataRun2_v32'
+  GT_MC = '106X_mcRun2_asymptotic_preVFP_v11'
+  GT_DATA = '106X_dataRun2_v35'
 if Is2016postVFP:
-  GT_MC = '106X_mcRun2_asymptotic_v15'
-  GT_DATA = '106X_dataRun2_v32'
+  GT_MC = '106X_mcRun2_asymptotic_v17'
+  GT_DATA = '106X_dataRun2_v35'
 elif Is2017:
   GT_MC = '106X_mc2017_realistic_v8'
-  GT_DATA = '106X_dataRun2_v32'
+  GT_DATA = '106X_dataRun2_v35'
 elif Is2018:
   GT_MC = '106X_upgrade2018_realistic_v15_L1v1'
-  GT_DATA = '106X_dataRun2_v32'
+  GT_DATA = '106X_dataRun2_v35'
 
 print 'GT_MC = '+GT_MC
 print 'GT_DATA = '+GT_DATA
@@ -152,6 +152,7 @@ process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 
 # -- Global Tags -- #
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JecGlobalTag
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 
 if isMC == True:
@@ -237,6 +238,7 @@ if Is2016preVFP:
 
   ###########################
   #### Rerun EGammaPostReco
+  #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Recipe_for_running_Scales_and_sm
   ###########################
 
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
@@ -245,12 +247,16 @@ if Is2016preVFP:
                          era='2016preVFP-UL',
                          eleIDModules=myEleID,
                          phoIDModules=myPhoID,
-                         runEnergyCorrections=False  ## not yet available
+                         runEnergyCorrections=True
   )
+  #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
   #################
   ### Reapply JEC
   ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
+  ### https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
+  ### 106X_dataRun2_v35 -> Summer19UL16_V7_DATA
+  ### 106X_mcRun2_asymptotic_preVFP_v11 -> Summer19UL16APV_V7_MC
   #################
 
   from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
@@ -288,11 +294,11 @@ if Is2016preVFP:
   #### JER
   #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2016_data
   ##########
-  # no JER for UL2016 yet. use old one
-  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_PtResolution_AK4PFchs.txt')
-  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_SF_AK4PFchs.txt')
-  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_PtResolution_AK8PFPuppi.txt')
-  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_SF_AK8PFPuppi.txt')
+
+  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt')
+  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt')
+  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_PtResolution_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_SF_AK8PFPuppi.txt')
 
   #################
   #### Update MET
@@ -304,7 +310,6 @@ if Is2016preVFP:
   runMetCorAndUncFromMiniAOD(process,
                            isData=(not isMC),
                            )
-
 
   #########################
   #### L1Prefire reweight
@@ -348,6 +353,7 @@ if Is2016postVFP:
 
   ###########################
   #### Rerun EGammaPostReco
+  #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Recipe_for_running_Scales_and_sm
   ###########################
 
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
@@ -356,12 +362,16 @@ if Is2016postVFP:
                          era='2016postVFP-UL',
                          eleIDModules=myEleID,
                          phoIDModules=myPhoID,
-                         runEnergyCorrections=False  ## not yet available
+                         runEnergyCorrections=True
   )
+  #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
   #################
   ### Reapply JEC
   ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
+  ### https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
+  ### 106X_dataRun2_v35 -> Summer19UL16_V7_DATA
+  ### 106X_mcRun2_asymptotic_v17 -> Summer19UL16_V7_MC
   #################
 
   from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
@@ -399,11 +409,11 @@ if Is2016postVFP:
   #### JER
   #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2016_data
   ##########
-  # no JER for UL2016 yet. use old one
-  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_PtResolution_AK4PFchs.txt')
-  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_SF_AK4PFchs.txt')
-  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_PtResolution_AK8PFPuppi.txt')
-  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer16_25nsV1b_MC/Summer16_25nsV1b_MC_SF_AK8PFPuppi.txt')
+
+  process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.txt')
+  process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_SF_AK4PFchs.txt')
+  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_PtResolution_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_SF_AK8PFPuppi.txt')
 
   #################
   #### Update MET
@@ -459,31 +469,27 @@ elif Is2017:
 
   ###########################
   #### Rerun EGammaPostReco
+  #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Recipe_for_running_Scales_and_sm
   ###########################
-  # Not needed for Summer20MiniAODv2 since it have already scale and smearing corrections
-  # But, for Summer19MiniAOD.
-  # https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018
+
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
                          era='2017-UL',
                          eleIDModules=myEleID,
                          phoIDModules=myPhoID,
+                         runEnergyCorrections=True
   )
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
-
-  ###########################
-  #### MET EE Noise
-  ###########################
-  # Not needed for UL.
-  # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetMET#Quick_links_to_current_recommend
 
   #################
   ### Reapply JEC
   ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
+  ### https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
+  ### 106X_dataRun2_v33 -> Summer19UL17_V5_DATA
+  ### 106X_mc2017_realistic_v8 -> Summer19UL17_V5_MC
+  ### AK8PFPuppi corrections are copied from prelegacy
   #################
-  # Recommended way to load JEC is using a global tag. 106X_mc2017_realistic_v8 includes Summer19UL17_V5 JEC.
-  # https://twiki.cern.ch/twiki/bin/view/CMS/JECDataMC#2017_Data
 
   #### Update jets
   from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
@@ -518,16 +524,12 @@ elif Is2017:
   #### JER
   #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2017_data
   ##########
-  # currently the JER-SF (in the following MC .tar or .db files) are not evaluated separately for each Era
-  # they are NOT in a Pt-dependent format, the previously strong pt dependency at high eta is however observed to be reduced in UL
 
-  # Only for AK4 currently
   process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt')
   process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt')
-
   # No JER for AK8Jet. Use old one temporary.
-  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_PtResolution_AK8PFPuppi.txt')
-  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3_MC/Fall17_V3_MC_SF_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3b_MC/Fall17_V3b_MC_PtResolution_AK8PFPuppi.txt')
+  process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3b_MC/Fall17_V3b_MC_SF_AK8PFPuppi.txt')
 
   #################
   #### Update MET
@@ -616,6 +618,7 @@ elif Is2018:
 
   ###########################
   #### Rerun EGammaPostReco
+  #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Recipe_for_running_Scales_and_sm
   ###########################
 
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
@@ -624,12 +627,16 @@ elif Is2018:
                          era='2018-UL',
                          eleIDModules=myEleID,
                          phoIDModules=myPhoID,
+                         runEnergyCorrections=True
   )  
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
   #################
   ### Reapply JEC
   ### https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
+  ### https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
+  ### 106X_dataRun2_v33 -> Summer19UL18_V5_DATA
+  ### 106X_upgrade2018_realistic_v15_L1v1 -> Summer19UL18_V5_MC
   #################
 
   from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
@@ -665,9 +672,9 @@ elif Is2018:
 
   ##########
   #### JER
+  #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2018_data
   ##########
-  #The JER-SF in UL18_JRV2 are not evaluated separately for each data-taking period, and they are not in a pT-dependent format. The previously strong pT dependency at high eta is however observed to be reduced in UL
-  #https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2018_data
+
   process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt')
   process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt')
   process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK8PFPuppi.txt')

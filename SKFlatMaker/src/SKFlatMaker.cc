@@ -3010,15 +3010,15 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 
         //==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
 
-        double sigma = jer * std::sqrt(jer_sf * jer_sf - 1);
+        double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
         std::normal_distribution<> d(0, sigma);
         smearFactor = 1. + d(m_random_generator);
 
-        double sigma_UP = jer * std::sqrt(jer_sf_UP * jer_sf_UP - 1);
+        double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
         std::normal_distribution<> d_UP(0, sigma_UP);
         smearFactor_UP = 1. + d_UP(m_random_generator);
 
-        double sigma_DOWN = jer * std::sqrt(jer_sf_DOWN * jer_sf_DOWN - 1);
+        double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
         std::normal_distribution<> d_DOWN(0, sigma_DOWN);
         smearFactor_DOWN = 1. + d_DOWN(m_random_generator);  
 
@@ -3324,15 +3324,15 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 
         //==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
 
-        double sigma = jer * std::sqrt(jer_sf * jer_sf - 1);
+        double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
         std::normal_distribution<> d(0, sigma);
         smearFactor = 1. + d(m_random_generator);
 
-        double sigma_UP = jer * std::sqrt(jer_sf_UP * jer_sf_UP - 1);
+        double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
         std::normal_distribution<> d_UP(0, sigma_UP);
         smearFactor_UP = 1. + d_UP(m_random_generator);
 
-        double sigma_DOWN = jer * std::sqrt(jer_sf_DOWN * jer_sf_DOWN - 1);
+        double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
         std::normal_distribution<> d_DOWN(0, sigma_DOWN);
         smearFactor_DOWN = 1. + d_DOWN(m_random_generator);
 
