@@ -240,7 +240,6 @@ if Is2016preVFP:
   #### Rerun EGammaPostReco
   #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Recipe_for_running_Scales_and_sm
   ###########################
-
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True,
@@ -294,7 +293,6 @@ if Is2016preVFP:
   #### JER
   #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2016_data
   ##########
-
   process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt')
   process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt')
   process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_PtResolution_AK8PFPuppi.txt')
@@ -305,7 +303,6 @@ if Is2016preVFP:
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
   #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
   #################
-
   from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
   runMetCorAndUncFromMiniAOD(process,
                            isData=(not isMC),
@@ -330,6 +327,18 @@ if Is2016preVFP:
   ###########################
   process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016aUL.txt')
 
+  ###########################
+  #### BadPFMuonDz filter
+  ###########################
+  from RecoMET.METFilters.BadPFMuonDzFilter_cfi import BadPFMuonDzFilter
+  process.BadPFMuonFilterUpdateDz=BadPFMuonDzFilter.clone(
+    muons = cms.InputTag("slimmedMuons"),
+    vtx   = cms.InputTag("offlineSlimmedPrimaryVertices"),
+    PFCandidates = cms.InputTag("packedPFCandidates"),
+    minDzBestTrack = cms.double(0.5),
+    taggingMode    = cms.bool(True)
+  )
+
   ###########
   #### Path
   ###########
@@ -339,6 +348,7 @@ if Is2016preVFP:
     process.jecSequence *
     process.fullPatMetSequence
   )
+  process.p *= process.BadPFMuonFilterUpdateDz
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
     process.p *= process.prefiringweight
@@ -355,7 +365,6 @@ if Is2016postVFP:
   #### Rerun EGammaPostReco
   #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Recipe_for_running_Scales_and_sm
   ###########################
-
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True,
@@ -409,7 +418,6 @@ if Is2016postVFP:
   #### JER
   #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2016_data
   ##########
-
   process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.txt')
   process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_SF_AK4PFchs.txt')
   process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_PtResolution_AK8PFPuppi.txt')
@@ -420,7 +428,6 @@ if Is2016postVFP:
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
   #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
   #################
-
   from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
   runMetCorAndUncFromMiniAOD(process,
                            isData=(not isMC),
@@ -446,6 +453,18 @@ if Is2016postVFP:
   ###########################
   process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016bUL.txt')
 
+  ###########################
+  #### BadPFMuonDz filter
+  ###########################
+  from RecoMET.METFilters.BadPFMuonDzFilter_cfi import BadPFMuonDzFilter
+  process.BadPFMuonFilterUpdateDz=BadPFMuonDzFilter.clone(
+    muons = cms.InputTag("slimmedMuons"),
+    vtx   = cms.InputTag("offlineSlimmedPrimaryVertices"),
+    PFCandidates = cms.InputTag("packedPFCandidates"),
+    minDzBestTrack = cms.double(0.5),
+    taggingMode    = cms.bool(True)
+  )
+
   ###########
   #### Path
   ###########
@@ -455,6 +474,7 @@ if Is2016postVFP:
     process.jecSequence *
     process.fullPatMetSequence
   )
+  process.p *= process.BadPFMuonFilterUpdateDz
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
     process.p *= process.prefiringweight
@@ -471,7 +491,6 @@ elif Is2017:
   #### Rerun EGammaPostReco
   #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Recipe_for_running_Scales_and_sm
   ###########################
-
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
@@ -524,7 +543,6 @@ elif Is2017:
   #### JER
   #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2017_data
   ##########
-
   process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt')
   process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL17_JRV2_MC/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt')
   # No JER for AK8Jet. Use old one temporary.
@@ -536,44 +554,10 @@ elif Is2017:
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
   #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
   #################
-
   from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
   runMetCorAndUncFromMiniAOD(process,
                            isData=(not isMC),
                            )
-
-  #######################################
-  #### ecalBadCalibReducedMINIAODFilter
-  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#How_to_run_ecal_BadCalibReducedM
-  ########################################
-  # WIP for UL. comment out for now. check process.p and SKFlatMaker.cc when updating
-#
-#  process.load('RecoMET.METFilters.ecalBadCalibFilter_cfi')
-#
-#  baddetEcallist = cms.vuint32(
-#    [872439604,872422825,872420274,872423218,
-#     872423215,872416066,872435036,872439336,
-#     872420273,872436907,872420147,872439731,
-#     872436657,872420397,872439732,872439339,
-#     872439603,872422436,872439861,872437051,
-#     872437052,872420649,872421950,872437185,
-#     872422564,872421566,872421695,872421955,
-#     872421567,872437184,872421951,872421694,
-#     872437056,872437057,872437313,872438182,
-#     872438951,872439990,872439864,872439609,
-#     872437181,872437182,872437053,872436794,
-#     872436667,872436536,872421541,872421413,
-#     872421414,872421031,872423083,872421439]
-#  )
-#
-#  process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
-#    "EcalBadCalibFilter",
-#    EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
-#    ecalMinEt        = cms.double(50.),
-#    baddetEcal    = baddetEcallist, 
-#    taggingMode = cms.bool(True),
-#    debug = cms.bool(False)
-#  )
 
   #########################
   #### L1Prefire reweight
@@ -594,6 +578,18 @@ elif Is2017:
   ###########################
   process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2017UL.txt')
 
+  ###########################
+  #### BadPFMuonDz filter
+  ###########################
+  from RecoMET.METFilters.BadPFMuonDzFilter_cfi import BadPFMuonDzFilter
+  process.BadPFMuonFilterUpdateDz=BadPFMuonDzFilter.clone(
+    muons = cms.InputTag("slimmedMuons"),
+    vtx   = cms.InputTag("offlineSlimmedPrimaryVertices"),
+    PFCandidates = cms.InputTag("packedPFCandidates"),
+    minDzBestTrack = cms.double(0.5),
+    taggingMode    = cms.bool(True)
+  )
+
   ###########
   #### Path
   ###########
@@ -602,8 +598,8 @@ elif Is2017:
     process.egammaPostRecoSeq *
     process.jecSequence *
     process.fullPatMetSequence
-    #process.ecalBadCalibReducedMINIAODFilter
   )
+  process.p *= process.BadPFMuonFilterUpdateDz
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
     process.p *= process.prefiringweight
@@ -620,7 +616,6 @@ elif Is2018:
   #### Rerun EGammaPostReco
   #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Recipe_for_running_Scales_and_sm
   ###########################
-
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
   setupEgammaPostRecoSeq(process,
                          runVID=True, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
@@ -674,7 +669,6 @@ elif Is2018:
   #### JER
   #### https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution#2018_data
   ##########
-
   process.recoTree.AK4Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt')
   process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt')
   process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK8PFPuppi.txt')
@@ -685,45 +679,10 @@ elif Is2018:
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
   #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
   #################
-
   from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
   runMetCorAndUncFromMiniAOD(process,
                            isData=(not isMC),
                            )
-
-  #######################################
-  #### ecalBadCalibReducedMINIAODFilter
-  #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#How_to_run_ecal_BadCalibReducedM
-  ########################################
-  # WIP for UL. comment out for now. check process.p and SKFlatMaker.cc when updating
-  # https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
-#
-#  process.load('RecoMET.METFilters.ecalBadCalibFilter_cfi')
-#
-#  baddetEcallist = cms.vuint32(
-#    [872439604,872422825,872420274,872423218,
-#     872423215,872416066,872435036,872439336,
-#     872420273,872436907,872420147,872439731,
-#     872436657,872420397,872439732,872439339,
-#     872439603,872422436,872439861,872437051,
-#     872437052,872420649,872421950,872437185,
-#     872422564,872421566,872421695,872421955,
-#     872421567,872437184,872421951,872421694,
-#     872437056,872437057,872437313,872438182,
-#     872438951,872439990,872439864,872439609,
-#     872437181,872437182,872437053,872436794,
-#     872436667,872436536,872421541,872421413,
-#     872421414,872421031,872423083,872421439]
-#  )
-#
-#  process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
-#    "EcalBadCalibFilter",
-#    EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
-#    ecalMinEt        = cms.double(50.),
-#    baddetEcal    = baddetEcallist,
-#    taggingMode = cms.bool(True),
-#    debug = cms.bool(False)
-#  )
 
   #########################
   #### L1Prefire reweight
@@ -744,6 +703,18 @@ elif Is2018:
   ###########################
   process.recoTree.roccorPath = cms.string('SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2018UL.txt')
 
+  ###########################
+  #### BadPFMuonDz filter
+  ###########################
+  from RecoMET.METFilters.BadPFMuonDzFilter_cfi import BadPFMuonDzFilter
+  process.BadPFMuonFilterUpdateDz=BadPFMuonDzFilter.clone(
+    muons = cms.InputTag("slimmedMuons"),
+    vtx   = cms.InputTag("offlineSlimmedPrimaryVertices"),
+    PFCandidates = cms.InputTag("packedPFCandidates"),
+    minDzBestTrack = cms.double(0.5),
+    taggingMode    = cms.bool(True)
+  )
+
   ###########
   #### Path
   ###########
@@ -752,8 +723,8 @@ elif Is2018:
     process.egammaPostRecoSeq *
     process.jecSequence *
     process.fullPatMetSequence
-    #process.ecalBadCalibReducedMINIAODFilter
   )
+  process.p *= process.BadPFMuonFilterUpdateDz
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
     process.p *= process.prefiringweight

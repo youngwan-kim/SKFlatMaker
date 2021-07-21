@@ -215,7 +215,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   // -- Tokens (for 76X) -- //
 
-  edm::EDGetTokenT< bool >ecalBadCalibFilterUpdate_token ;
+  edm::EDGetTokenT< bool > BadPFMuonDzFilter_token;
 
   edm::EDGetTokenT< std::vector<pat::Muon> >            MuonToken;
   edm::EDGetTokenT< edm::View<pat::Electron> >          ElectronToken;
@@ -294,15 +294,16 @@ class SKFlatMaker : public edm::EDAnalyzer
   std::vector<std::string > HLTName_WildCard;
   
   bool Flag_goodVertices;
-  bool Flag_globalTightHalo2016Filter;
   bool Flag_globalSuperTightHalo2016Filter;
   bool Flag_HBHENoiseFilter;
   bool Flag_HBHENoiseIsoFilter;
   bool Flag_EcalDeadCellTriggerPrimitiveFilter;
   bool Flag_BadPFMuonFilter;
+  bool Flag_BadPFMuonDzFilter;
+  //bool Flag_hfNoisyHitsFilter; //in MiniAODv2
   bool Flag_BadChargedCandidateFilter;
   bool Flag_eeBadScFilter;
-  bool Flag_ecalBadCalibReducedMINIAODFilter;
+  bool Flag_ecalBadCalibFilter;
   
   unsigned int nPileUp;
   

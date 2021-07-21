@@ -75,10 +75,10 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   else{
     cout << "[SKFlatMaker::SKFlatMaker] DataYear = " << DataYear << endl;
   }
-  //==== Flag_ecalBadCalibReducedMINIAODFilter
-  if(DataYear>=2017){
-    ecalBadCalibFilterUpdate_token= consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"));
-  }
+
+  //==== Flag_BadPFMuonDzFilter
+  BadPFMuonDzFilter_token = consumes< bool >(edm::InputTag("BadPFMuonFilterUpdateDz"));
+
   //==== L1 Prefireing
   prefweight_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProb"));
   prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
@@ -244,15 +244,16 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   ///////////////////////////////////////////
   
   Flag_goodVertices = false;
-  Flag_globalTightHalo2016Filter = false;
   Flag_globalSuperTightHalo2016Filter = false;
   Flag_HBHENoiseFilter = false;
   Flag_HBHENoiseIsoFilter = false;
   Flag_EcalDeadCellTriggerPrimitiveFilter = false;
   Flag_BadPFMuonFilter = false;
+  Flag_BadPFMuonDzFilter = false;
+  //Flag_hfNoisyHitsFilter = false; //in MiniAODv2
   Flag_BadChargedCandidateFilter = false;
   Flag_eeBadScFilter = false;
-  Flag_ecalBadCalibReducedMINIAODFilter = false;
+  Flag_ecalBadCalibFilter = false;
 
   nPV = -1;
   PVtrackSize = -1;
@@ -796,15 +797,16 @@ void SKFlatMaker::beginJob()
 
   //MET Filters 2017
   DYTree->Branch("Flag_goodVertices",&Flag_goodVertices,"Flag_goodVertices/O");
-  DYTree->Branch("Flag_globalTightHalo2016Filter",&Flag_globalTightHalo2016Filter,"Flag_globalTightHalo2016Filter/O");
   DYTree->Branch("Flag_globalSuperTightHalo2016Filter",&Flag_globalSuperTightHalo2016Filter,"Flag_globalSuperTightHalo2016Filter/O");
   DYTree->Branch("Flag_HBHENoiseFilter",&Flag_HBHENoiseFilter,"Flag_HBHENoiseFilter/O");
   DYTree->Branch("Flag_HBHENoiseIsoFilter",&Flag_HBHENoiseIsoFilter,"Flag_HBHENoiseIsoFilter/O");
   DYTree->Branch("Flag_EcalDeadCellTriggerPrimitiveFilter",&Flag_EcalDeadCellTriggerPrimitiveFilter,"Flag_EcalDeadCellTriggerPrimitiveFilter/O");
   DYTree->Branch("Flag_BadPFMuonFilter",&Flag_BadPFMuonFilter,"Flag_BadPFMuonFilter/O");
+  DYTree->Branch("Flag_BadPFMuonDzFilter",&Flag_BadPFMuonDzFilter,"Flag_BadPFMuonDzFilter/O");
+  //DYTree->Branch("Flag_hfNoisyHitsFilter",&Flag_hfNoisyHitsFilter,"Flag_hfNoisyHitsFilter/O");
   DYTree->Branch("Flag_BadChargedCandidateFilter",&Flag_BadChargedCandidateFilter,"Flag_BadChargedCandidateFilter/O");
   DYTree->Branch("Flag_eeBadScFilter",&Flag_eeBadScFilter,"Flag_eeBadScFilter/O");
-  DYTree->Branch("Flag_ecalBadCalibReducedMINIAODFilter",&Flag_ecalBadCalibReducedMINIAODFilter,"Flag_ecalBadCalibReducedMINIAODFilter/O");
+  DYTree->Branch("Flag_ecalBadCalibFilter",&Flag_ecalBadCalibFilter,"Flag_ecalBadCalibFilter/O");
 
   
   
@@ -1460,26 +1462,25 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
   //  std::cout << "MET Filter " << metNames.triggerName(i).c_str() << "\n";
   //}
     
+  edm::Handle< bool > passBadPFMuonDzFilter;
+  if(iEvent.getByToken(BadPFMuonDzFilter_token,passBadPFMuonDzFilter)){
+    Flag_BadPFMuonDzFilter = (*passBadPFMuonDzFilter);
+  }
+
   for(unsigned int i = 0, n = METFilterResults->size(); i < n; ++i){
 
     if(strcmp(metNames.triggerName(i).c_str(), "Flag_goodVertices") == 0) Flag_goodVertices = METFilterResults -> accept(i);
-    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalTightHalo2016Filter") == 0) Flag_globalTightHalo2016Filter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalSuperTightHalo2016Filter") == 0) Flag_globalSuperTightHalo2016Filter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseFilter") == 0) Flag_HBHENoiseFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseIsoFilter") == 0) Flag_HBHENoiseIsoFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_EcalDeadCellTriggerPrimitiveFilter") == 0) Flag_EcalDeadCellTriggerPrimitiveFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0) Flag_BadPFMuonFilter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonDzFilter") == 0) Flag_BadPFMuonDzFilter = METFilterResults -> accept(i);
+    //else if(strcmp(metNames.triggerName(i).c_str(), "Flag_hfNoisyHitsFilter") == 0) Flag_hfNoisyHitsFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0) Flag_BadChargedCandidateFilter = METFilterResults -> accept(i);
     else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0) Flag_eeBadScFilter = METFilterResults-> accept(i);
-    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibReducedMINIAODFilter") == 0) Flag_ecalBadCalibReducedMINIAODFilter = METFilterResults -> accept(i);
+    else if(strcmp(metNames.triggerName(i).c_str(), "Flag_ecalBadCalibFilter") == 0) Flag_ecalBadCalibFilter = METFilterResults -> accept(i);
   }
-  // ecalBadCalibReducedMINIAODFilter WIP for UL 
-  //  if(DataYear>=2017){
-  //    edm::Handle< bool > passecalBadCalibFilterUpdate ;
-  //    iEvent.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
-  //    Flag_ecalBadCalibReducedMINIAODFilter =  (*passecalBadCalibFilterUpdate );
-  //  }
-
 }
 
 ///////////////////////////////////
