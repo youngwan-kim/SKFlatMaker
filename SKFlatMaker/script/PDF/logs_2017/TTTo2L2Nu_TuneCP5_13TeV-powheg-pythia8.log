@@ -7,7 +7,7 @@ PDFAlphaSScaleValue =  [-999.0, -999.0]
 AdditionalWeights =  {}
 era = 2017
 GT_MC = 106X_mc2017_realistic_v8
-GT_DATA = 106X_dataRun2_v32
+GT_DATA = 106X_dataRun2_v35
 ################
 Running 2017
 ################
@@ -27,7 +27,7 @@ mvaEleID-Fall17-noIso-V2-wp90
 mvaEleID-Fall17-noIso-V2-wpLoose
 heepElectronID-HEEPV70
 #############################################
-[SKFlatMaker::SKFlatMaker] Rochester correction file from : /afs/cern.ch/user/w/wjun/public/Run2UltraLegacy_v1__CMSSW_10_6_20/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2017UL.txt
+[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v2__CMSSW_10_6_26/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2017UL.txt
 [SKFlatMaker::SKFlatMaker] ScaleIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = -999 - -999

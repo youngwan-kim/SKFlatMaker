@@ -4,9 +4,10 @@ ScaleIDRange =  [-999, -999]
 PDFErrorIDRange =  [-999, -999]
 PDFAlphaSIDRange =  [-999, -999]
 PDFAlphaSScaleValue =  [-999.0, -999.0]
+AdditionalWeights =  {}
 era = 2016preVFP
-GT_MC = 106X_mcRun2_asymptotic_preVFP_v9
-GT_DATA = 106X_dataRun2_v32
+GT_MC = 106X_mcRun2_asymptotic_preVFP_v11
+GT_DATA = 106X_dataRun2_v35
 ################
 Running 2016preVFP
 ################
@@ -26,7 +27,7 @@ mvaEleID-Fall17-noIso-V2-wp90
 mvaEleID-Fall17-noIso-V2-wpLoose
 heepElectronID-HEEPV70
 #############################################
-[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v1__CMSSW_10_6_20/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016aUL.txt
+[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v2__CMSSW_10_6_26/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016aUL.txt
 [SKFlatMaker::SKFlatMaker] ScaleIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = -999 - -999
@@ -47,13 +48,13 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] ! GENERAL POWHEG PARAMETERS
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] numevts 1901
+[SKFlatMaker::endRun,lines] numevts 3802
 [SKFlatMaker::endRun,lines] ih1   1           ! hadron 1 (1 for protons, -1 for antiprotons)
 [SKFlatMaker::endRun,lines] ih2   1           ! hadron 2 (1 for protons, -1 for antiprotons)
 [SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
 [SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] iseed 364786227
+[SKFlatMaker::endRun,lines] iseed 242654923
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
 [SKFlatMaker::endRun,lines] lhans1 306000      ! pdf set for hadron 1 (LHA numbering)
@@ -142,7 +143,7 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] rwl_format_rwgt 1
 [SKFlatMaker::endRun,lines] End of powheg.input content
 [SKFlatMaker::endRun,lines] PDF package: lha
-[SKFlatMaker::endRun,lines]  Random number generator initialized with:    364786227             0             0
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    242654923             0             0
 [SKFlatMaker::endRun,tag] initrwgt
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] <weightgroup combine="envelope" name="scale_variation">
@@ -1244,13 +1245,13 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] ! GENERAL POWHEG PARAMETERS
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] numevts 1901
+[SKFlatMaker::endRun,lines] numevts 3802
 [SKFlatMaker::endRun,lines] ih1   1           ! hadron 1 (1 for protons, -1 for antiprotons)
 [SKFlatMaker::endRun,lines] ih2   1           ! hadron 2 (1 for protons, -1 for antiprotons)
 [SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
 [SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] iseed 14529063
+[SKFlatMaker::endRun,lines] iseed 651613886
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
 [SKFlatMaker::endRun,lines] lhans1 306000      ! pdf set for hadron 1 (LHA numbering)
@@ -1339,7 +1340,7 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] rwl_format_rwgt 1
 [SKFlatMaker::endRun,lines] End of powheg.input content
 [SKFlatMaker::endRun,lines] PDF package: lha
-[SKFlatMaker::endRun,lines]  Random number generator initialized with:     14529063             0             0
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    651613886             0             0
 [SKFlatMaker::endRun] ##### End of information about PDF weights #####
 [SKFlatMaker::endJob] ++++++++++++++++++++++++++++++++++++++
 [SKFlatMaker::endJob] analyzed 1 events: 

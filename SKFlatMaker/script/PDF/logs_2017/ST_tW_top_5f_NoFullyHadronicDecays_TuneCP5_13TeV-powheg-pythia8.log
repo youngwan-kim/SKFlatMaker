@@ -4,9 +4,10 @@ ScaleIDRange =  [-999, -999]
 PDFErrorIDRange =  [-999, -999]
 PDFAlphaSIDRange =  [-999, -999]
 PDFAlphaSScaleValue =  [-999.0, -999.0]
+AdditionalWeights =  {}
 era = 2017
 GT_MC = 106X_mc2017_realistic_v8
-GT_DATA = 106X_dataRun2_v32
+GT_DATA = 106X_dataRun2_v35
 ################
 Running 2017
 ################
@@ -26,7 +27,7 @@ mvaEleID-Fall17-noIso-V2-wp90
 mvaEleID-Fall17-noIso-V2-wpLoose
 heepElectronID-HEEPV70
 #############################################
-[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v1__CMSSW_10_6_20/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2017UL.txt
+[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v2__CMSSW_10_6_26/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2017UL.txt
 [SKFlatMaker::SKFlatMaker] ScaleIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = -999 - -999
@@ -47,13 +48,13 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] ! GENERAL POWHEG PARAMETERS
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] numevts 2280
+[SKFlatMaker::endRun,lines] numevts 3802
 [SKFlatMaker::endRun,lines] ih1   1           ! hadron 1 (1 for protons, -1 for antiprotons)
 [SKFlatMaker::endRun,lines] ih2   1           ! hadron 2 (1 for protons, -1 for antiprotons)
 [SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
 [SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] iseed 828163160
+[SKFlatMaker::endRun,lines] iseed 61807029
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
 [SKFlatMaker::endRun,lines] lhans1 306000      ! pdf set for hadron 1 (LHA numbering)
@@ -142,7 +143,7 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] rwl_format_rwgt 1
 [SKFlatMaker::endRun,lines] End of powheg.input content
 [SKFlatMaker::endRun,lines] PDF package: lha
-[SKFlatMaker::endRun,lines]  Random number generator initialized with:    828163160             0             0
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:     61807029             0             0
 [SKFlatMaker::endRun,tag] initrwgt
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] <weightgroup combine="envelope" name="scale_variation">

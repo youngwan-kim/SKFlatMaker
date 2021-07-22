@@ -4,9 +4,10 @@ ScaleIDRange =  [-999, -999]
 PDFErrorIDRange =  [-999, -999]
 PDFAlphaSIDRange =  [-999, -999]
 PDFAlphaSScaleValue =  [-999.0, -999.0]
+AdditionalWeights =  {}
 era = 2017
 GT_MC = 106X_mc2017_realistic_v8
-GT_DATA = 106X_dataRun2_v32
+GT_DATA = 106X_dataRun2_v35
 ################
 Running 2017
 ################
@@ -26,7 +27,7 @@ mvaEleID-Fall17-noIso-V2-wp90
 mvaEleID-Fall17-noIso-V2-wpLoose
 heepElectronID-HEEPV70
 #############################################
-[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v1__CMSSW_10_6_20/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2017UL.txt
+[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v2__CMSSW_10_6_26/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2017UL.txt
 [SKFlatMaker::SKFlatMaker] ScaleIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = -999 - -999
@@ -195,7 +196,7 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] # If you want to run Pythia, avoid more than 50k events in a run.    *
 [SKFlatMaker::endRun,lines] #*********************************************************************
 [SKFlatMaker::endRun,lines]   100	= nevents ! Number of unweighted events requested 
-[SKFlatMaker::endRun,lines]  813808015 = iseed ! rnd seed (0=assigned automatically=default))
+[SKFlatMaker::endRun,lines]  819706421 = iseed ! rnd seed (0=assigned automatically=default))
 [SKFlatMaker::endRun,lines] #*********************************************************************
 [SKFlatMaker::endRun,lines] # Collider type and energy                                           *
 [SKFlatMaker::endRun,lines] # lpp: 0=No PDF, 1=proton, -1=antiproton, 2=photon from proton,      *
@@ -1932,8 +1933,8 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] <weight MUF="1.0" MUR="1.0" PDF="263000" id="2322"> PDF=263000 MemberID=0 </weight>
 [SKFlatMaker::endRun,tag] MGGenerationInfo
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] #  Number of Events        :       7163
-[SKFlatMaker::endRun,lines] #  Integrated weight (pb)  :       120571.536726
+[SKFlatMaker::endRun,lines] #  Number of Events        :  12375
+[SKFlatMaker::endRun,lines] #  Integrated weight (pb)  :  1.20632E+05
 [SKFlatMaker::endRun] ##### End of information about PDF weights #####
 [SKFlatMaker::endJob] ++++++++++++++++++++++++++++++++++++++
 [SKFlatMaker::endJob] analyzed 1 events: 

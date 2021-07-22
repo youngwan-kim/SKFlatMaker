@@ -4,9 +4,10 @@ ScaleIDRange =  [-999, -999]
 PDFErrorIDRange =  [-999, -999]
 PDFAlphaSIDRange =  [-999, -999]
 PDFAlphaSScaleValue =  [-999.0, -999.0]
+AdditionalWeights =  {}
 era = 2016preVFP
-GT_MC = 106X_mcRun2_asymptotic_preVFP_v9
-GT_DATA = 106X_dataRun2_v32
+GT_MC = 106X_mcRun2_asymptotic_preVFP_v11
+GT_DATA = 106X_dataRun2_v35
 ################
 Running 2016preVFP
 ################
@@ -26,7 +27,7 @@ mvaEleID-Fall17-noIso-V2-wp90
 mvaEleID-Fall17-noIso-V2-wpLoose
 heepElectronID-HEEPV70
 #############################################
-[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v1__CMSSW_10_6_20/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016aUL.txt
+[SKFlatMaker::SKFlatMaker] Rochester correction file from : /data6/Users/hsseo/Run2UltraLegacy_v2__CMSSW_10_6_26/src/SKFlatMaker/SKFlatMaker/data/roccor.Run2.v5/RoccoR2016aUL.txt
 [SKFlatMaker::SKFlatMaker] ScaleIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFErrorIDRange_ = -999 - -999
 [SKFlatMaker::SKFlatMaker] PDFAlphaSIDRange_ = -999 - -999
@@ -53,7 +54,7 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
 [SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] iseed 547230667
+[SKFlatMaker::endRun,lines] iseed 594261617
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
 [SKFlatMaker::endRun,lines] lhans1 306000      ! pdf set for hadron 1 (LHA numbering)
@@ -142,7 +143,7 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] rwl_format_rwgt 1
 [SKFlatMaker::endRun,lines] End of powheg.input content
 [SKFlatMaker::endRun,lines] PDF package: lha
-[SKFlatMaker::endRun,lines]  Random number generator initialized with:    547230667             0             0
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    594261617             0             0
 [SKFlatMaker::endRun,tag] initrwgt
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] <weightgroup combine="envelope" name="scale_variation">
@@ -1250,7 +1251,7 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
 [SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
 [SKFlatMaker::endRun,lines] 
-[SKFlatMaker::endRun,lines] iseed 849170787
+[SKFlatMaker::endRun,lines] iseed 93496022
 [SKFlatMaker::endRun,lines] 
 [SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
 [SKFlatMaker::endRun,lines] lhans1 306000      ! pdf set for hadron 1 (LHA numbering)
@@ -1339,7 +1340,451 @@ heepElectronID-HEEPV70
 [SKFlatMaker::endRun,lines] rwl_format_rwgt 1
 [SKFlatMaker::endRun,lines] End of powheg.input content
 [SKFlatMaker::endRun,lines] PDF package: lha
-[SKFlatMaker::endRun,lines]  Random number generator initialized with:    849170787             0             0
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:     93496022             0             0
+[SKFlatMaker::endRun,tag] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] file generated with POWHEG-BOX-V2
+[SKFlatMaker::endRun,lines] SVN status Begin
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/l/llechner/public/CMSSW_9_3_0/src/genproductions/bin/Powheg/my_ST_tW_DR_5f_ckm_top_13TeV_UL/POWHEG-BOX
+[SKFlatMaker::endRun,lines] no svn repository found
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/l/llechner/public/CMSSW_9_3_0/src/genproductions/bin/Powheg/my_ST_tW_DR_5f_ckm_top_13TeV_UL/POWHEG-BOX/ST_wtch_DR
+[SKFlatMaker::endRun,lines] no svn repository found
+[SKFlatMaker::endRun,lines] SVN status End
+[SKFlatMaker::endRun,lines] Process: ST_wtch_DR
+[SKFlatMaker::endRun,lines] Input file powheg.input contained:
+[SKFlatMaker::endRun,lines] ! ST-wtchannel production parameters
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! GENERAL POWHEG PARAMETERS
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] numevts 3802
+[SKFlatMaker::endRun,lines] ih1   1           ! hadron 1 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ih2   1           ! hadron 2 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
+[SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] iseed 318467582
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
+[SKFlatMaker::endRun,lines] lhans1 306000      ! pdf set for hadron 1 (LHA numbering)
+[SKFlatMaker::endRun,lines] lhans2 306000      ! pdf set for hadron 2 (LHA numbering)	
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! Parameters to allow or not the use of stored data
+[SKFlatMaker::endRun,lines] use-old-grid    1 ! if 1 use old grid if file pwggrids.dat is present (<> 1 regenerate)
+[SKFlatMaker::endRun,lines] use-old-ubound  1 ! if 1 use norm of upper bounding function stored in pwgubound.dat, if present; <>
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ncall1 50000   ! number of calls for initializing the integration grid
+[SKFlatMaker::endRun,lines] itmx1    5     ! number of iterations for initializing the integration grid
+[SKFlatMaker::endRun,lines] ncall2 50000   ! number of calls for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] itmx2    5     ! number of iterations for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] foldcsi   5    ! number of folds on csi integration
+[SKFlatMaker::endRun,lines] foldy     5    ! number of folds on  y  integration
+[SKFlatMaker::endRun,lines] foldphi   1    ! number of folds on phi integration
+[SKFlatMaker::endRun,lines] nubound 50000  ! number of bbarra calls to setup norm of upper bounding function
+[SKFlatMaker::endRun,lines] xupbound 2d0   ! increase upper bound for radiation generation
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] withdamp       1
+[SKFlatMaker::endRun,lines] hdamp 237.8775   ! 1.379*mtop nominal value for hdamp for Fall18
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! mandatory production parameters
+[SKFlatMaker::endRun,lines] ttype       1          ! 1 for t, -1 for tbar
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! mandatory parameters used in decay generation
+[SKFlatMaker::endRun,lines] topdecaymode 11111   ! decay mode: the 5 digits correspond to the following
+[SKFlatMaker::endRun,lines]                      ! top-decay channels (l,mu,tau,u,c)
+[SKFlatMaker::endRun,lines]                      ! 0 means close, 1 open
+[SKFlatMaker::endRun,lines] wdecaymode 11111     ! decay mode: the 5 digits correspond to the following
+[SKFlatMaker::endRun,lines]                      ! primary-w-decay channels (l,mu,tau,u,c)
+[SKFlatMaker::endRun,lines]                      ! 0 means close, 1 open
+[SKFlatMaker::endRun,lines] tdec/elbranching 0.108  ! W electronic branching fraction
+[SKFlatMaker::endRun,lines] tdec/sin2cabibbo 0.051
+[SKFlatMaker::endRun,lines] topwidth 1.33
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! optional production parameters
+[SKFlatMaker::endRun,lines] ! (defaults defined in init_couplings.f)
+[SKFlatMaker::endRun,lines] topmass      172.5
+[SKFlatMaker::endRun,lines] wmass        80.4
+[SKFlatMaker::endRun,lines] wwidth       2.141
+[SKFlatMaker::endRun,lines] sthw2        0.231295
+[SKFlatMaker::endRun,lines] alphaem_inv  137.0360098
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] lhfm/emass   0.00051
+[SKFlatMaker::endRun,lines] lhfm/mumass  0.1057
+[SKFlatMaker::endRun,lines] lhfm/taumass 1.777
+[SKFlatMaker::endRun,lines] lhfm/cmass   1.27
+[SKFlatMaker::endRun,lines] lhfm/bmass   4.18
+[SKFlatMaker::endRun,lines] tdec/emass   0.00051
+[SKFlatMaker::endRun,lines] tdec/mumass  0.1057
+[SKFlatMaker::endRun,lines] tdec/taumass 1.777
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] bottomthr    4.18
+[SKFlatMaker::endRun,lines] bottomthrpdf 4.18
+[SKFlatMaker::endRun,lines] charmthr     1.27
+[SKFlatMaker::endRun,lines] charmthrpdf  1.27
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! PDG Values http://pdg.lbl.gov/2019/reviews/rpp2018-rev-ckm-matrix.pdf
+[SKFlatMaker::endRun,lines] CKM_Vud   0.97420
+[SKFlatMaker::endRun,lines] CKM_Vus   0.2243
+[SKFlatMaker::endRun,lines] CKM_Vub   0.00394
+[SKFlatMaker::endRun,lines] CKM_Vcd   0.218
+[SKFlatMaker::endRun,lines] CKM_Vcs   0.997
+[SKFlatMaker::endRun,lines] CKM_Vcb   0.0422
+[SKFlatMaker::endRun,lines] CKM_Vtd   0.0081
+[SKFlatMaker::endRun,lines] CKM_Vts   0.0394
+[SKFlatMaker::endRun,lines] CKM_Vtb   1.0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #pdfreweight 0
+[SKFlatMaker::endRun,lines] #storeinfo_rwgt 0
+[SKFlatMaker::endRun,lines] #withnegweights 1 1 ! default 0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #manyseeds 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #parallelstage 4
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #xgriditeration 1 1
+[SKFlatMaker::endRun,lines] rwl_group_events 2000
+[SKFlatMaker::endRun,lines] lhapdf6maxsets 50
+[SKFlatMaker::endRun,lines] rwl_file 'pwg-rwl.dat'
+[SKFlatMaker::endRun,lines] rwl_format_rwgt 1
+[SKFlatMaker::endRun,lines] End of powheg.input content
+[SKFlatMaker::endRun,lines] PDF package: lha
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    318467582             0             0
+[SKFlatMaker::endRun,tag] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] file generated with POWHEG-BOX-V2
+[SKFlatMaker::endRun,lines] SVN status Begin
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/l/llechner/public/CMSSW_9_3_0/src/genproductions/bin/Powheg/my_ST_tW_DR_5f_ckm_top_13TeV_UL/POWHEG-BOX
+[SKFlatMaker::endRun,lines] no svn repository found
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/l/llechner/public/CMSSW_9_3_0/src/genproductions/bin/Powheg/my_ST_tW_DR_5f_ckm_top_13TeV_UL/POWHEG-BOX/ST_wtch_DR
+[SKFlatMaker::endRun,lines] no svn repository found
+[SKFlatMaker::endRun,lines] SVN status End
+[SKFlatMaker::endRun,lines] Process: ST_wtch_DR
+[SKFlatMaker::endRun,lines] Input file powheg.input contained:
+[SKFlatMaker::endRun,lines] ! ST-wtchannel production parameters
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! GENERAL POWHEG PARAMETERS
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] numevts 3802
+[SKFlatMaker::endRun,lines] ih1   1           ! hadron 1 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ih2   1           ! hadron 2 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
+[SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] iseed 425919514
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
+[SKFlatMaker::endRun,lines] lhans1 306000      ! pdf set for hadron 1 (LHA numbering)
+[SKFlatMaker::endRun,lines] lhans2 306000      ! pdf set for hadron 2 (LHA numbering)	
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! Parameters to allow or not the use of stored data
+[SKFlatMaker::endRun,lines] use-old-grid    1 ! if 1 use old grid if file pwggrids.dat is present (<> 1 regenerate)
+[SKFlatMaker::endRun,lines] use-old-ubound  1 ! if 1 use norm of upper bounding function stored in pwgubound.dat, if present; <>
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ncall1 50000   ! number of calls for initializing the integration grid
+[SKFlatMaker::endRun,lines] itmx1    5     ! number of iterations for initializing the integration grid
+[SKFlatMaker::endRun,lines] ncall2 50000   ! number of calls for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] itmx2    5     ! number of iterations for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] foldcsi   5    ! number of folds on csi integration
+[SKFlatMaker::endRun,lines] foldy     5    ! number of folds on  y  integration
+[SKFlatMaker::endRun,lines] foldphi   1    ! number of folds on phi integration
+[SKFlatMaker::endRun,lines] nubound 50000  ! number of bbarra calls to setup norm of upper bounding function
+[SKFlatMaker::endRun,lines] xupbound 2d0   ! increase upper bound for radiation generation
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] withdamp       1
+[SKFlatMaker::endRun,lines] hdamp 237.8775   ! 1.379*mtop nominal value for hdamp for Fall18
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! mandatory production parameters
+[SKFlatMaker::endRun,lines] ttype       1          ! 1 for t, -1 for tbar
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! mandatory parameters used in decay generation
+[SKFlatMaker::endRun,lines] topdecaymode 11111   ! decay mode: the 5 digits correspond to the following
+[SKFlatMaker::endRun,lines]                      ! top-decay channels (l,mu,tau,u,c)
+[SKFlatMaker::endRun,lines]                      ! 0 means close, 1 open
+[SKFlatMaker::endRun,lines] wdecaymode 11111     ! decay mode: the 5 digits correspond to the following
+[SKFlatMaker::endRun,lines]                      ! primary-w-decay channels (l,mu,tau,u,c)
+[SKFlatMaker::endRun,lines]                      ! 0 means close, 1 open
+[SKFlatMaker::endRun,lines] tdec/elbranching 0.108  ! W electronic branching fraction
+[SKFlatMaker::endRun,lines] tdec/sin2cabibbo 0.051
+[SKFlatMaker::endRun,lines] topwidth 1.33
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! optional production parameters
+[SKFlatMaker::endRun,lines] ! (defaults defined in init_couplings.f)
+[SKFlatMaker::endRun,lines] topmass      172.5
+[SKFlatMaker::endRun,lines] wmass        80.4
+[SKFlatMaker::endRun,lines] wwidth       2.141
+[SKFlatMaker::endRun,lines] sthw2        0.231295
+[SKFlatMaker::endRun,lines] alphaem_inv  137.0360098
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] lhfm/emass   0.00051
+[SKFlatMaker::endRun,lines] lhfm/mumass  0.1057
+[SKFlatMaker::endRun,lines] lhfm/taumass 1.777
+[SKFlatMaker::endRun,lines] lhfm/cmass   1.27
+[SKFlatMaker::endRun,lines] lhfm/bmass   4.18
+[SKFlatMaker::endRun,lines] tdec/emass   0.00051
+[SKFlatMaker::endRun,lines] tdec/mumass  0.1057
+[SKFlatMaker::endRun,lines] tdec/taumass 1.777
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] bottomthr    4.18
+[SKFlatMaker::endRun,lines] bottomthrpdf 4.18
+[SKFlatMaker::endRun,lines] charmthr     1.27
+[SKFlatMaker::endRun,lines] charmthrpdf  1.27
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! PDG Values http://pdg.lbl.gov/2019/reviews/rpp2018-rev-ckm-matrix.pdf
+[SKFlatMaker::endRun,lines] CKM_Vud   0.97420
+[SKFlatMaker::endRun,lines] CKM_Vus   0.2243
+[SKFlatMaker::endRun,lines] CKM_Vub   0.00394
+[SKFlatMaker::endRun,lines] CKM_Vcd   0.218
+[SKFlatMaker::endRun,lines] CKM_Vcs   0.997
+[SKFlatMaker::endRun,lines] CKM_Vcb   0.0422
+[SKFlatMaker::endRun,lines] CKM_Vtd   0.0081
+[SKFlatMaker::endRun,lines] CKM_Vts   0.0394
+[SKFlatMaker::endRun,lines] CKM_Vtb   1.0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #pdfreweight 0
+[SKFlatMaker::endRun,lines] #storeinfo_rwgt 0
+[SKFlatMaker::endRun,lines] #withnegweights 1 1 ! default 0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #manyseeds 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #parallelstage 4
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #xgriditeration 1 1
+[SKFlatMaker::endRun,lines] rwl_group_events 2000
+[SKFlatMaker::endRun,lines] lhapdf6maxsets 50
+[SKFlatMaker::endRun,lines] rwl_file 'pwg-rwl.dat'
+[SKFlatMaker::endRun,lines] rwl_format_rwgt 1
+[SKFlatMaker::endRun,lines] End of powheg.input content
+[SKFlatMaker::endRun,lines] PDF package: lha
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    425919514             0             0
+[SKFlatMaker::endRun,tag] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] file generated with POWHEG-BOX-V2
+[SKFlatMaker::endRun,lines] SVN status Begin
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/l/llechner/public/CMSSW_9_3_0/src/genproductions/bin/Powheg/my_ST_tW_DR_5f_ckm_top_13TeV_UL/POWHEG-BOX
+[SKFlatMaker::endRun,lines] no svn repository found
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/l/llechner/public/CMSSW_9_3_0/src/genproductions/bin/Powheg/my_ST_tW_DR_5f_ckm_top_13TeV_UL/POWHEG-BOX/ST_wtch_DR
+[SKFlatMaker::endRun,lines] no svn repository found
+[SKFlatMaker::endRun,lines] SVN status End
+[SKFlatMaker::endRun,lines] Process: ST_wtch_DR
+[SKFlatMaker::endRun,lines] Input file powheg.input contained:
+[SKFlatMaker::endRun,lines] ! ST-wtchannel production parameters
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! GENERAL POWHEG PARAMETERS
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] numevts 3802
+[SKFlatMaker::endRun,lines] ih1   1           ! hadron 1 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ih2   1           ! hadron 2 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
+[SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] iseed 725783805
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
+[SKFlatMaker::endRun,lines] lhans1 306000      ! pdf set for hadron 1 (LHA numbering)
+[SKFlatMaker::endRun,lines] lhans2 306000      ! pdf set for hadron 2 (LHA numbering)	
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! Parameters to allow or not the use of stored data
+[SKFlatMaker::endRun,lines] use-old-grid    1 ! if 1 use old grid if file pwggrids.dat is present (<> 1 regenerate)
+[SKFlatMaker::endRun,lines] use-old-ubound  1 ! if 1 use norm of upper bounding function stored in pwgubound.dat, if present; <>
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ncall1 50000   ! number of calls for initializing the integration grid
+[SKFlatMaker::endRun,lines] itmx1    5     ! number of iterations for initializing the integration grid
+[SKFlatMaker::endRun,lines] ncall2 50000   ! number of calls for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] itmx2    5     ! number of iterations for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] foldcsi   5    ! number of folds on csi integration
+[SKFlatMaker::endRun,lines] foldy     5    ! number of folds on  y  integration
+[SKFlatMaker::endRun,lines] foldphi   1    ! number of folds on phi integration
+[SKFlatMaker::endRun,lines] nubound 50000  ! number of bbarra calls to setup norm of upper bounding function
+[SKFlatMaker::endRun,lines] xupbound 2d0   ! increase upper bound for radiation generation
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] withdamp       1
+[SKFlatMaker::endRun,lines] hdamp 237.8775   ! 1.379*mtop nominal value for hdamp for Fall18
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! mandatory production parameters
+[SKFlatMaker::endRun,lines] ttype       1          ! 1 for t, -1 for tbar
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! mandatory parameters used in decay generation
+[SKFlatMaker::endRun,lines] topdecaymode 11111   ! decay mode: the 5 digits correspond to the following
+[SKFlatMaker::endRun,lines]                      ! top-decay channels (l,mu,tau,u,c)
+[SKFlatMaker::endRun,lines]                      ! 0 means close, 1 open
+[SKFlatMaker::endRun,lines] wdecaymode 11111     ! decay mode: the 5 digits correspond to the following
+[SKFlatMaker::endRun,lines]                      ! primary-w-decay channels (l,mu,tau,u,c)
+[SKFlatMaker::endRun,lines]                      ! 0 means close, 1 open
+[SKFlatMaker::endRun,lines] tdec/elbranching 0.108  ! W electronic branching fraction
+[SKFlatMaker::endRun,lines] tdec/sin2cabibbo 0.051
+[SKFlatMaker::endRun,lines] topwidth 1.33
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! optional production parameters
+[SKFlatMaker::endRun,lines] ! (defaults defined in init_couplings.f)
+[SKFlatMaker::endRun,lines] topmass      172.5
+[SKFlatMaker::endRun,lines] wmass        80.4
+[SKFlatMaker::endRun,lines] wwidth       2.141
+[SKFlatMaker::endRun,lines] sthw2        0.231295
+[SKFlatMaker::endRun,lines] alphaem_inv  137.0360098
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] lhfm/emass   0.00051
+[SKFlatMaker::endRun,lines] lhfm/mumass  0.1057
+[SKFlatMaker::endRun,lines] lhfm/taumass 1.777
+[SKFlatMaker::endRun,lines] lhfm/cmass   1.27
+[SKFlatMaker::endRun,lines] lhfm/bmass   4.18
+[SKFlatMaker::endRun,lines] tdec/emass   0.00051
+[SKFlatMaker::endRun,lines] tdec/mumass  0.1057
+[SKFlatMaker::endRun,lines] tdec/taumass 1.777
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] bottomthr    4.18
+[SKFlatMaker::endRun,lines] bottomthrpdf 4.18
+[SKFlatMaker::endRun,lines] charmthr     1.27
+[SKFlatMaker::endRun,lines] charmthrpdf  1.27
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! PDG Values http://pdg.lbl.gov/2019/reviews/rpp2018-rev-ckm-matrix.pdf
+[SKFlatMaker::endRun,lines] CKM_Vud   0.97420
+[SKFlatMaker::endRun,lines] CKM_Vus   0.2243
+[SKFlatMaker::endRun,lines] CKM_Vub   0.00394
+[SKFlatMaker::endRun,lines] CKM_Vcd   0.218
+[SKFlatMaker::endRun,lines] CKM_Vcs   0.997
+[SKFlatMaker::endRun,lines] CKM_Vcb   0.0422
+[SKFlatMaker::endRun,lines] CKM_Vtd   0.0081
+[SKFlatMaker::endRun,lines] CKM_Vts   0.0394
+[SKFlatMaker::endRun,lines] CKM_Vtb   1.0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #pdfreweight 0
+[SKFlatMaker::endRun,lines] #storeinfo_rwgt 0
+[SKFlatMaker::endRun,lines] #withnegweights 1 1 ! default 0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #manyseeds 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #parallelstage 4
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #xgriditeration 1 1
+[SKFlatMaker::endRun,lines] rwl_group_events 2000
+[SKFlatMaker::endRun,lines] lhapdf6maxsets 50
+[SKFlatMaker::endRun,lines] rwl_file 'pwg-rwl.dat'
+[SKFlatMaker::endRun,lines] rwl_format_rwgt 1
+[SKFlatMaker::endRun,lines] End of powheg.input content
+[SKFlatMaker::endRun,lines] PDF package: lha
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    725783805             0             0
+[SKFlatMaker::endRun,tag] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] file generated with POWHEG-BOX-V2
+[SKFlatMaker::endRun,lines] SVN status Begin
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/l/llechner/public/CMSSW_9_3_0/src/genproductions/bin/Powheg/my_ST_tW_DR_5f_ckm_top_13TeV_UL/POWHEG-BOX
+[SKFlatMaker::endRun,lines] no svn repository found
+[SKFlatMaker::endRun,lines] /afs/cern.ch/work/l/llechner/public/CMSSW_9_3_0/src/genproductions/bin/Powheg/my_ST_tW_DR_5f_ckm_top_13TeV_UL/POWHEG-BOX/ST_wtch_DR
+[SKFlatMaker::endRun,lines] no svn repository found
+[SKFlatMaker::endRun,lines] SVN status End
+[SKFlatMaker::endRun,lines] Process: ST_wtch_DR
+[SKFlatMaker::endRun,lines] Input file powheg.input contained:
+[SKFlatMaker::endRun,lines] ! ST-wtchannel production parameters
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! GENERAL POWHEG PARAMETERS
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] numevts 3802
+[SKFlatMaker::endRun,lines] ih1   1           ! hadron 1 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ih2   1           ! hadron 2 (1 for protons, -1 for antiprotons)
+[SKFlatMaker::endRun,lines] ebeam1 6500d0     ! energy of beam 1
+[SKFlatMaker::endRun,lines] ebeam2 6500d0     ! energy of beam 2
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] iseed 518025891
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! To be set only if using LHA pdfs
+[SKFlatMaker::endRun,lines] lhans1 306000      ! pdf set for hadron 1 (LHA numbering)
+[SKFlatMaker::endRun,lines] lhans2 306000      ! pdf set for hadron 2 (LHA numbering)	
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! Parameters to allow or not the use of stored data
+[SKFlatMaker::endRun,lines] use-old-grid    1 ! if 1 use old grid if file pwggrids.dat is present (<> 1 regenerate)
+[SKFlatMaker::endRun,lines] use-old-ubound  1 ! if 1 use norm of upper bounding function stored in pwgubound.dat, if present; <>
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ncall1 50000   ! number of calls for initializing the integration grid
+[SKFlatMaker::endRun,lines] itmx1    5     ! number of iterations for initializing the integration grid
+[SKFlatMaker::endRun,lines] ncall2 50000   ! number of calls for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] itmx2    5     ! number of iterations for computing the integral and finding upper bound
+[SKFlatMaker::endRun,lines] foldcsi   5    ! number of folds on csi integration
+[SKFlatMaker::endRun,lines] foldy     5    ! number of folds on  y  integration
+[SKFlatMaker::endRun,lines] foldphi   1    ! number of folds on phi integration
+[SKFlatMaker::endRun,lines] nubound 50000  ! number of bbarra calls to setup norm of upper bounding function
+[SKFlatMaker::endRun,lines] xupbound 2d0   ! increase upper bound for radiation generation
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] withdamp       1
+[SKFlatMaker::endRun,lines] hdamp 237.8775   ! 1.379*mtop nominal value for hdamp for Fall18
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! mandatory production parameters
+[SKFlatMaker::endRun,lines] ttype       1          ! 1 for t, -1 for tbar
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! mandatory parameters used in decay generation
+[SKFlatMaker::endRun,lines] topdecaymode 11111   ! decay mode: the 5 digits correspond to the following
+[SKFlatMaker::endRun,lines]                      ! top-decay channels (l,mu,tau,u,c)
+[SKFlatMaker::endRun,lines]                      ! 0 means close, 1 open
+[SKFlatMaker::endRun,lines] wdecaymode 11111     ! decay mode: the 5 digits correspond to the following
+[SKFlatMaker::endRun,lines]                      ! primary-w-decay channels (l,mu,tau,u,c)
+[SKFlatMaker::endRun,lines]                      ! 0 means close, 1 open
+[SKFlatMaker::endRun,lines] tdec/elbranching 0.108  ! W electronic branching fraction
+[SKFlatMaker::endRun,lines] tdec/sin2cabibbo 0.051
+[SKFlatMaker::endRun,lines] topwidth 1.33
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! optional production parameters
+[SKFlatMaker::endRun,lines] ! (defaults defined in init_couplings.f)
+[SKFlatMaker::endRun,lines] topmass      172.5
+[SKFlatMaker::endRun,lines] wmass        80.4
+[SKFlatMaker::endRun,lines] wwidth       2.141
+[SKFlatMaker::endRun,lines] sthw2        0.231295
+[SKFlatMaker::endRun,lines] alphaem_inv  137.0360098
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] lhfm/emass   0.00051
+[SKFlatMaker::endRun,lines] lhfm/mumass  0.1057
+[SKFlatMaker::endRun,lines] lhfm/taumass 1.777
+[SKFlatMaker::endRun,lines] lhfm/cmass   1.27
+[SKFlatMaker::endRun,lines] lhfm/bmass   4.18
+[SKFlatMaker::endRun,lines] tdec/emass   0.00051
+[SKFlatMaker::endRun,lines] tdec/mumass  0.1057
+[SKFlatMaker::endRun,lines] tdec/taumass 1.777
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] bottomthr    4.18
+[SKFlatMaker::endRun,lines] bottomthrpdf 4.18
+[SKFlatMaker::endRun,lines] charmthr     1.27
+[SKFlatMaker::endRun,lines] charmthrpdf  1.27
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] ! PDG Values http://pdg.lbl.gov/2019/reviews/rpp2018-rev-ckm-matrix.pdf
+[SKFlatMaker::endRun,lines] CKM_Vud   0.97420
+[SKFlatMaker::endRun,lines] CKM_Vus   0.2243
+[SKFlatMaker::endRun,lines] CKM_Vub   0.00394
+[SKFlatMaker::endRun,lines] CKM_Vcd   0.218
+[SKFlatMaker::endRun,lines] CKM_Vcs   0.997
+[SKFlatMaker::endRun,lines] CKM_Vcb   0.0422
+[SKFlatMaker::endRun,lines] CKM_Vtd   0.0081
+[SKFlatMaker::endRun,lines] CKM_Vts   0.0394
+[SKFlatMaker::endRun,lines] CKM_Vtb   1.0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #pdfreweight 0
+[SKFlatMaker::endRun,lines] #storeinfo_rwgt 0
+[SKFlatMaker::endRun,lines] #withnegweights 1 1 ! default 0
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #manyseeds 1
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #parallelstage 4
+[SKFlatMaker::endRun,lines] 
+[SKFlatMaker::endRun,lines] #xgriditeration 1 1
+[SKFlatMaker::endRun,lines] rwl_group_events 2000
+[SKFlatMaker::endRun,lines] lhapdf6maxsets 50
+[SKFlatMaker::endRun,lines] rwl_file 'pwg-rwl.dat'
+[SKFlatMaker::endRun,lines] rwl_format_rwgt 1
+[SKFlatMaker::endRun,lines] End of powheg.input content
+[SKFlatMaker::endRun,lines] PDF package: lha
+[SKFlatMaker::endRun,lines]  Random number generator initialized with:    518025891             0             0
 [SKFlatMaker::endRun] ##### End of information about PDF weights #####
 [SKFlatMaker::endJob] ++++++++++++++++++++++++++++++++++++++
 [SKFlatMaker::endJob] analyzed 1 events: 
