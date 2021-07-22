@@ -19,16 +19,6 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   LHERunInfoProduct = cms.untracked.InputTag("externalLHEProducer"),
   GenParticle = cms.untracked.InputTag("genParticles"),
 
-  #### MiniIso
-  pfCandsForMiniIso = cms.untracked.InputTag("packedPFCandidates"),
-  ## Muon
-  ## https://github.com/cms-sw/cmssw/blob/f493624b3018543865bbf04bb8a48c5dae44bc82/RecoMuon/MuonIsolation/python/muonPFIsolationValues_cff.py
-  miniIsoParams  = cms.vdouble(0.05, 0.2, 10.0, 0.5, 0.0001, 0.01, 0.01, 0.01, 0.0),
-  ## Electron
-  ## https://github.com/cms-sw/cmssw/blob/09c3fce6626f70fd04223e7dacebf0b485f73f54/RecoParticleFlow/PFProducer/python/electronPFIsolationValues_cff.py
-  miniIsoParamsE = cms.vdouble(0.05, 0.2, 10.0, 0.0, 0.015, 0.015, 0.08, 0.0, 0.0),
-  miniIsoParamsB = cms.vdouble(0.05, 0.2, 10.0, 0.0, 0.000, 0.000, 0.00, 0.0, 0.0),
-
   # -- electron information -- #
   rho = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
   conversionsInputTag = cms.untracked.InputTag("allConversions"),

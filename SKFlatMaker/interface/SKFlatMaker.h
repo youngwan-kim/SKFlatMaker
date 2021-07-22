@@ -199,13 +199,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual bool isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx);
   virtual int expectedNnumberOfMatchedStations(reco::Muon muon, float minDistanceFromEdge= 10.0);
 
-  virtual float miniIsoDr(const math::XYZTLorentzVector &p4, float mindr, float maxdr, float kt_scale);
-  virtual PFIsolation GetMiniIso(edm::Handle<pat::PackedCandidateCollection> pfcands,
-                                 const math::XYZTLorentzVector &p4,
-                                 float mindr, float maxdr, float kt_scale,
-                                 float ptthresh, float deadcone_ch, float deadcone_pu,
-                                 float deadcone_ph, float deadcone_nh, float dZ_cut);
-
   int DataYear;
   int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
   std::string processName;
@@ -229,11 +222,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< LHEEventProduct >               LHEEventProductToken;
   edm::EDGetTokenT< LHERunInfoProduct >             LHERunInfoProductToken;
   edm::EDGetTokenT< reco::GenParticleCollection>    mcLabel_;
-
-  edm::EDGetTokenT<pat::PackedCandidateCollection> pcToken_;
-  std::vector<double> miniIsoParams_;
-  std::vector<double> miniIsoParamsE_;
-  std::vector<double> miniIsoParamsB_;
 
   edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_PAT;
   edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_RECO;

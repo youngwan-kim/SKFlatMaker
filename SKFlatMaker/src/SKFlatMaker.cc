@@ -44,7 +44,6 @@ MetToken                            ( consumes< std::vector<pat::MET> >         
 LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
 LHERunInfoProductToken              ( consumes< LHERunInfoProduct,edm::InRun >              (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
 mcLabel_                            ( consumes< reco::GenParticleCollection>                (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
-pcToken_                            ( consumes< pat::PackedCandidateCollection >            (iConfig.getUntrackedParameter<edm::InputTag>("pfCandsForMiniIso"))   ),
 
 // -- MET Filter tokens -- //
 METFilterResultsToken_PAT           ( consumes<edm::TriggerResults>                         (iConfig.getParameter<edm::InputTag>("METFilterResults_PAT"))),
@@ -103,10 +102,6 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   photon_EA_CH_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_CH_file" );
   photon_EA_HN_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_HN_file" );
   photon_EA_Ph_file                 = iConfig.getUntrackedParameter<edm::FileInPath>( "photon_EA_Ph_file" );
-
-  miniIsoParams_                    = iConfig.getParameter< std::vector<double> >("miniIsoParams");
-  miniIsoParamsE_                   = iConfig.getParameter< std::vector<double> >("miniIsoParamsE");
-  miniIsoParamsB_                   = iConfig.getParameter< std::vector<double> >("miniIsoParamsB");
 
   jet_payloadName_                  = iConfig.getParameter<std::string>("AK4Jet_payloadName");
   fatjet_payloadName_               = iConfig.getParameter<std::string>("AK8Jet_payloadName");
@@ -1542,10 +1537,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   using reco::MuonCollection;
   MuonCollection::const_iterator imuon;
 
-  //==== Prepare PF for miniiso
-  edm::Handle<pat::PackedCandidateCollection> pc;
-  iEvent.getByToken(pcToken_, pc);
-
   edm::Handle<reco::GenParticleCollection> genParticles;
   if(!IsData){
     iEvent.getByToken(mcLabel_,genParticles);
@@ -2049,10 +2040,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::Handle< std::vector<pat::Muon> > muonHandle;
   iEvent.getByToken(MuonToken, muonHandle);
 
-  //==== Prepare PF for miniiso
-  edm::Handle<pat::PackedCandidateCollection> pc;
-  iEvent.getByToken(pcToken_, pc);
-
   edm::FileInPath eaConstantsFile(electron_EA_NHandPh_file);
   EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
 
@@ -2174,25 +2161,6 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
 
     //==== MiniIso
 /*
-    PFIsolation this_miniiso;
-
-    if(el->isEE()){
-
-      this_miniiso = GetMiniIso(pc, el->p4(),
-                                miniIsoParamsE_[0], miniIsoParamsE_[1], miniIsoParamsE_[2],
-                                miniIsoParamsE_[3], miniIsoParamsE_[4], miniIsoParamsE_[5],
-                                miniIsoParamsE_[6], miniIsoParamsE_[7], miniIsoParamsE_[8]);
-
-    }
-    else{
-
-      this_miniiso = GetMiniIso(pc, el->p4(),
-                                miniIsoParamsB_[0], miniIsoParamsB_[1], miniIsoParamsB_[2],
-                                miniIsoParamsB_[3], miniIsoParamsB_[4], miniIsoParamsB_[5],
-                                miniIsoParamsB_[6], miniIsoParamsB_[7], miniIsoParamsB_[8]);
-
-    }
-
     cout << "=======================" << endl;
     cout << "Pt = " << el->pt() << endl;
     cout << "isEE = " << el->isEE() << endl;
@@ -2201,26 +2169,11 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     cout << "NH = " << el->pfIsolationVariables().sumNeutralHadronEt << endl;
     cout << "Ph = " << el->pfIsolationVariables().sumPhotonEt << endl;
     cout << "PU = " << el->pfIsolationVariables().sumPUPt << endl;
-    cout << "---- Mini ----" << endl;
-    cout << "CH = " << this_miniiso.chargedHadronIso() << endl;
-    cout << "HN = " << this_miniiso.neutralHadronIso() << endl;
-    cout << "Ph = " << this_miniiso.photonIso() << endl;
-    cout << "PU = " << this_miniiso.puChargedHadronIso() << endl;
     cout << "---- MiniAOD MiniIso ----" << endl;
     cout << "CH = " << el->miniPFIsolation().chargedHadronIso() << endl;
     cout << "HN = " << el->miniPFIsolation().neutralHadronIso() << endl;
     cout << "Ph = " << el->miniPFIsolation().photonIso() << endl;
     cout << "PU = " << el->miniPFIsolation().puChargedHadronIso() << endl;
-    cout << "---- Diff ----" << endl;
-    cout << "dCH = " << this_miniiso.chargedHadronIso() - el->miniPFIsolation().chargedHadronIso() << endl;
-    cout << "dNH = " << this_miniiso.neutralHadronIso() - el->miniPFIsolation().neutralHadronIso() << endl;
-    cout << "dPh = " << this_miniiso.photonIso() - el->miniPFIsolation().photonIso() << endl;
-    cout << "dPU = " << this_miniiso.puChargedHadronIso() - el->miniPFIsolation().puChargedHadronIso() << endl;
-
-    electron_chMiniIso.push_back( this_miniiso.chargedHadronIso() );
-    electron_nhMiniIso.push_back( this_miniiso.neutralHadronIso() );
-    electron_phMiniIso.push_back( this_miniiso.photonIso() );
-    electron_puChMiniIso.push_back( this_miniiso.puChargedHadronIso() );
 */
 
     electron_chMiniIso.push_back( el->miniPFIsolation().chargedHadronIso() );
@@ -2228,7 +2181,7 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     electron_phMiniIso.push_back( el->miniPFIsolation().photonIso() );
     electron_puChMiniIso.push_back( el->miniPFIsolation().puChargedHadronIso() );
 
-    // For UL heepTrkPtIso is not saved as userFloat. (not sure)
+    // For UL heepTrkPtIso is not saved as userFloat.
     // https://github.com/cms-egamma/EgammaPostRecoTools/blob/3257bda882e7b34be4adbe2cd1e83dac8b533897/python/EgammaPostRecoTools.py#L452
     // https://hypernews.cern.ch/HyperNews/CMS/get/egamma/2268.html
     //electron_trackIso.push_back( el->userFloat("heepTrkPtIso") );
@@ -3425,59 +3378,6 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
     }
     cout << "[SKFlatMaker::endRun] ##### End of information about PDF weights #####" << endl;
   }
-
-}
-
-float SKFlatMaker::miniIsoDr(const math::XYZTLorentzVector &p4, float mindr, float maxdr, float kt_scale){
-  return std::max(mindr, std::min(maxdr, float(kt_scale/p4.pt())));
-}
-
-PFIsolation SKFlatMaker::GetMiniIso(edm::Handle<pat::PackedCandidateCollection> pfcands,
-                                 const math::XYZTLorentzVector &p4,
-                                 float mindr, float maxdr, float kt_scale,
-                                 float ptthresh, float deadcone_ch, float deadcone_pu,
-                                 float deadcone_ph, float deadcone_nh, float dZ_cut){
-
-/*
-  cout << "[SKFlatMaker::GetMiniIso] mindr = " << mindr << endl;
-  cout << "[SKFlatMaker::GetMiniIso] maxdr = " << maxdr << endl;
-  cout << "[SKFlatMaker::GetMiniIso] kt_scale = " << kt_scale << endl;
-  cout << "[SKFlatMaker::GetMiniIso] ptthresh = " << ptthresh << endl;
-  cout << "[SKFlatMaker::GetMiniIso] deadcone_ch = " << deadcone_ch << endl;
-  cout << "[SKFlatMaker::GetMiniIso] deadcone_pu = " << deadcone_pu << endl;
-  cout << "[SKFlatMaker::GetMiniIso] deadcone_ph = " << deadcone_ph << endl;
-  cout << "[SKFlatMaker::GetMiniIso] deadcone_nh = " << deadcone_nh << endl;
-  cout << "[SKFlatMaker::GetMiniIso] dZ_cut = " << dZ_cut << endl;
-*/
-
-  float chiso=0, nhiso=0, phiso=0, puiso=0;
-  float drcut = miniIsoDr(p4,mindr,maxdr,kt_scale);
-  for(const pat::PackedCandidate &pc : *pfcands){
-    float dr = deltaR(p4, pc.p4());
-    if(dr>drcut)  continue;
-    float pt = pc.p4().pt();
-    int id = pc.pdgId();
-    if(std::abs(id)==211){
-      bool fromPV = (pc.fromPV()>1 || fabs(pc.dz()) < dZ_cut);
-      if(fromPV && dr > deadcone_ch){
-        //==== if charged hadron and from primary vertex, add to charged hadron isolation
-        chiso += pt;
-      }
-      else if(!fromPV && pt > ptthresh && dr > deadcone_pu){
-        //==== if charged hadron and NOT from primary vertex, add to pileup isolation
-        puiso += pt;
-      }
-    }
-    //==== if neutral hadron, add to neutral hadron isolation
-    if(std::abs(id)==130 && pt>ptthresh && dr>deadcone_nh)
-      nhiso += pt;
-    //==== if photon, add to photon isolation
-    if(std::abs(id)==22 && pt>ptthresh && dr>deadcone_ph)
-      phiso += pt;
-
-  }
-
-  return pat::PFIsolation(chiso, nhiso, phiso, puiso);
 
 }
 
