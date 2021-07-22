@@ -1823,8 +1823,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_simMotherPdgId.push_back( imuon.simMotherPdgId() );
     //muon_simMatchQuality.push_back( imuon.simMatchQuality() );  // TODO not supported in CMSSW_10_2_10
 
-    //=== store ishighpt to get new ID for 10_4_X : use function copied from https://github.com/cms-sw/cmssw/blob/CMSSW_10_4_X/DataFormats/MuonReco/src/MuonSelectors.cc#L910
-
     muon_ishighpt.push_back(muon::isHighPtMuon(imuon, vtx));
     
     //==== Rochestor
@@ -1897,12 +1895,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
           this_roccor     = rc.kSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u, 0, 0);
           this_roccor_err = rc.kSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u);
         }
-
-/*
-        //==== TODO Now I'm not using genpt
-        this_roccor     = rc.kSmearMC     (imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u, 0, 0);
-        this_roccor_err = rc.kSmearMCerror(imuon.charge(), imuon.pt(), imuon.eta(), imuon.phi(), n_trackerLayersWithMeasurement, u);
-*/
 
       }
 
