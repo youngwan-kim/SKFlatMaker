@@ -194,11 +194,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void fillLHEInfo(const edm::Event &iEvent);
   virtual void fillGENInfo(const edm::Event &iEvent);            // fill MET information
 
-
-  
-  virtual bool isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx);
-  virtual int expectedNnumberOfMatchedStations(reco::Muon muon, float minDistanceFromEdge= 10.0);
-
   int DataYear;
   int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
   std::string processName;

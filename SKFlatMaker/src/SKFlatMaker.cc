@@ -171,62 +171,6 @@ SKFlatMaker::~SKFlatMaker() { }
 // member functions
 //
 
-
-// === New function for is High pt muon
-// === https://github.com/cms-sw/cmssw/blob/CMSSW_10_4_X/DataFormats/MuonReco/src/MuonSelectors.cc#L910
-
-bool SKFlatMaker::isHighPtMuon(const reco::Muon& muon, const reco::Vertex& vtx){
- 
-  
-
-  if(!muon.isGlobalMuon()) return false;
-
-  bool muValHits = ( muon.globalTrack()->hitPattern().numberOfValidMuonHits()>0 ||
-                     muon.tunePMuonBestTrack()->hitPattern().numberOfValidMuonHits()>0 );
-
-  bool muMatchedSt = muon.numberOfMatchedStations()>1;
-  if(!muMatchedSt) {
-    if( muon.isTrackerMuon() && muon.numberOfMatchedStations()==1 ) {
-      if( expectedNnumberOfMatchedStations(muon) <2 ||
-          !(muon.stationMask()==1 || muon.stationMask()==16) ||
-          muon.numberOfMatchedRPCLayers()>2
-    )
-        muMatchedSt = true;
-    }
-  }
-
-  bool muID = muValHits && muMatchedSt;
-
-  bool hits = muon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 &&
-    muon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0;
-
-  bool momQuality = muon.tunePMuonBestTrack()->ptError()/muon.tunePMuonBestTrack()->pt() < 0.3;
-
-  bool ip = fabs(muon.innerTrack()->dxy(vtx.position())) < 0.2 && fabs(muon.innerTrack()->dz(vtx.position())) < 0.5;
-
-  return muID && hits && momQuality && ip;
-
-}
-
-int  SKFlatMaker::expectedNnumberOfMatchedStations(reco::Muon muon, float minDistanceFromEdge){
-  unsigned int stationMask = 0;
-  for( auto& chamberMatch : muon.matches()  )
-    {
-      if (chamberMatch.detector()!=MuonSubdetId::DT && chamberMatch.detector()!=MuonSubdetId::CSC) continue;
-      float edgeX = chamberMatch.edgeX;
-      float edgeY = chamberMatch.edgeY;
-      // check we if the trajectory is well within the acceptance
-      if(edgeX<0 && fabs(edgeX)>fabs(minDistanceFromEdge) &&
-   edgeY<0 && fabs(edgeY)>fabs(minDistanceFromEdge))
-  stationMask |= 1<<( (chamberMatch.station()-1)+4*(chamberMatch.detector()-1) );
-    }
-  unsigned int n = 0;
-  for(unsigned int i=0; i<8; ++i)
-    if (stationMask&(1<<i)) n++;
-  return n;
-  
-}
-
 // ------------ method called to for each event  ------------ //
 void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
@@ -1881,7 +1825,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
 
     //=== store ishighpt to get new ID for 10_4_X : use function copied from https://github.com/cms-sw/cmssw/blob/CMSSW_10_4_X/DataFormats/MuonReco/src/MuonSelectors.cc#L910
 
-    muon_ishighpt.push_back(isHighPtMuon(imuon, vtx));
+    muon_ishighpt.push_back(muon::isHighPtMuon(imuon, vtx));
     
     //==== Rochestor
 
