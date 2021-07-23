@@ -1,14 +1,11 @@
+import os
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarParsing.varType.string, "sampletype: DATA/MC/PrivateMC")
-options.register('ScaleIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Scale ID range: 1,9")
-options.register('PDFErrorIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF Error ID range: 1001,1100")
-options.register('PDFAlphaSIDRange', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS ID range: 1101,1102")
-options.register('PDFAlphaSScaleValue', "-999,-999", VarParsing.multiplicity.singleton, VarParsing.varType.string, "PDF AlphaS Scale values: 1.5,1.5")
-options.register('AdditionalWeights', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "Additional weights: NAME1[1,4],NAME2[6,8,12,20]")
+options.register('weightmap', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "weightmap file path or string: Scale[1,9],PDF[1001,1100],AlphaS[1101,1102],AlphaSScale[1.5,1.5]")
 options.register('era',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "era: Which era? 2016preVFP, 2016postVFP, 2017, 2018")
 options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "Deprecated. Use 'era'")
 options.setDefault('outputFile','SKFlatNtuple.root')
@@ -74,34 +71,27 @@ if len(options.inputFiles)==0:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/MINIAOD/12Nov2019_UL2018_rsb-v1/240000/FE143ADE-E9E4-3143-8754-C9ECA89F3541.root')
       options.outputFile = options.outputFile.replace(".root","_2018_DATA.root")
 
-ScaleIDRange = [int(i) for i in options.ScaleIDRange.split(",")]
-PDFErrorIDRange = [int(i) for i in options.PDFErrorIDRange.split(",")]
-PDFAlphaSIDRange = [int(i) for i in options.PDFAlphaSIDRange.split(",")]
-PDFAlphaSScaleValue = [float(i) for i in options.PDFAlphaSScaleValue.split(",")]
-AdditionalWeights={}
-if options.AdditionalWeights!="":
-  for line in options.AdditionalWeights.replace("],","@").rstrip("]").split("@"):
-    print(line)
-    words=line.replace("[","@").split("@")
-    print(words)
-    AdditionalWeights[words[0]]=[int(i) for i in words[1].split(",")]
-
-
-print 'isMC = '+str(isMC)
-print 'isPrivateSample = '+str(isPrivateSample)
-print 'ScaleIDRange = ',
-print ScaleIDRange
-print 'PDFErrorIDRange = ',
-print PDFErrorIDRange
-print 'PDFAlphaSIDRange = ',
-print PDFAlphaSIDRange
-print 'PDFAlphaSScaleValue = ',
-print PDFAlphaSScaleValue
-print 'AdditionalWeights = ',
-print AdditionalWeights
-print 'era = '+str(options.era)
-
-
+weightmap={}
+if options.weightmap!="":
+  if os.path.exists(options.weightmap):
+    with open(options.weightmap) as f:
+      for line in f.readlines():
+        line=line.split("#",1)[0]
+        words=line.split()
+        if len(words)==2:
+          weightmap[words[0]]=words[1].split(",")
+  else:
+    for line in options.weightmap.replace("],","@").rstrip("]").split("@"):
+      words=line.replace("[","@").split("@")
+      weightmap[words[0]]=words[1].split(",")
+  for key in weightmap:
+    if key=="AlphaSScale":
+      weightmap[key]=[float(i) for i in weightmap[key]]
+    else:
+      weightmap[key]=[int(i) for i in weightmap[key]]
+    if key in ["PDF","Scale"] and len(weightmap[key])==2:
+      weightmap[key]=range(weightmap[key][0],weightmap[key][1]+1)
+      
 #### Global Tag
 #### https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis
 
@@ -121,8 +111,17 @@ elif Is2018:
   GT_MC = '106X_upgrade2018_realistic_v15_L1v1'
   GT_DATA = '106X_dataRun2_v35'
 
+
 print 'GT_MC = '+GT_MC
 print 'GT_DATA = '+GT_DATA
+print 'isMC = '+str(isMC)
+print 'isPrivateSample = '+str(isPrivateSample)
+print 'era = '+str(options.era)
+for key in weightmap:
+  if len(weightmap[key])>5:
+    print "weight_{} = [{},{},...,{},{}]".format(key,weightmap[key][0],weightmap[key][1],weightmap[key][-2],weightmap[key][-1])
+  else:
+    print "weight_{} =".format(key),weightmap[key]
 
 ####################################################################################################################
 
@@ -184,12 +183,11 @@ process.recoTree.FatJet = cms.untracked.InputTag("slimmedJetsAK8")
 process.recoTree.MET = cms.InputTag("slimmedMETs")
 process.recoTree.GenParticle = cms.untracked.InputTag("prunedGenParticles") # -- miniAOD -- #
 
-process.recoTree.ScaleIDRange = cms.untracked.vint32(ScaleIDRange)
-process.recoTree.PDFErrorIDRange = cms.untracked.vint32(PDFErrorIDRange)
-process.recoTree.PDFAlphaSIDRange = cms.untracked.vint32(PDFAlphaSIDRange)
-process.recoTree.PDFAlphaSScaleValue = cms.untracked.vdouble(PDFAlphaSScaleValue)
-for key in AdditionalWeights:
-  setattr(process.recoTree,"AdditionalWeights_"+key,cms.untracked.vint32(AdditionalWeights[key]))
+for key in weightmap:
+  if key=="AlphaSScale":
+    setattr(process.recoTree,"weight_"+key,cms.untracked.vdouble(weightmap[key]))
+  else:
+    setattr(process.recoTree,"weight_"+key,cms.untracked.vint32(weightmap[key]))
 
 if isPrivateSample:
   process.recoTree.LHEEventProduct = cms.untracked.InputTag("source")

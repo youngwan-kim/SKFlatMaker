@@ -290,10 +290,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   
   unsigned int nPileUp;
   
-  std::vector< int > ScaleIDRange_, PDFErrorIDRange_, PDFAlphaSIDRange_;
-  map<TString,vector<int>> AdditionalWeights_;
-  std::string PDFErrorType_;
   std::vector< double > PDFAlphaSScaleValue_;
+  map<TString,vector<int>> WeightMap;
 
   TTree *DYTree;
   
@@ -641,10 +639,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> LHE_E;
   vector<int> LHE_Status;
   vector<int> LHE_ID;
-  vector<float> PDFWeights_Scale;
-  vector<float> PDFWeights_Error;
-  vector<float> PDFWeights_AlphaS;
-  map<TString,vector<float>> PDFWeights_;
+  map<TString,vector<float>> weight_;
  
   //==== GEN
 
