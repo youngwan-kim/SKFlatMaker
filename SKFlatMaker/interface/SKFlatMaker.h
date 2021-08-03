@@ -529,6 +529,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> electron_dr03TkSumPt;
   vector<float> electron_ecalPFClusterIso;
   vector<float> electron_hcalPFClusterIso;
+  vector<int> electron_filterbits;
 
   //==== Muon
 
@@ -627,6 +628,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<int> muon_simPdgId;
   vector<int> muon_simMotherPdgId;
   vector<float> muon_simMatchQuality;
+  vector<int> muon_filterbits;
 
   //==== Rochestor correction
   RoccoR rc;

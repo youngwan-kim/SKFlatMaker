@@ -366,6 +366,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_dr03TkSumPt.clear();
   electron_ecalPFClusterIso.clear();
   electron_hcalPFClusterIso.clear();
+  electron_filterbits.clear();
 
   //==== Muon
   muon_PfChargedHadronIsoR04.clear();
@@ -460,6 +461,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_simPdgId.clear();
   muon_simMotherPdgId.clear();
   muon_simMatchQuality.clear();
+  muon_filterbits.clear();
 
   //==== Jet
   jet_pt.clear();
@@ -946,6 +948,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_dr03TkSumPt", "vector<float>", &electron_dr03TkSumPt);
     DYTree->Branch("electron_ecalPFClusterIso", "vector<float>", &electron_ecalPFClusterIso);
     DYTree->Branch("electron_hcalPFClusterIso", "vector<float>", &electron_hcalPFClusterIso);
+    DYTree->Branch("electron_filterbits", "vector<int>", &electron_filterbits);
   }
   
   // -- muon variables -- //
@@ -1043,6 +1046,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_simPdgId", "vector<int>", &muon_simPdgId);
     DYTree->Branch("muon_simMotherPdgId", "vector<int>", &muon_simMotherPdgId);
     DYTree->Branch("muon_simMatchQuality", "vector<float>", &muon_simMatchQuality);
+    DYTree->Branch("muon_filterbits", "vector<int>", &muon_filterbits);
 
   }
   
@@ -1483,6 +1487,12 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   if(!IsData){
     iEvent.getByToken(mcLabel_,genParticles);
   }
+
+  //==== HLT Object for lepton matching
+  edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
+  iEvent.getByToken(TriggerObjectToken, triggerObject);
+  Handle<TriggerResults> trigResult;
+  iEvent.getByToken(TriggerToken, trigResult);
 
   for( unsigned int i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
@@ -1938,6 +1948,46 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_roch_sf.push_back( this_roccor );
     muon_roch_sf_up.push_back( this_roccor+this_roccor_err );
 
+    // -- HLT object matching -- //
+    int filterbits=0;
+    for(pat::TriggerObjectStandAlone obj : *triggerObject){
+      cout<<"muon: "<<deltaR(obj,imuon)<<endl;
+      if(deltaR(obj,imuon)<0.3){
+	obj.unpackFilterLabels(iEvent, *trigResult);
+	if(obj.filter("hltDiMuon178Mass3p8Filtered")) filterbits|=1<<0;
+	if(obj.filter("hltDiMuon178Mass8Filtered")) filterbits|=1<<1;
+	if(obj.filter("hltDiMuon178RelTrkIsoFiltered0p4")) filterbits|=1<<2;
+	if(obj.filter("hltDiMuon178RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=1<<3;
+	if(obj.filter("hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4")) filterbits|=1<<4;
+	if(obj.filter("hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=1<<5;
+	if(obj.filter("hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4")) filterbits|=1<<6;
+	if(obj.filter("hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=1<<7;
+	if(obj.filter("hltDiMuonGlbFiltered17TrkFiltered8")) filterbits|=1<<8;
+	if(obj.filter("hltDiMuonTrk17Trk8RelTrkIsoFiltered0p4")) filterbits|=1<<9;
+	if(obj.filter("hltDiMuonTrk17Trk8RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=1<<10;
+	if(obj.filter("hltDiTkMuonTkFiltered17TkFiltered8")) filterbits|=1<<11;
+	if(obj.filter("hltL3crIsoL1sMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p09")) filterbits|=1<<12;
+	if(obj.filter("hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07")) filterbits|=1<<13;
+	if(obj.filter("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07")) filterbits|=1<<14;
+	if(obj.filter("hltL3fL1DoubleMu155fFiltered17")) filterbits|=1<<15;
+	if(obj.filter("hltL3fL1DoubleMu155fPreFiltered8")) filterbits|=1<<16;
+	if(obj.filter("hltL3fL1sDoubleMu114L1f0L2f10L3Filtered17")) filterbits|=1<<17;
+	if(obj.filter("hltL3fL1sDoubleMu114L1f0L2f10OneMuL3Filtered17")) filterbits|=1<<18;
+	if(obj.filter("hltL3fL1sDoubleMu114TkFiltered17Q")) filterbits|=1<<19;
+	if(obj.filter("hltL3fL1sMu10lqL1f0L2f10L3Filtered17")) filterbits|=1<<20;
+	if(obj.filter("hltL3fL1sMu15DQlqL1f0L2f10L3Filtered17")) filterbits|=1<<21;
+	if(obj.filter("hltL3fL1sMu1lqL1f0L2f10L3Filtered17TkIsoFiltered0p4")) filterbits|=1<<22;
+	if(obj.filter("hltL3fL1sMu22L1f0Tkf24QL3trkIsoFiltered0p09")) filterbits|=1<<23;
+	if(obj.filter("hltL3fL1sMu5L1f0L2f5L3Filtered8")) filterbits|=1<<24;
+	if(obj.filter("hltL3fL1sMu5L1f0L2f5L3Filtered8TkIsoFiltered0p4")) filterbits|=1<<25;
+	if(obj.filter("hltL3pfL1sDoubleMu114ORDoubleMu125L1f0L2pf0L3PreFiltered8")) filterbits|=1<<26;
+	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<27;
+	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23")) filterbits|=1<<28;
+	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<29;
+	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8")) filterbits|=1<<30;
+      }
+    }
+    muon_filterbits.push_back(filterbits);
   } // -- End of imuon iteration -- //
   
 }
@@ -1973,6 +2023,12 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   // -- muon for emu vertex -- //
   edm::Handle< std::vector<pat::Muon> > muonHandle;
   iEvent.getByToken(MuonToken, muonHandle);
+
+  //==== HLT Object for lepton matching
+  edm::Handle< std::vector<pat::TriggerObjectStandAlone> > triggerObject;
+  iEvent.getByToken(TriggerObjectToken, triggerObject);
+  Handle<TriggerResults> trigResult;
+  iEvent.getByToken(TriggerToken, trigResult);
 
   edm::FileInPath eaConstantsFile(electron_EA_NHandPh_file);
   EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
@@ -2274,6 +2330,34 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
       }
     }
 */
+    // -- HLT object matching -- //
+    int filterbits=0;
+    for(pat::TriggerObjectStandAlone obj : *triggerObject){
+      cout<<"electron: "<<deltaR(obj,*el)<<endl;
+      if(deltaR(obj,*el)<0.3){
+	obj.unpackFilterLabels(iEvent, *trigResult);
+	if(obj.filter("hltEGL1SingleEGOrFilter")) filterbits|=1<<0;
+	if(obj.filter("hltEle12CaloIdLTrackIdLIsoVLTrackIsoFilter")) filterbits|=1<<1;
+	if(obj.filter("hltEle17CaloIdLTrackIdLIsoVLTrackIsoFilter")) filterbits|=1<<2;
+	if(obj.filter("hltEle17CaloIdMGsfTrackIdMDphiFilter")) filterbits|=1<<3;
+	if(obj.filter("hltEle23CaloIdLTrackIdLIsoVLJet30TrackIsoFilter")) filterbits|=1<<4;
+	if(obj.filter("hltEle23Ele12CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<5;
+	if(obj.filter("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter")) filterbits|=1<<6;
+	if(obj.filter("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter")) filterbits|=1<<7;
+	if(obj.filter("hltEle27WPTightGsfTrackIsoFilter")) filterbits|=1<<8;
+	if(obj.filter("hltEle27erWPTightGsfTrackIsoFilter")) filterbits|=1<<9;
+	if(obj.filter("hltEle28WPTightGsfTrackIsoFilter")) filterbits|=1<<10;
+	if(obj.filter("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter")) filterbits|=1<<11;
+	if(obj.filter("hltEle32WPTightGsfTrackIsoFilter")) filterbits|=1<<12;
+	if(obj.filter("hltEle35noerWPTightGsfTrackIsoFilter")) filterbits|=1<<13;
+	if(obj.filter("hltEle8CaloIdLTrackIdLIsoVLTrackIsoFilter")) filterbits|=1<<14;
+	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<15;
+	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter")) filterbits|=1<<16;
+	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<17;
+	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter")) filterbits|=1<<18;
+      }
+    }
+    electron_filterbits.push_back(filterbits);
 
   } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   
