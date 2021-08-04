@@ -1,0 +1,5 @@
+## lhaid=306000 hessian
+Scale	1001,1009
+PDF	2001,2100
+AlphaS	2108,2109
+AlphaSScale	1.5

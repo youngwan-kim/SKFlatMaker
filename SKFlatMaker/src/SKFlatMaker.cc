@@ -1951,7 +1951,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     // -- HLT object matching -- //
     int filterbits=0;
     for(pat::TriggerObjectStandAlone obj : *triggerObject){
-      cout<<"muon: "<<deltaR(obj,imuon)<<endl;
       if(deltaR(obj,imuon)<0.3){
 	obj.unpackFilterLabels(iEvent, *trigResult);
 	if(obj.filter("hltDiMuon178Mass3p8Filtered")) filterbits|=1<<0;
@@ -2333,7 +2332,6 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     // -- HLT object matching -- //
     int filterbits=0;
     for(pat::TriggerObjectStandAlone obj : *triggerObject){
-      cout<<"electron: "<<deltaR(obj,*el)<<endl;
       if(deltaR(obj,*el)<0.3){
 	obj.unpackFilterLabels(iEvent, *trigResult);
 	if(obj.filter("hltEGL1SingleEGOrFilter")) filterbits|=1<<0;
