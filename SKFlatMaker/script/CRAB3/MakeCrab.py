@@ -10,6 +10,7 @@ txtfilename = sys.argv[1]
 
 SKFlatTag = os.environ['SKFlatTag']
 SKFlatWD = os.environ['SKFlatWD']
+cmssw_base = os.environ["CMSSW_BASE"]
 
 era = "-1"
 if "2016preVFP" in txtfilename:
@@ -60,9 +61,9 @@ for line in lines:
   line = line.strip('\n')
 
   #### incase the line contains # of event,
-  line = line.split()[0]
+  dasname = line.split()[0]
 
-  samplePDs = line.split("/")
+  samplePDs = dasname.split("/")
 
   #continue if blank line or invalid format
   if len(samplePDs)<4:
@@ -70,79 +71,50 @@ for line in lines:
   
   sample = samplePDs[1]
   confs = samplePDs[2]
+  dasname_="__".join(samplePDs[1:3])
 
-  #### get extension info
-  #### _ext1-v2
-  extension = ''
-  for w in range(0,len(confs)):
-    if confs[w:w+4]=='_ext':
-      extension = confs[w:]
-      break
-
-  cmd = 'crab submit -c SubmitCrab__'+sample+'__'+confs+'.py'
+  cmd = 'crab submit -c SubmitCrab__'+dasname_+'.py'
 
   ArgsListString = "['sampletype="+str_sample+"','era="+era+"'"
   # ['sampletype="+str_sample+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"','era="+era+"']
   if not isData:
-    HasFile = os.path.isfile(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+era+'/'+sample+'.txt')
-
-    if HasFile:
-
-      MCInfoLines = open(SKFlatWD+'/SKFlatMaker/script/MCPDFInfo/'+era+'/'+sample+'.txt').readlines()
-      words = MCInfoLines[0].split()
-      # 1001,1009 gaussian  2001,2100 2101,2102 1.5,1.5
-      ScaleIDRange = words[0]
-      PDFErrorType = words[1]
-      PDFErrorIDRange = words[2]
-      PDFAlphaSIDRange = words[3]
-      PDFAlphaSScaleValue = words[4]
-
-      #ArgsListString += ",'PDFErrorType="+PDFErrorType+"'"
-      ArgsListString += ",'ScaleIDRange="+ScaleIDRange+"'"
-      ArgsListString += ",'PDFErrorIDRange="+PDFErrorIDRange+"'"
-      ArgsListString += ",'PDFAlphaSIDRange="+PDFAlphaSIDRange+"'"
-      ArgsListString += ",'PDFAlphaSScaleValue="+PDFAlphaSScaleValue+"'"
-
-      AdditionalWeightList=[]
-      for i in range(1,len(MCInfoLines)):
-        AdditionalWeightList += ["{}[{}]".format(MCInfoLines[i].split()[0],MCInfoLines[i].split()[1])]
-      if len(AdditionalWeightList):
-        ArgsListString += ",'AdditionalWeights="+",".join(AdditionalWeightList)+"'"
-
-      if "999" in MCInfoLines[0]:
-        print '#### Has Issue : '+sample
-        #continue
+    weightmap=SKFlatWD+'SKFlatMaker/script/Weight/data/'+dasname_+'.txt'
+    if os.path.isfile(weightmap):
+      weightlines=open(weightmap).readlines()
+      weightlines=[l.split("#",1)[0].split() for l in weightlines if len(l.split("#",1))]
+      weightlines=["{}[{}]".format(words[0],words[1]) for words in weightlines if len(words)==2]
+      weightlines=",".join(weightlines)
+      if not "Scale" in weightlines:
+        print '#### Has Issue no Scale: '+sample
+      if not "AlphaS" in weightlines:
+        print '#### Has Issue no AlphaS: '+sample
+      if not "PDF" in weightlines:
+        print '#### Has Issue no PDF: '+sample
+      ArgsListString += ",'weightmap="+weightlines+"'"
 
     #### If WR sample
     elif 'WRtoNLtoLLJJ' in sample:
-      ArgsListString += ",'ScaleIDRange=1001,1045'"
-      ArgsListString += ",'PDFErrorIDRange=1046,1146'"
-      ArgsListString += ",'PDFAlphaSIDRange=1147,1148'"
-      ArgsListString += ",'PDFAlphaSScaleValue=0.75,0.75'"
+      ArgsListString += ",'weightmap=Scale[1001,1045],PDF[1046,1146],AlphaS[1147,1148],AlphaSScale[0.75,0.75]'"
 
     else:
       ### to avoid exit()
-      print '#### No MCPDFInfo : '+sample
-      #ArgsListString += ",'PDFErrorType="+"hessian"+"'"
+      print '#### No WeightMap : '+sample
 
   ArgsListString += "]"
 
 
   sk_lines = open('skeleton/SubmitCrab.py').readlines()
 
-  outname = base_dir+'/SubmitCrab__'+sample+'__'+confs+'.py'
+  outname = base_dir+'/SubmitCrab__'+dasname_+'.py'
   out = open(outname,'w')
 
   for sk_line in sk_lines:
     if "config.General.requestName" in sk_line:
-      if isData:
-        out.write("config.General.requestName = '"+sample+"__"+confs+"'\n")
-      else:
-        out.write("config.General.requestName = '"+sample+extension+"'\n")
+        out.write("config.General.requestName = '"+dasname_+"'\n")
     elif "config.JobType.pyCfgParams" in sk_line:
       out.write("config.JobType.pyCfgParams = "+ArgsListString+"\n")
     elif "config.Data.inputDataset" in sk_line:
-      out.write("config.Data.inputDataset = '"+line+"'\n")
+      out.write("config.Data.inputDataset = '"+dasname+"'\n")
       if isPrivateMC:
         out.write("config.Data.inputDBS = 'phys03'\n")
         out.write("config.Data.ignoreLocality = True\n")
