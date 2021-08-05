@@ -68,7 +68,7 @@ cd $SKFlatTag/2018/crab_submission_DATA/
 # now, run the submission commands
 ```
 
-# test runs
+## Test runs
 ```bash
 cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/test/
 cmsRun RunSKFlatMaker.py era=2016preVFP sampletype=DATA maxEvents=1000  ## Run 2016a DATA
@@ -80,3 +80,12 @@ cmsRun RunSKFlatMaker.py era=2017 sampletype=MC maxEvents=1000          ## Run 2
 cmsRun RunSKFlatMaker.py era=2018 sampletype=DATA maxEvents=1000        ## Run 2018 DATA
 cmsRun RunSKFlatMaker.py era=2018 sampletype=MC maxEvents=1000          ## Run 2018 MC
 ```
+Some useful options  
+- weightmap: weightmap file path or string: ex) Scale[1,9],PDF[1001,1100],AlphaS[1101,1102],AlphaSScale[1.5,1.5]  
+  weightmap files are stored at `$SKFlatWD/SKFlatMaker/script/Weight/data`  
+- debug: Set print level defalt=0  
+- `python RunSKFlatMaker.py help` for other options  
+
+## To-do list
+- weight calculation for some samples without weight information in MiniAOD  
+- README for adding new sample  

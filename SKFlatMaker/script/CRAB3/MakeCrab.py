@@ -111,7 +111,10 @@ for line in lines:
 
   for sk_line in sk_lines:
     if "config.General.requestName" in sk_line:
+      if len(dasname)<100:
         out.write("config.General.requestName = '"+dasname_+"'\n")
+      else:
+        out.write("config.General.requestName = '"+dasname_[:90]+"--"+dasname_[-7:]+"'\n")
     elif "config.JobType.pyCfgParams" in sk_line:
       out.write("config.JobType.pyCfgParams = "+ArgsListString+"\n")
     elif "config.Data.inputDataset" in sk_line:
