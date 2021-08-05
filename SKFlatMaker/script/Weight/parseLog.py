@@ -145,6 +145,7 @@ for log in logs:
     
     scale=[]
     alpsfact=[]
+    warning=""
     combine=""
     pdf=[]
     alphaS=[]
@@ -180,6 +181,7 @@ for log in logs:
             print lhapdfinfo
     else:
         print("> Cannot find default lhaid.. assume lhaid=306000")
+        warning+=" Assume lhaid=306000."
         lhaid="306000"
 
     
@@ -260,14 +262,18 @@ for log in logs:
         if len(cand)>99:
             cands+=[cand]
 
-    if len(cands)==0 and len(w.Find(name="PDF_variation1"))>0:
-        altlhaid=w.Find(name="PDF_variation1")[0].subs[0].PDF
-        print "> Cannot find pdf variations for {}. Use {}.".format(lhaid,altlhaid)
-        cand=Weight()
-        for i in range(103):
-            cand.subs+=w.Find(PDF=int(altlhaid)+i)
-        if len(cand)>99:
-            cands+=[cand]
+    if len(cands)==0:
+        altlhaids=[]
+        if lhaid=="306000": altlhaids=["305800"]
+        for altlhaid in altlhaids:
+            print "> Cannot find pdf variations for {}. Try {}.".format(lhaid,altlhaid)
+            cand=Weight()
+            for i in range(101):
+                cand.subs+=w.Find(PDF=int(altlhaid)+i)
+            if len(cand)>99:
+                cands+=[cand]
+                warning+=" Use {} for the PDF variation set.".format(altlhaid)
+                break
             
     if len(cands)==1: 
         final=cands[0]
@@ -293,7 +299,7 @@ for log in logs:
 
     ###############
     #### output ###
-    out=["## lhaid="+lhaid+" "+combine]
+    out=["## lhaid="+lhaid+" "+combine+warning]
     if len(scale)==9:
         if scale[-1]-scale[0]==9-1:
             out+=["Scale\t{},{}".format(scale[0],scale[-1])]
