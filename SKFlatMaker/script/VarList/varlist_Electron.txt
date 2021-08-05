@@ -72,4 +72,5 @@ float	electron_dr03HcalTowerSumEt	1
 float	electron_dr03TkSumPt	1
 float	electron_ecalPFClusterIso	1
 float	electron_hcalPFClusterIso	1
-int	electron_filterbits	1	
+ULong64_t	electron_pathbits	1
+ULong64_t	electron_filterbits	1	

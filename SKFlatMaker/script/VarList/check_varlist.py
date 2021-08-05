@@ -32,8 +32,8 @@ BashColor_Red = '\033[0;31m'
 BashColor_Green = '\033[0;32m'
 BashColor_NC = '\033[0m'
 
-lines_header = open('../interface/SKFlatMaker.h').readlines()
-lines_src = open('../src/SKFlatMaker.cc').readlines()
+lines_header = open(os.environ["SKFlatWD"]+'SKFlatMaker/interface/SKFlatMaker.h').readlines()
+lines_src = open(os.environ["SKFlatWD"]+'SKFlatMaker/src/SKFlatMaker.cc').readlines()
 
 for obj in objects:
 

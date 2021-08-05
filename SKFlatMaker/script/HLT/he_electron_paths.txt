@@ -1,0 +1,2 @@
+HLT_Ele17_CaloIdM_TrackIdM_PFJet30_v
+HLT_Ele17_CaloIdL_TrackIdL_IsoVL_PFJet30_v

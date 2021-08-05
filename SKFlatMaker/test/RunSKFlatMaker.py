@@ -8,6 +8,7 @@ options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarPar
 options.register('weightmap', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "weightmap file path or string: Scale[1,9],PDF[1001,1100],AlphaS[1101,1102],AlphaSScale[1.5,1.5]")
 options.register('era',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "era: Which era? 2016preVFP, 2016postVFP, 2017, 2018")
 options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "Deprecated. Use 'era'")
+options.register('debug',0, VarParsing.multiplicity.singleton, VarParsing.varType.int, "print level")
 options.setDefault('outputFile','SKFlatNtuple.root')
 options.parseArguments()
 
@@ -171,7 +172,7 @@ from SKFlatMaker.SKFlatMaker.SKFlatMaker_cfi import *
 
 process.recoTree = SKFlatMaker.clone()
 process.recoTree.DataYear = cms.untracked.int32(int(options.era[0:4]))
-process.recoTree.DebugLevel = cms.untracked.int32(0)
+process.recoTree.DebugLevel = cms.untracked.int32(options.debug)
 process.recoTree.StoreHLTObjectFlag = False ##FIXME
 
 # -- Objects without Corrections -- # 

@@ -366,6 +366,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_dr03TkSumPt.clear();
   electron_ecalPFClusterIso.clear();
   electron_hcalPFClusterIso.clear();
+  electron_pathbits.clear();
   electron_filterbits.clear();
 
   //==== Muon
@@ -461,6 +462,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_simPdgId.clear();
   muon_simMotherPdgId.clear();
   muon_simMatchQuality.clear();
+  muon_pathbits.clear();
   muon_filterbits.clear();
 
   //==== Jet
@@ -948,7 +950,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_dr03TkSumPt", "vector<float>", &electron_dr03TkSumPt);
     DYTree->Branch("electron_ecalPFClusterIso", "vector<float>", &electron_ecalPFClusterIso);
     DYTree->Branch("electron_hcalPFClusterIso", "vector<float>", &electron_hcalPFClusterIso);
-    DYTree->Branch("electron_filterbits", "vector<int>", &electron_filterbits);
+    DYTree->Branch("electron_pathbits", "vector<ULong64_t>", &electron_pathbits);
+    DYTree->Branch("electron_filterbits", "vector<ULong64_t>", &electron_filterbits);
   }
   
   // -- muon variables -- //
@@ -1046,7 +1049,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_simPdgId", "vector<int>", &muon_simPdgId);
     DYTree->Branch("muon_simMotherPdgId", "vector<int>", &muon_simMotherPdgId);
     DYTree->Branch("muon_simMatchQuality", "vector<float>", &muon_simMatchQuality);
-    DYTree->Branch("muon_filterbits", "vector<int>", &muon_filterbits);
+    DYTree->Branch("muon_pathbits", "vector<ULong64_t>", &muon_pathbits);
+    DYTree->Branch("muon_filterbits", "vector<ULong64_t>", &muon_filterbits);
 
   }
   
@@ -1163,6 +1167,8 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
       "HLT_IsoTkMu24_v*",
       "HLT_TripleMu*",
       "HLT_DiMu*",
+      "HLT_TrkMu15_DoubleTrkMu5NoFiltersNoVtx_v*",
+      "HLT_TrkMu12_DoubleTrkMu5NoFiltersNoVtx_v*",
 
 /*
       //==== single muon triggers
@@ -1264,9 +1270,11 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
           if( (*match).find("DisplacedIdL") != std::string::npos ) continue;
           if( (*match).find("HighEta") != std::string::npos ) continue;
           if( (*match).find("EleCleaned") != std::string::npos ) continue;
-          if( (*match).find("NoFiltersNoVtx") != std::string::npos ) continue;
+	  if( (*match).find("_DoubleTrkMu5NoFiltersNoVtx_v") == std::string::npos )
+	    if( (*match).find("NoFiltersNoVtx") != std::string::npos ) continue;
           if( (*match).find("WHbb") != std::string::npos ) continue;
-          if( (*match).find("eta2p1") != std::string::npos ) continue;
+	  if( (*match).find("HLT_Ele27_eta2p1_WPTight_Gsf_v") == std::string::npos )
+	    if( (*match).find("eta2p1") != std::string::npos ) continue;
 
           if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
 
@@ -1493,6 +1501,7 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
   iEvent.getByToken(TriggerObjectToken, triggerObject);
   Handle<TriggerResults> trigResult;
   iEvent.getByToken(TriggerToken, trigResult);
+  const edm::TriggerNames trigNames = iEvent.triggerNames(*trigResult);
 
   for( unsigned int i = 0; i != muonHandle->size(); i++ ){
     // cout << "##### Analyze:Start the loop for the muon #####" << endl;
@@ -1949,43 +1958,96 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     muon_roch_sf_up.push_back( this_roccor+this_roccor_err );
 
     // -- HLT object matching -- //
-    int filterbits=0;
+    ULong64_t pathbits=0;
+    ULong64_t filterbits=0;
     for(pat::TriggerObjectStandAlone obj : *triggerObject){
       if(deltaR(obj,imuon)<0.3){
+	obj.unpackPathNames(trigNames);
 	obj.unpackFilterLabels(iEvent, *trigResult);
-	if(obj.filter("hltDiMuon178Mass3p8Filtered")) filterbits|=1<<0;
-	if(obj.filter("hltDiMuon178Mass8Filtered")) filterbits|=1<<1;
-	if(obj.filter("hltDiMuon178RelTrkIsoFiltered0p4")) filterbits|=1<<2;
-	if(obj.filter("hltDiMuon178RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=1<<3;
-	if(obj.filter("hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4")) filterbits|=1<<4;
-	if(obj.filter("hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=1<<5;
-	if(obj.filter("hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4")) filterbits|=1<<6;
-	if(obj.filter("hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=1<<7;
-	if(obj.filter("hltDiMuonGlbFiltered17TrkFiltered8")) filterbits|=1<<8;
-	if(obj.filter("hltDiMuonTrk17Trk8RelTrkIsoFiltered0p4")) filterbits|=1<<9;
-	if(obj.filter("hltDiMuonTrk17Trk8RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=1<<10;
-	if(obj.filter("hltDiTkMuonTkFiltered17TkFiltered8")) filterbits|=1<<11;
-	if(obj.filter("hltL3crIsoL1sMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p09")) filterbits|=1<<12;
-	if(obj.filter("hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07")) filterbits|=1<<13;
-	if(obj.filter("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07")) filterbits|=1<<14;
-	if(obj.filter("hltL3fL1DoubleMu155fFiltered17")) filterbits|=1<<15;
-	if(obj.filter("hltL3fL1DoubleMu155fPreFiltered8")) filterbits|=1<<16;
-	if(obj.filter("hltL3fL1sDoubleMu114L1f0L2f10L3Filtered17")) filterbits|=1<<17;
-	if(obj.filter("hltL3fL1sDoubleMu114L1f0L2f10OneMuL3Filtered17")) filterbits|=1<<18;
-	if(obj.filter("hltL3fL1sDoubleMu114TkFiltered17Q")) filterbits|=1<<19;
-	if(obj.filter("hltL3fL1sMu10lqL1f0L2f10L3Filtered17")) filterbits|=1<<20;
-	if(obj.filter("hltL3fL1sMu15DQlqL1f0L2f10L3Filtered17")) filterbits|=1<<21;
-	if(obj.filter("hltL3fL1sMu1lqL1f0L2f10L3Filtered17TkIsoFiltered0p4")) filterbits|=1<<22;
-	if(obj.filter("hltL3fL1sMu22L1f0Tkf24QL3trkIsoFiltered0p09")) filterbits|=1<<23;
-	if(obj.filter("hltL3fL1sMu5L1f0L2f5L3Filtered8")) filterbits|=1<<24;
-	if(obj.filter("hltL3fL1sMu5L1f0L2f5L3Filtered8TkIsoFiltered0p4")) filterbits|=1<<25;
-	if(obj.filter("hltL3pfL1sDoubleMu114ORDoubleMu125L1f0L2pf0L3PreFiltered8")) filterbits|=1<<26;
-	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<27;
-	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23")) filterbits|=1<<28;
-	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<29;
-	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8")) filterbits|=1<<30;
+	if(obj.path("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<0;
+	if(obj.path("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*",true,true)) pathbits|=ULong64_t(1)<<1;
+	if(obj.path("HLT_IsoMu24_v*",true,true)) pathbits|=ULong64_t(1)<<2;
+	if(obj.path("HLT_IsoMu27_v*",true,true)) pathbits|=ULong64_t(1)<<3;
+	if(obj.path("HLT_IsoTkMu24_v*",true,true)) pathbits|=ULong64_t(1)<<4;
+	if(obj.path("HLT_Mu17_Mu8_SameSign_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<5;
+	if(obj.path("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*",true,true)) pathbits|=ULong64_t(1)<<6;
+	if(obj.path("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*",true,true)) pathbits|=ULong64_t(1)<<7;
+	if(obj.path("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<8;
+	if(obj.path("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*",true,true)) pathbits|=ULong64_t(1)<<9;
+	if(obj.path("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<10;
+	if(obj.path("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*",true,true)) pathbits|=ULong64_t(1)<<11;
+	if(obj.path("HLT_Mu17_TrkIsoVVL_v*",true,true)) pathbits|=ULong64_t(1)<<12;
+	if(obj.path("HLT_Mu17_v*",true,true)) pathbits|=ULong64_t(1)<<13;
+	if(obj.path("HLT_Mu18_Mu9_SameSign_v*",true,true)) pathbits|=ULong64_t(1)<<14;
+	if(obj.path("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<15;
+	if(obj.path("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*",true,true)) pathbits|=ULong64_t(1)<<16;
+	if(obj.path("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<17;
+	if(obj.path("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*",true,true)) pathbits|=ULong64_t(1)<<18;
+	if(obj.path("HLT_Mu50_v*",true,true)) pathbits|=ULong64_t(1)<<19;
+	if(obj.path("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*",true,true)) pathbits|=ULong64_t(1)<<20;
+	if(obj.path("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<21;
+	if(obj.path("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*",true,true)) pathbits|=ULong64_t(1)<<22;
+	if(obj.path("HLT_Mu8_TrkIsoVVL_v*",true,true)) pathbits|=ULong64_t(1)<<23;
+	if(obj.path("HLT_Mu8_v*",true,true)) pathbits|=ULong64_t(1)<<24;
+	if(obj.path("HLT_OldMu100_v*",true,true)) pathbits|=ULong64_t(1)<<25;
+	if(obj.path("HLT_TkMu100_v*",true,true)) pathbits|=ULong64_t(1)<<26;
+	if(obj.path("HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<27;
+	if(obj.path("HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*",true,true)) pathbits|=ULong64_t(1)<<28;
+	if(obj.path("HLT_TkMu50_v*",true,true)) pathbits|=ULong64_t(1)<<29;
+	if(obj.path("HLT_TripleMu_10_5_5_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<30;
+	if(obj.path("HLT_TripleMu_12_10_5_v*",true,true)) pathbits|=ULong64_t(1)<<31;
+	if(obj.path("HLT_TrkMu12_DoubleTrkMu5NoFiltersNoVtx_v*",true,true)) pathbits|=ULong64_t(1)<<32;
+	if(obj.path("HLT_TrkMu15_DoubleTrkMu5NoFiltersNoVtx_v*",true,true)) pathbits|=ULong64_t(1)<<33;
+	if(obj.filter("hltDiMu9Ele9CaloIdLTrackIdLMuonlegL3Filtered9")) filterbits|=ULong64_t(1)<<0;
+	if(obj.filter("hltDiMuon178Mass3p8Filtered")) filterbits|=ULong64_t(1)<<1;
+	if(obj.filter("hltDiMuon178Mass8Filtered")) filterbits|=ULong64_t(1)<<2;
+	if(obj.filter("hltDiMuon178RelTrkIsoFiltered0p4")) filterbits|=ULong64_t(1)<<3;
+	if(obj.filter("hltDiMuon178RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=ULong64_t(1)<<4;
+	if(obj.filter("hltDiMuonGlb17Glb8DzFiltered0p2")) filterbits|=ULong64_t(1)<<5;
+	if(obj.filter("hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4")) filterbits|=ULong64_t(1)<<6;
+	if(obj.filter("hltDiMuonGlb17Glb8RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=ULong64_t(1)<<7;
+	if(obj.filter("hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4")) filterbits|=ULong64_t(1)<<8;
+	if(obj.filter("hltDiMuonGlb17Trk8RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=ULong64_t(1)<<9;
+	if(obj.filter("hltDiMuonGlbFiltered17TrkFiltered8")) filterbits|=ULong64_t(1)<<10;
+	if(obj.filter("hltDiMuonTrk17Trk8RelTrkIsoFiltered0p4")) filterbits|=ULong64_t(1)<<11;
+	if(obj.filter("hltDiMuonTrk17Trk8RelTrkIsoFiltered0p4DzFiltered0p2")) filterbits|=ULong64_t(1)<<12;
+	if(obj.filter("hltDiTkMuonTkFiltered17TkFiltered8")) filterbits|=ULong64_t(1)<<13;
+	if(obj.filter("hltL1TripleMu553L2TriMuFiltered3L3TriMuFiltered10105")) filterbits|=ULong64_t(1)<<14;
+	if(obj.filter("hltL1TripleMu553L2TriMuFiltered3L3TriMuFiltered5")) filterbits|=ULong64_t(1)<<15;
+	if(obj.filter("hltL3crIsoL1sMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p09")) filterbits|=ULong64_t(1)<<16;
+	if(obj.filter("hltL3crIsoL1sMu22Or25L1f0L2f10QL3f27QL3trkIsoFiltered0p07")) filterbits|=ULong64_t(1)<<17;
+	if(obj.filter("hltL3crIsoL1sSingleMu22L1f0L2f10QL3f24QL3trkIsoFiltered0p07")) filterbits|=ULong64_t(1)<<18;
+	if(obj.filter("hltL3fL1DoubleMu155fFiltered17")) filterbits|=ULong64_t(1)<<19;
+	if(obj.filter("hltL3fL1DoubleMu155fPreFiltered8")) filterbits|=ULong64_t(1)<<20;
+	if(obj.filter("hltL3fL1DoubleMu157fFiltered18")) filterbits|=ULong64_t(1)<<21;
+	if(obj.filter("hltL3fL1DoubleMu157fFiltered9")) filterbits|=ULong64_t(1)<<22;
+	if(obj.filter("hltL3fL1DoubleMu7EG7f0Filtered9")) filterbits|=ULong64_t(1)<<23;
+	if(obj.filter("hltL3fL1Mu6DoubleEG10f0Filtered8")) filterbits|=ULong64_t(1)<<24;
+	if(obj.filter("hltL3fL1TripleMu553f0Filtered10105")) filterbits|=ULong64_t(1)<<25;
+	if(obj.filter("hltL3fL1TripleMu553f0Filtered1055")) filterbits|=ULong64_t(1)<<26;
+	if(obj.filter("hltL3fL1TripleMu553f0PreFiltered555")) filterbits|=ULong64_t(1)<<27;
+	if(obj.filter("hltL3fL1sDoubleMu114L1f0L2f10L3Filtered17")) filterbits|=ULong64_t(1)<<28;
+	if(obj.filter("hltL3fL1sDoubleMu114L1f0L2f10OneMuL3Filtered17")) filterbits|=ULong64_t(1)<<29;
+	if(obj.filter("hltL3fL1sDoubleMu114TkFiltered17Q")) filterbits|=ULong64_t(1)<<30;
+	if(obj.filter("hltL3fL1sMu10lqL1f0L2f10L3Filtered17")) filterbits|=ULong64_t(1)<<31;
+	if(obj.filter("hltL3fL1sMu15DQlqL1f0L2f10L3Filtered17")) filterbits|=ULong64_t(1)<<32;
+	if(obj.filter("hltL3fL1sMu1lqL1f0L2f10L3Filtered17TkIsoFiltered0p4")) filterbits|=ULong64_t(1)<<33;
+	if(obj.filter("hltL3fL1sMu22L1f0Tkf24QL3trkIsoFiltered0p09")) filterbits|=ULong64_t(1)<<34;
+	if(obj.filter("hltL3fL1sMu5L1f0L2f5L3Filtered8")) filterbits|=ULong64_t(1)<<35;
+	if(obj.filter("hltL3fL1sMu5L1f0L2f5L3Filtered8TkIsoFiltered0p4")) filterbits|=ULong64_t(1)<<36;
+	if(obj.filter("hltL3pfL1sDoubleMu114L1f0L2pf0L3PreFiltered8")) filterbits|=ULong64_t(1)<<37;
+	if(obj.filter("hltL3pfL1sDoubleMu114ORDoubleMu125L1f0L2pf0L3PreFiltered8")) filterbits|=ULong64_t(1)<<38;
+	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=ULong64_t(1)<<39;
+	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23")) filterbits|=ULong64_t(1)<<40;
+	if(obj.filter("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered23")) filterbits|=ULong64_t(1)<<41;
+	if(obj.filter("hltMu8DiEle12CaloIdLTrackIdLMuonlegL3Filtered8")) filterbits|=ULong64_t(1)<<42;
+	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=ULong64_t(1)<<43;
+	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLMuonlegL3IsoFiltered8")) filterbits|=ULong64_t(1)<<44;
+	if(obj.filter("hltMu9Ele9DZFilter")) filterbits|=ULong64_t(1)<<45;
+	if(obj.filter("hltTripleTrkMuFiltered5NoVtx")) filterbits|=ULong64_t(1)<<46;
       }
     }
+    muon_pathbits.push_back(pathbits);
     muon_filterbits.push_back(filterbits);
   } // -- End of imuon iteration -- //
   
@@ -2028,6 +2090,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   iEvent.getByToken(TriggerObjectToken, triggerObject);
   Handle<TriggerResults> trigResult;
   iEvent.getByToken(TriggerToken, trigResult);
+  const edm::TriggerNames trigNames = iEvent.triggerNames(*trigResult);
 
   edm::FileInPath eaConstantsFile(electron_EA_NHandPh_file);
   EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
@@ -2330,31 +2393,62 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     }
 */
     // -- HLT object matching -- //
-    int filterbits=0;
+    ULong64_t pathbits=0;
+    ULong64_t filterbits=0;
     for(pat::TriggerObjectStandAlone obj : *triggerObject){
       if(deltaR(obj,*el)<0.3){
+	obj.unpackPathNames(trigNames);
 	obj.unpackFilterLabels(iEvent, *trigResult);
-	if(obj.filter("hltEGL1SingleEGOrFilter")) filterbits|=1<<0;
-	if(obj.filter("hltEle12CaloIdLTrackIdLIsoVLTrackIsoFilter")) filterbits|=1<<1;
-	if(obj.filter("hltEle17CaloIdLTrackIdLIsoVLTrackIsoFilter")) filterbits|=1<<2;
-	if(obj.filter("hltEle17CaloIdMGsfTrackIdMDphiFilter")) filterbits|=1<<3;
-	if(obj.filter("hltEle23CaloIdLTrackIdLIsoVLJet30TrackIsoFilter")) filterbits|=1<<4;
-	if(obj.filter("hltEle23Ele12CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<5;
-	if(obj.filter("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter")) filterbits|=1<<6;
-	if(obj.filter("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter")) filterbits|=1<<7;
-	if(obj.filter("hltEle27WPTightGsfTrackIsoFilter")) filterbits|=1<<8;
-	if(obj.filter("hltEle27erWPTightGsfTrackIsoFilter")) filterbits|=1<<9;
-	if(obj.filter("hltEle28WPTightGsfTrackIsoFilter")) filterbits|=1<<10;
-	if(obj.filter("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter")) filterbits|=1<<11;
-	if(obj.filter("hltEle32WPTightGsfTrackIsoFilter")) filterbits|=1<<12;
-	if(obj.filter("hltEle35noerWPTightGsfTrackIsoFilter")) filterbits|=1<<13;
-	if(obj.filter("hltEle8CaloIdLTrackIdLIsoVLTrackIsoFilter")) filterbits|=1<<14;
-	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<15;
-	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter")) filterbits|=1<<16;
-	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=1<<17;
-	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter")) filterbits|=1<<18;
+	if(obj.path("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<0;
+	if(obj.path("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v*",true,true)) pathbits|=ULong64_t(1)<<1;
+	if(obj.path("HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30_v*",true,true)) pathbits|=ULong64_t(1)<<2;
+	if(obj.path("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v*",true,true)) pathbits|=ULong64_t(1)<<3;
+	if(obj.path("HLT_Ele17_CaloIdL_TrackIdL_IsoVL_PFJet30_v*",true,true)) pathbits|=ULong64_t(1)<<4;
+	if(obj.path("HLT_Ele17_CaloIdM_TrackIdM_PFJet30_v*",true,true)) pathbits|=ULong64_t(1)<<5;
+	if(obj.path("HLT_Ele23_CaloIdL_TrackIdL_IsoVL_PFJet30_v*",true,true)) pathbits|=ULong64_t(1)<<6;
+	if(obj.path("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<7;
+	if(obj.path("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*",true,true)) pathbits|=ULong64_t(1)<<8;
+	if(obj.path("HLT_Ele27_WPTight_Gsf_v*",true,true)) pathbits|=ULong64_t(1)<<9;
+	if(obj.path("HLT_Ele27_eta2p1_WPTight_Gsf_v*",true,true)) pathbits|=ULong64_t(1)<<10;
+	if(obj.path("HLT_Ele28_WPTight_Gsf_v*",true,true)) pathbits|=ULong64_t(1)<<11;
+	if(obj.path("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*",true,true)) pathbits|=ULong64_t(1)<<12;
+	if(obj.path("HLT_Ele32_WPTight_Gsf_v*",true,true)) pathbits|=ULong64_t(1)<<13;
+	if(obj.path("HLT_Ele35_WPTight_Gsf_v*",true,true)) pathbits|=ULong64_t(1)<<14;
+	if(obj.path("HLT_Ele8_CaloIdL_TrackIdL_IsoVL_PFJet30_v*",true,true)) pathbits|=ULong64_t(1)<<15;
+	if(obj.path("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<16;
+	if(obj.path("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*",true,true)) pathbits|=ULong64_t(1)<<17;
+	if(obj.path("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<18;
+	if(obj.path("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v*",true,true)) pathbits|=ULong64_t(1)<<19;
+	if(obj.path("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v*",true,true)) pathbits|=ULong64_t(1)<<20;
+	if(obj.path("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*",true,true)) pathbits|=ULong64_t(1)<<21;
+	if(obj.path("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*",true,true)) pathbits|=ULong64_t(1)<<22;
+	if(obj.filter("hltDiMu9Ele9CaloIdLTrackIdLElectronlegDphiFilter")) filterbits|=ULong64_t(1)<<0;
+	if(obj.filter("hltEGL1SingleEGOrFilter")) filterbits|=ULong64_t(1)<<1;
+	if(obj.filter("hltEle12CaloIdLTrackIdLIsoVLTrackIsoFilter")) filterbits|=ULong64_t(1)<<2;
+	if(obj.filter("hltEle16Ele12Ele8CaloIdLTrackIdLDphiLeg1Filter")) filterbits|=ULong64_t(1)<<3;
+	if(obj.filter("hltEle16Ele12Ele8CaloIdLTrackIdLDphiLeg2Filter")) filterbits|=ULong64_t(1)<<4;
+	if(obj.filter("hltEle17CaloIdLTrackIdLIsoVLTrackIsoFilter")) filterbits|=ULong64_t(1)<<5;
+	if(obj.filter("hltEle17CaloIdMGsfTrackIdMDphiFilter")) filterbits|=ULong64_t(1)<<6;
+	if(obj.filter("hltEle23CaloIdLTrackIdLIsoVLJet30TrackIsoFilter")) filterbits|=ULong64_t(1)<<7;
+	if(obj.filter("hltEle23Ele12CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=ULong64_t(1)<<8;
+	if(obj.filter("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg1Filter")) filterbits|=ULong64_t(1)<<9;
+	if(obj.filter("hltEle23Ele12CaloIdLTrackIdLIsoVLTrackIsoLeg2Filter")) filterbits|=ULong64_t(1)<<10;
+	if(obj.filter("hltEle27WPTightGsfTrackIsoFilter")) filterbits|=ULong64_t(1)<<11;
+	if(obj.filter("hltEle27erWPTightGsfTrackIsoFilter")) filterbits|=ULong64_t(1)<<12;
+	if(obj.filter("hltEle28WPTightGsfTrackIsoFilter")) filterbits|=ULong64_t(1)<<13;
+	if(obj.filter("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter")) filterbits|=ULong64_t(1)<<14;
+	if(obj.filter("hltEle32WPTightGsfTrackIsoFilter")) filterbits|=ULong64_t(1)<<15;
+	if(obj.filter("hltEle35noerWPTightGsfTrackIsoFilter")) filterbits|=ULong64_t(1)<<16;
+	if(obj.filter("hltEle8CaloIdLTrackIdLIsoVLTrackIsoFilter")) filterbits|=ULong64_t(1)<<17;
+	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=ULong64_t(1)<<18;
+	if(obj.filter("hltMu23TrkIsoVVLEle12CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter")) filterbits|=ULong64_t(1)<<19;
+	if(obj.filter("hltMu23TrkIsoVVLEle8CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter")) filterbits|=ULong64_t(1)<<20;
+	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLDZFilter")) filterbits|=ULong64_t(1)<<21;
+	if(obj.filter("hltMu8TrkIsoVVLEle23CaloIdLTrackIdLIsoVLElectronlegTrackIsoFilter")) filterbits|=ULong64_t(1)<<22;
+	if(obj.filter("hltMu9Ele9DZFilter")) filterbits|=ULong64_t(1)<<23;
       }
     }
+    electron_pathbits.push_back(pathbits);
     electron_filterbits.push_back(filterbits);
 
   } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //

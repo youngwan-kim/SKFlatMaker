@@ -90,4 +90,5 @@ int	muon_simHeaviestMotherFlavour	1
 int	muon_simPdgId	1
 int	muon_simMotherPdgId	1
 float	muon_simMatchQuality	1
-int	muon_filterbits	1
+ULong64_t	muon_pathbits	1
+ULong64_t	muon_filterbits	1

@@ -90,7 +90,8 @@ for line in lines:
         print '#### Has Issue no AlphaS: '+sample
       if not "PDF" in weightlines:
         print '#### Has Issue no PDF: '+sample
-      ArgsListString += ",'weightmap="+weightlines+"'"
+      if weightlines!="": 
+        ArgsListString += ",'weightmap="+weightlines+"'"
 
     #### If WR sample
     elif 'WRtoNLtoLLJJ' in sample:
