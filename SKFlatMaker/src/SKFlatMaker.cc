@@ -13,6 +13,7 @@
 //   Revised By
 //   S.B. Oh           Seoul National University
 //   J.S. Kim          Seoul National University
+//   I. Yoon           Seoul National Univeristy (GenHFHadronMatcher)
 //
 //--------------------------------------------------
 
@@ -63,7 +64,23 @@ GenEventInfoToken                   ( consumes< GenEventInfoProduct >           
 BeamSpotToken                       ( consumes< reco::BeamSpot >                            (iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
 PrimaryVertexToken                  ( consumes< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
 TrackToken                          ( consumes< edm::View<reco::Track> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
-PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
+PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) ),
+
+// -- GenHFHadronMatcher -- //
+genJetsToken_                       (consumes<reco::GenJetCollection>                       (iConfig.getParameter<edm::InputTag>("genJets"))),
+genBHadJetIndexToken_               ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadJetIndex"))),
+genBHadFlavourToken_                (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genBHadFlavour"))),  
+genBHadFromTopWeakDecayToken_       (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genBHadFromTopWeakDecay"))),
+genBHadPlusMothersToken_            (consumes<std::vector<reco::GenParticle> >              (iConfig.getParameter<edm::InputTag>("genBHadPlusMothers"))),
+genBHadPlusMothersIndicesToken_     (consumes<std::vector<std::vector<int> > >              (iConfig.getParameter<edm::InputTag>("genBHadPlusMothersIndices"))),
+genBHadIndexToken_                  (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genBHadIndex"))),
+genBHadLeptonHadronIndexToken_      (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genBHadLeptonHadronIndex"))),
+genBHadLeptonViaTauToken_           (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genBHadLeptonViaTau"))),
+genCHadJetIndexToken_               (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genCHadJetIndex"))),
+genCHadFlavourToken_                (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genCHadFlavour"))),
+genCHadFromTopWeakDecayToken_       (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genCHadFromTopWeakDecay"))),
+genCHadBHadronIdToken_              (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genCHadBHadronId"))),
+genCHadIndexToken_                  (consumes<std::vector<int> >                            (iConfig.getParameter<edm::InputTag>("genCHadIndex")))                   
 {
 
   DataYear                          = iConfig.getUntrackedParameter<int>("DataYear");
@@ -506,6 +523,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_smearedResDown.clear();
   jet_JECL1FastJet.clear();
   jet_JECFull.clear();
+  jet_GenHFHadronMatcher_flavour.clear();
+  jet_GenHFHadronMatcher_origin.clear();
 
   //==== FatJet
   fatjet_pt.clear();
@@ -821,7 +840,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_smearedResDown", "vector<float>", &jet_smearedResDown);
     DYTree->Branch("jet_JECL1FastJet", "vector<float>", &jet_JECL1FastJet);
     DYTree->Branch("jet_JECFull", "vector<float>", &jet_JECFull);
-
+    DYTree->Branch("jet_GenHFHadronMatcher_flavour", "vector<int>", &jet_GenHFHadronMatcher_flavour);
+    DYTree->Branch("jet_GenHFHadronMatcher_origin", "vector<int>", &jet_GenHFHadronMatcher_origin);
   }
   
   if(theStoreFatJetFlag){
@@ -2734,6 +2754,46 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
   edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(JetToken,jetHandle);
   
+  // Handles for GenHFHadronMatcher
+  edm::Handle<std::vector<int> > genBHadFlavour;
+  iEvent.getByToken(genBHadFlavourToken_, genBHadFlavour);
+    
+  edm::Handle<std::vector<int> > genBHadJetIndex;
+  iEvent.getByToken(genBHadJetIndexToken_, genBHadJetIndex);
+    
+  edm::Handle<std::vector<int> > genBHadFromTopWeakDecay;
+  iEvent.getByToken(genBHadFromTopWeakDecayToken_, genBHadFromTopWeakDecay);
+    
+  edm::Handle<std::vector<reco::GenParticle> > genBHadPlusMothers;
+  iEvent.getByToken(genBHadPlusMothersToken_, genBHadPlusMothers);
+    
+  edm::Handle<std::vector<std::vector<int> > > genBHadPlusMothersIndices;
+  iEvent.getByToken(genBHadPlusMothersIndicesToken_, genBHadPlusMothersIndices);
+    
+  edm::Handle<std::vector<int> > genBHadIndex;
+  iEvent.getByToken(genBHadIndexToken_, genBHadIndex);
+    
+  edm::Handle<std::vector<int> > genBHadLeptonHadronIndex;
+  iEvent.getByToken(genBHadLeptonHadronIndexToken_, genBHadLeptonHadronIndex);
+    
+  edm::Handle<std::vector<int> > genBHadLeptonViaTau;
+  iEvent.getByToken(genBHadLeptonViaTauToken_, genBHadLeptonViaTau);
+
+  edm::Handle<std::vector<int> > genCHadFlavour;
+  iEvent.getByToken(genCHadFlavourToken_, genCHadFlavour);
+    
+  edm::Handle<std::vector<int> > genCHadJetIndex;
+  iEvent.getByToken(genCHadJetIndexToken_, genCHadJetIndex);
+    
+  edm::Handle<std::vector<int> > genCHadFromTopWeakDecay;
+  iEvent.getByToken(genCHadFromTopWeakDecayToken_, genCHadFromTopWeakDecay);
+    
+  edm::Handle<std::vector<int> > genCHadBHadronId;
+  iEvent.getByToken(genCHadBHadronIdToken_, genCHadBHadronId);
+
+  edm::Handle<std::vector<int> > genCHadIndex;
+  iEvent.getByToken(genCHadIndexToken_, genCHadIndex);
+
   if( jetHandle->size() > 0 && theDebugLevel > 0) 
     cout << "[SKFlatMaker::fillJet] # of Jets = " << jetHandle->size() << endl;
   
@@ -2987,7 +3047,6 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
         smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
         smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
         smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
-
       }
       else if (jer_sf > 1) {
 
@@ -3031,8 +3090,63 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
       jet_smearedRes.push_back(smearFactor);
       jet_smearedResUp.push_back(smearFactor_UP);
       jet_smearedResDown.push_back(smearFactor_DOWN);
+      
+      //== GenHFHadronMatcher  ==//
+      if(genJet){
+	int index_genJet = find_index(genJet);
+	
+	bool chkBHadron = false;
+	bool chkCHadron = false;
+	
+	int bHadFlavor;
+	//int bHadFromTopWeakDecay;
+	
+	int cHadFlavor;
+	int cHadBHadronId;
 
-    }
+	//BHadron
+	for(size_t hadronId = 0; hadronId < genBHadIndex->size(); ++hadronId){
+	  const int jetIndex = genBHadJetIndex->at(hadronId);
+	  
+	  if(index_genJet == jetIndex){
+	    bHadFlavor = genBHadFlavour->at(hadronId);
+	    //bHadFromTopWeakDecay = genBHadFromTopWeakDecay->at(hadronId);
+
+	    chkBHadron = true;
+	  }
+	}//for loop over BHadron loop
+
+	//CHadron
+	for(size_t hadronId = 0; hadronId < genCHadIndex->size(); ++hadronId){
+	  const int jetIndex = genCHadJetIndex->at(hadronId);
+	  
+	  if(index_genJet == jetIndex){
+	    cHadFlavor = genCHadFlavour->at(hadronId);
+	    cHadBHadronId = genCHadBHadronId->at(hadronId);
+	    
+	    //cHadBHadronId==-1 means no b hadrons among mothers of corresponding C hadrons
+	    if(cHadBHadronId==-1) chkCHadron = true;
+	  }
+	}//for loop over CHadron loop
+	 
+	if(chkBHadron==true){
+	  jet_GenHFHadronMatcher_flavour.push_back(5);//matched b hadron
+	  jet_GenHFHadronMatcher_origin.push_back(bHadFlavor);
+	}
+	else if(chkCHadron==true){
+	  jet_GenHFHadronMatcher_flavour.push_back(4);//no b haron, only matched c hadron
+	  jet_GenHFHadronMatcher_origin.push_back(cHadFlavor);
+	}
+	else{
+	  jet_GenHFHadronMatcher_flavour.push_back(1);//light jets, neither b nor c hadron found
+	  jet_GenHFHadronMatcher_origin.push_back(-999);//no origin found
+	}
+      }//if(genJet)
+      else{
+	jet_GenHFHadronMatcher_flavour.push_back(-999);//no matched genjet found
+	jet_GenHFHadronMatcher_origin.push_back(-999);//no matched genjet found
+      }
+    }//if(!IsData)
 
     //cout << "QGTagger:qgLikelihood = " << jets_iter->userFloat("QGTagger:qgLikelihood") << endl;
 
@@ -3436,6 +3550,26 @@ const reco::GenJet* SKFlatMaker::match(const T& jet, double resolution, TString 
   }
 
   return matched_genJet;
+}
+
+int SKFlatMaker::find_index(const reco::GenJet* genJetSearch)
+{
+  int index = 0;
+  bool found = false;
+  
+  
+  for(size_t i=0; i<m_genJets->size(); i++){
+    const reco::GenJet* genJet = &m_genJets->at(i);
+    
+    if(genJetSearch == genJet){
+      found = true;
+      break;
+    }
+    else index++;
+  }
+  
+  if(found) return index;
+  else return -1;
 }
 
 //define this as a plug-in

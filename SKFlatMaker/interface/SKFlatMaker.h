@@ -245,7 +245,25 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::FileInPath photon_EA_CH_file;
   edm::FileInPath photon_EA_HN_file;
   edm::FileInPath photon_EA_Ph_file;
-  
+
+  // -- GenHFHadronMatcher -- //
+  const edm::EDGetTokenT<reco::GenJetCollection> genJetsToken_;
+
+  const edm::EDGetTokenT<std::vector<int> > genBHadJetIndexToken_;
+  const edm::EDGetTokenT<std::vector<int> > genBHadFlavourToken_;
+  const edm::EDGetTokenT<std::vector<int> > genBHadFromTopWeakDecayToken_;
+  const edm::EDGetTokenT<std::vector<reco::GenParticle> > genBHadPlusMothersToken_;
+  const edm::EDGetTokenT<std::vector<std::vector<int> > > genBHadPlusMothersIndicesToken_;
+  const edm::EDGetTokenT<std::vector<int> > genBHadIndexToken_;
+  const edm::EDGetTokenT<std::vector<int> > genBHadLeptonHadronIndexToken_;
+  const edm::EDGetTokenT<std::vector<int> > genBHadLeptonViaTauToken_;
+        
+  const edm::EDGetTokenT<std::vector<int> > genCHadJetIndexToken_;
+  const edm::EDGetTokenT<std::vector<int> > genCHadFlavourToken_;
+  const edm::EDGetTokenT<std::vector<int> > genCHadFromTopWeakDecayToken_;
+  const edm::EDGetTokenT<std::vector<int> > genCHadBHadronIdToken_;
+  const edm::EDGetTokenT<std::vector<int> > genCHadIndexToken_;
+
   // -- Store flags -- // 
   bool theStorePriVtxFlag;                // Yes or No to store primary vertex
   bool theStoreJetFlag;                // Yes or No to store Jet
@@ -379,6 +397,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> jet_smearedResDown;
   vector<float> jet_JECL1FastJet;
   vector<float> jet_JECFull;
+  vector<int> jet_GenHFHadronMatcher_flavour;
+  vector<int> jet_GenHFHadronMatcher_origin;
 
   //==== JEC
   JetCorrectionUncertainty *jet_jecUnc;
@@ -401,6 +421,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   JME::JetResolution fatjet_resolution;
   JME::JetResolutionScaleFactor fatjet_resolution_sf;
   edm::Handle<reco::GenJetCollection> m_genFatJets;
+
+  //==== GenHFHadronMatcher
+  int find_index(const reco::GenJet* genJetSearch);
 
   //==== FatJet
 
