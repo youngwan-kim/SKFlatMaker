@@ -103,7 +103,9 @@ if __name__=="__main__":
             break;
 
     elif arg.count('/')==3:
-      getLog(arg,overwrite=args.force)
+      for i in range(3):
+        if getLog(arg,overwrite=args.force,fileindex=i)!=-1:
+          break;
 
     else:
       print "Wrong argument "+arg+". No such file or wrong DAS name format"
