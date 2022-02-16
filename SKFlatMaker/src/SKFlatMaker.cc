@@ -144,6 +144,7 @@ PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo >
   WeightMap["Scale"]={};
   WeightMap["PDF"]={};
   WeightMap["AlphaS"]={};
+  WeightMap["PSSyst"]={};
   PDFAlphaSScaleValue_={1.};
   for(auto pname:iConfig.getParameterNames()){
     TString wname=pname;
@@ -2514,7 +2515,9 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 	if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] weights for "+wname+"; adding id = " << id << endl;
 	weight_[wname].push_back( 1 + (map_id_to_weight[id]-nominalweight)/nominalweight * PDFAlphaSScaleValue_.at(i));
       }      
-    }else{
+    }      
+    else if(wname=="PSSyst") continue;
+    else{
       for(int id:ids){
 	if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] weights for "+wname+"; adding id = " << id << endl;
 	weight_[wname].push_back( map_id_to_weight[id]/nominalweight );
@@ -2525,6 +2528,7 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   if(theDebugLevel){
     cout << "[SKFlatMaker::fillLHEInfo] LHEInfo->originalXWGTUP() = " << LHEInfo->originalXWGTUP() << endl;
     for(auto [wname,weights]:weight_){
+      if(wname=="PSSyst") continue;
       cout << "[SKFlatMaker::fillLHEInfo] [weight_["+wname+"]]" << endl;
       for(unsigned int i=0;i<weights.size();i++) cout << "[SKFlatMaker::fillLHEInfo] " << weights.at(i) << endl;
     }
@@ -2587,12 +2591,18 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
   iEvent.getByToken(GenEventInfoToken, genEvtInfo);
   gen_weight = genEvtInfo->weight();
 
+  //PS Syst ref.: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HowToPDF#Parton_shower_weights
+  for(auto [wname,ids]:WeightMap){
+    if(wname!="PSSyst") continue;
+    for(int id:ids){
+      if(theDebugLevel){
+        if(id >(int) genEvtInfo->weights().size()-1){ printf("Error: PSSyst id:%d > PSweight vec. size(%d)-1\n", id, (int) genEvtInfo->weights().size()); continue; }
+        printf("[SKFlatMaker::fillGENInfo] weights for %s, id = %d, weight: %.3e\n", wname.Data(), id, genEvtInfo->weights().at(id)/gen_weight);
+      }
+      weight_[wname].push_back( genEvtInfo->weights().at(id)/gen_weight );
+    }
+  }
   genWeight_Q = genEvtInfo->pdf()->scalePDF;
-
-  //==== I think they are same..
-  //cout << "[JSKIM] genEvtInfo->pdf()->scalePDF = " << genEvtInfo->pdf()->scalePDF << endl;
-  //cout << "[JSKIM] genEvtInfo->qScale() = " << genEvtInfo->qScale() << endl << endl;
-
   genWeight_X1 = genEvtInfo->pdf()->x.first;
   genWeight_X2 = genEvtInfo->pdf()->x.second;
   genWeight_id1 = genEvtInfo->pdf()->id.first;
