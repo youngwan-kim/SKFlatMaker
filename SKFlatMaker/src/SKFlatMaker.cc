@@ -42,7 +42,9 @@ genFatJetToken                      ( consumes< reco::GenJetCollection >        
 MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
 
 LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
+LHEEventProductSourceToken          ( consumes< LHEEventProduct >                           (edm::InputTag("source")) ),
 LHERunInfoProductToken              ( consumes< LHERunInfoProduct,edm::InRun >              (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
+LHERunInfoProductSourceToken        ( consumes< LHERunInfoProduct,edm::InRun >              (edm::InputTag("source")) ),
 mcLabel_                            ( consumes< reco::GenParticleCollection>                (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
 
 // -- MET Filter tokens -- //
@@ -2463,6 +2465,7 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 {
   Handle<LHEEventProduct> LHEInfo;
   iEvent.getByToken(LHEEventProductToken, LHEInfo);
+  if(!LHEInfo.isValid()) iEvent.getByToken(LHEEventProductSourceToken, LHEInfo);
   if(!LHEInfo.isValid()) return;
 
   //==== LHE object
@@ -3373,6 +3376,7 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
     // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW#Retrieving_the_weights -- //
     edm::Handle<LHERunInfoProduct> LHERunInfo;
     iRun.getByToken(LHERunInfoProductToken, LHERunInfo);
+    if(!LHERunInfo.isValid()) iRun.getByToken(LHERunInfoProductSourceToken, LHERunInfo);
     if(!LHERunInfo.isValid()) return;
 
     cout << "[SKFlatMaker::endRun] ##### Information about PDF weights #####" << endl;

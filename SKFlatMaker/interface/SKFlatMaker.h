@@ -215,7 +215,9 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< std::vector<pat::MET> >             MetToken;
 
   edm::EDGetTokenT< LHEEventProduct >               LHEEventProductToken;
+  edm::EDGetTokenT< LHEEventProduct >               LHEEventProductSourceToken;
   edm::EDGetTokenT< LHERunInfoProduct >             LHERunInfoProductToken;
+  edm::EDGetTokenT< LHERunInfoProduct >             LHERunInfoProductSourceToken;
   edm::EDGetTokenT< reco::GenParticleCollection>    mcLabel_;
 
   edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_PAT;

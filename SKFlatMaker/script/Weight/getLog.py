@@ -1,6 +1,6 @@
 import os,sys,argparse
 
-def getLog(dasname,era=None,isPrivate=False,overwrite=False,fileindex=0):
+def getLog(dasname,era=None,overwrite=False,fileindex=0):
   if dasname.count('/')!=3:
     print "Wrong DAS name format"
     return False
@@ -39,14 +39,16 @@ def getLog(dasname,era=None,isPrivate=False,overwrite=False,fileindex=0):
   SKFlatWD = os.environ['SKFlatWD']
 
   dascmd = 'dasgoclient --limit=10 --query="file dataset='+dasname+'"'
-  if isPrivate:
-    dascmd = 'dasgoclient --limit=10 --query="file dataset='+dasname+' instance=prod/phys03"'
   print dascmd
-
   filepaths=os.popen(dascmd).readlines()
   if len(filepaths)==0:
-    print "No file for : "+dasname
-    return False
+    print "Try instance=prod/phys03"
+    dascmd = 'dasgoclient --limit=10 --query="file dataset='+dasname+' instance=prod/phys03"'
+    print dascmd
+    filepaths=os.popen(dascmd).readlines()
+    if len(filepaths)==0:
+      print "No file for : "+dasname
+      return False
 
   filepath = filepaths[fileindex].replace('/xrootd','').strip('\n')
   filepath = 'root://cms-xrd-global.cern.ch/'+filepath
@@ -57,10 +59,7 @@ def getLog(dasname,era=None,isPrivate=False,overwrite=False,fileindex=0):
   if os.path.isfile(weightmap):
     cmd = cmd+' weightmap='+weightmap
 
-  if isPrivate:
-    cmd = cmd+' sampletype=PrivateMC'
-  else:
-    cmd = cmd+' sampletype=MC'
+  cmd = cmd+' sampletype=MC'
 
   cmd = cmd+' era='+era
   
@@ -99,7 +98,7 @@ if __name__=="__main__":
         if line.count('/')!=3:
           continue
         for i in range(3):
-          if getLog(line,era=era,isPrivate=("Private" in arg),overwrite=args.force,fileindex=i)!=-1:
+          if getLog(line,era=era,overwrite=args.force,fileindex=i)!=-1:
             break;
 
     elif arg.count('/')==3:
