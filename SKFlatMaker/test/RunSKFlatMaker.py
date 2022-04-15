@@ -5,7 +5,7 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarParsing.varType.string, "sampletype: DATA/MC")
-options.register('weightmap', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "weightmap file path or string: Scale[1,9],PDF[1001,1100],AlphaS[1101,1102],AlphaSScale[1.5,1.5]")
+options.register('weightmap', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "weightmap file path or string: Scale[1,9],PDF[1001,1100],AlphaS[1101,1102],AlphaSScale[1.5,1.5],PSSyst[1,45]")
 options.register('era',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "era: Which era? 2016preVFP, 2016postVFP, 2017, 2018")
 options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "Deprecated. Use 'era'")
 options.register('debug',0, VarParsing.multiplicity.singleton, VarParsing.varType.int, "print level")
@@ -42,28 +42,32 @@ if "mc" in options.sampletype.lower():
 if len(options.inputFiles)==0:
   if Is2016preVFP:
     if isMC:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL16MiniAODAPV/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v8-v1/270000/19589E57-61A2-7049-9343-788B6D00A07D.root')
+      #options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL16MiniAODAPV/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v8-v1/270000/19589E57-61A2-7049-9343-788B6D00A07D.root') #MiniAODv1
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL16MiniAODAPVv2/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/120000/008E4139-6019-CE4C-B83C-A849F56F57B3.root') #MiniAODv2
       options.outputFile = options.outputFile.replace(".root","_2016preVFP_MC.root")
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016B/SingleMuon/MINIAOD/21Feb2020_ver2_UL2016_HIPM-v1/70000/6805D8D5-79EB-0346-9E07-B267BE5BD848.root')
       options.outputFile = options.outputFile.replace(".root","_2016preVFP_DATA.root")
   if Is2016postVFP:
     if isMC:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL16MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/110000/F0A9DC9B-B0D6-804A-BD80-57F7FA06FACB.root')
+      #options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL16MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/110000/F0A9DC9B-B0D6-804A-BD80-57F7FA06FACB.root') #MiniAODv1
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL16MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2520000/04A698D5-2AF9-B548-9A6D-DB5AFE92F0A6.root') #MiniAODv2
       options.outputFile = options.outputFile.replace(".root","_2016postVFP_MC.root")
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2016H/SingleMuon/MINIAOD/21Feb2020_UL2016-v1/250000/D6CA5522-DB00-CE45-BF90-06176D4DBC86.root')
       options.outputFile = options.outputFile.replace(".root","_2016postVFP_DATA.root")
   elif Is2017:
     if isMC:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL17MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mc2017_realistic_v6-v2/260000/04B074CC-43FC-6045-ACD2-D49AC762E5A6.root')
+      #options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL17MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mc2017_realistic_v6-v2/260000/04B074CC-43FC-6045-ACD2-D49AC762E5A6.root') #MiniAODv1
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_mc2017_realistic_v9-v2/100000/00827E5C-253F-F942-9751-3F3277340A21.root') #MiniAODv2
       options.outputFile = options.outputFile.replace(".root","_2017_MC.root")
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2017B/SingleMuon/MINIAOD/09Aug2019_UL2017-v1/210000/49E82EBF-E7AF-8645-B5C7-6F2B208F3F5F.root')
       options.outputFile = options.outputFile.replace(".root","_2017_DATA.root")
   elif Is2018:
     if isMC:
-      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_upgrade2018_realistic_v11_L1v1-v2/70000/EA2F219D-8534-7B4D-AF83-5D91AF448EC6.root')
+      #options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_upgrade2018_realistic_v11_L1v1-v2/70000/EA2F219D-8534-7B4D-AF83-5D91AF448EC6.root') #MiniAODv1
+      options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_upgrade2018_realistic_v16_L1v1-v2/100000/4E295BA9-D9F7-6643-B993-57789E70C0CB.root') #MiniAODv2
       options.outputFile = options.outputFile.replace(".root","_2018_MC.root")
     else:
       options.inputFiles.append('root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/MINIAOD/12Nov2019_UL2018_rsb-v1/240000/FE143ADE-E9E4-3143-8754-C9ECA89F3541.root')
@@ -87,7 +91,7 @@ if options.weightmap!="":
       weightmap[key]=[float(i) for i in weightmap[key]]
     else:
       weightmap[key]=[int(i) for i in weightmap[key]]
-    if key in ["PDF","Scale"] and len(weightmap[key])==2:
+    if key in ["PDF","Scale", "PSSyst"] and len(weightmap[key])==2:
       weightmap[key]=range(weightmap[key][0],weightmap[key][1]+1)
       
 #### Global Tag
@@ -103,11 +107,12 @@ if Is2016postVFP:
   GT_MC = '106X_mcRun2_asymptotic_v17'
   GT_DATA = '106X_dataRun2_v35'
 elif Is2017:
-  GT_MC = '106X_mc2017_realistic_v8'
+  GT_MC = '106X_mc2017_realistic_v9'
   GT_DATA = '106X_dataRun2_v35'
 elif Is2018:
-  GT_MC = '106X_upgrade2018_realistic_v15_L1v1'
+  GT_MC = '106X_upgrade2018_realistic_v16_L1v1'
   GT_DATA = '106X_dataRun2_v35'
+## if MiniAODv1: v9->v8 (17,MC), v16->v15 (18,MC)
 
 
 print 'GT_MC = '+GT_MC
