@@ -67,6 +67,8 @@ if len(options.inputFiles)==0:
   elif Is2018:
     if isMC:
       #options.inputFiles.append('root://cms-xrd-global.cern.ch//store/mc/RunIISummer19UL18MiniAOD/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/106X_upgrade2018_realistic_v11_L1v1-v2/70000/EA2F219D-8534-7B4D-AF83-5D91AF448EC6.root')
+      #options.inputFiles.append('file:02E8A41D-B1DD-B049-BFAE-A3224F106BB8.root')
+      #options.inputFiles.append('file:TOP-RunIISummer20UL18MiniAOD-00001_1.root')
       options.inputFiles.append('file:02E8A41D-B1DD-B049-BFAE-A3224F106BB8.root')
       options.outputFile = options.outputFile.replace(".root","_2018_MC.root")
     else:
@@ -246,6 +248,9 @@ process.matchGenCHadron = matchGenCHadron.clone(
 
 process.matchGenSeq = cms.Sequence(process.matchGenBHadron + process.matchGenCHadron)
 
+#### BJetEnergyCorrection ####
+process.load('SKFlatMaker.SKFlatMaker.BJetEnergyCorr_cff')
+
 if Is2016preVFP:
 
   print "################"
@@ -283,7 +288,7 @@ if Is2016preVFP:
      jetSource = cms.InputTag('slimmedJets'),
      labelName = 'UpdatedJECslimmedJets',
      jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
-  )
+  ) 
   process.recoTree.Jet = cms.untracked.InputTag("updatedPatJetsUpdatedJECslimmedJets")
 
   #### AK8
@@ -731,6 +736,11 @@ elif Is2018:
     taggingMode    = cms.bool(True)
   )
 
+  ###########################
+  #### JetEnergyRegressionNN
+  ###########################
+
+
   ###########
   #### Path
   ###########
@@ -740,11 +750,14 @@ elif Is2018:
     process.jecSequence *
     process.fullPatMetSequence
   )
-  process.p *= process.BadPFMuonFilterUpdateDz
+  #process.p *= process.BadPFMuonFilterUpdateDz
+  
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
     process.p *= process.prefiringweight
     
     ## GenHFHadron 
     process.p *= process.matchGenSeq
+    
+  process.p *= process.bJetCorrSeq
   process.p *= process.recoTree

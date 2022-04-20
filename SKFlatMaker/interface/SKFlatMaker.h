@@ -264,7 +264,14 @@ class SKFlatMaker : public edm::EDAnalyzer
   const edm::EDGetTokenT<std::vector<int> > genCHadBHadronIdToken_;
   const edm::EDGetTokenT<std::vector<int> > genCHadIndexToken_;
 
-  // -- Store flags -- // 
+  // --  BJetEnergyCorrectionNN -- //
+  const edm::EDGetTokenT<ValueMap<float> > bJetNNCorrToken_;
+  const edm::EDGetTokenT<ValueMap<float> > bJetNNResToken_;
+  const edm::EDGetTokenT<ValueMap<float> > cJetNNCorrToken_; 
+  const edm::EDGetTokenT<ValueMap<float> > cJetNNResToken_; 
+
+
+  // -- Store Flags -- // 
   bool theStorePriVtxFlag;                // Yes or No to store primary vertex
   bool theStoreJetFlag;                // Yes or No to store Jet
   bool theStoreFatJetFlag;                // Yes or No to store FatJet
@@ -399,6 +406,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> jet_JECFull;
   vector<int> jet_GenHFHadronMatcher_flavour;
   vector<int> jet_GenHFHadronMatcher_origin;
+  vector<float> jet_bjetNN_corr;
+  vector<float> jet_bjetNN_res;
+  vector<float> jet_cjetNN_corr;
+  vector<float> jet_cjetNN_res;
 
   //==== JEC
   JetCorrectionUncertainty *jet_jecUnc;
