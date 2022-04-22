@@ -325,9 +325,10 @@ if Is2016preVFP:
   #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
   #################
   from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-  runMetCorAndUncFromMiniAOD(process,
-                           isData=(not isMC),
-                           )
+  runMetCorAndUncFromMiniAOD(
+    process,
+    isData=(not isMC),
+  )
 
   #########################
   #### L1Prefire reweight
@@ -638,12 +639,13 @@ elif Is2018:
   #### https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Recipe_for_running_Scales_and_sm
   ###########################
   from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-  setupEgammaPostRecoSeq(process,
-                         runVID=True, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
-                         era='2018-UL',
-                         eleIDModules=myEleID,
-                         phoIDModules=myPhoID,
-                         runEnergyCorrections=True
+  setupEgammaPostRecoSeq(
+    process,
+    runVID=True, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
+    era='2018-UL',
+    eleIDModules=myEleID,
+    phoIDModules=myPhoID,
+    runEnergyCorrections=True
   )  
   #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
@@ -701,10 +703,11 @@ elif Is2018:
   #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
   #################
   from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-  runMetCorAndUncFromMiniAOD(process,
-                           isData=(not isMC),
-                           )
-
+  runMetCorAndUncFromMiniAOD(
+    process,
+    isData=(not isMC),
+  )
+  
   #########################
   #### L1Prefire reweight
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
@@ -736,11 +739,6 @@ elif Is2018:
     taggingMode    = cms.bool(True)
   )
 
-  ###########################
-  #### JetEnergyRegressionNN
-  ###########################
-
-
   ###########
   #### Path
   ###########
@@ -750,7 +748,7 @@ elif Is2018:
     process.jecSequence *
     process.fullPatMetSequence
   )
-  #process.p *= process.BadPFMuonFilterUpdateDz
+  process.p *= process.BadPFMuonFilterUpdateDz
   
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
