@@ -4,7 +4,7 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
-options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarParsing.varType.string, "sampletype: DATA/MC/PrivateMC")
+options.register('sampletype', "DATA", VarParsing.multiplicity.singleton, VarParsing.varType.string, "sampletype: DATA/MC")
 options.register('weightmap', "", VarParsing.multiplicity.singleton, VarParsing.varType.string, "weightmap file path or string: Scale[1,9],PDF[1001,1100],AlphaS[1101,1102],AlphaSScale[1.5,1.5],PSSyst[1,45]")
 options.register('era',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "era: Which era? 2016preVFP, 2016postVFP, 2017, 2018")
 options.register('year',-1, VarParsing.multiplicity.singleton, VarParsing.varType.string, "Deprecated. Use 'era'")
@@ -38,9 +38,6 @@ if "data" in options.sampletype.lower():
   isMC = False
 if "mc" in options.sampletype.lower():
   isMC = True
-isPrivateSample = False
-if "private" in options.sampletype.lower():
-  isPrivateSample = True
 
 if len(options.inputFiles)==0:
   if Is2016preVFP:
@@ -121,7 +118,6 @@ elif Is2018:
 print 'GT_MC = '+GT_MC
 print 'GT_DATA = '+GT_DATA
 print 'isMC = '+str(isMC)
-print 'isPrivateSample = '+str(isPrivateSample)
 print 'era = '+str(options.era)
 for key in weightmap:
   if len(weightmap[key])>5:
@@ -194,10 +190,6 @@ for key in weightmap:
     setattr(process.recoTree,"weight_"+key,cms.untracked.vdouble(weightmap[key]))
   else:
     setattr(process.recoTree,"weight_"+key,cms.untracked.vint32(weightmap[key]))
-
-if isPrivateSample:
-  process.recoTree.LHEEventProduct = cms.untracked.InputTag("source")
-  process.recoTree.LHERunInfoProduct = cms.untracked.InputTag("source")
 
 process.recoTree.rho = cms.untracked.InputTag("fixedGridRhoFastjetAll")
 process.recoTree.conversionsInputTag = cms.untracked.InputTag("reducedEgamma:reducedConversions") # -- miniAOD -- #

@@ -30,19 +30,12 @@ lines = open(txtfilename).readlines()
 
 str_sample = "DATA"
 isData = False
-isPrivateMC = False
 if ("DATA" in txtfilename) or ("Data" in txtfilename) or ("data" in txtfilename):
   str_sample = "DATA"
   isData = True
-  isPrivateMC = False
 else:
   str_sample = "MC"
   isData = False
-  isPrivateMC = False
-if ("Private" in txtfilename) or ("private" in txtfilename):
-  str_sample = "PrivateMC"
-  isData = False
-  isPrivateMC = True
 
 base_dir = SKFlatTag+'/'+era+'/crab_submission_'+str_sample+'/'
 
@@ -119,7 +112,7 @@ for line in lines:
       out.write("config.JobType.pyCfgParams = "+ArgsListString+"\n")
     elif "config.Data.inputDataset" in sk_line:
       out.write("config.Data.inputDataset = '"+dasname+"'\n")
-      if isPrivateMC:
+      if dasname.split("/")[3]=="USER":
         out.write("config.Data.inputDBS = 'phys03'\n")
         out.write("config.Data.ignoreLocality = True\n")
         out.write("config.Site.whitelist = ['T2*']\n")
