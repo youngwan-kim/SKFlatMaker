@@ -71,7 +71,8 @@ class Weight:
                     self.subs+=[Weight(buf)]
                     buf=""
             if level==0:
-                if len(buf.split("="))==2 and buf.count("'")%2==0 and buf.count('"')%2==0 and not isRoot:
+                short="''".join('""'.join(buf.split('"')[::2]).split("'")[::2])
+                if len(short.split("="))==2 and short.count("'")%2==0 and short.count('"')%2==0 and not isRoot:
                     self.Set(buf)
                     buf=""
             elif level<0:
@@ -101,7 +102,16 @@ class Weight:
             
     def Set(self,line):
         if "=" in line:
-            words=line.split("=")
+            temp=line.split("=")
+            words=[]
+            for word in temp:
+                if len(words)==0: 
+                    words=[word]
+                    continue
+                if words[-1].count("'")%2==1 or words[-1].count('"')%2==1:
+                    words[-1]+="="+word
+                else:
+                    words+=[word]
             if len(words)!=2:
                 print("[Weight::Set] ERROR Wrong line "+line)
                 exit(1)
@@ -149,6 +159,7 @@ for log in logs:
     combine=""
     pdf=[]
     alphaS=[]
+    PSSyst=[]
     asScale=0
     lhaid=""
 
@@ -297,6 +308,12 @@ for log in logs:
                 alphaS=[alphaSA[0].index,alphaSB[0].index]
                 asScale=1.5
 
+    ##### Pythia parton shower systematic ####
+    cands=w.Find(name="fsr:murfac=0.5")+w.Find(name="fsr:murfac=2.0")+w.Find(name="isr:murfac=0.5")+w.Find(name="isr:murfac=2.0")
+    PSSyst=[cand.index for cand in cands]
+    if PSSyst!=[4,5,26,27]:
+        print "> Unusual Pythia weights("+PSSyst.__str__()+"). Please Check."
+
     ###############
     #### output ###
     out=["## lhaid="+lhaid+" "+combine+warning]
@@ -326,6 +343,12 @@ for log in logs:
 
     if asScale!=0:
         out+=["AlphaSScale\t{}".format(asScale)]
+
+    if len(PSSyst)>1:
+        if PSSyst[-1]-PSSyst[0]==len(PSSyst)-1:
+            out+=["PSSyst\t{},{}".format(PSSyst[0],PSSyst[-1])]
+        else:
+            out+=["PSSyst\t"+",".join([str(i) for i in PSSyst])]
 
     ## MiNNLO specific
     cands=w.Find(name="sthw2_variation")
