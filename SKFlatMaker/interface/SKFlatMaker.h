@@ -628,6 +628,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> muon_softMVA;
   vector<float> muon_jetPtRatio;
   vector<float> muon_jetPtRel;
+  vector<float> muon_chi2LocalPosition;
+  vector<float> muon_trkKink;
+  vector<float> muon_segmentCompatibility;
+  vector<float> muon_trackerValidFraction;
   vector<int> muon_simType;
   vector<int> muon_simExtType;
   vector<int> muon_simFlavour;

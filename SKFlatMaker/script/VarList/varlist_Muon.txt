@@ -83,6 +83,10 @@ float	muon_lowptMVA	1
 float	muon_softMVA	1
 float	muon_jetPtRatio	1
 float	muon_jetPtRel	1
+float	muon_chi2LocalPosition	1
+float	muon_trkKink	1
+float	muon_segmentCompatibility	1
+float	muon_trackerValidFraction	1
 int	muon_simType	1
 int	muon_simExtType	1
 int	muon_simFlavour	1
