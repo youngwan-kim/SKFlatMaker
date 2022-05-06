@@ -65,7 +65,8 @@ GenEventInfoToken                   ( consumes< GenEventInfoProduct >           
 BeamSpotToken                       ( consumes< reco::BeamSpot >                            (iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
 PrimaryVertexToken                  ( consumes< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
 TrackToken                          ( consumes< edm::View<reco::Track> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
-PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) )
+PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) ),
+GenLumiInfoHeaderToken              ( consumes< GenLumiInfoHeader,edm::InLumi >             (edm::InputTag("generator")) )
 {
 
   DataYear                          = iConfig.getUntrackedParameter<int>("DataYear");
@@ -3401,7 +3402,18 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
     }
     cout << "[SKFlatMaker::endRun] ##### End of information about PDF weights #####" << endl;
   }
-
+}
+void SKFlatMaker::beginLuminosityBlock(const edm::LuminosityBlock & iLumi, const EventSetup & iSetup){
+  if(printGenWeightNames){
+    edm::Handle<GenLumiInfoHeader> genLumiInfoHeader;
+    iLumi.getByToken(GenLumiInfoHeaderToken, genLumiInfoHeader);
+    if(genLumiInfoHeader.isValid()){
+      for(unsigned int i=0,n=genLumiInfoHeader->weightNames().size();i<n;i++){
+	std::cout << "[SKFlatMaker::beginLuminosityBlock] <weight> id="<<i<<" name='"<<genLumiInfoHeader->weightNames().at(i)<<"' </weight>"<<std::endl;
+      }
+    }
+    printGenWeightNames=false;
+  }
 }
 
 template<class T>

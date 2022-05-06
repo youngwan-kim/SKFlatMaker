@@ -71,6 +71,7 @@
 ////////////////////////////
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h" // -- LHE info like PDF
 #include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h" // -- ??
+#include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h" // -- Pythia weight names
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h" // -- 
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h" // -- ???
@@ -182,6 +183,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   virtual void endJob() ;
   virtual void beginRun(const edm::Run &, const edm::EventSetup & );
   virtual void endRun(const edm::Run &, const edm::EventSetup & );
+  virtual void beginLuminosityBlock(const edm::LuminosityBlock &, const edm::EventSetup & );
   
   virtual void fillPrimaryVertex(const edm::Event &iEvent);  // fill primary vertex information
   virtual void fillMET(const edm::Event &iEvent);            // fill MET information
@@ -196,6 +198,7 @@ class SKFlatMaker : public edm::EDAnalyzer
 
   int DataYear;
   int theDebugLevel;                   // 0 no prints, 1 some, 2 lots
+  bool printGenWeightNames=true;       //PSSyst names
   std::string processName;
   std::string theElectronID;
   
@@ -236,6 +239,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< reco::VertexCollection >             PrimaryVertexToken;
   edm::EDGetTokenT< edm::View<reco::Track> >             TrackToken;
   edm::EDGetTokenT< std::vector< PileupSummaryInfo > >   PileUpInfoToken;
+  edm::EDGetTokenT< GenLumiInfoHeader >                  GenLumiInfoHeaderToken;
 
   edm::Handle<edm::TriggerResults> METFilterResults;
 
