@@ -32,62 +32,62 @@ using namespace isodeposit;
 
 // -- Constructor -- //
 SKFlatMaker::SKFlatMaker(const edm::ParameterSet& iConfig):
-  // -- object tokens -- //
-  MuonToken                           ( consumes< std::vector<pat::Muon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
-  ElectronToken                       ( consumes< edm::View<pat::Electron> >                  (iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
-  PhotonToken                         ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
-  JetToken                            ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
-  genJetToken                         ( consumes< reco::GenJetCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("GenJet")) ),
-  FatJetToken                         ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("FatJet")) ),
-  genFatJetToken                      ( consumes< reco::GenJetCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("GenFatJet")) ),
-  MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
-  
-  LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
-  LHERunInfoProductToken              ( consumes< LHERunInfoProduct,edm::InRun >              (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
-  mcLabel_                            ( consumes< reco::GenParticleCollection>                (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle")) ),
-  
-  // -- MET Filter tokens -- //
-  METFilterResultsToken_PAT           ( consumes<edm::TriggerResults>                         (iConfig.getParameter<edm::InputTag>("METFilterResults_PAT"))),
-  METFilterResultsToken_RECO          ( consumes<edm::TriggerResults>                         (iConfig.getParameter<edm::InputTag>("METFilterResults_RECO"))),
-  
-  // -- Electron tokens -- //
-  RhoToken                            ( consumes< double >                                    (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
-  ConversionsToken                    ( consumes< std::vector<reco::Conversion> >             (iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
-  GsfTrackToken                       ( consumes< std::vector< reco::GsfTrack > >             (iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
+// -- object tokens -- //
+MuonToken                           ( consumes< std::vector<pat::Muon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
+ElectronToken                       ( consumes< edm::View<pat::Electron> >                  (iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
+PhotonToken                         ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
+JetToken                            ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
+genJetToken                         ( consumes< reco::GenJetCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("GenJet")) ),
+FatJetToken                         ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("FatJet")) ),
+genFatJetToken                      ( consumes< reco::GenJetCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("GenFatJet")) ),
+MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
 
-  // -- Trigger Token -- //
-  TriggerToken                        ( consumes< edm::TriggerResults >                       (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
-  TriggerTokenPAT                     ( consumes< edm::TriggerResults >                       (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResultsPAT")) ),
-  TriggerObjectToken                  ( consumes< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("TriggerObject")) ),
+LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
+LHERunInfoProductToken              ( consumes< LHERunInfoProduct,edm::InRun >              (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
+mcLabel_                            ( consumes< reco::GenParticleCollection>                (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
 
-  // -- Else -- //
-  GenEventInfoToken                   ( consumes< GenEventInfoProduct >                       (iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")) ),
-  BeamSpotToken                       ( consumes< reco::BeamSpot >                            (iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
-  PrimaryVertexToken                  ( consumes< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
-  TrackToken                          ( consumes< edm::View<reco::Track> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
-  PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) ),
+// -- MET Filter tokens -- //
+METFilterResultsToken_PAT           ( consumes<edm::TriggerResults>                         (iConfig.getParameter<edm::InputTag>("METFilterResults_PAT"))),
+METFilterResultsToken_RECO          ( consumes<edm::TriggerResults>                         (iConfig.getParameter<edm::InputTag>("METFilterResults_RECO"))),
+
+// -- Electron tokens -- //
+RhoToken                            ( consumes< double >                                    (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
+ConversionsToken                    ( consumes< std::vector<reco::Conversion> >             (iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
+GsfTrackToken                       ( consumes< std::vector< reco::GsfTrack > >             (iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
+
+// -- Trigger Token -- //
+TriggerToken                        ( consumes< edm::TriggerResults >                       (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
+TriggerTokenPAT                     ( consumes< edm::TriggerResults >                       (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResultsPAT")) ),
+TriggerObjectToken                  ( consumes< std::vector<pat::TriggerObjectStandAlone> > (iConfig.getUntrackedParameter<edm::InputTag>("TriggerObject")) ),
+
+// -- Else -- //
+GenEventInfoToken                   ( consumes< GenEventInfoProduct >                       (iConfig.getUntrackedParameter<edm::InputTag>("GenEventInfo")) ),
+BeamSpotToken                       ( consumes< reco::BeamSpot >                            (iConfig.getUntrackedParameter<edm::InputTag>("BeamSpot")) ),
+PrimaryVertexToken                  ( consumes< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
+TrackToken                          ( consumes< edm::View<reco::Track> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
+PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) ),
   
-  // -- GenHFHadronMatcher -- //
-  genJetsToken_                       ( consumes<reco::GenJetCollection>                      (iConfig.getParameter<edm::InputTag>("genJets"))),
-  genBHadJetIndexToken_               ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadJetIndex"))),
-  genBHadFlavourToken_                ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadFlavour"))),  
-  genBHadFromTopWeakDecayToken_       ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadFromTopWeakDecay"))),
-  genBHadPlusMothersToken_            ( consumes<std::vector<reco::GenParticle> >             (iConfig.getParameter<edm::InputTag>("genBHadPlusMothers"))),
-  genBHadPlusMothersIndicesToken_     ( consumes<std::vector<std::vector<int> > >             (iConfig.getParameter<edm::InputTag>("genBHadPlusMothersIndices"))),
-  genBHadIndexToken_                  ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadIndex"))),
-  genBHadLeptonHadronIndexToken_      ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadLeptonHadronIndex"))),
-  genBHadLeptonViaTauToken_           ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadLeptonViaTau"))),
-  genCHadJetIndexToken_               ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadJetIndex"))),
-  genCHadFlavourToken_                ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadFlavour"))),
-  genCHadFromTopWeakDecayToken_       ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadFromTopWeakDecay"))),
-  genCHadBHadronIdToken_              ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadBHadronId"))),
-  genCHadIndexToken_                  ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadIndex"))),                   
+// -- GenHFHadronMatcher -- //
+genJetsToken_                       ( consumes<reco::GenJetCollection>                      (iConfig.getParameter<edm::InputTag>("genJets"))),
+genBHadJetIndexToken_               ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadJetIndex"))),
+genBHadFlavourToken_                ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadFlavour"))),  
+genBHadFromTopWeakDecayToken_       ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadFromTopWeakDecay"))),
+genBHadPlusMothersToken_            ( consumes<std::vector<reco::GenParticle> >             (iConfig.getParameter<edm::InputTag>("genBHadPlusMothers"))),
+genBHadPlusMothersIndicesToken_     ( consumes<std::vector<std::vector<int> > >             (iConfig.getParameter<edm::InputTag>("genBHadPlusMothersIndices"))),
+genBHadIndexToken_                  ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadIndex"))),
+genBHadLeptonHadronIndexToken_      ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadLeptonHadronIndex"))),
+genBHadLeptonViaTauToken_           ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genBHadLeptonViaTau"))),
+genCHadJetIndexToken_               ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadJetIndex"))),
+genCHadFlavourToken_                ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadFlavour"))),
+genCHadFromTopWeakDecayToken_       ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadFromTopWeakDecay"))),
+genCHadBHadronIdToken_              ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadBHadronId"))),
+genCHadIndexToken_                  ( consumes<std::vector<int> >                           (iConfig.getParameter<edm::InputTag>("genCHadIndex"))),                   
 
-  // -- bJetEnergyCorrectionNN -- //
-  bJetNNCorrToken_                    ( consumes<ValueMap<float> >                            (iConfig.getParameter<edm::InputTag>("bJetNNCorr"))),
-  bJetNNResToken_                     ( consumes<ValueMap<float> >                            (iConfig.getParameter<edm::InputTag>("bJetNNRes"))),
-  cJetNNCorrToken_                    ( consumes<ValueMap<float> >                            (iConfig.getParameter<edm::InputTag>("cJetNNCorr"))),
-  cJetNNResToken_                     ( consumes<ValueMap<float> >                            (iConfig.getParameter<edm::InputTag>("cJetNNRes")))
+// -- bJetEnergyCorrectionNN -- //
+bJetNNCorrToken_                    ( consumes<ValueMap<float> >                            (iConfig.getParameter<edm::InputTag>("bJetNNCorr"))),
+bJetNNResToken_                     ( consumes<ValueMap<float> >                            (iConfig.getParameter<edm::InputTag>("bJetNNRes"))),
+cJetNNCorrToken_                    ( consumes<ValueMap<float> >                            (iConfig.getParameter<edm::InputTag>("cJetNNCorr"))),
+cJetNNResToken_                     ( consumes<ValueMap<float> >                            (iConfig.getParameter<edm::InputTag>("cJetNNRes")))
 {
 
   DataYear                          = iConfig.getUntrackedParameter<int>("DataYear");
@@ -2845,405 +2845,358 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
   std::uint32_t seed = jet0eta + m_nomVar + (lumiNum_uint<<10) + (runNum_uint<<20) + evNum_uint;
   m_random_generator.seed(seed);
 
-  for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter)
-    {
-      
-      jet_pt.push_back( jets_iter->pt() );
-      jet_eta.push_back( jets_iter->eta() );
-      jet_phi.push_back( jets_iter->phi() );
-      jet_charge.push_back( jets_iter->jetCharge() );
-      jet_area.push_back( jets_iter->jetArea() );
-      jet_partonFlavour.push_back( jets_iter->partonFlavour() );
-      jet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
-      
-      //=========================================================================
-      //==== Taggers
-      //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-      //=========================================================================
-      
-      //=== CSVv2
-      
-      jet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
-      
-      //==== DeepCSV (B)
-      /*
-	cout << "==============================" << endl;
-	cout << "---- BvsAll ----" << endl;
-	cout << "methodA = " << jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") << endl;
-	cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") << endl;
-      */
-      //==== methodA
-      //jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
-      //==== methodB
-      jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
-      
-      //==== DeepFlavour
-      
-      jet_DeepFlavour_b.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probb"));
-      jet_DeepFlavour_bb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probbb"));
-      jet_DeepFlavour_lepb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:problepb"));
-      jet_DeepFlavour_c.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probc"));
-      jet_DeepFlavour_uds.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probuds"));
-      jet_DeepFlavour_g.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probg"));
-      
-      //==== Old Charm Tagger
-      
-      jet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
-      jet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
-      
-      //==== DeepCSV charm tagger
-      
-      /*
-	cout << "---- CvsL ----" << endl;
-	cout << "methodA = " << deepcharm_c/(deepcharm_c+deepcharm_udsg) << endl;
-	cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") << endl;
-	cout << "---- CvsB ----" << endl;
-	cout << "methodA = " << deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) << endl;
-	cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") << endl;
-      */
-      //==== methodA : it gives value = 0.5 or 0.333 when these are -1.. 
-      //double deepcharm_c = jets_iter->bDiscriminator("pfDeepCSVJetTags:probc");
-      //double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
-      //double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
-      //double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
-      //jet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
-      //jet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
-      //==== methodB
-      jet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
-      jet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
-      
-      
-      jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
-      jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
-      jet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
-      jet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
-      jet_muonEnergyFraction.push_back( jets_iter->muonEnergyFraction() );
-      jet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
-      jet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
-      
-      //==== JetID
-      //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVUL
-      double NHF  = jets_iter->neutralHadronEnergyFraction();
-      double NEMF = jets_iter->neutralEmEnergyFraction();
-      double CHF  = jets_iter->chargedHadronEnergyFraction();
-      double MUF  = jets_iter->muonEnergyFraction();
-      double CEMF = jets_iter->chargedEmEnergyFraction();
-      double NumConst = jets_iter->chargedMultiplicity()+jets_iter->neutralMultiplicity();
-      double NumNeutralParticle =jets_iter->neutralMultiplicity();
-      double CHM      = jets_iter->chargedMultiplicity();
-      double eta = jets_iter->eta();
-      
-      bool tightJetID        = false;
-      bool tightLepVetoJetID = false;
-      
-      if(DataYear==2016)
-	{
-	  if(fabs(eta)<=2.4)
-	    {
-	      tightJetID = ( CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 ); 
-	      tightLepVetoJetID = tightJetID && CEMF<0.8 && MUF <0.8; 
-	    }
-	  else if(fabs(eta)<=2.7)
-	    {
-	      tightJetID = ( NEMF<0.99 && NHF < 0.9 );
-	      tightLepVetoJetID = tightJetID;
-	    }
-	  else if(fabs(eta)<=3.0)
-	    {
-	      tightJetID = ( NEMF>0.0 && NEMF<0.99 && NHF<0.9 && NumNeutralParticle>1 );
-	      tightLepVetoJetID = tightJetID;
-	    }
-	  else
-	    {
-	      tightJetID = ( NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
-	      tightLepVetoJetID = tightJetID;
-	    }
-	}
-      else if(DataYear==2017||DataYear==2018)
-	{
-	  if(fabs(eta)<=2.6)
-	    {
-	      tightJetID = ( CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 ); 
-	      tightLepVetoJetID = tightJetID && CEMF<0.8 && MUF <0.8; 
-	    }
-	  else if(fabs(eta)<=2.7)
-	    {
-	      tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
-	      tightLepVetoJetID = tightJetID && CEMF<0.8 && MUF <0.8;
-	    }
-	  else if(fabs(eta)<=3.0)
-	    {
-	      tightJetID = ( NEMF>0.01 && NEMF<0.99 && NumNeutralParticle>1 );
-	      tightLepVetoJetID = tightJetID;
-	    }
-	  else
-	    {
-	      tightJetID = ( NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
-	      tightLepVetoJetID = tightJetID;
-	    }
-	}
-      else
-	{
-	  cout << "DataYear is not set : DataYear = " << DataYear << endl;
-	  exit(EXIT_FAILURE);
-	}
-      
-      jet_tightJetID.push_back(tightJetID);
-      jet_tightLepVetoJetID.push_back(tightLepVetoJetID);
-      
-      int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
-      jet_partonPdgId.push_back( partonPdgId );
-      
-      if( jets_iter->hasUserFloat("vtxNtracks") ) jet_vtxNtracks.push_back( jets_iter->userFloat("vtxNtracks") );
-      jet_m.push_back( jets_iter->mass() );
-      jet_energy.push_back( jets_iter->energy() );
-      if( jets_iter->hasUserFloat("pileupJetId:fullDiscriminant") ) jet_PileupJetId.push_back( jets_iter->userFloat("pileupJetId:fullDiscriminant") );
-      
-      //==========
-      //==== JEC
-      //==========
-      
-      /*
-      //==== Printing JEC levels
-      cout << "[AK4]" << endl;
-      cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
-      cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
-      cout << "availableJECLevels() : " << endl;
-      const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
-      for(unsigned int z=0; z< aaa.size(); z++){
-      cout << "  " << aaa.at(z) << endl;
+  for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter){
+
+    jet_pt.push_back( jets_iter->pt() );
+    jet_eta.push_back( jets_iter->eta() );
+    jet_phi.push_back( jets_iter->phi() );
+    jet_charge.push_back( jets_iter->jetCharge() );
+    jet_area.push_back( jets_iter->jetArea() );
+    jet_partonFlavour.push_back( jets_iter->partonFlavour() );
+    jet_hadronFlavour.push_back( jets_iter->hadronFlavour() );
+
+    //=========================================================================
+    //==== Taggers
+    //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    //=========================================================================
+
+    //=== CSVv2
+
+    jet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
+
+    //==== DeepCSV (B)
+/*
+    cout << "==============================" << endl;
+    cout << "---- BvsAll ----" << endl;
+    cout << "methodA = " << jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") << endl;
+*/
+    //==== methodA
+    //jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
+    //==== methodB
+    jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
+
+    //==== DeepFlavour
+
+    jet_DeepFlavour_b.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probb"));
+    jet_DeepFlavour_bb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probbb"));
+    jet_DeepFlavour_lepb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:problepb"));
+    jet_DeepFlavour_c.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probc"));
+    jet_DeepFlavour_uds.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probuds"));
+    jet_DeepFlavour_g.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probg"));
+
+    //==== Old Charm Tagger
+
+    jet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
+    jet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
+
+    //==== DeepCSV charm tagger
+
+/*
+    cout << "---- CvsL ----" << endl;
+    cout << "methodA = " << deepcharm_c/(deepcharm_c+deepcharm_udsg) << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") << endl;
+    cout << "---- CvsB ----" << endl;
+    cout << "methodA = " << deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") << endl;
+*/
+    //==== methodA : it gives value = 0.5 or 0.333 when these are -1.. 
+    //double deepcharm_c = jets_iter->bDiscriminator("pfDeepCSVJetTags:probc");
+    //double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
+    //double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
+    //double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
+    //jet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
+    //jet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
+    //==== methodB
+    jet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
+    jet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
+
+
+    jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
+    jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
+    jet_neutralEmEnergyFraction.push_back( jets_iter->neutralEmEnergyFraction() );
+    jet_chargedEmEnergyFraction.push_back( jets_iter->chargedEmEnergyFraction() );
+    jet_muonEnergyFraction.push_back( jets_iter->muonEnergyFraction() );
+    jet_chargedMultiplicity.push_back( jets_iter->chargedMultiplicity() );
+    jet_neutralMultiplicity.push_back( jets_iter->neutralMultiplicity() );
+
+    //==== JetID
+    //==== https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVUL
+    double NHF  = jets_iter->neutralHadronEnergyFraction();
+    double NEMF = jets_iter->neutralEmEnergyFraction();
+    double CHF  = jets_iter->chargedHadronEnergyFraction();
+    double MUF  = jets_iter->muonEnergyFraction();
+    double CEMF = jets_iter->chargedEmEnergyFraction();
+    double NumConst = jets_iter->chargedMultiplicity()+jets_iter->neutralMultiplicity();
+    double NumNeutralParticle =jets_iter->neutralMultiplicity();
+    double CHM      = jets_iter->chargedMultiplicity();
+    double eta = jets_iter->eta();
+
+    bool tightJetID        = false;
+    bool tightLepVetoJetID = false;
+
+    if(DataYear==2016){
+      if(fabs(eta)<=2.4){
+	tightJetID = ( CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 ); 
+	tightLepVetoJetID = tightJetID && CEMF<0.8 && MUF <0.8; 
+      }else if(fabs(eta)<=2.7){
+	tightJetID = ( NEMF<0.99 && NHF < 0.9 );
+	tightLepVetoJetID = tightJetID;
+      }else if(fabs(eta)<=3.0){
+	tightJetID = ( NEMF>0.0 && NEMF<0.99 && NHF<0.9 && NumNeutralParticle>1 );
+	tightLepVetoJetID = tightJetID;
+      }else{
+	tightJetID = ( NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
+	tightLepVetoJetID = tightJetID;
       }
-      */
-      
-      //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
-      jet_jecUnc->setJetEta( jets_iter->eta() );
-      jet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
-      double unc = jet_jecUnc->getUncertainty(true);
-      jet_shiftedEnUp.push_back( 1.+unc );
-      jet_shiftedEnDown.push_back( 1.-unc ); // I found jet_jecUnc->getUncertainty(true) = jet_jecUnc->getUncertainty(false)
-      
-      //==== For cross check
-      //==== methodB
-      //jet_jecUnc_methodB->setJetEta( jets_iter->eta() );
-      //jet_jecUnc_methodB->setJetPt( jets_iter->pt() ); 
-      //double unc_methodB = jet_jecUnc_methodB->getUncertainty(true);
-      //cout << "jec unc methodA = " << unc << endl;
-      //cout << "jec unc methodB = " << unc_methodB << endl << endl;
-      
-      //=======================================================================================================================
-      //==== Save JEC variables for Lepton-aware JEC
-      //==== https://github.com/cms-sw/cmssw/blob/02d4198c0b6615287fd88e9a8ff650aea994412e/PhysicsTools/NanoAOD/plugins/LeptonJetVarProducer.cc#L154-L184
-      //=======================================================================================================================
-      
-      //==== Save L1 Correction
-      //==== auto L1Correctedjet = jets_iter->correctedP4("L1FastJet"); : "JET corrected up to L1FastJet"
-      //==== jets_iter->jecFactor("L1FastJet") = L1Correctedjet.pt()/jets_iter->pt()
-      //==== i.e., "FINAL JET" times "jecFactor(L1FastJet)" = "JET corrected up to L1FastJet"
-      //==== So, to get L1 correction alone,
-      //==== jecFactor("L1FastJet")/jecFactor("Uncorrected")
-      
-      jet_JECL1FastJet.push_back( jets_iter->jecFactor("L1FastJet")/jets_iter->jecFactor("Uncorrected") );
-      
-      //==== Save Full Correction
-      //==== auto uncorjet =  jets_iter->correctedP4("Uncorrected");
-      //==== jets_iter->jecFactor("Uncorrected") = uncorjet.pt()/jets_iter->pt()
-      auto uncorjet =  jets_iter->correctedP4("Uncorrected");
-      //cout << "uncorjet.pt()/jets_iter->pt() = " << uncorjet.pt()/jets_iter->pt() << endl;
-      //cout << ( jets_iter->jecFactor("Uncorrected") ) / ( uncorjet.pt()/jets_iter->pt() ) << endl;
-      jet_JECFull.push_back( jets_iter->pt()/uncorjet.pt() );
-      
-      /*
-      //==== debug for JEC updator
-      cout << "[AK4]" << endl;
-      cout << "jets_iter->pt() = " << jets_iter->pt() << endl;
-      cout << "uncorjet.pt() = " << uncorjet.pt() << endl;
-      cout << "ratio = " << jets_iter->pt()/uncorjet.pt() << endl;
-      cout << "1/ratio = " << uncorjet.pt()/jets_iter->pt() << endl;
-      cout << "unc = " << unc << endl;
-      cout << "jet_JECL1FastJet = " << jets_iter->jecFactor("L1FastJet")/jets_iter->jecFactor("Uncorrected") << endl;
-      cout << "jet_JECFull = " << jets_iter->pt()/uncorjet.pt() << endl;
-      */
-      
-      
-      //BJetEnergyCorrectionNN
-      unsigned index = jets_iter - jetHandle->begin();
-      jet_bjetNN_corr.push_back(bJetNNCorr_iter[index]);
-      jet_bjetNN_res.push_back(bJetNNRes_iter[index]);
-      jet_cjetNN_corr.push_back(cJetNNCorr_iter[index]);
-      jet_cjetNN_res.push_back(cJetNNRes_iter[index]);
+    }
+    else if(DataYear==2017||DataYear==2018){
+      if(fabs(eta)<=2.6){
+	tightJetID = ( CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 ); 
+	tightLepVetoJetID = tightJetID && CEMF<0.8 && MUF <0.8; 
+      }else if(fabs(eta)<=2.7){
+	tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
+	tightLepVetoJetID = tightJetID && CEMF<0.8 && MUF <0.8;
+      }else if(fabs(eta)<=3.0){
+	tightJetID = ( NEMF>0.01 && NEMF<0.99 && NumNeutralParticle>1 );
+	tightLepVetoJetID = tightJetID;
+      }else{
+	tightJetID = ( NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
+	tightLepVetoJetID = tightJetID;
+      }
+    }
+    else{
+      cout << "DataYear is not set : DataYear = " << DataYear << endl;
+      exit(EXIT_FAILURE);
+    }
 
-      if(!IsData)
-	{
-	  
-	  //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures
-	  //==== https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h
-	  //==== https://github.com/cms-sw/cmssw/blob/aa14a75177e9f010b3b8d0af0440598735c49311/PhysicsTools/PatUtils/python/patPFMETCorrections_cff.py
-	  
-	  //==========
-	  //==== JER
-	  //==========
-	  
-	  double jer = jet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
-	  double jer_sf = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
-	  double jer_sf_UP = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
-	  double jer_sf_DOWN = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
-	  
-	  if(theDebugLevel)
-	    {
-	      
-	      cout << "#### Jet ####" << endl;
-	      cout << "pt = " << jets_iter->pt() << endl;
-	      cout << "eta = " << jets_iter->eta() << endl;
-	      cout << "Rho = " << Rho << endl;
-	      cout << "jer = " << jer << endl;
-	      cout << "jer_sf = " << jer_sf << endl;
-	      cout << "jer_sf_UP = " << jer_sf_UP << endl;
-	    }
-	  
-	  const reco::GenJet* genJet = nullptr;
-	  genJet = match(*jets_iter, jets_iter->pt() * jer, "AK4");
-	  double smearFactor = 1., smearFactor_UP = 1., smearFactor_DOWN = 1.;
-	  if(genJet)
-	    {
-	      
-	      //==== Case 1: we have a "good" gen jet matched to the reco jet
-	      
-	      double dPt = jets_iter->pt() - genJet->pt();
-	      smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
-	      smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
-	      smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
-	    }
-	  else if (jer_sf > 1)
-	    {
-	      
-	      //==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
-	      
-	      double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
-	      std::normal_distribution<> d(0, sigma);
-	      smearFactor = 1. + d(m_random_generator);
-	      
-	      double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
-	      std::normal_distribution<> d_UP(0, sigma_UP);
-	      smearFactor_UP = 1. + d_UP(m_random_generator);
-	      
-	      double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
-	      std::normal_distribution<> d_DOWN(0, sigma_DOWN);
-	      smearFactor_DOWN = 1. + d_DOWN(m_random_generator);  
-	      
-	    }
-	  else
-	    {
-	    }
-	  
-	  //==== Negative or too small smearFactor. We would change direction of the jet
-	  //==== and this is not what we want.
-	  //==== Recompute the smearing factor in order to have jet.energy() == MIN_JET_ENERGY
-	  double newSmearFactor = MIN_JET_ENERGY / jets_iter->energy();
-	  
-	  smearFactor = std::max(smearFactor,newSmearFactor);
-	  smearFactor_UP = std::max(smearFactor_UP,newSmearFactor);
-	  smearFactor_DOWN = std::max(smearFactor_DOWN,newSmearFactor);
-	  
-	  if(theDebugLevel)
-	    {
-	      
-	      cout << "--->" << endl;
-	      cout << "smearFactor = " << smearFactor << endl;
-	      cout << "smearFactor_UP = " << smearFactor_UP << endl;
-	      cout << "smearFactor_DOWN = " << smearFactor_DOWN << endl;
-	      
-	    }
-	  
-	  jet_smearedRes.push_back(smearFactor);
-	  jet_smearedResUp.push_back(smearFactor_UP);
-	  jet_smearedResDown.push_back(smearFactor_DOWN);
-	  
-	  //== GenHFHadronMatcher  ==//
-	  if(genJet)
-	    {
-	      int index_genJet = find_index(genJet);
-	      
-	      bool chkBHadron = false;
-	      bool chkCHadron = false;
-	      
-	      int bHadFlavor;
-	      //int bHadFromTopWeakDecay;
-	      
-	      int cHadFlavor;
-	      int cHadBHadronId;
-	      
-	      //BHadron
-	      for(size_t hadronId = 0; hadronId < genBHadIndex->size(); ++hadronId)
-		{
-		  const int jetIndex = genBHadJetIndex->at(hadronId);
-		  
-		  if(index_genJet == jetIndex)
-		    {
-		      bHadFlavor = genBHadFlavour->at(hadronId);
-		      //bHadFromTopWeakDecay = genBHadFromTopWeakDecay->at(hadronId);
-		      cout << "test bHadFlavour = " << bHadFlavor << endl;
-		      chkBHadron = true;
-		    }
-		}//for loop over BHadron loop
-	      
-	      //CHadron
-	      for(size_t hadronId = 0; hadronId < genCHadIndex->size(); ++hadronId)
-		{
-		  const int jetIndex = genCHadJetIndex->at(hadronId);
-		  
-		  if(index_genJet == jetIndex)
-		    {
-		      cHadFlavor = genCHadFlavour->at(hadronId);
-		      cHadBHadronId = genCHadBHadronId->at(hadronId);
-		      
-		      //cHadBHadronId==-1 means no b hadrons among mothers of corresponding C hadrons
-		      if(cHadBHadronId==-1) chkCHadron = true;
-		    }
-		}//for loop over CHadron loop
-	      
-	      if(chkBHadron==true)
-		{
-		  jet_GenHFHadronMatcher_flavour.push_back(5);//matched b hadron
-		  jet_GenHFHadronMatcher_origin.push_back(bHadFlavor);
-		}
-	      else if(chkCHadron==true)
-		{
-		  jet_GenHFHadronMatcher_flavour.push_back(4);//no b haron, only matched c hadron
-		  jet_GenHFHadronMatcher_origin.push_back(cHadFlavor);
-		}
-	      else{
-		jet_GenHFHadronMatcher_flavour.push_back(1);//light jets, neither b nor c hadron found
-		jet_GenHFHadronMatcher_origin.push_back(-999);//no origin found
-	      }
-	    }//if(genJet)
-	  else
-	    {
-	      jet_GenHFHadronMatcher_flavour.push_back(-999);//no matched genjet found
-	      jet_GenHFHadronMatcher_origin.push_back(-999);//no matched genjet found
-	    }
-	}//if(!IsData)
-      
-      //cout << "QGTagger:qgLikelihood = " << jets_iter->userFloat("QGTagger:qgLikelihood") << endl;
+    jet_tightJetID.push_back(tightJetID);
+    jet_tightLepVetoJetID.push_back(tightLepVetoJetID);
 
-     
+    int partonPdgId = jets_iter->genParton() ? jets_iter->genParton()->pdgId() : 0;
+    jet_partonPdgId.push_back( partonPdgId );
+
+    if( jets_iter->hasUserFloat("vtxNtracks") ) jet_vtxNtracks.push_back( jets_iter->userFloat("vtxNtracks") );
+    jet_m.push_back( jets_iter->mass() );
+    jet_energy.push_back( jets_iter->energy() );
+    if( jets_iter->hasUserFloat("pileupJetId:fullDiscriminant") ) jet_PileupJetId.push_back( jets_iter->userFloat("pileupJetId:fullDiscriminant") );
+
+    //==========
+    //==== JEC
+    //==========
+
+/*
+    //==== Printing JEC levels
+    cout << "[AK4]" << endl;
+    cout << "currentJECSet = " << jets_iter->currentJECSet() << endl;
+    cout << "currentJECLevel = " << jets_iter->currentJECLevel() << endl;
+    cout << "availableJECLevels() : " << endl;
+    const std::vector<std::string> aaa = jets_iter->availableJECLevels(jets_iter->currentJECSet());
+    for(unsigned int z=0; z< aaa.size(); z++){
+    cout << "  " << aaa.at(z) << endl;
+    }
+*/
+
+    //==== https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+    jet_jecUnc->setJetEta( jets_iter->eta() );
+    jet_jecUnc->setJetPt( jets_iter->pt() ); // here you must use the CORRECTED jet pt
+    double unc = jet_jecUnc->getUncertainty(true);
+    jet_shiftedEnUp.push_back( 1.+unc );
+    jet_shiftedEnDown.push_back( 1.-unc ); // I found jet_jecUnc->getUncertainty(true) = jet_jecUnc->getUncertainty(false)
+
+    //==== For cross check
+    //==== methodB
+    //jet_jecUnc_methodB->setJetEta( jets_iter->eta() );
+    //jet_jecUnc_methodB->setJetPt( jets_iter->pt() ); 
+    //double unc_methodB = jet_jecUnc_methodB->getUncertainty(true);
+    //cout << "jec unc methodA = " << unc << endl;
+    //cout << "jec unc methodB = " << unc_methodB << endl << endl;
+
+    //=======================================================================================================================
+    //==== Save JEC variables for Lepton-aware JEC
+    //==== https://github.com/cms-sw/cmssw/blob/02d4198c0b6615287fd88e9a8ff650aea994412e/PhysicsTools/NanoAOD/plugins/LeptonJetVarProducer.cc#L154-L184
+    //=======================================================================================================================
+
+    //==== Save L1 Correction
+    //==== auto L1Correctedjet = jets_iter->correctedP4("L1FastJet"); : "JET corrected up to L1FastJet"
+    //==== jets_iter->jecFactor("L1FastJet") = L1Correctedjet.pt()/jets_iter->pt()
+    //==== i.e., "FINAL JET" times "jecFactor(L1FastJet)" = "JET corrected up to L1FastJet"
+    //==== So, to get L1 correction alone,
+    //==== jecFactor("L1FastJet")/jecFactor("Uncorrected")
+
+    jet_JECL1FastJet.push_back( jets_iter->jecFactor("L1FastJet")/jets_iter->jecFactor("Uncorrected") );
+
+    //==== Save Full Correction
+    //==== auto uncorjet =  jets_iter->correctedP4("Uncorrected");
+    //==== jets_iter->jecFactor("Uncorrected") = uncorjet.pt()/jets_iter->pt()
+    auto uncorjet =  jets_iter->correctedP4("Uncorrected");
+    //cout << "uncorjet.pt()/jets_iter->pt() = " << uncorjet.pt()/jets_iter->pt() << endl;
+    //cout << ( jets_iter->jecFactor("Uncorrected") ) / ( uncorjet.pt()/jets_iter->pt() ) << endl;
+    jet_JECFull.push_back( jets_iter->pt()/uncorjet.pt() );
+
+/*
+    //==== debug for JEC updator
+    cout << "[AK4]" << endl;
+    cout << "jets_iter->pt() = " << jets_iter->pt() << endl;
+    cout << "uncorjet.pt() = " << uncorjet.pt() << endl;
+    cout << "ratio = " << jets_iter->pt()/uncorjet.pt() << endl;
+    cout << "1/ratio = " << uncorjet.pt()/jets_iter->pt() << endl;
+    cout << "unc = " << unc << endl;
+    cout << "jet_JECL1FastJet = " << jets_iter->jecFactor("L1FastJet")/jets_iter->jecFactor("Uncorrected") << endl;
+    cout << "jet_JECFull = " << jets_iter->pt()/uncorjet.pt() << endl;
+*/
+    
+    
+    //BJetEnergyCorrectionNN
+    unsigned index = jets_iter - jetHandle->begin();
+    jet_bjetNN_corr.push_back(bJetNNCorr_iter[index]);
+    jet_bjetNN_res.push_back(bJetNNRes_iter[index]);
+    jet_cjetNN_corr.push_back(cJetNNCorr_iter[index]);
+    jet_cjetNN_res.push_back(cJetNNRes_iter[index]);
+    
+    if(!IsData){
+
+      //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures
+      //==== https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h
+      //==== https://github.com/cms-sw/cmssw/blob/aa14a75177e9f010b3b8d0af0440598735c49311/PhysicsTools/PatUtils/python/patPFMETCorrections_cff.py
+
+      //==========
+      //==== JER
+      //==========
+
+      double jer = jet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
+      double jer_sf = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
+      double jer_sf_UP = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
+      double jer_sf_DOWN = jet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
+
+      if(theDebugLevel){
+
+	cout << "#### Jet ####" << endl;
+	cout << "pt = " << jets_iter->pt() << endl;
+	cout << "eta = " << jets_iter->eta() << endl;
+	cout << "Rho = " << Rho << endl;
+	cout << "jer = " << jer << endl;
+	cout << "jer_sf = " << jer_sf << endl;
+	cout << "jer_sf_UP = " << jer_sf_UP << endl;
+
+      }
       
-    }//for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter)
+      const reco::GenJet* genJet = nullptr;
+      genJet = match(*jets_iter, jets_iter->pt() * jer, "AK4");
+      double smearFactor = 1., smearFactor_UP = 1., smearFactor_DOWN = 1.;
+      if(genJet){
+	      
+	//==== Case 1: we have a "good" gen jet matched to the reco jet
+	
+	double dPt = jets_iter->pt() - genJet->pt();
+	smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
+	smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
+	smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
+
+      }
+      else if (jer_sf > 1) {
+	
+	//==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
+	
+	double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
+	std::normal_distribution<> d(0, sigma);
+	smearFactor = 1. + d(m_random_generator);
+	
+	double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
+	std::normal_distribution<> d_UP(0, sigma_UP);
+	smearFactor_UP = 1. + d_UP(m_random_generator);
+	
+	double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
+	std::normal_distribution<> d_DOWN(0, sigma_DOWN);
+	smearFactor_DOWN = 1. + d_DOWN(m_random_generator);  
+	
+      }
+      else{
+      
+      }
+      
+      //==== Negative or too small smearFactor. We would change direction of the jet
+      //==== and this is not what we want.
+      //==== Recompute the smearing factor in order to have jet.energy() == MIN_JET_ENERGY
+      double newSmearFactor = MIN_JET_ENERGY / jets_iter->energy();
+      
+      smearFactor = std::max(smearFactor,newSmearFactor);
+      smearFactor_UP = std::max(smearFactor_UP,newSmearFactor);
+      smearFactor_DOWN = std::max(smearFactor_DOWN,newSmearFactor);
+      
+      if(theDebugLevel){
+	
+        cout << "--->" << endl;
+        cout << "smearFactor = " << smearFactor << endl;
+        cout << "smearFactor_UP = " << smearFactor_UP << endl;
+        cout << "smearFactor_DOWN = " << smearFactor_DOWN << endl;
+	
+      }
+      
+      jet_smearedRes.push_back(smearFactor);
+      jet_smearedResUp.push_back(smearFactor_UP);
+      jet_smearedResDown.push_back(smearFactor_DOWN);
+      
+      //== GenHFHadronMatcher  ==//
+      if(genJet){
+	int index_genJet = find_index(genJet);
+	
+	bool chkBHadron = false;
+	bool chkCHadron = false;
+	
+	int bHadFlavor;
+	//int bHadFromTopWeakDecay;
+	
+	int cHadFlavor;
+	int cHadBHadronId;
+	
+	//BHadron
+	for(size_t hadronId = 0; hadronId < genBHadIndex->size(); ++hadronId){
+	  const int jetIndex = genBHadJetIndex->at(hadronId);
+	  
+	  if(index_genJet == jetIndex){
+	    bHadFlavor = genBHadFlavour->at(hadronId);
+	    //bHadFromTopWeakDecay = genBHadFromTopWeakDecay->at(hadronId);
+	    //cout << "test bHadFlavour = " << bHadFlavor << endl;
+	    chkBHadron = true;
+	  }
+	}//for loop over BHadron loop
+	      
+	//CHadron
+	for(size_t hadronId = 0; hadronId < genCHadIndex->size(); ++hadronId){
+	  const int jetIndex = genCHadJetIndex->at(hadronId);
+	  
+	  if(index_genJet == jetIndex){
+	    cHadFlavor = genCHadFlavour->at(hadronId);
+	    cHadBHadronId = genCHadBHadronId->at(hadronId);
+	    
+	    //cHadBHadronId==-1 means no b hadrons among mothers of corresponding C hadrons
+	    if(cHadBHadronId==-1) chkCHadron = true;
+	  }
+	}//for loop over CHadron loop
+	      
+	if(chkBHadron==true){
+	  jet_GenHFHadronMatcher_flavour.push_back(5);//matched b hadron
+	  jet_GenHFHadronMatcher_origin.push_back(bHadFlavor);
+	}else if(chkCHadron==true){
+	  jet_GenHFHadronMatcher_flavour.push_back(4);//no b haron, only matched c hadron
+	  jet_GenHFHadronMatcher_origin.push_back(cHadFlavor);
+	}else{
+	  jet_GenHFHadronMatcher_flavour.push_back(1);//light jets, neither b nor c hadron found
+	  jet_GenHFHadronMatcher_origin.push_back(-999);//no origin found
+	}
+      }else{
+	jet_GenHFHadronMatcher_flavour.push_back(-999);//no matched genjet found
+	jet_GenHFHadronMatcher_origin.push_back(-999);//no matched genjet found
+      }//if(genJet)
   
-  //==== BJetEnergyCorrectionNN ====/
-  //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWG/BJetRegression
-  
-  //Handles for BJetEnergyCorrectionNN
-  // edm::Handle<edm::ValueMap<float> > bJetNNCorr_handle;
-  // iEvent.getByToken(bJetNNCorrToken_, bJetNNCorr_handle);
-  // //iEvent.getByLabel("bJetNNCorr", bJetNNCorr_handle);
-  
-  // for(auto handle_iter = bJetNNCorr_handle->begin(); handle_iter!=bJetNNCorr_handle->end(); ++handle_iter)
-  //   {
-  //     cout << "test " << handle_iter[0] << ", " << handle_iter[1] << endl;
-  //   }
+    }//if(!IsData)
+    
+    //cout << "QGTagger:qgLikelihood = " << jets_iter->userFloat("QGTagger:qgLikelihood") << endl;
+        
+    
+  }//for (vector<pat::Jet>::const_iterator jets_iter = jetHandle->begin(); jets_iter != jetHandle->end(); ++jets_iter)
 
-
-  return;
 }//Void SKFlatMaker::fillJet(const edm::Event &iEvent)
 
 //////////
@@ -3454,92 +3407,87 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     cout << "jets_iter->pt() = " << jets_iter->pt() << endl;
 */
 
-    if(!IsData)
-      {
-
-	//==========
-	//==== JER
-	//==========
+    if(!IsData){
+      
+      //==========
+      //==== JER
+      //==========
+      
+      double jer = fatjet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
+      double jer_sf = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
+      double jer_sf_UP = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
+      double jer_sf_DOWN = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
+      
+      if(theDebugLevel){
 	
-	double jer = fatjet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
-	double jer_sf = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
-	double jer_sf_UP = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
-	double jer_sf_DOWN = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
+	cout << "#### FatJet ####" << endl;
+	cout << "pt = " << jets_iter->pt() << endl;
+	cout << "eta = " << jets_iter->eta() << endl;
+	cout << "Rho = " << Rho << endl;
+	cout << "jer = " << jer << endl;
+	cout << "jer_sf = " << jer_sf << endl;
+	cout << "jer_sf_UP = " << jer_sf_UP << endl;
 	
-	if(theDebugLevel)
-	  {
-	    
-	    cout << "#### FatJet ####" << endl;
-	    cout << "pt = " << jets_iter->pt() << endl;
-	    cout << "eta = " << jets_iter->eta() << endl;
-	    cout << "Rho = " << Rho << endl;
-	    cout << "jer = " << jer << endl;
-	    cout << "jer_sf = " << jer_sf << endl;
-	    cout << "jer_sf_UP = " << jer_sf_UP << endl;
-	    
-	  }
+      }
+      
+      const reco::GenJet* genJet = nullptr;
+      genJet = match(*jets_iter, jets_iter->pt() * jer, "AK8");
+      double smearFactor = 1., smearFactor_UP = 1., smearFactor_DOWN = 1.;
+      if(genJet){
+	  
+	//==== Case 1: we have a "good" gen jet matched to the reco jet
 	
-	const reco::GenJet* genJet = nullptr;
-	genJet = match(*jets_iter, jets_iter->pt() * jer, "AK8");
-	double smearFactor = 1., smearFactor_UP = 1., smearFactor_DOWN = 1.;
-	if(genJet)
-	  {
-	    
-	    //==== Case 1: we have a "good" gen jet matched to the reco jet
-	    
-	    double dPt = jets_iter->pt() - genJet->pt();
-	    smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
-	    smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
-	    smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
-	    
-	  }
-	else if (jer_sf > 1) 
-	  {
-	    
-	    //==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
-	    
-	    double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
-	    std::normal_distribution<> d(0, sigma);
-	    smearFactor = 1. + d(m_random_generator);
-	    
-	    double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
-	    std::normal_distribution<> d_UP(0, sigma_UP);
-	    smearFactor_UP = 1. + d_UP(m_random_generator);
-	    
-	    double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
-	    std::normal_distribution<> d_DOWN(0, sigma_DOWN);
-	    smearFactor_DOWN = 1. + d_DOWN(m_random_generator);
-	    
-	  }
-	else
-	  {
-	  }
+	double dPt = jets_iter->pt() - genJet->pt();
+	smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
+	smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
+	smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
 	
-	//==== Negative or too small smearFactor. We would change direction of the jet
-	//==== and this is not what we want.
-	//==== Recompute the smearing factor in order to have jet.energy() == MIN_JET_ENERGY
-	double newSmearFactor = MIN_JET_ENERGY / jets_iter->energy();
+      }else if (jer_sf > 1) {
 	
-	smearFactor = std::max(smearFactor,newSmearFactor);
-	smearFactor_UP = std::max(smearFactor_UP,newSmearFactor);
-	smearFactor_DOWN = std::max(smearFactor_DOWN,newSmearFactor);
+	//==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
 	
-	if(theDebugLevel)
-	  {
-	    cout << "--->" << endl;
-	    cout << "smearFactor = " << smearFactor << endl;
-	    cout << "smearFactor_UP = " << smearFactor_UP << endl;
-	    cout << "smearFactor_DOWN = " << smearFactor_DOWN << endl;
-	  }
+	double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
+	std::normal_distribution<> d(0, sigma);
+	smearFactor = 1. + d(m_random_generator);
 	
-	fatjet_smearedRes.push_back(smearFactor);
-	fatjet_smearedResUp.push_back(smearFactor_UP);
-	fatjet_smearedResDown.push_back(smearFactor_DOWN);
+	double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
+	std::normal_distribution<> d_UP(0, sigma_UP);
+	smearFactor_UP = 1. + d_UP(m_random_generator);
 	
-      }//if(!IsData)
-
+	double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
+	std::normal_distribution<> d_DOWN(0, sigma_DOWN);
+	smearFactor_DOWN = 1. + d_DOWN(m_random_generator);
+	
+      }
+      else{
+	
+      }
+      
+      //==== Negative or too small smearFactor. We would change direction of the jet
+      //==== and this is not what we want.
+      //==== Recompute the smearing factor in order to have jet.energy() == MIN_JET_ENERGY
+      double newSmearFactor = MIN_JET_ENERGY / jets_iter->energy();
+      
+      smearFactor = std::max(smearFactor,newSmearFactor);
+      smearFactor_UP = std::max(smearFactor_UP,newSmearFactor);
+      smearFactor_DOWN = std::max(smearFactor_DOWN,newSmearFactor);
+      
+      if(theDebugLevel){
+	cout << "--->" << endl;
+	cout << "smearFactor = " << smearFactor << endl;
+	cout << "smearFactor_UP = " << smearFactor_UP << endl;
+	cout << "smearFactor_DOWN = " << smearFactor_DOWN << endl;
+	
+      }
+      
+      fatjet_smearedRes.push_back(smearFactor);
+      fatjet_smearedResUp.push_back(smearFactor_UP);
+      fatjet_smearedResDown.push_back(smearFactor_DOWN);
+      
+    }
+    
     //==== LSF variables
-
+    
     std::vector<reco::CandidatePtr> pfConstituents = jets_iter->getJetConstituents();
     std::vector<fastjet::PseudoJet> lClusterParticles;
     for(unsigned int ic=0; ic<pfConstituents.size(); ic++) {
