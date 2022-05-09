@@ -3071,68 +3071,68 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 
       if(theDebugLevel){
 
-	cout << "#### Jet ####" << endl;
-	cout << "pt = " << jets_iter->pt() << endl;
-	cout << "eta = " << jets_iter->eta() << endl;
-	cout << "Rho = " << Rho << endl;
-	cout << "jer = " << jer << endl;
-	cout << "jer_sf = " << jer_sf << endl;
-	cout << "jer_sf_UP = " << jer_sf_UP << endl;
+        cout << "#### Jet ####" << endl;
+        cout << "pt = " << jets_iter->pt() << endl;
+        cout << "eta = " << jets_iter->eta() << endl;
+        cout << "Rho = " << Rho << endl;
+        cout << "jer = " << jer << endl;
+        cout << "jer_sf = " << jer_sf << endl;
+        cout << "jer_sf_UP = " << jer_sf_UP << endl;
 
       }
-      
+
       const reco::GenJet* genJet = nullptr;
       genJet = match(*jets_iter, jets_iter->pt() * jer, "AK4");
       double smearFactor = 1., smearFactor_UP = 1., smearFactor_DOWN = 1.;
       if(genJet){
-	      
-	//==== Case 1: we have a "good" gen jet matched to the reco jet
-	
-	double dPt = jets_iter->pt() - genJet->pt();
-	smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
-	smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
-	smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
+
+        //==== Case 1: we have a "good" gen jet matched to the reco jet
+
+        double dPt = jets_iter->pt() - genJet->pt();
+        smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
+        smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
+        smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
 
       }
       else if (jer_sf > 1) {
-	
-	//==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
-	
-	double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
-	std::normal_distribution<> d(0, sigma);
-	smearFactor = 1. + d(m_random_generator);
-	
-	double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
-	std::normal_distribution<> d_UP(0, sigma_UP);
-	smearFactor_UP = 1. + d_UP(m_random_generator);
-	
-	double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
-	std::normal_distribution<> d_DOWN(0, sigma_DOWN);
-	smearFactor_DOWN = 1. + d_DOWN(m_random_generator);  
-	
+
+        //==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
+
+        double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
+        std::normal_distribution<> d(0, sigma);
+        smearFactor = 1. + d(m_random_generator);
+
+        double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
+        std::normal_distribution<> d_UP(0, sigma_UP);
+        smearFactor_UP = 1. + d_UP(m_random_generator);
+
+        double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
+        std::normal_distribution<> d_DOWN(0, sigma_DOWN);
+        smearFactor_DOWN = 1. + d_DOWN(m_random_generator);  
+
       }
       else{
-      
+
       }
-      
+
       //==== Negative or too small smearFactor. We would change direction of the jet
       //==== and this is not what we want.
       //==== Recompute the smearing factor in order to have jet.energy() == MIN_JET_ENERGY
       double newSmearFactor = MIN_JET_ENERGY / jets_iter->energy();
-      
+
       smearFactor = std::max(smearFactor,newSmearFactor);
       smearFactor_UP = std::max(smearFactor_UP,newSmearFactor);
       smearFactor_DOWN = std::max(smearFactor_DOWN,newSmearFactor);
-      
+
       if(theDebugLevel){
-	
+
         cout << "--->" << endl;
         cout << "smearFactor = " << smearFactor << endl;
         cout << "smearFactor_UP = " << smearFactor_UP << endl;
         cout << "smearFactor_DOWN = " << smearFactor_DOWN << endl;
-	
+
       }
-      
+
       jet_smearedRes.push_back(smearFactor);
       jet_smearedResUp.push_back(smearFactor_UP);
       jet_smearedResDown.push_back(smearFactor_DOWN);
@@ -3207,7 +3207,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 {
 
-  edm::Handle< std::vector<pat::Jet> > jetHandle;
+  Edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(FatJetToken,jetHandle);
 
   if( jetHandle->size() > 0 && theDebugLevel > 0)
@@ -3408,86 +3408,88 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 */
 
     if(!IsData){
-      
+
       //==========
       //==== JER
       //==========
-      
+
       double jer = fatjet_resolution.getResolution({{JME::Binning::JetPt, jets_iter->pt()}, {JME::Binning::JetEta, jets_iter->eta()}, {JME::Binning::Rho, Rho}});
       double jer_sf = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::NOMINAL);
       double jer_sf_UP = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::UP);
       double jer_sf_DOWN = fatjet_resolution_sf.getScaleFactor({{JME::Binning::JetPt, jets_iter->pt()},{JME::Binning::JetEta, jets_iter->eta()}}, Variation::DOWN);
-      
+
       if(theDebugLevel){
-	
-	cout << "#### FatJet ####" << endl;
-	cout << "pt = " << jets_iter->pt() << endl;
-	cout << "eta = " << jets_iter->eta() << endl;
-	cout << "Rho = " << Rho << endl;
-	cout << "jer = " << jer << endl;
-	cout << "jer_sf = " << jer_sf << endl;
-	cout << "jer_sf_UP = " << jer_sf_UP << endl;
-	
+
+        cout << "#### FatJet ####" << endl;
+        cout << "pt = " << jets_iter->pt() << endl;
+        cout << "eta = " << jets_iter->eta() << endl;
+        cout << "Rho = " << Rho << endl;
+        cout << "jer = " << jer << endl;
+        cout << "jer_sf = " << jer_sf << endl;
+        cout << "jer_sf_UP = " << jer_sf_UP << endl;
+
       }
-      
+
       const reco::GenJet* genJet = nullptr;
       genJet = match(*jets_iter, jets_iter->pt() * jer, "AK8");
       double smearFactor = 1., smearFactor_UP = 1., smearFactor_DOWN = 1.;
       if(genJet){
-	  
-	//==== Case 1: we have a "good" gen jet matched to the reco jet
-	
-	double dPt = jets_iter->pt() - genJet->pt();
-	smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
-	smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
-	smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
-	
-      }else if (jer_sf > 1) {
-	
-	//==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
-	
-	double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
-	std::normal_distribution<> d(0, sigma);
-	smearFactor = 1. + d(m_random_generator);
-	
-	double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
-	std::normal_distribution<> d_UP(0, sigma_UP);
-	smearFactor_UP = 1. + d_UP(m_random_generator);
-	
-	double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
-	std::normal_distribution<> d_DOWN(0, sigma_DOWN);
-	smearFactor_DOWN = 1. + d_DOWN(m_random_generator);
-	
+
+        //==== Case 1: we have a "good" gen jet matched to the reco jet
+
+        double dPt = jets_iter->pt() - genJet->pt();
+        smearFactor = 1 + (jer_sf - 1.) * dPt / jets_iter->pt();
+        smearFactor_UP = 1 + (jer_sf_UP - 1.) * dPt / jets_iter->pt();
+        smearFactor_DOWN = 1 + (jer_sf_DOWN - 1.) * dPt / jets_iter->pt();
+
+      }
+      else if (jer_sf > 1) {
+
+        //==== Case 2: we don't have a gen jet. Smear jet pt using a random gaussian variation
+
+        double sigma = jer * std::sqrt(std::max(jer_sf*jer_sf-1,0.));
+        std::normal_distribution<> d(0, sigma);
+        smearFactor = 1. + d(m_random_generator);
+
+        double sigma_UP = jer * std::sqrt(std::max(jer_sf_UP*jer_sf_UP-1,0.));
+        std::normal_distribution<> d_UP(0, sigma_UP);
+        smearFactor_UP = 1. + d_UP(m_random_generator);
+
+        double sigma_DOWN = jer * std::sqrt(std::max(jer_sf_DOWN*jer_sf_DOWN-1,0.));
+        std::normal_distribution<> d_DOWN(0, sigma_DOWN);
+        smearFactor_DOWN = 1. + d_DOWN(m_random_generator);
+
       }
       else{
-	
+
       }
-      
+
       //==== Negative or too small smearFactor. We would change direction of the jet
       //==== and this is not what we want.
       //==== Recompute the smearing factor in order to have jet.energy() == MIN_JET_ENERGY
       double newSmearFactor = MIN_JET_ENERGY / jets_iter->energy();
-      
+
       smearFactor = std::max(smearFactor,newSmearFactor);
       smearFactor_UP = std::max(smearFactor_UP,newSmearFactor);
       smearFactor_DOWN = std::max(smearFactor_DOWN,newSmearFactor);
-      
+
       if(theDebugLevel){
-	cout << "--->" << endl;
-	cout << "smearFactor = " << smearFactor << endl;
-	cout << "smearFactor_UP = " << smearFactor_UP << endl;
-	cout << "smearFactor_DOWN = " << smearFactor_DOWN << endl;
+
+        cout << "--->" << endl;
+        cout << "smearFactor = " << smearFactor << endl;
+        cout << "smearFactor_UP = " << smearFactor_UP << endl;
+        cout << "smearFactor_DOWN = " << smearFactor_DOWN << endl;
 	
       }
-      
+
       fatjet_smearedRes.push_back(smearFactor);
       fatjet_smearedResUp.push_back(smearFactor_UP);
       fatjet_smearedResDown.push_back(smearFactor_DOWN);
-      
+
     }
-    
+
     //==== LSF variables
-    
+
     std::vector<reco::CandidatePtr> pfConstituents = jets_iter->getJetConstituents();
     std::vector<fastjet::PseudoJet> lClusterParticles;
     for(unsigned int ic=0; ic<pfConstituents.size(); ic++) {
@@ -3520,8 +3522,6 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
   }
 
 }
-
-//////////
 
 void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
 {
