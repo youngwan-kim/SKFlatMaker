@@ -10,13 +10,15 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 
 # Make CMSSW directory
 
+CMSSW_XXX=CMSSW_10_6_27/CMSSW_10_6_29 for MiniAODv1/v2
+
 #### 1) For a test job or developement
-cmsrel CMSSW_10_6_26
-cd CMSSW_10_6_26/src
+cmsrel CMSSW_XXX
+cd CMSSW_XXX/src
 
 #### 2) For production, let's not use the working directory but use new and clean directory
-scram p -n Run2UltraLegacy_v2__CMSSW_10_6_26 CMSSW CMSSW_10_6_26
-cd Run2UltraLegacy_v2__CMSSW_10_6_26/src
+scram p -n Run2UltraLegacy_v2__CMSSW_XXX CMSSW CMSSW_XXX
+cd Run2UltraLegacy_v2__CMSSW_XXX/src
 
 #### Then,
 cmsenv

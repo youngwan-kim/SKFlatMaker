@@ -43,7 +43,9 @@ genFatJetToken                      ( consumes< reco::GenJetCollection >        
 MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
 
 LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
+LHEEventProductSourceToken          ( consumes< LHEEventProduct >                           (edm::InputTag("source")) ),
 LHERunInfoProductToken              ( consumes< LHERunInfoProduct,edm::InRun >              (iConfig.getUntrackedParameter<edm::InputTag>("LHERunInfoProduct")) ),
+LHERunInfoProductSourceToken        ( consumes< LHERunInfoProduct,edm::InRun >              (edm::InputTag("source")) ),
 mcLabel_                            ( consumes< reco::GenParticleCollection>                (iConfig.getUntrackedParameter<edm::InputTag>("GenParticle"))  ),
 
 // -- MET Filter tokens -- //
@@ -66,6 +68,7 @@ BeamSpotToken                       ( consumes< reco::BeamSpot >                
 PrimaryVertexToken                  ( consumes< reco::VertexCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("PrimaryVertex")) ),
 TrackToken                          ( consumes< edm::View<reco::Track> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Track")) ),
 PileUpInfoToken                     ( consumes< std::vector< PileupSummaryInfo > >          (iConfig.getUntrackedParameter<edm::InputTag>("PileUpInfo")) ),
+GenLumiInfoHeaderToken              ( consumes< GenLumiInfoHeader,edm::InLumi >             (edm::InputTag("generator")) ),
   
 // -- GenHFHadronMatcher -- //
 genJetsToken_                       ( consumes<reco::GenJetCollection>                      (iConfig.getParameter<edm::InputTag>("genJets"))),
@@ -168,6 +171,7 @@ cJetNNResToken_                     ( consumes<ValueMap<float> >                
   WeightMap["Scale"]={};
   WeightMap["PDF"]={};
   WeightMap["AlphaS"]={};
+  WeightMap["PSSyst"]={};
   PDFAlphaSScaleValue_={1.};
   for(auto pname:iConfig.getParameterNames()){
     TString wname=pname;
@@ -2500,6 +2504,7 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 {
   Handle<LHEEventProduct> LHEInfo;
   iEvent.getByToken(LHEEventProductToken, LHEInfo);
+  if(!LHEInfo.isValid()) iEvent.getByToken(LHEEventProductSourceToken, LHEInfo);
   if(!LHEInfo.isValid()) return;
 
   //==== LHE object
@@ -2551,7 +2556,9 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
 	if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] weights for "+wname+"; adding id = " << id << endl;
 	weight_[wname].push_back( 1 + (map_id_to_weight[id]-nominalweight)/nominalweight * PDFAlphaSScaleValue_.at(i));
       }      
-    }else{
+    }      
+    else if(wname=="PSSyst") continue;
+    else{
       for(int id:ids){
 	if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] weights for "+wname+"; adding id = " << id << endl;
 	weight_[wname].push_back( map_id_to_weight[id]/nominalweight );
@@ -2562,6 +2569,7 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   if(theDebugLevel){
     cout << "[SKFlatMaker::fillLHEInfo] LHEInfo->originalXWGTUP() = " << LHEInfo->originalXWGTUP() << endl;
     for(auto [wname,weights]:weight_){
+      if(wname=="PSSyst") continue;
       cout << "[SKFlatMaker::fillLHEInfo] [weight_["+wname+"]]" << endl;
       for(unsigned int i=0;i<weights.size();i++) cout << "[SKFlatMaker::fillLHEInfo] " << weights.at(i) << endl;
     }
@@ -2624,12 +2632,18 @@ void SKFlatMaker::fillGENInfo(const edm::Event &iEvent)
   iEvent.getByToken(GenEventInfoToken, genEvtInfo);
   gen_weight = genEvtInfo->weight();
 
+  //PS Syst ref.: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HowToPDF#Parton_shower_weights
+  for(auto [wname,ids]:WeightMap){
+    if(wname!="PSSyst") continue;
+    for(int id:ids){
+      if(theDebugLevel){
+        if(id >(int) genEvtInfo->weights().size()-1){ printf("Error: PSSyst id:%d > PSweight vec. size(%d)-1\n", id, (int) genEvtInfo->weights().size()); continue; }
+        printf("[SKFlatMaker::fillGENInfo] weights for %s, id = %d, weight: %.3e\n", wname.Data(), id, genEvtInfo->weights().at(id)/gen_weight);
+      }
+      weight_[wname].push_back( genEvtInfo->weights().at(id)/gen_weight );
+    }
+  }
   genWeight_Q = genEvtInfo->pdf()->scalePDF;
-
-  //==== I think they are same..
-  //cout << "[JSKIM] genEvtInfo->pdf()->scalePDF = " << genEvtInfo->pdf()->scalePDF << endl;
-  //cout << "[JSKIM] genEvtInfo->qScale() = " << genEvtInfo->qScale() << endl << endl;
-
   genWeight_X1 = genEvtInfo->pdf()->x.first;
   genWeight_X2 = genEvtInfo->pdf()->x.second;
   genWeight_id1 = genEvtInfo->pdf()->id.first;
@@ -3533,6 +3547,7 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
     // -- ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW#Retrieving_the_weights -- //
     edm::Handle<LHERunInfoProduct> LHERunInfo;
     iRun.getByToken(LHERunInfoProductToken, LHERunInfo);
+    if(!LHERunInfo.isValid()) iRun.getByToken(LHERunInfoProductSourceToken, LHERunInfo);
     if(!LHERunInfo.isValid()) return;
 
     cout << "[SKFlatMaker::endRun] ##### Information about PDF weights #####" << endl;
@@ -3547,7 +3562,18 @@ void SKFlatMaker::endRun(const Run & iRun, const EventSetup & iSetup)
     }
     cout << "[SKFlatMaker::endRun] ##### End of information about PDF weights #####" << endl;
   }
-
+}
+void SKFlatMaker::beginLuminosityBlock(const edm::LuminosityBlock & iLumi, const EventSetup & iSetup){
+  if(printGenWeightNames){
+    edm::Handle<GenLumiInfoHeader> genLumiInfoHeader;
+    iLumi.getByToken(GenLumiInfoHeaderToken, genLumiInfoHeader);
+    if(genLumiInfoHeader.isValid()){
+      for(unsigned int i=0,n=genLumiInfoHeader->weightNames().size();i<n;i++){
+	std::cout << "[SKFlatMaker::beginLuminosityBlock] <weight> id="<<i<<" name='"<<genLumiInfoHeader->weightNames().at(i)<<"' </weight>"<<std::endl;
+      }
+    }
+    printGenWeightNames=false;
+  }
 }
 
 template<class T>
