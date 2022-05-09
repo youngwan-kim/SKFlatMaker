@@ -3072,10 +3072,6 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
       jet_cjetNN_corr.push_back(cJetNNCorr_iter[index]);
       jet_cjetNN_res.push_back(cJetNNRes_iter[index]);
 
-//bJetNNCorr
-      //cout << bJetNNCor[index] << endl;
-      //jet_bJetNN_corr.push_back();
-
       if(!IsData)
 	{
 	  
@@ -3185,7 +3181,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 		    {
 		      bHadFlavor = genBHadFlavour->at(hadronId);
 		      //bHadFromTopWeakDecay = genBHadFromTopWeakDecay->at(hadronId);
-		      
+		      cout << "test bHadFlavour = " << bHadFlavor << endl;
 		      chkBHadron = true;
 		    }
 		}//for loop over BHadron loop
