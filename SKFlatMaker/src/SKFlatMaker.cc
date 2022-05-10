@@ -3221,7 +3221,7 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 {
 
-  Edm::Handle< std::vector<pat::Jet> > jetHandle;
+  edm::Handle< std::vector<pat::Jet> > jetHandle;
   iEvent.getByToken(FatJetToken,jetHandle);
 
   if( jetHandle->size() > 0 && theDebugLevel > 0)
