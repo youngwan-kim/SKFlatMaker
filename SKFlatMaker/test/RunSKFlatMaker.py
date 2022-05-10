@@ -226,6 +226,27 @@ myPhoID =  [
 'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff',
 ]
 
+
+#### GenHFHadronMatcher ####
+from PhysicsTools.JetMCAlgos.GenHFHadronMatcher_cff import matchGenBHadron
+process.matchGenBHadron = matchGenBHadron.clone(
+  genParticles = cms.InputTag("prunedGenParticles"),
+  jetFlavourInfos = cms.InputTag("slimmedGenJetsFlavourInfos"),
+)
+
+from PhysicsTools.JetMCAlgos.GenHFHadronMatcher_cff import matchGenCHadron
+process.matchGenCHadron = matchGenCHadron.clone(
+  genParticles = cms.InputTag("prunedGenParticles"),
+  jetFlavourInfos = cms.InputTag("slimmedGenJetsFlavourInfos"),
+)
+
+process.matchGenSeq = cms.Sequence(process.matchGenBHadron + process.matchGenCHadron)
+
+#### BJetEnergyCorrection ####
+from SKFlatMaker.SKFlatMaker.BJetEnergyCorr_cff import bJetNN
+from SKFlatMaker.SKFlatMaker.BJetEnergyCorr_cff import cJetNN
+process.load('SKFlatMaker.SKFlatMaker.BJetEnergyCorr_cff')
+
 if Is2016preVFP:
 
   print "################"
@@ -295,6 +316,14 @@ if Is2016preVFP:
   process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16APV_JRV3_MC/Summer20UL16APV_JRV3_MC_SF_AK8PFPuppi.txt')
 
   #################
+  #### BJetEnergyRegression
+  #################
+  bJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2016.pb")
+  bJetNN.outputFormulas = cms.vstring(["at(0)*0.31976690888404846+1.047176718711853","0.5*(at(2)-at(1))*0.31976690888404846"])
+  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2016.pb")
+  cJetNN.outputFormulas = cms.vstring(["at(0)*0.28862622380256653+0.9908722639083862","0.5*(at(2)-at(1))*0.28862622380256653"])
+
+  #################
   #### Update MET
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
   #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
@@ -348,6 +377,12 @@ if Is2016preVFP:
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
     process.p *= process.prefiringweight
+
+    ## GenHFHadron
+    process.p *= process.matchGenSeq
+
+  ## BJetEnergyRegression
+  process.p *= process.bJetCorrSeq
 
   process.p *= process.recoTree
 
@@ -420,6 +455,14 @@ if Is2016postVFP:
   process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer20UL16_JRV3_MC/Summer20UL16_JRV3_MC_SF_AK8PFPuppi.txt')
 
   #################
+  #### BJetEnergyRegression
+  #################
+  bJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2016.pb")
+  bJetNN.outputFormulas = cms.vstring(["at(0)*0.31976690888404846+1.047176718711853","0.5*(at(2)-at(1))*0.31976690888404846"])
+  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2016.pb")
+  cJetNN.outputFormulas = cms.vstring(["at(0)*0.28862622380256653+0.9908722639083862","0.5*(at(2)-at(1))*0.28862622380256653"])
+
+  #################
   #### Update MET
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
   #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
@@ -474,6 +517,12 @@ if Is2016postVFP:
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
     process.p *= process.prefiringweight
+
+    ## GenHFHadron
+    process.p *= process.matchGenSeq
+
+  ## BJetEnergyRegression
+  process.p *= process.bJetCorrSeq
 
   process.p *= process.recoTree
 
@@ -546,6 +595,14 @@ elif Is2017:
   process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Fall17_V3b_MC/Fall17_V3b_MC_SF_AK8PFPuppi.txt')
 
   #################
+  #### BJetEnergyRegression
+  #################
+  bJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2017.pb")
+  bJetNN.outputFormulas = cms.vstring(["at(0)*0.28225210309028625+1.055067777633667","0.5*(at(2)-at(1))*0.28225210309028625"])
+  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2017.pb")
+  cJetNN.outputFormulas = cms.vstring(["at(0)*0.24718524515628815+0.9927206635475159","0.5*(at(2)-at(1))*0.24718524515628815"])
+
+  #################
   #### Update MET
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription
   #### This is independent of jecSequence, but it rather reapply JEC/JER using GT withing this MET corrector module
@@ -600,7 +657,13 @@ elif Is2017:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
     process.p *= process.prefiringweight
 
-  process.p *= process.recoTree
+    ## GenHFHadron
+    process.p *= process.matchGenSeq
+
+  ## BJetEnergyRegression
+  process.p *= process.bJetCorrSeq
+
+  #process.p *= process.recoTree
 
 elif Is2018:
 
@@ -721,8 +784,15 @@ elif Is2018:
     process.fullPatMetSequence
   )
   process.p *= process.BadPFMuonFilterUpdateDz
+  
   if isMC:
     process.recoTree.StoreL1PrefireFlag = cms.untracked.bool(True)
     process.p *= process.prefiringweight
-
+    
+    ## GenHFHadron 
+    process.p *= process.matchGenSeq
+ 
+  ## BJetEnergyRegression
+  process.p *= process.bJetCorrSeq
+  
   process.p *= process.recoTree
