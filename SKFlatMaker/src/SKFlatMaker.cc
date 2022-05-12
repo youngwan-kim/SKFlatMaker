@@ -501,18 +501,12 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_area.clear();
   jet_partonFlavour.clear();
   jet_hadronFlavour.clear();
-  jet_CSVv2.clear();
   jet_DeepCSV.clear();
-  jet_CvsL.clear();
-  jet_CvsB.clear();
-  jet_DeepFlavour_b.clear();
-  jet_DeepFlavour_bb.clear();
-  jet_DeepFlavour_lepb.clear();
-  jet_DeepFlavour_c.clear();
-  jet_DeepFlavour_uds.clear();
-  jet_DeepFlavour_g.clear();
-  jet_DeepCvsL.clear();
-  jet_DeepCvsB.clear();
+  jet_DeepCSV_CvsL.clear();
+  jet_DeepCSV_CvsB.clear();
+  jet_DeepFlavour.clear();
+  jet_DeepFlavour_CvsL.clear();
+  jet_DeepFlavour_CvsB.clear();
   jet_chargedHadronEnergyFraction.clear();
   jet_neutralHadronEnergyFraction.clear();
   jet_neutralEmEnergyFraction.clear();
@@ -550,18 +544,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_area.clear();
   fatjet_partonFlavour.clear();
   fatjet_hadronFlavour.clear();
-  fatjet_CSVv2.clear();
   fatjet_DeepCSV.clear();
-  fatjet_CvsL.clear();
-  fatjet_CvsB.clear();
-  fatjet_DeepFlavour_b.clear();
-  fatjet_DeepFlavour_bb.clear();
-  fatjet_DeepFlavour_lepb.clear();
-  fatjet_DeepFlavour_c.clear();
-  fatjet_DeepFlavour_uds.clear();
-  fatjet_DeepFlavour_g.clear();
-  fatjet_DeepCvsL.clear();
-  fatjet_DeepCvsB.clear();
+  fatjet_DeepCSV_CvsL.clear();
+  fatjet_DeepCSV_CvsB.clear();
   fatjet_tightJetID.clear();
   fatjet_tightLepVetoJetID.clear();
   fatjet_partonPdgId.clear();
@@ -824,18 +809,12 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_area", "vector<float>", &jet_area);
     DYTree->Branch("jet_partonFlavour", "vector<int>", &jet_partonFlavour);
     DYTree->Branch("jet_hadronFlavour", "vector<int>", &jet_hadronFlavour);
-    DYTree->Branch("jet_CSVv2", "vector<float>", &jet_CSVv2);
     DYTree->Branch("jet_DeepCSV", "vector<float>", &jet_DeepCSV);
-    DYTree->Branch("jet_CvsL", "vector<float>", &jet_CvsL);
-    DYTree->Branch("jet_CvsB", "vector<float>", &jet_CvsB);
-    DYTree->Branch("jet_DeepFlavour_b", "vector<float>", &jet_DeepFlavour_b);
-    DYTree->Branch("jet_DeepFlavour_bb", "vector<float>", &jet_DeepFlavour_bb);
-    DYTree->Branch("jet_DeepFlavour_lepb", "vector<float>", &jet_DeepFlavour_lepb);
-    DYTree->Branch("jet_DeepFlavour_c", "vector<float>", &jet_DeepFlavour_c);
-    DYTree->Branch("jet_DeepFlavour_uds", "vector<float>", &jet_DeepFlavour_uds);
-    DYTree->Branch("jet_DeepFlavour_g", "vector<float>", &jet_DeepFlavour_g);
-    DYTree->Branch("jet_DeepCvsL", "vector<float>", &jet_DeepCvsL);
-    DYTree->Branch("jet_DeepCvsB", "vector<float>", &jet_DeepCvsB);
+    DYTree->Branch("jet_DeepCSV_CvsL", "vector<float>", &jet_DeepCSV_CvsL);
+    DYTree->Branch("jet_DeepCSV_CvsB", "vector<float>", &jet_DeepCSV_CvsB);
+    DYTree->Branch("jet_DeepFlavour", "vector<float>", &jet_DeepFlavour);
+    DYTree->Branch("jet_DeepFlavour_CvsL", "vector<float>", &jet_DeepFlavour_CvsL);
+    DYTree->Branch("jet_DeepFlavour_CvsB", "vector<float>", &jet_DeepFlavour_CvsB);
     DYTree->Branch("jet_chargedHadronEnergyFraction", "vector<float>", &jet_chargedHadronEnergyFraction);
     DYTree->Branch("jet_neutralHadronEnergyFraction", "vector<float>", &jet_neutralHadronEnergyFraction);
     DYTree->Branch("jet_neutralEmEnergyFraction", "vector<float>", &jet_neutralEmEnergyFraction);
@@ -873,18 +852,9 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_area", "vector<float>", &fatjet_area);
     DYTree->Branch("fatjet_partonFlavour", "vector<int>", &fatjet_partonFlavour);
     DYTree->Branch("fatjet_hadronFlavour", "vector<int>", &fatjet_hadronFlavour);
-    DYTree->Branch("fatjet_CSVv2", "vector<float>", &fatjet_CSVv2);
     DYTree->Branch("fatjet_DeepCSV", "vector<float>", &fatjet_DeepCSV);
-    DYTree->Branch("fatjet_DeepFlavour_b", "vector<float>", &fatjet_DeepFlavour_b);
-    DYTree->Branch("fatjet_DeepFlavour_bb", "vector<float>", &fatjet_DeepFlavour_bb);
-    DYTree->Branch("fatjet_DeepFlavour_lepb", "vector<float>", &fatjet_DeepFlavour_lepb);
-    DYTree->Branch("fatjet_DeepFlavour_c", "vector<float>", &fatjet_DeepFlavour_c);
-    DYTree->Branch("fatjet_DeepFlavour_uds", "vector<float>", &fatjet_DeepFlavour_uds);
-    DYTree->Branch("fatjet_DeepFlavour_g", "vector<float>", &fatjet_DeepFlavour_g);
-    DYTree->Branch("fatjet_CvsL", "vector<float>", &fatjet_CvsL);
-    DYTree->Branch("fatjet_CvsB", "vector<float>", &fatjet_CvsB);
-    DYTree->Branch("fatjet_DeepCvsL", "vector<float>", &fatjet_DeepCvsL);
-    DYTree->Branch("fatjet_DeepCvsB", "vector<float>", &fatjet_DeepCvsB);
+    DYTree->Branch("fatjet_DeepCSV_CvsL", "vector<float>", &fatjet_DeepCSV_CvsL);
+    DYTree->Branch("fatjet_DeepCSV_CvsB", "vector<float>", &fatjet_DeepCSV_CvsB);
     DYTree->Branch("fatjet_tightJetID", "vector<bool>", &fatjet_tightJetID);
     DYTree->Branch("fatjet_tightLepVetoJetID", "vector<bool>", &fatjet_tightLepVetoJetID);
     DYTree->Branch("fatjet_partonPdgId", "vector<int>", &fatjet_partonPdgId);
@@ -2871,38 +2841,20 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
 
     //=========================================================================
     //==== Taggers
-    //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    //==== https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation
     //=========================================================================
 
-    //=== CSVv2
-
-    jet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
-
     //==== DeepCSV (B)
-/*
+    /*
     cout << "==============================" << endl;
-    cout << "---- BvsAll ----" << endl;
+    cout << "---- jet_DeepCSV BvsAll ----" << endl;
     cout << "methodA = " << jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") << endl;
     cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") << endl;
-*/
+    */
     //==== methodA
     //jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
     //==== methodB
     jet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
-
-    //==== DeepFlavour
-
-    jet_DeepFlavour_b.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probb"));
-    jet_DeepFlavour_bb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probbb"));
-    jet_DeepFlavour_lepb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:problepb"));
-    jet_DeepFlavour_c.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probc"));
-    jet_DeepFlavour_uds.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probuds"));
-    jet_DeepFlavour_g.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probg"));
-
-    //==== Old Charm Tagger
-
-    jet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
-    jet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
 
     //==== DeepCSV charm tagger
 
@@ -2919,12 +2871,46 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     //double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
     //double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
     //double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
-    //jet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
-    //jet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
+    //jet_DeepCSV_CvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
+    //jet_DeepCSV_CvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
     //==== methodB
-    jet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
-    jet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
+    jet_DeepCSV_CvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
+    jet_DeepCSV_CvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
 
+    //==== DeepFlavour (B)
+    double deepflavour_c = jets_iter->bDiscriminator("pfDeepFlavourJetTags:probc");
+    double deepflavour_uds = jets_iter->bDiscriminator("pfDeepFlavourJetTags:probuds");
+    double deepflavour_g = jets_iter->bDiscriminator("pfDeepFlavourJetTags:probg");
+    double deepflavour_b = jets_iter->bDiscriminator("pfDeepFlavourJetTags:probb");
+    double deepflavour_bb = jets_iter->bDiscriminator("pfDeepFlavourJetTags:probbb");
+    double deepflavour_lepb = jets_iter->bDiscriminator("pfDeepFlavourJetTags:problepb");
+    /*
+    cout << "==============================" << endl;
+    cout << "---- jet_DeepFlavour BvsAll ----" << endl;
+    cout << "methodA = " << deepflavour_b+deepflavour_bb+deepflavour_lepb << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepFlavourDiscriminatorsJetTags:BvsAll") << endl;
+    */
+    //==== methodA
+    jet_DeepFlavour.push_back( deepflavour_b+deepflavour_bb+deepflavour_lepb );
+    //==== methodB (not working)
+    //jet_DeepFlavour.push_back( jets_iter->bDiscriminator("pfDeepFlavourDiscriminatorsJetTags:BvsAll") );
+
+    //==== DeepFlavour charm tagger
+
+    //==== methodA
+    jet_DeepFlavour_CvsL.push_back( deepflavour_c/(deepflavour_c+deepflavour_uds+deepflavour_g) );
+    jet_DeepFlavour_CvsB.push_back( deepflavour_c/(deepflavour_c+deepflavour_b+deepflavour_bb+deepflavour_lepb) );
+    //==== methodB (not working)
+    //jet_DeepFlavour_CvsL.push_back( jets_iter->bDiscriminator("pfDeepFlavourDiscriminatorsJetTags:CvsL") );
+    //jet_DeepFlavour_CvsB.push_back( jets_iter->bDiscriminator("pfDeepFlavourDiscriminatorsJetTags:CvsB") );
+    /*
+    cout << "---- jet_DeepFlavour_CvsL ----" << endl;
+    cout << "methodA = " << deepflavour_c/(deepflavour_c+deepflavour_uds+deepflavour_g) << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepFlavourDiscriminatorsJetTags:CvsL") << endl;
+    cout << "---- jet_DeepFlavour_CvsB ----" << endl;
+    cout << "methodA = " << deepflavour_c/(deepflavour_c+deepflavour_b+deepflavour_bb+deepflavour_lepb) << endl;
+    cout << "methodB = " << jets_iter->bDiscriminator("pfDeepFlavourDiscriminatorsJetTags:CvsB") << endl;
+    */
 
     jet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
     jet_neutralHadronEnergyFraction.push_back( jets_iter->neutralHadronEnergyFraction() );
@@ -3261,35 +3247,17 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     //==== https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     //=========================================================================
 
-    //=== CSVv2
-
-    fatjet_CSVv2.push_back( jets_iter->bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") );
-
     //==== DeepCSV (B)
-/*
+    /*
     cout << "==============================" << endl;
-    cout << "---- BvsAll ----" << endl;
+    cout << "---- fatjet_DeepCSV BvsAll ----" << endl;
     cout << "methodA = " << jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") << endl;
     cout << "methodB = " << jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") << endl;
-*/
+    */
     //==== methodA
     //fatjet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVJetTags:probb")+jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb") );
     //==== methodB
     fatjet_DeepCSV.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:BvsAll") );
-
-    //==== DeepFlavour
-
-    fatjet_DeepFlavour_b.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probb"));
-    fatjet_DeepFlavour_bb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probbb"));
-    fatjet_DeepFlavour_lepb.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:problepb"));
-    fatjet_DeepFlavour_c.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probc"));
-    fatjet_DeepFlavour_uds.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probuds"));
-    fatjet_DeepFlavour_g.push_back( jets_iter->bDiscriminator("pfDeepFlavourJetTags:probg"));
-
-    //==== Old Charm Tagger
-
-    fatjet_CvsL.push_back( jets_iter->bDiscriminator("pfCombinedCvsLJetTags") );
-    fatjet_CvsB.push_back( jets_iter->bDiscriminator("pfCombinedCvsBJetTags") );
 
     //==== DeepCSV charm tagger
 
@@ -3306,11 +3274,11 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     //double deepcharm_udsg = jets_iter->bDiscriminator("pfDeepCSVJetTags:probudsg");
     //double deepcharm_b = jets_iter->bDiscriminator("pfDeepCSVJetTags:probb");
     //double deepcharm_bb = jets_iter->bDiscriminator("pfDeepCSVJetTags:probbb");
-    //fatjet_DeepCvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
-    //fatjet_DeepCvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
+    //fatjet_DeepCSV_CvsL.push_back( deepcharm_c/(deepcharm_c+deepcharm_udsg) );
+    //fatjet_DeepCSV_CvsB.push_back( deepcharm_c/(deepcharm_c+deepcharm_b+deepcharm_bb) );
     //==== methodB
-    fatjet_DeepCvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
-    fatjet_DeepCvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
+    fatjet_DeepCSV_CvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
+    fatjet_DeepCSV_CvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
 
 
     fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );
