@@ -385,6 +385,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_TypeBit.clear();
   muon_IDBit.clear();
   muon_ishighpt.clear();
+  muon_ismedium_hip.clear();
+  muon_ismedium_nohip.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -459,10 +461,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_softMVA.clear();
   muon_jetPtRatio.clear();
   muon_jetPtRel.clear();
-  muon_chi2LocalPosition.clear();
-  muon_trkKink.clear();
-  muon_segmentCompatibility.clear();
-  muon_trackerValidFraction.clear();
   muon_simType.clear();
   muon_simExtType.clear();
   muon_simFlavour.clear();
@@ -976,6 +974,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_TypeBit", "vector<unsigned int>", &muon_TypeBit);
     DYTree->Branch("muon_IDBit", "vector<unsigned int>", &muon_IDBit);
     DYTree->Branch("muon_ishighpt", "vector<bool>", &muon_ishighpt);
+    DYTree->Branch("muon_ismedium_hip", "vector<bool>", &muon_ismedium_hip);
+    DYTree->Branch("muon_ismedium_nohip", "vector<bool>", &muon_ismedium_nohip);
     DYTree->Branch("muon_dB", "vector<float>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<float>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<float>", &muon_eta);
@@ -1050,10 +1050,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_softMVA", "vector<float>", &muon_softMVA);
     DYTree->Branch("muon_jetPtRatio", "vector<float>", &muon_jetPtRatio);
     DYTree->Branch("muon_jetPtRel", "vector<float>", &muon_jetPtRel);
-    DYTree->Branch("muon_chi2LocalPosition", "vector<float>", &muon_chi2LocalPosition);
-    DYTree->Branch("muon_trkKink", "vector<float>", &muon_trkKink);
-    DYTree->Branch("muon_segmentCompatibility", "vector<float>", &muon_segmentCompatibility);
-    DYTree->Branch("muon_trackerValidFraction", "vector<float>", &muon_trackerValidFraction);
     DYTree->Branch("muon_simType", "vector<int>", &muon_simType);
     DYTree->Branch("muon_simExtType", "vector<int>", &muon_simExtType);
     DYTree->Branch("muon_simFlavour", "vector<int>", &muon_simFlavour);
@@ -1564,9 +1560,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     // cout << "##### Analyze:Muon Tracks #####" << endl;
 
     muon_validhits.push_back( imuon.numberOfValidHits() );
-    muon_chi2LocalPosition.push_back( imuon.combinedQuality().chi2LocalPosition );
-    muon_trkKink.push_back( imuon.combinedQuality().trkKink );
-    muon_segmentCompatibility.push_back( muon::segmentCompatibility(imuon) );
 
     //==== Global track
     if( glbTrack.isNonnull() ){
@@ -1645,13 +1638,11 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
       const reco::HitPattern & inhit = trackerTrack->hitPattern();
       
       muon_trackerHits.push_back( inhit.numberOfValidTrackerHits() );
-      muon_trackerValidFraction.push_back( trackerTrack->validFraction() );
       muon_pixelHits.push_back( inhit.numberOfValidPixelHits() );
       muon_trackerLayers.push_back( inhit.trackerLayersWithMeasurement() );
     }
     else{
       muon_trackerHits.push_back( 0 );
-      muon_trackerValidFraction.push_back( 0 );
       muon_pixelHits.push_back( 0 );
       muon_trackerLayers.push_back( 0 );
     }
@@ -1857,6 +1848,8 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     //muon_simMatchQuality.push_back( imuon.simMatchQuality() );  // TODO not supported in CMSSW_10_2_10
 
     muon_ishighpt.push_back(muon::isHighPtMuon(imuon, vtx));
+    muon_ismedium_hip.push_back(muon::isMediumMuon(imuon, true));
+    muon_ismedium_nohip.push_back(muon::isMediumMuon(imuon, false));
     
     //==== Rochestor
 

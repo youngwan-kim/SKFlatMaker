@@ -9,6 +9,8 @@ float	muon_PFSumPUIsoR03	1
 unsigned int	muon_TypeBit	1
 unsigned int	muon_IDBit	1
 bool	muon_ishighpt	1
+bool	muon_ismedium_hip	1
+bool	muon_ismedium_nohip	1
 float	muon_dB	1
 float	muon_phi	1
 float	muon_eta	1
@@ -83,10 +85,6 @@ float	muon_lowptMVA	1
 float	muon_softMVA	1
 float	muon_jetPtRatio	1
 float	muon_jetPtRel	1
-float	muon_chi2LocalPosition	1
-float	muon_trkKink	1
-float	muon_segmentCompatibility	1
-float	muon_trackerValidFraction	1
 int	muon_simType	1
 int	muon_simExtType	1
 int	muon_simFlavour	1

@@ -551,6 +551,8 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<unsigned int> muon_TypeBit;
   vector<unsigned int> muon_IDBit;
   vector<bool> muon_ishighpt;
+  vector<bool> muon_ismedium_hip;
+  vector<bool> muon_ismedium_nohip;
   vector<float> muon_dB;
   vector<float> muon_phi;
   vector<float> muon_eta;
@@ -628,10 +630,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> muon_softMVA;
   vector<float> muon_jetPtRatio;
   vector<float> muon_jetPtRel;
-  vector<float> muon_chi2LocalPosition;
-  vector<float> muon_trkKink;
-  vector<float> muon_segmentCompatibility;
-  vector<float> muon_trackerValidFraction;
   vector<int> muon_simType;
   vector<int> muon_simExtType;
   vector<int> muon_simFlavour;
