@@ -409,6 +409,8 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   muon_TypeBit.clear();
   muon_IDBit.clear();
   muon_ishighpt.clear();
+  muon_ismedium_hip.clear();
+  muon_ismedium_nohip.clear();
   muon_dB.clear();
   muon_phi.clear();
   muon_eta.clear();
@@ -1009,6 +1011,8 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("muon_TypeBit", "vector<unsigned int>", &muon_TypeBit);
     DYTree->Branch("muon_IDBit", "vector<unsigned int>", &muon_IDBit);
     DYTree->Branch("muon_ishighpt", "vector<bool>", &muon_ishighpt);
+    DYTree->Branch("muon_ismedium_hip", "vector<bool>", &muon_ismedium_hip);
+    DYTree->Branch("muon_ismedium_nohip", "vector<bool>", &muon_ismedium_nohip);
     DYTree->Branch("muon_dB", "vector<float>", &muon_dB);
     DYTree->Branch("muon_phi", "vector<float>", &muon_phi);
     DYTree->Branch("muon_eta", "vector<float>", &muon_eta);
@@ -1593,7 +1597,6 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     // cout << "##### Analyze:Muon Tracks #####" << endl;
 
     muon_validhits.push_back( imuon.numberOfValidHits() );
-    
 
     //==== Global track
     if( glbTrack.isNonnull() ){
@@ -1882,6 +1885,8 @@ void SKFlatMaker::fillMuons(const edm::Event &iEvent, const edm::EventSetup& iSe
     //muon_simMatchQuality.push_back( imuon.simMatchQuality() );  // TODO not supported in CMSSW_10_2_10
 
     muon_ishighpt.push_back(muon::isHighPtMuon(imuon, vtx));
+    muon_ismedium_hip.push_back(muon::isMediumMuon(imuon, true));
+    muon_ismedium_nohip.push_back(muon::isMediumMuon(imuon, false));
     
     //==== Rochestor
 
