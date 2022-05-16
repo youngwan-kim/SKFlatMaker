@@ -412,10 +412,10 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> jet_JECFull;
   vector<int> jet_GenHFHadronMatcher_flavour;
   vector<int> jet_GenHFHadronMatcher_origin;
-  vector<float> jet_bjetNN_corr;
-  vector<float> jet_bjetNN_res;
-  vector<float> jet_cjetNN_corr;
-  vector<float> jet_cjetNN_res;
+  vector<float> jet_bJetNN_corr;
+  vector<float> jet_bJetNN_res;
+  vector<float> jet_cJetNN_corr;
+  vector<float> jet_cJetNN_res;
 
   //==== JEC
   JetCorrectionUncertainty *jet_jecUnc;

@@ -538,10 +538,10 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   jet_JECFull.clear();
   jet_GenHFHadronMatcher_flavour.clear();
   jet_GenHFHadronMatcher_origin.clear();
-  jet_bjetNN_corr.clear();
-  jet_bjetNN_res.clear();
-  jet_cjetNN_corr.clear();
-  jet_cjetNN_res.clear();
+  jet_bJetNN_corr.clear();
+  jet_bJetNN_res.clear();
+  jet_cJetNN_corr.clear();
+  jet_cJetNN_res.clear();
   
 
   //==== FatJet
@@ -861,10 +861,10 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("jet_JECFull", "vector<float>", &jet_JECFull);
     DYTree->Branch("jet_GenHFHadronMatcher_flavour", "vector<int>", &jet_GenHFHadronMatcher_flavour);
     DYTree->Branch("jet_GenHFHadronMatcher_origin", "vector<int>", &jet_GenHFHadronMatcher_origin);
-    DYTree->Branch("jet_bJetNN_corr", "vector<float>", &jet_bjetNN_corr);
-    DYTree->Branch("jet_bJetNN_res", "vector<float>", &jet_bjetNN_res);
-    DYTree->Branch("jet_cJetNN_corr", "vector<float>", &jet_cjetNN_corr);
-    DYTree->Branch("jet_cJetNN_res", "vector<float>", &jet_cjetNN_res);
+    DYTree->Branch("jet_bJetNN_corr", "vector<float>", &jet_bJetNN_corr);
+    DYTree->Branch("jet_bJetNN_res", "vector<float>", &jet_bJetNN_res);
+    DYTree->Branch("jet_cJetNN_corr", "vector<float>", &jet_cJetNN_corr);
+    DYTree->Branch("jet_cJetNN_res", "vector<float>", &jet_cJetNN_res);
   }
   
   if(theStoreFatJetFlag){
@@ -3068,10 +3068,10 @@ void SKFlatMaker::fillJet(const edm::Event &iEvent)
     
     //BJetEnergyCorrectionNN
     unsigned index = jets_iter - jetHandle->begin();
-    jet_bjetNN_corr.push_back(bJetNNCorr_iter[index]);
-    jet_bjetNN_res.push_back(bJetNNRes_iter[index]);
-    jet_cjetNN_corr.push_back(cJetNNCorr_iter[index]);
-    jet_cjetNN_res.push_back(cJetNNRes_iter[index]);
+    jet_bJetNN_corr.push_back(bJetNNCorr_iter[index]);
+    jet_bJetNN_res.push_back(bJetNNRes_iter[index]);
+    jet_cJetNN_corr.push_back(cJetNNCorr_iter[index]);
+    jet_cJetNN_res.push_back(cJetNNRes_iter[index]);
     
     if(!IsData){
 

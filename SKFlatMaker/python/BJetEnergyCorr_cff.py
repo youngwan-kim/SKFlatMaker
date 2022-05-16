@@ -1,32 +1,16 @@
-from  PhysicsTools.PatAlgos.recoLayer0.jetCorrFactors_cfi import *
-jetCorrFactors = patJetCorrFactors.clone(
-    src='slimmedJets',
-    levels = cms.vstring(
-        'L1FastJet',
-        'L2Relative',
-        'L3Absolute',
-        'L2L3Residual'),
-    primaryVertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
-)
-
-from  PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cfi import *
-updatedJets = updatedPatJets.clone(
-    addBTagInfo = False,
-    jetSource = 'slimmedJets',
-    jetCorrFactorsSource=cms.VInputTag(cms.InputTag("jetCorrFactors") ),
-)
+import FWCore.ParameterSet.Config as cms
 
 bJetVars = cms.EDProducer(
     "JetRegressionVarProducer",
     pvsrc = cms.InputTag("offlineSlimmedPrimaryVertices"),
-    src = cms.InputTag("updatedJets"),
+    src = cms.InputTag("updatedPatJetsUpdatedJECslimmedJets"),
     svsrc = cms.InputTag("slimmedSecondaryVertices"),
     gpsrc = cms.InputTag("prunedGenParticles"),
 )
 
 updatedJetsWithUserData = cms.EDProducer(
     "PATJetUserDataEmbedder",
-    src = cms.InputTag("updatedJets"),
+    src = cms.InputTag("updatedPatJetsUpdatedJECslimmedJets"),
     userFloats = cms.PSet(
         leadTrackPt = cms.InputTag("bJetVars:leadTrackPt"),
         leptonPtRel = cms.InputTag("bJetVars:leptonPtRel"),
@@ -48,13 +32,6 @@ updatedJetsWithUserData = cms.EDProducer(
         vtxNtrk = cms.InputTag("bJetVars:vtxNtrk"),
         leptonPdgId = cms.InputTag("bJetVars:leptonPdgId"),
     ),
-)
-
-jetUpdaterSeq = cms.Sequence(
-    jetCorrFactors
-    + updatedJets
-    + bJetVars
-    + updatedJetsWithUserData
 )
 
 bJetNN = cms.EDProducer(
@@ -161,12 +138,9 @@ name = cms.string("JetRegNN"),
     singleThreadPool = cms.string("no_threads"),
 )#cjetNN
 
-correctionSeq = cms.Sequence(
-    bJetNN
-    + cJetNN
-)
-
 bJetCorrSeq = cms.Sequence(
-    jetUpdaterSeq
-    + correctionSeq
+    bJetVars
+    + updatedJetsWithUserData
+    + bJetNN
+    + cJetNN
 )

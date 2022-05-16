@@ -320,7 +320,7 @@ if Is2016preVFP:
   #################
   bJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2016.pb")
   bJetNN.outputFormulas = cms.vstring(["at(0)*0.31976690888404846+1.047176718711853","0.5*(at(2)-at(1))*0.31976690888404846"])
-  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2016.pb")
+  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/creg_training_2016.pb")
   cJetNN.outputFormulas = cms.vstring(["at(0)*0.28862622380256653+0.9908722639083862","0.5*(at(2)-at(1))*0.28862622380256653"])
 
   #################
@@ -459,7 +459,7 @@ if Is2016postVFP:
   #################
   bJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2016.pb")
   bJetNN.outputFormulas = cms.vstring(["at(0)*0.31976690888404846+1.047176718711853","0.5*(at(2)-at(1))*0.31976690888404846"])
-  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2016.pb")
+  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/creg_training_2016.pb")
   cJetNN.outputFormulas = cms.vstring(["at(0)*0.28862622380256653+0.9908722639083862","0.5*(at(2)-at(1))*0.28862622380256653"])
 
   #################
@@ -599,7 +599,7 @@ elif Is2017:
   #################
   bJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2017.pb")
   bJetNN.outputFormulas = cms.vstring(["at(0)*0.28225210309028625+1.055067777633667","0.5*(at(2)-at(1))*0.28225210309028625"])
-  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2017.pb")
+  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/creg_training_2017.pb")
   cJetNN.outputFormulas = cms.vstring(["at(0)*0.24718524515628815+0.9927206635475159","0.5*(at(2)-at(1))*0.24718524515628815"])
 
   #################
@@ -663,7 +663,7 @@ elif Is2017:
   ## BJetEnergyRegression
   process.p *= process.bJetCorrSeq
 
-  #process.p *= process.recoTree
+  process.p *= process.recoTree
 
 elif Is2018:
 
@@ -732,6 +732,14 @@ elif Is2018:
   process.recoTree.AK4Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt')
   process.recoTree.AK8Jet_JER_PtRes_filepath = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_PtResolution_AK8PFPuppi.txt')
   process.recoTree.AK8Jet_JER_SF_filepath    = cms.string('SKFlatMaker/SKFlatMaker/data/JRDatabase/textFiles/Summer19UL18_JRV2_MC/Summer19UL18_JRV2_MC_SF_AK8PFPuppi.txt')
+
+  #################
+  #### BJetEnergyRegression
+  #################
+  bJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/breg_training_2018.pb")
+  bJetNN.outputFormulas = cms.vstring(["at(0)*0.27912887930870056+1.0545977354049683","0.5*(at(2)-at(1))*0.27912887930870056"])
+  cJetNN.weightFile =  cms.FileInPath("PhysicsTools/NanoAOD/data/creg_training_2018.pb")
+  cJetNN.outputFormulas = cms.vstring(["at(0)*0.24325256049633026+0.993854820728302","0.5*(at(2)-at(1))*0.24325256049633026"])
 
   #################
   #### Update MET
