@@ -44,7 +44,7 @@
 #include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
-
+#include "DataFormats/L1Trigger/interface/EGamma.h"
 
 ///////////////////
 // -- For MET -- //
@@ -229,6 +229,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< double >                          RhoToken;
   edm::EDGetTokenT< std::vector<reco::Conversion> >   ConversionsToken;
   edm::EDGetTokenT< std::vector< reco::GsfTrack > >   GsfTrackToken;
+  edm::EDGetTokenT< BXVector<l1t::EGamma> >           L1EGToken;
   
   edm::EDGetTokenT< edm::TriggerResults >                          TriggerToken;
   edm::EDGetTokenT< edm::TriggerResults >                          TriggerTokenPAT;
@@ -556,6 +557,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> electron_hcalPFClusterIso;
   vector<ULong64_t> electron_pathbits;
   vector<ULong64_t> electron_filterbits;
+  vector<float> electron_l1et;
 
   //==== Muon
 
