@@ -56,6 +56,7 @@ METFilterResultsToken_RECO          ( consumes<edm::TriggerResults>             
 RhoToken                            ( consumes< double >                                    (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
 ConversionsToken                    ( consumes< std::vector<reco::Conversion> >             (iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
 GsfTrackToken                       ( consumes< std::vector< reco::GsfTrack > >             (iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
+L1EGToken                           ( consumes< BXVector<l1t::EGamma> >                     (edm::InputTag("caloStage2Digis","EGamma")) ),
 
 // -- Trigger Token -- //
 TriggerToken                        ( consumes< edm::TriggerResults >                       (iConfig.getUntrackedParameter<edm::InputTag>("TriggerResults")) ),
@@ -396,6 +397,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_hcalPFClusterIso.clear();
   electron_pathbits.clear();
   electron_filterbits.clear();
+  electron_l1et.clear();
 
   //==== Muon
   muon_PfChargedHadronIsoR04.clear();
@@ -965,6 +967,7 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_hcalPFClusterIso", "vector<float>", &electron_hcalPFClusterIso);
     DYTree->Branch("electron_pathbits", "vector<ULong64_t>", &electron_pathbits);
     DYTree->Branch("electron_filterbits", "vector<ULong64_t>", &electron_filterbits);
+    DYTree->Branch("electron_l1et", "vector<float>", &electron_l1et);
   }
   
   // -- muon variables -- //
@@ -2111,6 +2114,10 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
   edm::FileInPath eaConstantsFile(electron_EA_NHandPh_file);
   EffectiveAreas effectiveAreas(eaConstantsFile.fullPath());
 
+  // -- L1 object for L1 matching -- //
+  edm::Handle<BXVector<l1t::EGamma>> L1EGHandle;
+  iEvent.getByToken(L1EGToken, L1EGHandle);
+
   if(theDebugLevel) cout << "[SKFlatMaker::fillElectrons] for ElecHandle starts, ElecHandle->size() : " << ElecHandle->size() << endl;
   
   for(int i=0; i< (int)ElecHandle->size(); i++){
@@ -2466,6 +2473,19 @@ el->deltaEtaSuperClusterTrackAtVtx() - el->superCluster()->eta() + el->superClus
     }
     electron_pathbits.push_back(pathbits);
     electron_filterbits.push_back(filterbits);
+
+
+    // -- L1 object matching -- //
+    float l1et=0.;
+    float dRmin = 0.3;
+    for (std::vector<l1t::EGamma>::const_iterator l1Cand = L1EGHandle->begin(0); l1Cand != L1EGHandle->end(0); ++l1Cand) {
+      float dR = deltaR(l1Cand->eta(), l1Cand->phi() , el->superCluster()->eta(), el->superCluster()->phi());
+      if (dR < dRmin) {
+        dRmin = dR;
+        l1et = l1Cand->et();
+      }
+    }
+    electron_l1et.push_back(l1et);
 
   } // -- end of for(int i=0; i< (int)ElecHandle->size(); i++): 1st electron iteration -- //
   
