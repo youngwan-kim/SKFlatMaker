@@ -551,6 +551,18 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   fatjet_DeepCSV.clear();
   fatjet_DeepCSV_CvsL.clear();
   fatjet_DeepCSV_CvsB.clear();
+  fatjet_particleNet_TvsQCD.clear();
+  fatjet_particleNet_WvsQCD.clear();
+  fatjet_particleNet_ZvsQCD.clear();
+  fatjet_particleNet_HbbvsQCD.clear();
+  fatjet_particleNet_HccvsQCD.clear();
+  fatjet_particleNet_H4qvsQCD.clear();
+  fatjet_particleNet_QCD.clear();
+  //fatjet_particleNet_mass.clear();
+  fatjet_particleNetMD_Xbb.clear();
+  fatjet_particleNetMD_Xcc.clear();
+  fatjet_particleNetMD_Xqq.clear();
+  fatjet_particleNetMD_QCD.clear();
   fatjet_tightJetID.clear();
   fatjet_tightLepVetoJetID.clear();
   fatjet_partonPdgId.clear();
@@ -859,6 +871,18 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("fatjet_DeepCSV", "vector<float>", &fatjet_DeepCSV);
     DYTree->Branch("fatjet_DeepCSV_CvsL", "vector<float>", &fatjet_DeepCSV_CvsL);
     DYTree->Branch("fatjet_DeepCSV_CvsB", "vector<float>", &fatjet_DeepCSV_CvsB);
+    DYTree->Branch("fatjet_particleNet_TvsQCD", "vector<float>", &fatjet_particleNet_TvsQCD);
+    DYTree->Branch("fatjet_particleNet_WvsQCD", "vector<float>", &fatjet_particleNet_WvsQCD);
+    DYTree->Branch("fatjet_particleNet_ZvsQCD", "vector<float>", &fatjet_particleNet_ZvsQCD);
+    DYTree->Branch("fatjet_particleNet_HbbvsQCD", "vector<float>", &fatjet_particleNet_HbbvsQCD);
+    DYTree->Branch("fatjet_particleNet_HccvsQCD", "vector<float>", &fatjet_particleNet_HccvsQCD);
+    DYTree->Branch("fatjet_particleNet_H4qvsQCD", "vector<float>", &fatjet_particleNet_H4qvsQCD);
+    DYTree->Branch("fatjet_particleNet_QCD", "vector<float>", &fatjet_particleNet_QCD);
+    //DYTree->Branch("fatjet_particleNet_mass", "vector<float>", &fatjet_particleNet_mass);
+    DYTree->Branch("fatjet_particleNetMD_Xbb", "vector<float>", &fatjet_particleNetMD_Xbb);
+    DYTree->Branch("fatjet_particleNetMD_Xcc", "vector<float>", &fatjet_particleNetMD_Xcc);
+    DYTree->Branch("fatjet_particleNetMD_Xqq", "vector<float>", &fatjet_particleNetMD_Xqq);
+    DYTree->Branch("fatjet_particleNetMD_QCD", "vector<float>", &fatjet_particleNetMD_QCD);
     DYTree->Branch("fatjet_tightJetID", "vector<bool>", &fatjet_tightJetID);
     DYTree->Branch("fatjet_tightLepVetoJetID", "vector<bool>", &fatjet_tightLepVetoJetID);
     DYTree->Branch("fatjet_partonPdgId", "vector<int>", &fatjet_partonPdgId);
@@ -3304,6 +3328,30 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
     //==== methodB
     fatjet_DeepCSV_CvsL.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsL") );
     fatjet_DeepCSV_CvsB.push_back( jets_iter->bDiscriminator("pfDeepCSVDiscriminatorsJetTags:CvsB") );
+
+    //==== fatjet ParticleNet
+    fatjet_particleNet_TvsQCD.push_back( jets_iter->bDiscriminator("pfParticleNetDiscriminatorsJetTags:TvsQCD") );
+    fatjet_particleNet_WvsQCD.push_back( jets_iter->bDiscriminator("pfParticleNetDiscriminatorsJetTags:WvsQCD") );
+    fatjet_particleNet_ZvsQCD.push_back( jets_iter->bDiscriminator("pfParticleNetDiscriminatorsJetTags:ZvsQCD") );
+    fatjet_particleNet_HbbvsQCD.push_back( jets_iter->bDiscriminator("pfParticleNetDiscriminatorsJetTags:HbbvsQCD") );
+    fatjet_particleNet_HccvsQCD.push_back( jets_iter->bDiscriminator("pfParticleNetDiscriminatorsJetTags:HccvsQCD") );
+    fatjet_particleNet_H4qvsQCD.push_back( jets_iter->bDiscriminator("pfParticleNetDiscriminatorsJetTags:H4qvsQCD") );
+    fatjet_particleNet_QCD.push_back
+      ( jets_iter->bDiscriminator("pfParticleNetJetTags:probQCDbb")+
+	jets_iter->bDiscriminator("pfParticleNetJetTags:probQCDcc")+
+	jets_iter->bDiscriminator("pfParticleNetJetTags:probQCDb")+
+	jets_iter->bDiscriminator("pfParticleNetJetTags:probQCDc")+
+	jets_iter->bDiscriminator("pfParticleNetJetTags:probQCDothers")	);
+    //fatjet_particleNet_mass.push_back( jets_iter->bDiscriminator("pfParticleNetMassRegressionJetTags:mass") );
+    fatjet_particleNetMD_Xbb.push_back( jets_iter->bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probXbb") );
+    fatjet_particleNetMD_Xcc.push_back( jets_iter->bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probXcc") );
+    fatjet_particleNetMD_Xqq.push_back( jets_iter->bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probXqq") );
+    fatjet_particleNetMD_QCD.push_back
+      ( jets_iter->bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDbb")+
+	jets_iter->bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDcc")+
+	jets_iter->bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDb")+
+	jets_iter->bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDc")+
+	jets_iter->bDiscriminator("pfMassDecorrelatedParticleNetJetTags:probQCDothers") );
 
 
     fatjet_chargedHadronEnergyFraction.push_back( jets_iter->chargedHadronEnergyFraction() );

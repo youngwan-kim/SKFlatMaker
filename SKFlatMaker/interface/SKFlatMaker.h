@@ -449,6 +449,18 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> fatjet_DeepCSV;
   vector<float> fatjet_DeepCSV_CvsL;
   vector<float> fatjet_DeepCSV_CvsB;
+  vector<float> fatjet_particleNet_TvsQCD;
+  vector<float> fatjet_particleNet_WvsQCD;
+  vector<float> fatjet_particleNet_ZvsQCD;
+  vector<float> fatjet_particleNet_HbbvsQCD;
+  vector<float> fatjet_particleNet_HccvsQCD;
+  vector<float> fatjet_particleNet_H4qvsQCD;
+  vector<float> fatjet_particleNet_QCD;
+  //vector<float> fatjet_particleNet_mass;
+  vector<float> fatjet_particleNetMD_Xbb;
+  vector<float> fatjet_particleNetMD_Xcc;
+  vector<float> fatjet_particleNetMD_Xqq;
+  vector<float> fatjet_particleNetMD_QCD;
   vector<bool> fatjet_tightJetID;
   vector<bool> fatjet_tightLepVetoJetID;
   vector<int> fatjet_partonPdgId;
