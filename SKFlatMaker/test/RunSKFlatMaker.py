@@ -183,6 +183,7 @@ process.recoTree.Photon = cms.untracked.InputTag("slimmedPhotons") # -- miniAOD 
 process.recoTree.Jet = cms.untracked.InputTag("slimmedJets") # -- miniAOD -- #
 process.recoTree.FatJet = cms.untracked.InputTag("slimmedJetsAK8")
 process.recoTree.MET = cms.InputTag("slimmedMETs")
+process.recoTree.PuppiMET = cms.InputTag("slimmedMETsPuppi")
 process.recoTree.GenParticle = cms.untracked.InputTag("prunedGenParticles") # -- miniAOD -- #
 
 for key in weightmap:
@@ -209,6 +210,7 @@ process.recoTree.StoreElectronFlag = True
 process.recoTree.StorePhotonFlag = True # -- photon part should be updated! later when it is necessary -- #
 process.recoTree.StoreJetFlag = True
 process.recoTree.StoreMETFlag = True
+process.recoTree.StorePuppiMETFlag = True
 process.recoTree.StoreGENFlag = isMC
 process.recoTree.KeepAllGen = isMC
 process.recoTree.StoreLHEFlag = isMC
@@ -333,6 +335,15 @@ if Is2016preVFP:
                            isData=(not isMC),
                            )
 
+  from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
+  makePuppiesFromMiniAOD( process, True );
+  runMetCorAndUncFromMiniAOD(process,
+                             isData=is_data,
+                             metType="Puppi",
+                             postfix="Puppi",
+                             jetFlavor="AK4PFPuppi",
+                             )
+
   #########################
   #### L1Prefire reweight
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
@@ -371,7 +382,10 @@ if Is2016preVFP:
   process.p = cms.Path(
     process.egammaPostRecoSeq *
     process.jecSequence *
-    process.fullPatMetSequence
+    process.fullPatMetSequence *
+    process.egmPhotonIDSequence *
+    process.puppiMETSequence *
+    process.fullPatMetSequencePuppi
   )
   process.p *= process.BadPFMuonFilterUpdateDz
   if isMC:
@@ -472,6 +486,14 @@ if Is2016postVFP:
                            isData=(not isMC),
                            )
 
+  from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
+  makePuppiesFromMiniAOD( process, True );
+  runMetCorAndUncFromMiniAOD(process,
+                             isData=is_data,
+                             metType="Puppi",
+                             postfix="Puppi",
+                             jetFlavor="AK4PFPuppi",
+                             )
 
   #########################
   #### L1Prefire reweight
@@ -511,7 +533,10 @@ if Is2016postVFP:
   process.p = cms.Path(
     process.egammaPostRecoSeq *
     process.jecSequence *
-    process.fullPatMetSequence
+    process.fullPatMetSequence *
+    process.egmPhotonIDSequence *
+    process.puppiMETSequence *
+    process.fullPatMetSequencePuppi
   )
   process.p *= process.BadPFMuonFilterUpdateDz
   if isMC:
@@ -612,6 +637,15 @@ elif Is2017:
                            isData=(not isMC),
                            )
 
+  from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
+  makePuppiesFromMiniAOD( process, True );
+  runMetCorAndUncFromMiniAOD(process,
+                             isData=is_data,
+                             metType="Puppi",
+                             postfix="Puppi",
+                             jetFlavor="AK4PFPuppi",
+                             )
+
   #########################
   #### L1Prefire reweight
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
@@ -650,7 +684,10 @@ elif Is2017:
   process.p = cms.Path(
     process.egammaPostRecoSeq *
     process.jecSequence *
-    process.fullPatMetSequence
+    process.fullPatMetSequence *
+    process.egmPhotonIDSequence *
+    process.puppiMETSequence *
+    process.fullPatMetSequencePuppi
   )
   process.p *= process.BadPFMuonFilterUpdateDz
   if isMC:
@@ -751,6 +788,15 @@ elif Is2018:
                            isData=(not isMC),
                            )
 
+  from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
+  makePuppiesFromMiniAOD( process, True );
+  runMetCorAndUncFromMiniAOD(process,
+                             isData=is_data,
+                             metType="Puppi",
+                             postfix="Puppi",
+                             jetFlavor="AK4PFPuppi",
+                             )
+
   #########################
   #### L1Prefire reweight
   #### https://twiki.cern.ch/twiki/bin/viewauth/CMS/L1PrefiringWeightRecipe
@@ -789,7 +835,10 @@ elif Is2018:
   process.p = cms.Path(
     process.egammaPostRecoSeq *
     process.jecSequence *
-    process.fullPatMetSequence
+    process.fullPatMetSequence *
+    process.egmPhotonIDSequence *
+    process.puppiMETSequence *
+    process.fullPatMetSequencePuppi
   )
   process.p *= process.BadPFMuonFilterUpdateDz
   
