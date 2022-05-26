@@ -338,7 +338,7 @@ if Is2016preVFP:
   from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
   makePuppiesFromMiniAOD( process, True );
   runMetCorAndUncFromMiniAOD(process,
-                             isData=is_data,
+                             isData=(not isMC),
                              metType="Puppi",
                              postfix="Puppi",
                              jetFlavor="AK4PFPuppi",
@@ -489,7 +489,7 @@ if Is2016postVFP:
   from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
   makePuppiesFromMiniAOD( process, True );
   runMetCorAndUncFromMiniAOD(process,
-                             isData=is_data,
+                             isData=(not isMC),
                              metType="Puppi",
                              postfix="Puppi",
                              jetFlavor="AK4PFPuppi",
@@ -640,7 +640,7 @@ elif Is2017:
   from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
   makePuppiesFromMiniAOD( process, True );
   runMetCorAndUncFromMiniAOD(process,
-                             isData=is_data,
+                             isData=(not isMC),
                              metType="Puppi",
                              postfix="Puppi",
                              jetFlavor="AK4PFPuppi",
@@ -791,7 +791,7 @@ elif Is2018:
   from PhysicsTools.PatAlgos.slimming.puppiForMET_cff import makePuppiesFromMiniAOD
   makePuppiesFromMiniAOD( process, True );
   runMetCorAndUncFromMiniAOD(process,
-                             isData=is_data,
+                             isData=(not isMC),
                              metType="Puppi",
                              postfix="Puppi",
                              jetFlavor="AK4PFPuppi",
