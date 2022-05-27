@@ -34,6 +34,7 @@ using namespace isodeposit;
 SKFlatMaker::SKFlatMaker(const edm::ParameterSet& iConfig):
 // -- object tokens -- //
 MuonToken                           ( consumes< std::vector<pat::Muon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Muon")) ),
+TauToken                            ( consumes< std::vector<pat::Tau> >                     (iConfig.getUntrackedParameter<edm::InputTag>("Tau")) ),
 ElectronToken                       ( consumes< edm::View<pat::Electron> >                  (iConfig.getUntrackedParameter<edm::InputTag>("Electron")) ),
 PhotonToken                         ( consumes< edm::View<pat::Photon> >                    (iConfig.getUntrackedParameter<edm::InputTag>("Photon")) ),
 JetToken                            ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("Jet")) ),
@@ -144,6 +145,7 @@ cJetNNResToken_                     ( consumes<ValueMap<float> >                
   theStoreMETFlag                   = iConfig.getUntrackedParameter<bool>("StoreMETFlag", true);
   theStoreHLTReportFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTReportFlag", true);
   theStoreHLTObjectFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTObjectFlag", true);
+  theStoreTauFlag                   = iConfig.getUntrackedParameter<bool>("StoreTauFlag", true);
   theStoreMuonFlag                  = iConfig.getUntrackedParameter<bool>("StoreMuonFlag", true);
   theStoreElectronFlag              = iConfig.getUntrackedParameter<bool>("StoreElectronFlag", true);
   theStoreLHEFlag                   = iConfig.getUntrackedParameter<bool>("StoreLHEFlag", false);
@@ -398,6 +400,18 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_pathbits.clear();
   electron_filterbits.clear();
   electron_l1et.clear();
+
+  //==== Tau
+  tau_phi.clear();
+  tau_eta.clear();
+  tau_pt.clear();
+  tau_mass.clear();
+  tau_dz.clear();
+  tau_dxy.clear();
+  tau_decaymode.clear();
+  tau_charge.clear();
+  tau_idDecayModeNewDMs.clear();
+  tau_IDBit.clear();
 
   //==== Muon
   muon_PfChargedHadronIsoR04.clear();
@@ -742,6 +756,10 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreMuonFlag" << endl;
   if( theStoreMuonFlag ) fillMuons(iEvent, iSetup);
 
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreTauFlag" << endl;
+  if( theStoreTauFlag ) fillTaus(iEvent, iSetup);
+
+
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreElectronFlag" << endl;
   if( theStoreElectronFlag ) fillElectrons(iEvent, iSetup);
 
@@ -994,6 +1012,20 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_l1et", "vector<float>", &electron_l1et);
   }
   
+  // -- tau variables -- //                                                                                                                                                                                
+
+  if( theStoreTauFlag ){
+    DYTree->Branch("tau_phi", "vector<float>", &tau_phi);
+    DYTree->Branch("tau_eta", "vector<float>", &tau_eta);
+    DYTree->Branch("tau_pt",  "vector<float>", &tau_pt);
+    DYTree->Branch("tau_mass","vector<float>", &tau_mass);
+    DYTree->Branch("tau_dxy", "vector<float>", &tau_dxy);
+    DYTree->Branch("tau_dz",  "vector<float>", &tau_dz);
+    DYTree->Branch("tau_decaymode", "vector<int>", &tau_decaymode);
+    DYTree->Branch("tau_charge",    "vector<int>", &tau_charge);
+    DYTree->Branch("tau_IDBit",     "vector<unsigned int>", &tau_IDBit);
+    DYTree->Branch("tau_idDecayModeNewDMs", "vector<bool>", &tau_idDecayModeNewDMs);
+  }
   // -- muon variables -- //
   if( theStoreMuonFlag ){
 
@@ -1497,6 +1529,86 @@ void SKFlatMaker::fillPrimaryVertex(const edm::Event &iEvent)
    }
   
 }
+
+//////////////////////////////
+// -- Get Tau info -- //
+//////////////////////////////                                                                                                                                                                              
+void SKFlatMaker::fillTaus(const edm::Event &iEvent, const edm::EventSetup& iSetup)
+{
+
+  
+  edm::Handle< std::vector<pat::Tau> > tauHandle;
+  iEvent.getByToken(TauToken, tauHandle);
+
+  if (!tauHandle.isValid()) {
+    edm::LogWarning("SKFlatMaker") << "no pat::Tau in event";
+    return;
+  }
+
+  for( unsigned int i = 0; i != tauHandle->size(); i++ ){
+    // cout << "##### Analyze:Start the loop for the tau #####" << endl;                                                                                                                                   
+    const pat::Tau itau = tauHandle->at(i);
+
+    if ( itau.pt() < 18         ) continue;
+
+    tau_pt.push_back( itau.pt() );
+    tau_mass.push_back( itau.mass() );
+    tau_eta.push_back( itau.eta() );
+    tau_phi.push_back( itau.phi() );
+    tau_decaymode.push_back(itau.decayMode());
+    tau_charge.push_back( itau.charge());
+
+    edm::Handle<reco::VertexCollection> pvHandle;
+    iEvent.getByToken(PrimaryVertexToken, pvHandle);
+    
+    
+    if (pvHandle->size()>0) {
+      pat::PackedCandidate const* packedLeadTauCand = dynamic_cast<pat::PackedCandidate const*>(itau.leadChargedHadrCand().get());
+
+      if (!packedLeadTauCand) {
+	tau_dxy.push_back (-9999.);
+	tau_dz.push_back (-9999.);
+      }
+      else{
+	tau_dxy.push_back (packedLeadTauCand->dxy());    
+	tau_dz.push_back (packedLeadTauCand->dz());    
+      }
+    }
+    else{
+      tau_dxy.push_back (itau.dxy());
+      tau_dz.push_back (-9999.);
+    }
+
+    tau_idDecayModeNewDMs.push_back( itau.tauID("decayModeFindingNewDMs"));
+    
+    vector<TString> tauWPs =   {"VVVLoose","VVLoose","VLoose","Loose","Medium","Tight","VTight","VVTight"};
+    vector<TString> tau_disc = {"DeepTau2017v2p1VSjet","DeepTau2017v2p1VSe","DeepTau2017v2p1VSmu"};
+
+    // loop over tau discimuinants and store results in IDBit
+
+    vector<TString> TauIDs;
+    unsigned int IDBit = 0;
+    for ( auto it_disc : tau_disc ) {
+
+      for ( auto itid : tauWPs) TauIDs.push_back("by"+itid+it_disc);
+    }
+    TauIDs.push_back("byLooseCombinedIsolationDeltaBetaCorr3Hits");
+    TauIDs.push_back("byMediumCombinedIsolationDeltaBetaCorr3Hits");
+    TauIDs.push_back("byTightCombinedIsolationDeltaBetaCorr3Hits");
+    
+    
+    for(unsigned int it_ID=0; it_ID < TauIDs.size(); it_ID++){
+      // since muon disc does not have results for VVVL/VVL/VT/VVT need to set bit to 0 by hand 
+      if      (TauIDs.at(it_ID).Contains("DeepTau2017v2p1VSmu") && TauIDs.at(it_ID).Contains("VVLoose")) IDBit &= ~(1 << it_ID);
+      else if (TauIDs.at(it_ID).Contains("DeepTau2017v2p1VSmu") && TauIDs.at(it_ID).Contains("VTight"))  IDBit &= ~(1 << it_ID);
+      else if (itau.tauID( TauIDs.at(it_ID)))   IDBit |= (1 << it_ID);
+      else   IDBit &= ~(1 << it_ID);
+    }
+    tau_IDBit.push_back(IDBit); 
+
+  }
+}
+
 
 //////////////////////////////
 // -- Get Muons info -- //
