@@ -8,6 +8,7 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
 
   # -- Object Tags -- #
   Muon = cms.untracked.InputTag("slimmedMuons"),
+  Tau = cms.untracked.InputTag("slimmedTaus"),
   Electron = cms.untracked.InputTag("slimmedElectrons"),
   Photon = cms.untracked.InputTag("slimmedPhotons"),
   Jet = cms.untracked.InputTag("slimmedJets"),
@@ -75,6 +76,7 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
 
   # -- Store Flags -- #
   StoreMuonFlag = cms.untracked.bool(True),
+  StoreTauFlag = cms.untracked.bool(True),
   StoreElectronFlag = cms.untracked.bool(True),
   StoreCalibElectronFlag = cms.untracked.bool(True),
   StorePhotonFlag = cms.untracked.bool(True),
