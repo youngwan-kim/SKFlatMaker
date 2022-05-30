@@ -16,3 +16,15 @@ float	pfMET_Type1_SumEt_shifts	1
 float	pfMET_Type1_PhiCor_pt_shifts	1
 float	pfMET_Type1_PhiCor_phi_shifts	1
 float	pfMET_Type1_PhiCor_SumEt_shifts	1
+float	PuppiMET_pt	0
+float	PuppiMET_phi	0
+float	PuppiMET_SumEt	0
+float	PuppiMET_Type1_pt	0
+float	PuppiMET_Type1_phi	0
+float	PuppiMET_Type1_SumEt	0
+float	PuppiMET_Type1_PhiCor_pt	0
+float	PuppiMET_Type1_PhiCor_phi	0
+float	PuppiMET_Type1_PhiCor_SumEt	0
+float	PuppiMET_Type1_pt_shifts	1
+float	PuppiMET_Type1_phi_shifts	1
+float	PuppiMET_Type1_SumEt_shifts	1
