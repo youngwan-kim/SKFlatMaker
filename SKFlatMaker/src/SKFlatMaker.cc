@@ -255,9 +255,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pfMET_Type1_PhiCor_pt=-999;
   pfMET_Type1_PhiCor_phi=-999;
   pfMET_Type1_PhiCor_SumEt=-999;
-  pfMET_pt_shifts.clear();
-  pfMET_phi_shifts.clear();
-  pfMET_SumEt_shifts.clear();
   pfMET_Type1_pt_shifts.clear();
   pfMET_Type1_phi_shifts.clear();
   pfMET_Type1_SumEt_shifts.clear();
@@ -1182,9 +1179,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("pfMET_Type1_PhiCor_pt", &pfMET_Type1_PhiCor_pt, "pfMET_Type1_PhiCor_pt/F");
     DYTree->Branch("pfMET_Type1_PhiCor_phi", &pfMET_Type1_PhiCor_phi, "pfMET_Type1_PhiCor_phi/F");
     DYTree->Branch("pfMET_Type1_PhiCor_SumEt", &pfMET_Type1_PhiCor_SumEt, "pfMET_Type1_PhiCor_SumEt/F");
-    DYTree->Branch("pfMET_pt_shifts", "vector<float>", &pfMET_pt_shifts);
-    DYTree->Branch("pfMET_phi_shifts", "vector<float>", &pfMET_phi_shifts);
-    DYTree->Branch("pfMET_SumEt_shifts", "vector<float>", &pfMET_SumEt_shifts);
     DYTree->Branch("pfMET_Type1_pt_shifts", "vector<float>", &pfMET_Type1_pt_shifts);
     DYTree->Branch("pfMET_Type1_phi_shifts", "vector<float>", &pfMET_Type1_phi_shifts);
     DYTree->Branch("pfMET_Type1_SumEt_shifts", "vector<float>", &pfMET_Type1_SumEt_shifts);
@@ -2776,10 +2770,6 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
   //==== https://github.com/cms-sw/cmssw/blob/4dbb008c8f4473dc9beb26171d7dde863880d02e/DataFormats/PatCandidates/interface/MET.h#L151-L157
 
   for(int i=0; i<pat::MET::METUncertaintySize; i++){
-
-    pfMET_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Raw) );
-    pfMET_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Raw) );
-    pfMET_SumEt_shifts.push_back( metHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Raw) );
 
     pfMET_Type1_pt_shifts.push_back( metHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1) );
     pfMET_Type1_phi_shifts.push_back( metHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1) );
