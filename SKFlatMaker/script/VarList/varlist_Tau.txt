@@ -1,0 +1,10 @@
+float	tau_phi	1
+float	tau_eta	1
+float	tau_pt	1
+float	tau_mass	1
+float	tau_dz	1
+float	tau_dxy	1
+int	tau_decaymode	1
+int	tau_charge	1
+unsigned int	tau_IDBit	1
+bool	tau_idDecayModeNewDMs	1
