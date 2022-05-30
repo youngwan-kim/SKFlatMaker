@@ -179,6 +179,7 @@ process.recoTree.StoreHLTObjectFlag = False ##FIXME
 # -- Objects without Corrections -- # 
 process.recoTree.Muon = cms.untracked.InputTag("slimmedMuons") # -- miniAOD -- #
 process.recoTree.Electron = cms.untracked.InputTag("slimmedElectrons") # -- miniAOD -- #
+process.recoTree.Tau = cms.untracked.InputTag("slimmedTaus") # -- miniAOD -- #                                                                                                                        
 process.recoTree.Photon = cms.untracked.InputTag("slimmedPhotons") # -- miniAOD -- #
 process.recoTree.Jet = cms.untracked.InputTag("slimmedJets") # -- miniAOD -- #
 process.recoTree.FatJet = cms.untracked.InputTag("slimmedJetsAK8")
@@ -207,6 +208,7 @@ process.recoTree.ApplyFilter = False
 # -- Store Flags -- #
 process.recoTree.StoreMuonFlag = True
 process.recoTree.StoreElectronFlag = True
+process.recoTree.StoreTauFlag = True
 process.recoTree.StorePhotonFlag = True # -- photon part should be updated! later when it is necessary -- #
 process.recoTree.StoreJetFlag = True
 process.recoTree.StoreMETFlag = True
@@ -374,6 +376,7 @@ if Is2016preVFP:
     minDzBestTrack = cms.double(0.5),
     taggingMode    = cms.bool(True)
   )
+
 
   ###########
   #### Path

@@ -25,6 +25,7 @@ objects = [
 "MET",
 "Muon",
 "Photon",
+"Tau",
 "Trigger",
 ]
 
