@@ -795,24 +795,18 @@ class SKFlatMaker : public edm::EDAnalyzer
   vector<float> pfMET_Type1_PhiCor_SumEt_shifts;
 
   //==== Puppi MET
-  double PuppiMET_pt;
-  double PuppiMET_phi;
-  double PuppiMET_SumEt;
-  double PuppiMET_Type1_pt;
-  double PuppiMET_Type1_phi;
-  double PuppiMET_Type1_SumEt;
-  double PuppiMET_Type1_PhiCor_pt;
-  double PuppiMET_Type1_PhiCor_phi;
-  double PuppiMET_Type1_PhiCor_SumEt;
-  vector<double> PuppiMET_pt_shifts;
-  vector<double> PuppiMET_phi_shifts;
-  vector<double> PuppiMET_SumEt_shifts;
-  vector<double> PuppiMET_Type1_pt_shifts;
-  vector<double> PuppiMET_Type1_phi_shifts;
-  vector<double> PuppiMET_Type1_SumEt_shifts;
-  vector<double> PuppiMET_Type1_PhiCor_pt_shifts;
-  vector<double> PuppiMET_Type1_PhiCor_phi_shifts;
-  vector<double> PuppiMET_Type1_PhiCor_SumEt_shifts;
+  float PuppiMET_pt;
+  float PuppiMET_phi;
+  float PuppiMET_SumEt;
+  float PuppiMET_Type1_pt;
+  float PuppiMET_Type1_phi;
+  float PuppiMET_Type1_SumEt;
+  float PuppiMET_Type1_PhiCor_pt;
+  float PuppiMET_Type1_PhiCor_phi;
+  float PuppiMET_Type1_PhiCor_SumEt;
+  vector<float> PuppiMET_Type1_pt_shifts;
+  vector<float> PuppiMET_Type1_phi_shifts;
+  vector<float> PuppiMET_Type1_SumEt_shifts;
 
 };
 #endif

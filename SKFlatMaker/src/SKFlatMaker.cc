@@ -280,15 +280,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   PuppiMET_Type1_PhiCor_pt=-999;
   PuppiMET_Type1_PhiCor_phi=-999;
   PuppiMET_Type1_PhiCor_SumEt=-999;
-  PuppiMET_pt_shifts.clear();
-  PuppiMET_phi_shifts.clear();
-  PuppiMET_SumEt_shifts.clear();
   PuppiMET_Type1_pt_shifts.clear();
   PuppiMET_Type1_phi_shifts.clear();
   PuppiMET_Type1_SumEt_shifts.clear();
-  PuppiMET_Type1_PhiCor_pt_shifts.clear();
-  PuppiMET_Type1_PhiCor_phi_shifts.clear();
-  PuppiMET_Type1_PhiCor_SumEt_shifts.clear();
 
   //==== Trigger (object)
 
@@ -1252,24 +1246,18 @@ void SKFlatMaker::beginJob()
   }
 
   if( theStorePuppiMETFlag ){
-    DYTree->Branch("PuppiMET_pt", &PuppiMET_pt, "PuppiMET_pt/D");
-    DYTree->Branch("PuppiMET_phi", &PuppiMET_phi, "PuppiMET_phi/D");
-    DYTree->Branch("PuppiMET_SumEt", &PuppiMET_SumEt, "PuppiMET_SumEt/D");
-    DYTree->Branch("PuppiMET_Type1_pt", &PuppiMET_Type1_pt, "PuppiMET_Type1_pt/D");
-    DYTree->Branch("PuppiMET_Type1_phi", &PuppiMET_Type1_phi, "PuppiMET_Type1_phi/D");
-    DYTree->Branch("PuppiMET_Type1_SumEt", &PuppiMET_Type1_SumEt, "PuppiMET_Type1_SumEt/D");
-    DYTree->Branch("PuppiMET_Type1_PhiCor_pt", &PuppiMET_Type1_PhiCor_pt, "PuppiMET_Type1_PhiCor_pt/D");
-    DYTree->Branch("PuppiMET_Type1_PhiCor_phi", &PuppiMET_Type1_PhiCor_phi, "PuppiMET_Type1_PhiCor_phi/D");
-    DYTree->Branch("PuppiMET_Type1_PhiCor_SumEt", &PuppiMET_Type1_PhiCor_SumEt, "PuppiMET_Type1_PhiCor_SumEt/D");
-    DYTree->Branch("PuppiMET_pt_shifts", "vector<double>", &PuppiMET_pt_shifts);
-    DYTree->Branch("PuppiMET_phi_shifts", "vector<double>", &PuppiMET_phi_shifts);
-    DYTree->Branch("PuppiMET_SumEt_shifts", "vector<double>", &PuppiMET_SumEt_shifts);
-    DYTree->Branch("PuppiMET_Type1_pt_shifts", "vector<double>", &PuppiMET_Type1_pt_shifts);
-    DYTree->Branch("PuppiMET_Type1_phi_shifts", "vector<double>", &PuppiMET_Type1_phi_shifts);
-    DYTree->Branch("PuppiMET_Type1_SumEt_shifts", "vector<double>", &PuppiMET_Type1_SumEt_shifts);
-    DYTree->Branch("PuppiMET_Type1_PhiCor_pt_shifts", "vector<double>", &PuppiMET_Type1_PhiCor_pt_shifts);
-    DYTree->Branch("PuppiMET_Type1_PhiCor_phi_shifts", "vector<double>", &PuppiMET_Type1_PhiCor_phi_shifts);
-    DYTree->Branch("PuppiMET_Type1_PhiCor_SumEt_shifts", "vector<double>", &PuppiMET_Type1_PhiCor_SumEt_shifts);
+    DYTree->Branch("PuppiMET_pt", &PuppiMET_pt, "PuppiMET_pt/F");
+    DYTree->Branch("PuppiMET_phi", &PuppiMET_phi, "PuppiMET_phi/F");
+    DYTree->Branch("PuppiMET_SumEt", &PuppiMET_SumEt, "PuppiMET_SumEt/F");
+    DYTree->Branch("PuppiMET_Type1_pt", &PuppiMET_Type1_pt, "PuppiMET_Type1_pt/F");
+    DYTree->Branch("PuppiMET_Type1_phi", &PuppiMET_Type1_phi, "PuppiMET_Type1_phi/F");
+    DYTree->Branch("PuppiMET_Type1_SumEt", &PuppiMET_Type1_SumEt, "PuppiMET_Type1_SumEt/F");
+    DYTree->Branch("PuppiMET_Type1_PhiCor_pt", &PuppiMET_Type1_PhiCor_pt, "PuppiMET_Type1_PhiCor_pt/F");
+    DYTree->Branch("PuppiMET_Type1_PhiCor_phi", &PuppiMET_Type1_PhiCor_phi, "PuppiMET_Type1_PhiCor_phi/F");
+    DYTree->Branch("PuppiMET_Type1_PhiCor_SumEt", &PuppiMET_Type1_PhiCor_SumEt, "PuppiMET_Type1_PhiCor_SumEt/F");
+    DYTree->Branch("PuppiMET_Type1_pt_shifts", "vector<float>", &PuppiMET_Type1_pt_shifts);
+    DYTree->Branch("PuppiMET_Type1_phi_shifts", "vector<float>", &PuppiMET_Type1_phi_shifts);
+    DYTree->Branch("PuppiMET_Type1_SumEt_shifts", "vector<float>", &PuppiMET_Type1_SumEt_shifts);
   }
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginJob] finished" << endl;
@@ -2988,17 +2976,9 @@ void SKFlatMaker::fillPuppiMET(const edm::Event &iEvent)
 
   for(int i=0; i<pat::MET::METUncertaintySize; i++){
 
-    PuppiMET_pt_shifts.push_back( puppimetHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Raw) );
-    PuppiMET_phi_shifts.push_back( puppimetHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Raw) );
-    PuppiMET_SumEt_shifts.push_back( puppimetHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Raw) );
-
     PuppiMET_Type1_pt_shifts.push_back( puppimetHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1) );
     PuppiMET_Type1_phi_shifts.push_back( puppimetHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1) );
     PuppiMET_Type1_SumEt_shifts.push_back( puppimetHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Type1) );
-
-    PuppiMET_Type1_PhiCor_pt_shifts.push_back( puppimetHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
-    PuppiMET_Type1_PhiCor_phi_shifts.push_back( puppimetHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
-    PuppiMET_Type1_PhiCor_SumEt_shifts.push_back( puppimetHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Type1XY) );
 
   }
 

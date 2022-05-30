@@ -60,7 +60,6 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
   # -- MET information -- #
   METFilterResults_PAT = cms.InputTag("TriggerResults", "", "PAT"),
   METFilterResults_RECO = cms.InputTag("TriggerResults", "", "RECO"),
-  pfMET = cms.untracked.InputTag("pfMet"),
      
   # -- Trigger -- #
   TriggerResults = cms.untracked.InputTag("TriggerResults", "", "HLT"),
