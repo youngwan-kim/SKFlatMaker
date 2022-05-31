@@ -42,6 +42,7 @@ genJetToken                         ( consumes< reco::GenJetCollection >        
 FatJetToken                         ( consumes< std::vector<pat::Jet> >                     (iConfig.getUntrackedParameter<edm::InputTag>("FatJet")) ),
 genFatJetToken                      ( consumes< reco::GenJetCollection >                    (iConfig.getUntrackedParameter<edm::InputTag>("GenFatJet")) ),
 MetToken                            ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("MET")) ),
+PuppiMetToken                       ( consumes< std::vector<pat::MET> >                     (iConfig.getParameter<edm::InputTag>("PuppiMET")) ),
 
 LHEEventProductToken                ( consumes< LHEEventProduct >                           (iConfig.getUntrackedParameter<edm::InputTag>("LHEEventProduct")) ),
 LHEEventProductSourceToken          ( consumes< LHEEventProduct >                           (edm::InputTag("source")) ),
@@ -143,6 +144,7 @@ cJetNNResToken_                     ( consumes<ValueMap<float> >                
   theStoreJetFlag                   = iConfig.getUntrackedParameter<bool>("StoreJetFlag", true);
   theStoreFatJetFlag                = iConfig.getUntrackedParameter<bool>("StoreFatJetFlag", true);
   theStoreMETFlag                   = iConfig.getUntrackedParameter<bool>("StoreMETFlag", true);
+  theStorePuppiMETFlag              = iConfig.getUntrackedParameter<bool>("StorePuppiMETFlag", true);
   theStoreHLTReportFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTReportFlag", true);
   theStoreHLTObjectFlag             = iConfig.getUntrackedParameter<bool>("StoreHLTObjectFlag", true);
   theStoreTauFlag                   = iConfig.getUntrackedParameter<bool>("StoreTauFlag", true);
@@ -266,6 +268,21 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   pfMET_Type1_PhiCor_pt_shifts.clear();
   pfMET_Type1_PhiCor_phi_shifts.clear();
   pfMET_Type1_PhiCor_SumEt_shifts.clear();
+
+  //==== Puppi MET
+
+  PuppiMET_pt=-999;
+  PuppiMET_phi=-999;
+  PuppiMET_SumEt=-999;
+  PuppiMET_Type1_pt=-999;
+  PuppiMET_Type1_phi=-999;
+  PuppiMET_Type1_SumEt=-999;
+  PuppiMET_Type1_PhiCor_pt=-999;
+  PuppiMET_Type1_PhiCor_phi=-999;
+  PuppiMET_Type1_PhiCor_SumEt=-999;
+  PuppiMET_Type1_pt_shifts.clear();
+  PuppiMET_Type1_phi_shifts.clear();
+  PuppiMET_Type1_SumEt_shifts.clear();
 
   //==== Trigger (object)
 
@@ -741,6 +758,9 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreMETFlag" << endl;
   if( theStoreMETFlag ) fillMET(iEvent);
+
+  if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStorePuppiMETFlag" << endl;
+  if( theStorePuppiMETFlag ) fillPuppiMET(iEvent);
 
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreLHEFlag" << endl;
   //if( !IsData && theStoreLHEFlag ) fillLHEInfo(iEvent);
@@ -1223,6 +1243,21 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("pfMET_Type1_PhiCor_pt_shifts", "vector<float>", &pfMET_Type1_PhiCor_pt_shifts);
     DYTree->Branch("pfMET_Type1_PhiCor_phi_shifts", "vector<float>", &pfMET_Type1_PhiCor_phi_shifts);
     DYTree->Branch("pfMET_Type1_PhiCor_SumEt_shifts", "vector<float>", &pfMET_Type1_PhiCor_SumEt_shifts);
+  }
+
+  if( theStorePuppiMETFlag ){
+    DYTree->Branch("PuppiMET_pt", &PuppiMET_pt, "PuppiMET_pt/F");
+    DYTree->Branch("PuppiMET_phi", &PuppiMET_phi, "PuppiMET_phi/F");
+    DYTree->Branch("PuppiMET_SumEt", &PuppiMET_SumEt, "PuppiMET_SumEt/F");
+    DYTree->Branch("PuppiMET_Type1_pt", &PuppiMET_Type1_pt, "PuppiMET_Type1_pt/F");
+    DYTree->Branch("PuppiMET_Type1_phi", &PuppiMET_Type1_phi, "PuppiMET_Type1_phi/F");
+    DYTree->Branch("PuppiMET_Type1_SumEt", &PuppiMET_Type1_SumEt, "PuppiMET_Type1_SumEt/F");
+    DYTree->Branch("PuppiMET_Type1_PhiCor_pt", &PuppiMET_Type1_PhiCor_pt, "PuppiMET_Type1_PhiCor_pt/F");
+    DYTree->Branch("PuppiMET_Type1_PhiCor_phi", &PuppiMET_Type1_PhiCor_phi, "PuppiMET_Type1_PhiCor_phi/F");
+    DYTree->Branch("PuppiMET_Type1_PhiCor_SumEt", &PuppiMET_Type1_PhiCor_SumEt, "PuppiMET_Type1_PhiCor_SumEt/F");
+    DYTree->Branch("PuppiMET_Type1_pt_shifts", "vector<float>", &PuppiMET_Type1_pt_shifts);
+    DYTree->Branch("PuppiMET_Type1_phi_shifts", "vector<float>", &PuppiMET_Type1_phi_shifts);
+    DYTree->Branch("PuppiMET_Type1_SumEt_shifts", "vector<float>", &PuppiMET_Type1_SumEt_shifts);
   }
 
   if(theDebugLevel) cout << "[SKFlatMaker::beginJob] finished" << endl;
@@ -2905,6 +2940,51 @@ void SKFlatMaker::fillMET(const edm::Event &iEvent)
 
 
 }
+
+/////////////////////////
+// -- Get Puppi METs info -- // 
+/////////////////////////
+void SKFlatMaker::fillPuppiMET(const edm::Event &iEvent)
+{
+  edm::Handle< std::vector<pat::MET> > puppimetHandle;
+  iEvent.getByToken(PuppiMetToken,puppimetHandle);
+
+  if( (puppimetHandle->size() > 1) && (theDebugLevel > 0)) cout << "[SKFlatMaker::fillPuppiMET] # of Puppi METs = " << puppimetHandle->size() << endl;
+
+  PuppiMET_pt = puppimetHandle->front().uncorPt();
+  PuppiMET_phi = puppimetHandle->front().uncorPhi();
+  PuppiMET_SumEt = puppimetHandle->front().uncorSumEt();
+
+  PuppiMET_Type1_pt = puppimetHandle->front().pt();
+  PuppiMET_Type1_phi = puppimetHandle->front().phi();
+  PuppiMET_Type1_SumEt = puppimetHandle->front().sumEt();
+
+  PuppiMET_Type1_PhiCor_pt = puppimetHandle->front().corPt(pat::MET::Type1XY);
+  PuppiMET_Type1_PhiCor_phi = puppimetHandle->front().corPhi(pat::MET::Type1XY);
+  PuppiMET_Type1_PhiCor_SumEt = puppimetHandle->front().corSumEt(pat::MET::Type1XY);
+
+
+  //cout << "[MET Check]" << endl;
+  //cout << "Uncorrected\t" << PuppiMET_pt << "\t" << PuppiMET_phi << endl;
+  //cout << "Cor(Raw)\t\t" <<  puppimetHandle->front().corPt(pat::MET::Raw) << "\t" << puppimetHandle->front().corPhi(pat::MET::Raw) << endl;
+  //cout << "Default(Type1)\t"     << PuppiMET_Type1_pt << "\t" << PuppiMET_Type1_phi << endl;
+  //cout << "Cor(Type1)\t\t\t" <<  puppimetHandle->front().corPt(pat::MET::Type1) << "\t" << puppimetHandle->front().corPhi(pat::MET::Type1) << endl;
+
+
+  //==== Uncertainties
+  //==== https://github.com/cms-sw/cmssw/blob/4dbb008c8f4473dc9beb26171d7dde863880d02e/DataFormats/PatCandidates/interface/MET.h#L151-L157
+
+  for(int i=0; i<pat::MET::METUncertaintySize; i++){
+
+    PuppiMET_Type1_pt_shifts.push_back( puppimetHandle->front().shiftedPt(pat::MET::METUncertainty(i), pat::MET::Type1) );
+    PuppiMET_Type1_phi_shifts.push_back( puppimetHandle->front().shiftedPhi(pat::MET::METUncertainty(i), pat::MET::Type1) );
+    PuppiMET_Type1_SumEt_shifts.push_back( puppimetHandle->front().shiftedSumEt(pat::MET::METUncertainty(i), pat::MET::Type1) );
+
+  }
+
+}
+
+
 
 /////////////////////////
 // -- Get Jets info -- // 
