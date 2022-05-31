@@ -784,9 +784,6 @@ class SKFlatMaker : public edm::EDAnalyzer
   float pfMET_Type1_PhiCor_pt;
   float pfMET_Type1_PhiCor_phi;
   float pfMET_Type1_PhiCor_SumEt;
-  vector<float> pfMET_pt_shifts;
-  vector<float> pfMET_phi_shifts;
-  vector<float> pfMET_SumEt_shifts;
   vector<float> pfMET_Type1_pt_shifts;
   vector<float> pfMET_Type1_phi_shifts;
   vector<float> pfMET_Type1_SumEt_shifts;
