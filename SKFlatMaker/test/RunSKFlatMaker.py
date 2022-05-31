@@ -194,6 +194,7 @@ for key in weightmap:
     setattr(process.recoTree,"weight_"+key,cms.untracked.vint32(weightmap[key]))
 
 process.recoTree.rho = cms.untracked.InputTag("fixedGridRhoFastjetAll")
+process.recoTree.rhoNC = cms.untracked.InputTag("fixedGridRhoFastjetCentralNeutral")
 process.recoTree.conversionsInputTag = cms.untracked.InputTag("reducedEgamma:reducedConversions") # -- miniAOD -- #
 
 # -- for Track & Vertex -- #

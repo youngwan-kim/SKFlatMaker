@@ -56,6 +56,7 @@ METFilterResultsToken_RECO          ( consumes<edm::TriggerResults>             
 
 // -- Electron tokens -- //
 RhoToken                            ( consumes< double >                                    (iConfig.getUntrackedParameter<edm::InputTag>("rho")) ),
+RhoNCToken                          ( consumes< double >                                    (iConfig.getUntrackedParameter<edm::InputTag>("rhoNC")) ),
 ConversionsToken                    ( consumes< std::vector<reco::Conversion> >             (iConfig.getUntrackedParameter<edm::InputTag>("conversionsInputTag")) ),
 GsfTrackToken                       ( consumes< std::vector< reco::GsfTrack > >             (iConfig.getUntrackedParameter<edm::InputTag>("GsfTrack")) ),
 L1EGToken                           ( consumes< BXVector<l1t::EGamma> >                     (edm::InputTag("caloStage2Digis","EGamma")) ),
@@ -247,6 +248,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   chargedHadronEt = 0;
   neutralHadronEt = 0;
   Rho = 0;
+  RhoNC = 0;
 
   //==== MET
 
@@ -739,8 +741,12 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.getByToken(RhoToken,rhoHandle);
   Rho = *rhoHandle;
 
+  edm::Handle< double > rhoNCHandle;
+  iEvent.getByToken(RhoNCToken,rhoNCHandle);
+  RhoNC = *rhoNCHandle;
+
+
   // fills
-  
   if(theDebugLevel) cout << "[SKFlatMaker::analyze] theStoreHLTReportFlag" << endl;
   if( theStoreHLTReportFlag ) hltReport(iEvent);
 
@@ -803,6 +809,7 @@ void SKFlatMaker::beginJob()
   DYTree->Branch("event",&evtNum,"evtNum/l");
   DYTree->Branch("lumi",&lumiBlock,"lumiBlock/I");
   DYTree->Branch("Rho",&Rho,"Rho/F");
+  DYTree->Branch("RhoNC",&RhoNC,"RhoNC/F");
   DYTree->Branch("nPV",&nPV,"nPV/I");
 
   if(theStoreL1PrefireFlag){
