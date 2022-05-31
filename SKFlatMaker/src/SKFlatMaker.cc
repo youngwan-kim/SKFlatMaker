@@ -3575,13 +3575,13 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 	tightJetID = ( CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 ); 
 	tightLepVetoJetID = tightJetID && CEMF<0.8 && MUF <0.8; 
       }else if(fabs(eta)<=2.7){
-	tightJetID = ( NEMF<0.99 && NHF < 0.9 );
+	tightJetID = ( NEMF<0.99 && NHF < 0.98 );
 	tightLepVetoJetID = tightJetID;
       }else if(fabs(eta)<=3.0){
-	tightJetID = ( NEMF>0.0 && NEMF<0.99 && NHF<0.9 && NumNeutralParticle>1 );
+	tightJetID = ( NumNeutralParticle>=1 );
 	tightLepVetoJetID = tightJetID;
       }else{
-	tightJetID = ( NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
+	tightJetID = ( NEMF<0.90 && NumNeutralParticle>2 );
 	tightLepVetoJetID = tightJetID;
       }
     }
@@ -3590,13 +3590,13 @@ void SKFlatMaker::fillFatJet(const edm::Event &iEvent)
 	tightJetID = ( CHM>0 && CHF>0 && NumConst>1 && NEMF<0.9 && NHF < 0.9 ); 
 	tightLepVetoJetID = tightJetID && CEMF<0.8 && MUF <0.8; 
       }else if(fabs(eta)<=2.7){
-	tightJetID = ( CHM>0 && NEMF<0.99 && NHF < 0.9 );
+	tightJetID = ( NEMF<0.99 && NHF < 0.9 );
 	tightLepVetoJetID = tightJetID && CEMF<0.8 && MUF <0.8;
       }else if(fabs(eta)<=3.0){
-	tightJetID = ( NEMF>0.01 && NEMF<0.99 && NumNeutralParticle>1 );
+	tightJetID = ( NHF < 0.9999 );
 	tightLepVetoJetID = tightJetID;
       }else{
-	tightJetID = ( NEMF<0.90 && NHF>0.2 && NumNeutralParticle>10 );
+	tightJetID = ( NEMF<0.90 && NumNeutralParticle>2 );
 	tightLepVetoJetID = tightJetID;
       }
     }
