@@ -240,6 +240,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   edm::EDGetTokenT< edm::TriggerResults >          METFilterResultsToken_RECO;
   
   edm::EDGetTokenT< double >                          RhoToken;
+  edm::EDGetTokenT< double >                          RhoNCToken;
   edm::EDGetTokenT< std::vector<reco::Conversion> >   ConversionsToken;
   edm::EDGetTokenT< std::vector< reco::GsfTrack > >   GsfTrackToken;
   edm::EDGetTokenT< BXVector<l1t::EGamma> >           L1EGToken;
@@ -354,6 +355,7 @@ class SKFlatMaker : public edm::EDAnalyzer
   double chargedHadronEt;
   double neutralHadronEt;
   float Rho;
+  float RhoNC;
   
   int Nelectrons;
   

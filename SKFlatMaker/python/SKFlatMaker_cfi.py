@@ -23,6 +23,7 @@ SKFlatMaker = cms.EDAnalyzer("SKFlatMaker",
 
   # -- electron information -- #
   rho = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
+  rhoNC = cms.untracked.InputTag("fixedGridRhoFastjetCentralNeutral"),
   conversionsInputTag = cms.untracked.InputTag("allConversions"),
   GsfTrack = cms.untracked.InputTag("electronGsfTracks"),
   electron_EA_NHandPh_file = cms.untracked.FileInPath("RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt"),
