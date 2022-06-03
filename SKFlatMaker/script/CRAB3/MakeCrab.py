@@ -124,9 +124,9 @@ for line in lines:
         out.write("config.Data.splitting = 'FileBased'\n")
     elif 'config.Data.unitsPerJob' in sk_line:
       if isData:
-        out.write("config.Data.unitsPerJob = 50\n")
+        out.write("config.Data.unitsPerJob = 100\n")
       else:
-        out.write("config.Data.unitsPerJob = 1\n")
+        out.write("config.Data.unitsPerJob = 2\n")
     elif 'config.Data.outputDatasetTag' in sk_line:
       if isData:
         period = ""
