@@ -3,24 +3,11 @@
 ## Environment
 ```bash
 export SCRAM_ARCH=slc7_amd64_gcc700
-
-# For machines with CVMFS
-export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
-source $VO_CMS_SW_DIR/cmsset_default.sh
+source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 # Make CMSSW directory
-
-CMSSW_XXX=CMSSW_10_6_27/CMSSW_10_6_29 for MiniAODv1/v2
-
-#### 1) For a test job or developement
-cmsrel CMSSW_XXX
-cd CMSSW_XXX/src
-
-#### 2) For production, let's not use the working directory but use new and clean directory
-scram p -n Run2UltraLegacy_v2__CMSSW_XXX CMSSW CMSSW_XXX
-cd Run2UltraLegacy_v2__CMSSW_XXX/src
-
-#### Then,
+scram p -n Run2UltraLegacy_v3__CMSSW_10_6_29 CMSSW CMSSW_10_6_29
+cd Run2UltraLegacy_v3__CMSSW_10_6_29/src
 cmsenv
 git cms-init
 
@@ -41,33 +28,19 @@ scram b -j 4
 ######################
 
 # Copy this code
-git clone https://github.com/CMSSNU/SKFlatMaker.git
-#Or git clone git@github.com:CMSSNU/SKFlatMaker.git
+git clone git@github.com:CMSSNU/SKFlatMaker.git
 cd SKFlatMaker
+git checkout Run2UltraLegacy
+#git checkout -b Run2UltraLegacy_v3 Run2UltraLegacy_v3 #### use the tag
 
-#### 1) For a test job or development 
-git checkout master
-git checkout -b <testbranch>
-
-#### 2) For production
-git checkout Run2UltraLegacy_v2 #### use the tag
-
-cd $CMSSW_BASE/src
 
 # Compile
+cd $CMSSW_BASE/src
 scram b -j 4
 
 # Setup
 cd $CMSSW_BASE/src/SKFlatMaker
 source setup.sh
-
-# Now, submitting crab jobs.
-cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/script/CRAB3
-python MakeCrab.py 2018_DATA.txt
-# then it will print crab submission commands
-# copy them somewhere
-cd $SKFlatTag/2018/crab_submission_DATA/
-# now, run the submission commands
 ```
 
 ## Test runs
@@ -88,6 +61,35 @@ Some useful options
 - debug: Set print level defalt=0  
 - `python RunSKFlatMaker.py help` for other options  
 
-## To-do list
-- weight calculation for some samples without weight information in MiniAOD  
-- README for adding new sample  
+## Sample processing
+1. make a sample list you want to process at `$CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/script/CRAB3`. The file name should include the correct era.
+2. (optional) check the sample status using `checkDAS.py` script. If a sample is VALID state, it will print the number of events. If a sample is PRODUCTION state, it will print the progress. It will overwrite the sample list file with `-w` option.
+```
+python checkDAS.py SAMPLELISTFILE
+python checkDAS.py SAMPLELISTFILE -w
+```
+3. (optional) If you want to save events weight for the scale variation (LHE level), PDF reweight (LHE level), parton shower weight (Pythia level) etc, You should provide the weight IDs you want to store (weight map file). First, get logs containing weight description using `getLog.py` script and then make weight map files using `parseLog.py` script. See examples in the relevant directories.
+```
+cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/script/Weight
+python getLog.py ../CRAB3/SAMPLEFILELIST
+python parseLog.py logs/
+```
+4. Make crab script using `MakeCrab.py` script. There will be warnings if you don't provide a weight map file or it miss some basic weights such as Scale, PDF, AlphaS weight. In that case these weights will not be stored.
+```
+cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/script/CRAB3
+python MakeCrab.py SAMPLELISTFILE
+```
+5. Now, submitting crab jobs. For example, 2016preVFP DY MC
+```
+cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/script/CRAB3/$SKFlatTag/2016preVFP/crab_submission_MC/
+crab submit -c SubmitCrab__DYJetsToEE_M-50_massWgtFix_TuneCP5_13TeV-powhegMiNNLO-pythia8-photos__RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v1.py
+```
+
+## Processed samples
+* [2016preVFP_DATA](SKFlatMaker/script/CRAB3/2016preVFP_DATA.txt)
+* [2016preVFP_MC](SKFlatMaker/script/CRAB3/2016preVFP_MC.txt)
+
+## Release note
+v3 (2022Jun)
+* MiniAODv1 -> MiniAODv2
+* Add Tau object, Puppi MET, and other variables. See https://github.com/CMSSNU/SKFlatMaker/issues/63 for the details
