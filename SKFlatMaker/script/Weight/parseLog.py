@@ -71,10 +71,11 @@ class Weight:
                     self.subs+=[Weight(buf)]
                     buf=""
             if level==0:
-                short="''".join('""'.join(buf.split('"')[::2]).split("'")[::2])
-                if len(short.split("="))==2 and short.count("'")%2==0 and short.count('"')%2==0 and not isRoot:
-                    self.Set(buf)
-                    buf=""
+                if buf.count("'")%2==0 and buf.count('"')%2==0:
+                    short="''".join('""'.join(buf.split('"')[::2]).split("'")[::2])
+                    if len(short.split("="))==2 and short.count("'")%2==0 and short.count('"')%2==0 and not isRoot:
+                        self.Set(buf)
+                        buf=""
             elif level<0:
                 buf=""
             
@@ -122,7 +123,7 @@ class Weight:
         elif left == "alpsfact": self.alpsfact=float(right.replace("d","e"))
         elif left == "combine": self.combine=right
         elif left == "name": self.name=right
-        elif left == "id": self.index=int(right)
+        elif left == "id": self.index=int(right) if right.isdigit() else right
         elif left == "memberid": self.memberID=int(right)
         elif left == "pdf" or left == "lhapdf": 
             if self.PDF!="": self.description+=" "+line                
@@ -275,11 +276,12 @@ for log in logs:
 
     if len(cands)==0:
         altlhaids=[]
-        if lhaid=="306000": altlhaids=["305800"]
+        if lhaid=="306000": altlhaids=["325300","305800"]
+        if lhaid=="325300": altlhaids=["306000","305800"]
         for altlhaid in altlhaids:
             print "> Cannot find pdf variations for {}. Try {}.".format(lhaid,altlhaid)
             cand=Weight()
-            for i in range(101):
+            for i in range(103):
                 cand.subs+=w.Find(PDF=int(altlhaid)+i)
             if len(cand)>99:
                 cands+=[cand]
@@ -307,6 +309,7 @@ for log in logs:
             if len(alphaSA) and len(alphaSB):
                 alphaS=[alphaSA[0].index,alphaSB[0].index]
                 asScale=1.5
+        
 
     ##### Pythia parton shower systematic ####
     cands=w.Find(name="fsr:murfac=0.5")+w.Find(name="fsr:murfac=2.0")+w.Find(name="isr:murfac=0.5")+w.Find(name="isr:murfac=2.0")
@@ -351,15 +354,16 @@ for log in logs:
             out+=["PSSyst\t"+",".join([str(i) for i in PSSyst])]
 
     ## MiNNLO specific
-    cands=w.Find(name="sthw2_variation")
-    if len(cands):
-        out+=["sthw2\t"+",".join([str(c.index) for c in cands[0].subs])]
-    cands=w.Find(name="q0_variation")
-    if len(cands):
-        out+=["q0\t"+",".join([str(c.index) for c in cands[0].subs])]
-    cands=w.Find(name="largeptscales_variation")
-    if len(cands):
-        out+=["largeptscales\t"+",".join([str(c.index) for c in cands[0].subs])]
+    if "MiNNLO" in log and "DYJets" in log:
+        cands=w.Find(name="sthw2_variation")
+        if len(cands):
+            out+=["sthw2\t"+",".join([str(c.index) for c in cands[0].subs])]
+        cands=w.Find(name="q0_variation")
+        if len(cands):
+            out+=["q0\t"+",".join([str(c.index) for c in cands[0].subs])]
+        cands=w.Find(name="largeptscales_variation")
+        if len(cands):
+            out+=["largeptscales\t"+",".join([str(c.index) for c in cands[0].subs])]
 
     outfile=os.environ["SKFlatWD"]+"SKFlatMaker/script/Weight/data/"+os.path.basename(log.replace(".log",".txt"))
     if os.path.exists(outfile):
