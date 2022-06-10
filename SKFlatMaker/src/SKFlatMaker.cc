@@ -2699,7 +2699,9 @@ void SKFlatMaker::fillLHEInfo(const edm::Event &iEvent)
   //==== Save id-weight as a map
   map<int,double> map_id_to_weight;
   for(int i=0; i<nWeight; i++){
-    int this_id = stoi(LHEInfo->weights()[i].id.c_str());
+    TString this_id_str=LHEInfo->weights()[i].id;
+    if(!this_id_str.IsDigit()) continue;
+    int this_id = this_id_str.Atoi();
     map_id_to_weight[this_id] = LHEInfo->weights()[i].wgt;
     if(theDebugLevel) cout << "[SKFlatMaker::fillLHEInfo] map_id_to_weight["<<this_id<<"] = " << map_id_to_weight[this_id] << endl;
   }
