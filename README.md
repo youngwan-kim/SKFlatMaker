@@ -40,9 +40,8 @@ git clone git@github.com:CMSSNU/SKFlatMaker.git
 cd SKFlatMaker
 git checkout -b Run2UltraLegacy_v3 Run2UltraLegacy_v3 #### use the tag
 
-cd $CMSSW_BASE/src
-
 # Compile
+cd $CMSSW_BASE/src
 scram b -j 4
 
 # Setup
@@ -68,18 +67,21 @@ Some useful options
 - debug: Set print level defalt=0  
 - `python RunSKFlatMaker.py help` for other options  
 
+<<<<<<< HEAD
 ## Submitting crab jobs
-1. Make a sample list to be processed at *SKFlatMaker/script/CRAB3* directory. **The filename should include the era.** See [SKFlatMaker/script/CRAB3/2018_DATA.txt](SKFlatMaker/script/CRAB3/2018_DATA.txt) for example. The number of events in the second column are not necessary but *checkDAS.py* script will can help to get the numbers.
-2. If it is a simulation, you may want to store MC weights such as scale variation or PDF weights. We should provide the weight IDs to be stored using weight map file. Get logs with weight definitions using *getLog.py* script. The logs will be stored at *logs/* directory
+1. Make a sample list to be processed at *SKFlatMaker/script/CRAB3* directory. **The filename should include the era.** See [SKFlatMaker/script/CRAB3/2018_DATA.txt](SKFlatMaker/script/CRAB3/2018_DATA.txt) for example.
+2. (optional) The number of events in the second column are not necessary but *checkDAS.py* script will can help to get the numbers. If a sample is VALID state, it will print the number of events. If a sample is PRODUCTION state, it will print the progress. It will overwrite the sample list file with `-w` option.
 ```
-cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/script/Weight/
+python checkDAS.py 2018_MYSAMPLELIST.txt
+python checkDAS.py 2018_MYSAMPLELIST.txt -w
+```
+3. (optional) If you want to save events weight for the scale variation (LHE level), PDF reweight (LHE level), parton shower weight (Pythia level) etc, You should provide the weight IDs you want to store (weight map file). First, get logs containing weight description using `getLog.py` script and then make weight map files using `parseLog.py` script. See examples in the relevant directories and [files](SKFlatMaker/script/Weight/data/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v1.txt).
+```
+cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/script/Weight
 python getLog.py ../CRAB3/2018_MYSAMPLELIST.txt
-```
-3. Parse the logs using *parseLog.py* script. It will create weight map files at *data/* directory. See [this](SKFlatMaker/script/Weight/data/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v1.txt) for example. **The parser could be wrong.** Please check whether weigth map files look fine.
-```
 python parseLog.py logs/
 ```
-4. Make crab configuration files using *MakeCrab.py* script.
+4. Make crab configuration files using `MakeCrab.py` script. There will be warnings if you don't provide a weight map file or it miss some basic weights such as Scale, PDF, AlphaS weight. In that case these weights will not be stored.
 ```
 cd $CMSSW_BASE/src/SKFlatMaker/SKFlatMaker/script/CRAB3
 python MakeCrab.py 2018_MYSAMPLELIST.txt
