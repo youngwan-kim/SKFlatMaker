@@ -232,6 +232,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Flag_eeBadScFilter = false;
   Flag_ecalBadCalibFilter = false;
 
+  nPileUp = -1;
   nPV = -1;
   PVtrackSize = -1;
   PVchi2 = -1;
