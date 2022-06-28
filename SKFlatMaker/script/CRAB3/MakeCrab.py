@@ -47,8 +47,8 @@ hostname = os.environ['HOSTNAME']
 for line in lines:
 
   if "#" in line:
-    continue
-  if line.count('/')!=3:
+    line=line.split("#",1)[0]
+  if len(line.split())==0:
     continue
 
   line = line.strip('\n')
