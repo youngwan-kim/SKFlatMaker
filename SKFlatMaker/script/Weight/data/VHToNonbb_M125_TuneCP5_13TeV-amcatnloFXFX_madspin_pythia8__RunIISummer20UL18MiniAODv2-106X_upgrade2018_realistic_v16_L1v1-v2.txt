@@ -1,0 +1,6 @@
+## lhaid=325300 hessian
+Scale	1001,1009
+PDF	1011,1110
+AlphaS	1111,1112
+AlphaSScale	0.75
+PSSyst	4,5,26,27
