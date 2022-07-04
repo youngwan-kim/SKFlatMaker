@@ -38,8 +38,11 @@ executable=run.sh
 output=job$(arguments).out
 error=job$(arguments).err
 log=job$(arguments).log
+request_memory=5000
 should_transfer_files=yes
 transfer_output_files=""
+max_retries=2
+on_exit_hold=exitcode!=0
 getenv=false
 x509userproxy=/tmp/x509up_u{uid}
 queue arguments from (
