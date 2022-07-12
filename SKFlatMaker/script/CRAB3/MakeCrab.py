@@ -47,8 +47,8 @@ hostname = os.environ['HOSTNAME']
 for line in lines:
 
   if "#" in line:
-    continue
-  if line.count('/')!=3:
+    line=line.split("#",1)[0]
+  if len(line.split())==0:
     continue
 
   line = line.strip('\n')
@@ -118,15 +118,12 @@ for line in lines:
         out.write("config.Site.whitelist = ['T2*']\n")
 
     elif 'config.Data.splitting' in sk_line:
-      if isData:
-        out.write("config.Data.splitting = 'LumiBased'\n")
-      else:
-        out.write("config.Data.splitting = 'FileBased'\n")
+      out.write("config.Data.splitting = 'FileBased'\n")
     elif 'config.Data.unitsPerJob' in sk_line:
       if isData:
-        out.write("config.Data.unitsPerJob = 100\n")
-      else:
         out.write("config.Data.unitsPerJob = 2\n")
+      else:
+        out.write("config.Data.unitsPerJob = 1\n")
     elif 'config.Data.outputDatasetTag' in sk_line:
       if isData:
         period = ""

@@ -1,0 +1,6 @@
+## lhaid=306000 hessian Use 305800 for the PDF variation set.
+Scale	1001,1009
+PDF	3001,3100
+AlphaS	3101,3102
+AlphaSScale	0.75
+PSSyst	4,5,26,27

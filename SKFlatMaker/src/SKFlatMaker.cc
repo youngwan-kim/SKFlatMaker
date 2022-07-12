@@ -232,6 +232,7 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Flag_eeBadScFilter = false;
   Flag_ecalBadCalibFilter = false;
 
+  nPileUp = -1;
   nPV = -1;
   PVtrackSize = -1;
   PVchi2 = -1;
@@ -1272,6 +1273,7 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
   
   vector<string> temp_trigs = {
       "HLT_Mu*", "HLT_Ele*", "HLT_DoubleEle*", "HLT_DoublePhoton*", "HLT_IsoMu*", "HLT_Photon*",
+      "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_*",
       "HLT_OldMu100_v*", "HLT_TkMu100_v*",
       "HLT_TkMu50_v*",
       "HLT_IsoTkMu24_v*",
