@@ -1,0 +1,2 @@
+## lhaid=306000  Assume lhaid=306000.
+PSSyst	4,5,26,27
