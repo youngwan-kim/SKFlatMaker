@@ -2372,7 +2372,7 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       electron_Energy_ScaleEt_Down.push_back(el->energy() );
 
       electron_Energy_SigmaPhi_Up.push_back(el->energy() );
-      electron_Energy_SigmaPhi_Down.push_back(el->energy() );
+      electron_Energy_SigmaRho_Down.push_back(el->energy() );
       electron_Energy_SigmaRho_Up.push_back(el->energy() );
 
     }
