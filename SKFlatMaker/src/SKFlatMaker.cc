@@ -347,6 +347,17 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_Energy_Scale_Down.clear();
   electron_Energy_Smear_Up.clear();
   electron_Energy_Smear_Down.clear();
+  electron_Energy_ScaleStat_Up.clear();
+  electron_Energy_ScaleStat_Down.clear();
+  electron_Energy_ScaleSyst_Up.clear();
+  electron_Energy_ScaleSyst_Down.clear();
+  electron_Energy_ScaleGain_Up.clear();
+  electron_Energy_ScaleGain_Down.clear();
+  electron_Energy_ScaleEt_Up.clear();
+  electron_Energy_ScaleEt_Down.clear();
+  electron_Energy_SigmaPhi_Up.clear();
+  electron_Energy_SigmaRho_Up.clear();
+  electron_Energy_SigmaRho_Down.clear();
   electron_eta.clear();
   electron_phi.clear();
   electron_charge.clear();
@@ -965,6 +976,19 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_Energy_Scale_Down", "vector<float>", &electron_Energy_Scale_Down);
     DYTree->Branch("electron_Energy_Smear_Up", "vector<float>", &electron_Energy_Smear_Up);
     DYTree->Branch("electron_Energy_Smear_Down", "vector<float>", &electron_Energy_Smear_Down);
+
+    DYTree->Branch("electron_Energy_ScaleStat_Up", "vector<float>", &electron_Energy_ScaleStat_Up);
+    DYTree->Branch("electron_Energy_ScaleStat_Down", "vector<float>", &electron_Energy_ScaleStat_Down);
+    DYTree->Branch("electron_Energy_ScaleSyst_Up", "vector<float>", &electron_Energy_ScaleSyst_Up);
+    DYTree->Branch("electron_Energy_ScaleSyst_Down", "vector<float>", &electron_Energy_ScaleSyst_Down);
+    DYTree->Branch("electron_Energy_ScaleGain_Up", "vector<float>", &electron_Energy_ScaleGain_Up);
+    DYTree->Branch("electron_Energy_ScaleGain_Down", "vector<float>", &electron_Energy_ScaleGain_Down);
+    DYTree->Branch("electron_Energy_ScaleEt_Up", "vector<float>", &electron_Energy_ScaleEt_Up);
+    DYTree->Branch("electron_Energy_ScaleEt_Down", "vector<float>", &electron_Energy_ScaleEt_Down);
+    DYTree->Branch("electron_Energy_SigmaPhi_Up", "vector<float>", &electron_Energy_SigmaPhi_Up);
+    DYTree->Branch("electron_Energy_SigmaRho_Up", "vector<float>", &electron_Energy_SigmaRho_Up);
+    DYTree->Branch("electron_Energy_SigmaRho_Down", "vector<float>", &electron_Energy_SigmaRho_Down);
+
     DYTree->Branch("electron_eta", "vector<float>", &electron_eta);
     DYTree->Branch("electron_phi", "vector<float>", &electron_phi);
     DYTree->Branch("electron_charge", "vector<int>", &electron_charge);
@@ -2311,6 +2335,21 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       electron_Energy_Smear_Up.push_back( el->userFloat("energySigmaUp") );
       electron_Energy_Smear_Down.push_back( el->userFloat("energySigmaDown") );
 
+      electron_Energy_ScaleStat_Up.push_back( el->userFloat("energyScaleStatUp") );
+      electron_Energy_ScaleStat_Down.push_back( el->userFloat("energyScaleStatDown") );
+      electron_Energy_ScaleSyst_Up.push_back( el->userFloat("energyScaleSystUp") );
+      electron_Energy_ScaleSyst_Down.push_back( el->userFloat("energyScaleSystDown") );
+      electron_Energy_ScaleGain_Up.push_back( el->userFloat("energyScaleGainUp") );
+      electron_Energy_ScaleGain_Down.push_back( el->userFloat("energyScaleGainDown") );
+      electron_Energy_ScaleEt_Up.push_back( el->userFloat("energyScaleEtUp") );
+      electron_Energy_ScaleEt_Down.push_back( el->userFloat("energyScaleEtDown") );
+
+      electron_Energy_SigmaPhi_Up.push_back( el->userFloat("energySigmaPhiUp") );
+      electron_Energy_SigmaRho_Up.push_back( el->userFloat("energySigmaRhoUp") );
+      electron_Energy_SigmaRho_Down.push_back( el->userFloat("energySigmaRhoDown") );
+
+      
+
     }
     else{
 
@@ -2322,6 +2361,19 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       electron_Energy_Scale_Down.push_back( el->energy() );
       electron_Energy_Smear_Up.push_back( el->energy() );
       electron_Energy_Smear_Down.push_back( el->energy() );
+
+      electron_Energy_ScaleStat_Up.push_back(el->energy() );
+      electron_Energy_ScaleStat_Down.push_back(el->energy() ); 
+      electron_Energy_ScaleSyst_Up.push_back( el->energy() );
+      electron_Energy_ScaleSyst_Down.push_back(el->energy() );
+      electron_Energy_ScaleGain_Up.push_back(el->energy() );
+      electron_Energy_ScaleGain_Down.push_back( el->energy() );
+      electron_Energy_ScaleEt_Up.push_back(el->energy() );
+      electron_Energy_ScaleEt_Down.push_back(el->energy() );
+
+      electron_Energy_SigmaPhi_Up.push_back(el->energy() );
+      electron_Energy_SigmaRho_Down.push_back(el->energy() );
+      electron_Energy_SigmaRho_Up.push_back(el->energy() );
 
     }
     electron_eta.push_back( el->eta() );
