@@ -114,7 +114,7 @@ cJetNNResToken_                     ( consumes<ValueMap<float> >                
   prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
   prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
 
-  theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 0);
+  theDebugLevel                     = iConfig.getUntrackedParameter<int>("DebugLevel", 2);
 
   if(theDebugLevel) cout << "[SKFlatMaker::SKFlatMaker] Constructor called" << endl;
 
@@ -347,17 +347,6 @@ void SKFlatMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   electron_Energy_Scale_Down.clear();
   electron_Energy_Smear_Up.clear();
   electron_Energy_Smear_Down.clear();
-  electron_Energy_ScaleStat_Up.clear();
-  electron_Energy_ScaleStat_Down.clear();
-  electron_Energy_ScaleSyst_Up.clear();
-  electron_Energy_ScaleSyst_Down.clear();
-  electron_Energy_ScaleGain_Up.clear();
-  electron_Energy_ScaleGain_Down.clear();
-  electron_Energy_ScaleEt_Up.clear();
-  electron_Energy_ScaleEt_Down.clear();
-  electron_Energy_SigmaPhi_Up.clear();
-  electron_Energy_SigmaRho_Up.clear();
-  electron_Energy_SigmaRho_Down.clear();
   electron_eta.clear();
   electron_phi.clear();
   electron_charge.clear();
@@ -976,19 +965,6 @@ void SKFlatMaker::beginJob()
     DYTree->Branch("electron_Energy_Scale_Down", "vector<float>", &electron_Energy_Scale_Down);
     DYTree->Branch("electron_Energy_Smear_Up", "vector<float>", &electron_Energy_Smear_Up);
     DYTree->Branch("electron_Energy_Smear_Down", "vector<float>", &electron_Energy_Smear_Down);
-
-    DYTree->Branch("electron_Energy_ScaleStat_Up", "vector<float>", &electron_Energy_ScaleStat_Up);
-    DYTree->Branch("electron_Energy_ScaleStat_Down", "vector<float>", &electron_Energy_ScaleStat_Down);
-    DYTree->Branch("electron_Energy_ScaleSyst_Up", "vector<float>", &electron_Energy_ScaleSyst_Up);
-    DYTree->Branch("electron_Energy_ScaleSyst_Down", "vector<float>", &electron_Energy_ScaleSyst_Down);
-    DYTree->Branch("electron_Energy_ScaleGain_Up", "vector<float>", &electron_Energy_ScaleGain_Up);
-    DYTree->Branch("electron_Energy_ScaleGain_Down", "vector<float>", &electron_Energy_ScaleGain_Down);
-    DYTree->Branch("electron_Energy_ScaleEt_Up", "vector<float>", &electron_Energy_ScaleEt_Up);
-    DYTree->Branch("electron_Energy_ScaleEt_Down", "vector<float>", &electron_Energy_ScaleEt_Down);
-    DYTree->Branch("electron_Energy_SigmaPhi_Up", "vector<float>", &electron_Energy_SigmaPhi_Up);
-    DYTree->Branch("electron_Energy_SigmaRho_Up", "vector<float>", &electron_Energy_SigmaRho_Up);
-    DYTree->Branch("electron_Energy_SigmaRho_Down", "vector<float>", &electron_Energy_SigmaRho_Down);
-
     DYTree->Branch("electron_eta", "vector<float>", &electron_eta);
     DYTree->Branch("electron_phi", "vector<float>", &electron_phi);
     DYTree->Branch("electron_charge", "vector<int>", &electron_charge);
@@ -1305,6 +1281,21 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
       "HLT_DiMu*",
       "HLT_TrkMu15_DoubleTrkMu5NoFiltersNoVtx_v*",
       "HLT_TrkMu12_DoubleTrkMu5NoFiltersNoVtx_v*",
+       // 2017,2018 Tau Triggers
+      "HLT_MediumChargedIsoPFTau*", // Tau+(MET)
+      "HLT_Ele24_eta2p1_WPTight_Gsf_*", // Ele+Tau
+      "HLT_IsoMu20_eta2p1_*", // Mu+Tau
+      "HLT_IsoMu24_eta2p1_*", // Mu+Tau
+      "HLT_DoubleMediumChargedIsoPFTau*", // Double Tau
+      "HLT_DoubleTightChargedIsoPFTau*", // Double Tau
+      // 2016 Tau Triggers
+      "HLT_DoubleMediumCombinedIsoPFTau*", // 2016G Double Tau
+      "HLT_DoubleMediumIsoPFTau*", // 2016B-F Double Tau
+      "HLT_IsoMu19_eta2p1_LooseIsoPFTau*", // 2016 Mu+Tau
+      "HLT_IsoMu21_eta2p1_LooseIsoPFTau*", // 2016 Mu+Tau 
+      "HLT_MET*",
+      "HLT_PFMET*",
+      "HLT_PFHT*",
 
 /*
       //==== single muon triggers
@@ -1326,8 +1317,26 @@ void SKFlatMaker::beginRun(const Run & iRun, const EventSetup & iSetup)
 */
 
   };
+
+  vector<string> tau_trigs = {
+
+    "HLT_MediumChargedIsoPFTau*", // Tau+(MET)
+    "HLT_Ele24_eta2p1_WPTight_Gsf_*", // Ele+Tau
+    "HLT_IsoMu20_eta2p1_*", // Mu+Tau
+    "HLT_IsoMu24_eta2p1_*", // Mu+Tau
+    "HLT_DoubleMediumChargedIsoPFTau*", // Double Tau
+    "HLT_DoubleTightChargedIsoPFTau*", // Double Tau
+    // 2016 Tau Triggers
+    "HLT_DoubleMediumCombinedIsoPFTau*", // 2016G Double Tau
+    "HLT_DoubleMediumIsoPFTau*", // 2016B-F Double Tau
+    "HLT_IsoMu19_eta2p1_LooseIsoPFTau*", // 2016 Mu+Tau
+    "HLT_IsoMu21_eta2p1_LooseIsoPFTau*", // 2016 Mu+Tau 
+
+  };
+
   //==== copy this to member variable, HLTName_WildCard
   HLTName_WildCard.clear();
+  for(unsigned int i=0; i<temp_trigs.size(); i++ ) cout << temp_trigs.at(i) << endl;
   for(unsigned int i=0; i<temp_trigs.size(); i++ ) HLTName_WildCard.push_back(temp_trigs.at(i));
 
   bool changedConfig;
@@ -1355,7 +1364,7 @@ void SKFlatMaker::endJob()
 void SKFlatMaker::hltReport(const edm::Event &iEvent)
 {
 
-  if(theDebugLevel) cout << "[SKFlatMaker::hltReport] called" << endl;
+  if(false) cout << "[SKFlatMaker::hltReport] called" << endl;
 
   Handle<TriggerResults> trigResult;
   iEvent.getByToken(TriggerToken, trigResult);
@@ -1365,21 +1374,32 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
     //==== All trigger paths in this event setup
     const edm::TriggerNames trigName = iEvent.triggerNames(*trigResult);
 
-    if(theDebugLevel>=2){
+    if(false){
       cout << "[SKFlatMaker::hltReport] trigger names in trigger result (HLT)" << endl;
       cout << "[SKFlatMaker::hltReport] trigName.size() = " << trigName.size() << endl;
-      for(int itrig=0; itrig<(int)trigName.size(); itrig++)
-        cout << "[SKFlatMaker::hltReport] trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
+      // for(int itrig=0; itrig<(int)trigName.size(); itrig++) cout << "[SKFlatMaker::hltReport] trigName = " << trigName.triggerName(itrig) << " " << itrig << endl;
     }
 
 
     //==== iteration for each Trigger Name WildCards
     //==== e.g., {"HLT_Mu*", "HLT_Ele*"}
     for(unsigned int it_HLTWC = 0; it_HLTWC < HLTName_WildCard.size(); it_HLTWC++ ){
-      if(theDebugLevel) cout << "[SKFlatMaker::hltReport] [" << it_HLTWC << "th Input Trigger Name WildCard = " << HLTName_WildCard[it_HLTWC] << "]" << endl;
+      // cout << "[SKFlatMaker::hltReport] [" << it_HLTWC << "th Input Trigger Name WildCard = " << HLTName_WildCard[it_HLTWC] << "]" << endl;
 
       //==== find triggers in HLT matched to this WildCard
       std::vector<std::vector<std::string>::const_iterator> matches = edm::regexMatch(trigName.triggerNames(), HLTName_WildCard[it_HLTWC]);
+
+      /*if(!matches.empty() && std::find(tau_trigs.begin(), tau_trigs.end(), HLTName_WildCard[it_HLTWC]) != tau_trigs.end()){
+
+          cout << "[SKFlatMaker::hltReport]  TAU HLT " << endl;
+          BOOST_FOREACH(std::vector<std::string>::const_iterator match, matches){
+            if( trigResult->accept(trigName.triggerIndex(*match)) ){
+              HLT_TriggerName.push_back(*match); //save HLT list as a vector
+              if(true) cout << "[SKFlatMaker::hltReport]   [TAU matched trigger = " << *match << "]" << endl;
+            }
+          }
+
+      }*/
 
       if( !matches.empty() ){
 
@@ -1389,30 +1409,57 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
 
           //==== Cleaningup
           //==== https://github.com/CMSSNU/SKFlatMaker/issues/9
-
+          //cout << "[SKFlatMaker::hltReport]   [matched trigger before cleaning = " << *match << "]" << endl;
           if(HLTName_WildCard[it_HLTWC]=="HLT_Mu*"){
+            //cout << "Muon HLT cleaning..." << endl;
             if( (*match).find("HLT_Mu7p5") != std::string::npos ) continue;
             if( (*match).find("Phi") != std::string::npos ) continue;
             if( (*match).find("PFMETNoMu") != std::string::npos ) continue;
-
+            if( (*match).find("Onia") != std::string::npos ) continue;
+            if( (*match).find("BTagCSV") != std::string::npos ) continue;
+            if( (*match).find("CaloBTagCSV") != std::string::npos ) continue;
+            //if( (*match).find("Tau") != std::string::npos ) continue;
+            if( (*match).find("EBOnly") != std::string::npos ) continue;
+            if( (*match).find("R9Id90") != std::string::npos ) continue;
+            if( (*match).find("R9Id85") != std::string::npos ) continue;
+            if( (*match).find("DisplacedIdL") != std::string::npos ) continue;
+            if( (*match).find("HighEta") != std::string::npos ) continue;
+            if( (*match).find("EleCleaned") != std::string::npos ) continue;
+	          if( (*match).find("_DoubleTrkMu5NoFiltersNoVtx_v") == std::string::npos )
+	          if( (*match).find("NoFiltersNoVtx") != std::string::npos ) continue;
+            if( (*match).find("WHbb") != std::string::npos ) continue;
+	          //if( (*match).find("HLT_Ele27_eta2p1_WPTight_Gsf_v") == std::string::npos )
+	          //if( (*match).find("eta2p1") != std::string::npos ) continue;
           }
-          if( (*match).find("Onia") != std::string::npos ) continue;
-          if( (*match).find("BTagCSV") != std::string::npos ) continue;
-          if( (*match).find("CaloBTagCSV") != std::string::npos ) continue;
-          if( (*match).find("Tau") != std::string::npos ) continue;
-          if( (*match).find("EBOnly") != std::string::npos ) continue;
-          if( (*match).find("R9Id90") != std::string::npos ) continue;
-          if( (*match).find("R9Id85") != std::string::npos ) continue;
-          if( (*match).find("DisplacedIdL") != std::string::npos ) continue;
-          if( (*match).find("HighEta") != std::string::npos ) continue;
-          if( (*match).find("EleCleaned") != std::string::npos ) continue;
-	  if( (*match).find("_DoubleTrkMu5NoFiltersNoVtx_v") == std::string::npos )
-	    if( (*match).find("NoFiltersNoVtx") != std::string::npos ) continue;
-          if( (*match).find("WHbb") != std::string::npos ) continue;
-	  if( (*match).find("HLT_Ele27_eta2p1_WPTight_Gsf_v") == std::string::npos )
-	    if( (*match).find("eta2p1") != std::string::npos ) continue;
 
-          if(theDebugLevel) cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
+          else if(it_HLTWC>14){
+            //cout << "Tau HLT cleaning..." << endl;
+            if( trigResult->accept(trigName.triggerIndex(*match)) ){
+              HLT_TriggerName.push_back(*match); //save HLT list as a vector
+            }
+          }
+
+          else {
+
+            //cout << "Other HLTs cleaning..." << endl;
+            if( (*match).find("Onia") != std::string::npos ) continue;
+            if( (*match).find("BTagCSV") != std::string::npos ) continue;
+            if( (*match).find("CaloBTagCSV") != std::string::npos ) continue;
+            //if( (*match).find("Tau") != std::string::npos ) continue;
+            if( (*match).find("EBOnly") != std::string::npos ) continue;
+            if( (*match).find("R9Id90") != std::string::npos ) continue;
+            if( (*match).find("R9Id85") != std::string::npos ) continue;
+            if( (*match).find("DisplacedIdL") != std::string::npos ) continue;
+            if( (*match).find("HighEta") != std::string::npos ) continue;
+            if( (*match).find("EleCleaned") != std::string::npos ) continue;
+	          if( (*match).find("_DoubleTrkMu5NoFiltersNoVtx_v") == std::string::npos )
+	          if( (*match).find("NoFiltersNoVtx") != std::string::npos ) continue;
+            if( (*match).find("WHbb") != std::string::npos ) continue;
+	          //if( (*match).find("HLT_Ele27_eta2p1_WPTight_Gsf_v") == std::string::npos )
+	          //if( (*match).find("eta2p1") != std::string::npos ) continue;
+          }
+          
+          //cout << "[SKFlatMaker::hltReport]   [matched trigger = " << *match << "]" << endl;
 
           //==== Check if this trigger is fired
           if( trigResult->accept(trigName.triggerIndex(*match)) ){
@@ -1423,10 +1470,10 @@ void SKFlatMaker::hltReport(const edm::Event &iEvent)
           if(theStoreHLTObjectFlag){
             //==== find modules corresponding to a trigger in HLT configuration
             std::vector<std::string> moduleNames = hltConfig_.moduleLabels( *match );
-            if(theDebugLevel){
+            if(false){
               cout << "[SKFlatMaker::hltReport]   moduleNames.size() = " << moduleNames.size() << endl;
               for(unsigned int it_md=0; it_md<moduleNames.size(); it_md++){
-                if(theDebugLevel) cout << "[SKFlatMaker::hltReport]     " << moduleNames.at(it_md) << endl;
+                if(false) cout << "[SKFlatMaker::hltReport]     " << moduleNames.at(it_md) << endl;
               }
             }
             string this_modulename = "";
@@ -2335,21 +2382,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       electron_Energy_Smear_Up.push_back( el->userFloat("energySigmaUp") );
       electron_Energy_Smear_Down.push_back( el->userFloat("energySigmaDown") );
 
-      electron_Energy_ScaleStat_Up.push_back( el->userFloat("energyScaleStatUp") );
-      electron_Energy_ScaleStat_Down.push_back( el->userFloat("energyScaleStatDown") );
-      electron_Energy_ScaleSyst_Up.push_back( el->userFloat("energyScaleSystUp") );
-      electron_Energy_ScaleSyst_Down.push_back( el->userFloat("energyScaleSystDown") );
-      electron_Energy_ScaleGain_Up.push_back( el->userFloat("energyScaleGainUp") );
-      electron_Energy_ScaleGain_Down.push_back( el->userFloat("energyScaleGainDown") );
-      electron_Energy_ScaleEt_Up.push_back( el->userFloat("energyScaleEtUp") );
-      electron_Energy_ScaleEt_Down.push_back( el->userFloat("energyScaleEtDown") );
-
-      electron_Energy_SigmaPhi_Up.push_back( el->userFloat("energySigmaPhiUp") );
-      electron_Energy_SigmaRho_Up.push_back( el->userFloat("energySigmaRhoUp") );
-      electron_Energy_SigmaRho_Down.push_back( el->userFloat("energySigmaRhoDown") );
-
-      
-
     }
     else{
 
@@ -2361,19 +2393,6 @@ void SKFlatMaker::fillElectrons(const edm::Event &iEvent, const edm::EventSetup&
       electron_Energy_Scale_Down.push_back( el->energy() );
       electron_Energy_Smear_Up.push_back( el->energy() );
       electron_Energy_Smear_Down.push_back( el->energy() );
-
-      electron_Energy_ScaleStat_Up.push_back(el->energy() );
-      electron_Energy_ScaleStat_Down.push_back(el->energy() ); 
-      electron_Energy_ScaleSyst_Up.push_back( el->energy() );
-      electron_Energy_ScaleSyst_Down.push_back(el->energy() );
-      electron_Energy_ScaleGain_Up.push_back(el->energy() );
-      electron_Energy_ScaleGain_Down.push_back( el->energy() );
-      electron_Energy_ScaleEt_Up.push_back(el->energy() );
-      electron_Energy_ScaleEt_Down.push_back(el->energy() );
-
-      electron_Energy_SigmaPhi_Up.push_back(el->energy() );
-      electron_Energy_SigmaRho_Down.push_back(el->energy() );
-      electron_Energy_SigmaRho_Up.push_back(el->energy() );
 
     }
     electron_eta.push_back( el->eta() );
