@@ -1,5 +1,9 @@
 # SKFlatMaker
 ## Release notes
+
+### Run2UltraLegacy_v3_TauHLT
+* Personal branch of SKFlatMaker to include originally removed Tau HLT wildcards 
+
 ### Run2UltraLegacy_v3 (2022 June)
 * Move to UL MiniAOD v2. Add tau, puppiMET, etc. See more details [here](https://github.com/CMSSNU/SKFlatMaker/issues/63)
 * Processed samples are listed in below text files. But please also check the HN google sheet for more updated list  
