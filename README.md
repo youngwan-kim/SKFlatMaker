@@ -40,7 +40,7 @@ scram b -j 4
 ######################
 
 # Copy this code
-git clone git@github.com:youngwan-kim/SKFlatMaker.git
+git clone -b Run2UltraLegacy_v3_TauHLT git@github.com:youngwan-kim/SKFlatMaker.git
 cd SKFlatMaker
 git checkout -b Run2UltraLegacy_v3_TauHLT Run2UltraLegacy_v3_TauHLT #### use the tag
 
