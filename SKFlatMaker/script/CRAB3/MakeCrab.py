@@ -66,7 +66,7 @@ for line in lines:
   confs = samplePDs[2]
   dasname_="__".join(samplePDs[1:3])
 
-  cmd = 'crab submit -c SubmitCrab__'+dasname_+'.py'
+  cmd = 'crab-pre submit -c SubmitCrab__'+dasname_+'.py'
 
   ArgsListString = "['sampletype="+str_sample+"','era="+era+"'"
   # ['sampletype="+str_sample+"','PDFIDShift="+pdfshift+"','PDFOrder="+order+"','PDFType="+gentype+"','era="+era+"']
